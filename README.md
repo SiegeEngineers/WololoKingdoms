@@ -9,7 +9,7 @@ However, people playing on this version of the engine are missing out on great c
 This program is an (early) attempt at providing the best of both worlds, while waiting for an even better game engine (openage)
 
 ## How to use
-Download the latest release, extract it into your "Age2HD" folder, launch WololoKingdoms.exe, then copy the content of the "WololoKingdoms/out" folder to your AOC folder, then you can use it as a mod in Voobly.
+[Download the latestrelease](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder, launch WololoKingdoms.exe, then copy the content of the "WololoKingdoms/out" folder to your AOC folder, then you can use it as a mod in Voobly.
 
 ## Limitations
 Because of the features missing from the original AOC engine, not everything from the expansions can be replicated, this includes :
