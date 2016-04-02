@@ -11,7 +11,7 @@
 
 using namespace std;
 
-string const version = "0.95";
+string const version = "1.0-beta1";
 
 void fileCopy(string const src, string const dst) {
 	ifstream srcStream(src, std::ios::binary);
