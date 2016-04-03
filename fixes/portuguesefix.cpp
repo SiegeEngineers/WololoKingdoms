@@ -18,9 +18,11 @@ void PortuguesePatch(genie::DatFile *aocDat) {
 	effect.B = 1; // (+/-)
 	effect.D = 1; // +1
 	effects.push_back(effect);
-	effect.Type = 102; // disable research
-	effect.D = 19; // carthography
-	effects.push_back(effect);
+
+	// broken : prevents from researching caravan
+//	effect.Type = 102; // disable research
+//	effect.D = 19; // cartography
+//	effects.push_back(effect);
 
 	aocDat->Techages[portugueseTBonusTechId].Effects = effects;
 	aocDat->Techages[portugueseBrokenTBonusTechId].Effects = std::vector<genie::TechageEffect>(); // nothing
