@@ -10,7 +10,7 @@ void berbersUTPatch(genie::DatFile *aocDat) {
 	 *
 	 * The caste unique tech becomes an additionnal team bonus
 	 * To compensate for the fact you don't even have to go castle and research it, it's effect is reduced from 25% to 15%
-	 * For the imperial one, the regen. is replaced by +1/+2 armor
+	 * For the imperial one, the regen. is replaced by +1/+1 armor
 	 */
 
 	size_t const berbersTBonusTechId = 38;
@@ -39,9 +39,8 @@ void berbersUTPatch(genie::DatFile *aocDat) {
 		int armorType = 4; // melee;
 		it->D = (armorType << 8) + armorQuantity;
 
-		// now add a new attribute
+		// now add a new attribute : +1 pierce armor
 		effect = *it;
-		armorQuantity = 2;
 		armorType = 3; // pierce
 		effect.D = (armorType << 8) + armorQuantity;
 		effectsToAdd.push_back(effect);

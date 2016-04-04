@@ -17,7 +17,7 @@ Because of the features missing from the original AOC engine, not everything fro
 - The feitoria and siege tower which can be built but don't work
 - The Unique technologies of the Berbers : which have been replaced by the following :
     - Castle age UT is a team bonus, which has been reduced to 15% to make up for the fact you don't have to go castle and research it
-    - Imperial Age UT gives their camels +1 melee armor and +2 pierce armor instead of the regen.
+    - Imperial Age UT gives their camels +1 melee armor and +1 pierce armor instead of the regen.
     - These changes might be rebalanced in the future
 - Bots can't play the new civilizations, however, using the AI files from the Forgotten Empires seems to work for the forgotten files, if you are an AI scripter, feel free to contribute.
 - There may be other things not working properly, I will add them to this list when they are reported
@@ -26,7 +26,6 @@ If you have experience with AOC .exe editing, and are willing to share your work
 
 ## Known issues
 - Saboteurs (cheat unit) don't work properly due to a workaround related to Demolition rafts
-- Text related to the tech tree of the new civilization may be missing, this should be fixable but is low priority (text related to new units should be working however)
 
 ## Keep in mind
 The Forgotten team has made a fantastic work with their expansions and, while this is probably not the way they expected their expansions to be played, I hope they can understand that many people are disapointed with the current state of AOE2HD engine.

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <set>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
 #include "wololo/fix.h"
 #include "wololo/Drs.h"
@@ -11,12 +12,10 @@
 
 using namespace std;
 
-string const version = "1.0-beta2";
+string const version = "1.0-beta3";
 
 void fileCopy(string const src, string const dst) {
-	ifstream srcStream(src, std::ios::binary);
-	ofstream dstStream(dst, std::ios::binary);
-	dstStream << srcStream.rdbuf();
+	boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
 }
 
 void listAssetFiles(string const path, vector<string> *listOfSlpFiles, std::vector<string> *listOfWavFiles) {
@@ -48,12 +47,18 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *out) {
 		int spaceIdx = line.find(' ');
 		string number = line.substr(0, spaceIdx);
 		try {
-			stoi(number);
+			int nb = stoi(number);
+			if (nb >= 120168 && nb <= 120176) { // descriptions of the new civs in the expansion
+				nb -= 100000; // descriptions of the new civs in the base game
+				number = to_string(nb);
+			}
 		}
 		catch (invalid_argument const & e){
 			continue;
 		}
-		*out << number << '=' << line.substr(spaceIdx+2, line.size() - spaceIdx - 3) << endl;
+		line = line.substr(spaceIdx+2, line.size() - spaceIdx - 3);
+		boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion
+		*out << number << '=' << line << endl;
 	}
 }
 
