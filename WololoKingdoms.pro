@@ -12,7 +12,9 @@ TEMPLATE = app
 SOURCES += main.cpp \
     fixes/portuguesefix.cpp \
     fixes/demoshipfix.cpp \
-    fixes/berbersutfix.cpp
+    fixes/berbersutfix.cpp \
+    fixes/ethiopiansfreepikeupgradefix.cpp \
+    fixes/maliansfreeminingupgradefix.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -30,7 +32,9 @@ HEADERS += \
     fixes/portuguesefix.h \
     fixes/demoshipfix.h \
     fixes/berbersutfix.h \
-    include/wololo/fix.h
+    include/wololo/fix.h \
+    fixes/ethiopiansfreepikeupgradefix.h \
+    fixes/maliansfreeminingupgradefix.h
 
 DISTFILES += \
     WololoKingdoms.ico
