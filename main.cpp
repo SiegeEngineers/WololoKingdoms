@@ -70,7 +70,13 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		*iniOut << number << '=' << line << endl;
 		if (generateLangDll) {
 			boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
-			dllOut->setString(nb, line);
+			try {
+				dllOut->setString(nb, line);
+			}
+			catch (string const & e) {
+				boost::replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
+				dllOut->setString(nb, line);
+			}
 		}
 	}
 }
@@ -332,6 +338,11 @@ int main(int argc, char *argv[]) {
 		cerr << e.what() << endl;
 		ret = 1;
 	}
+	catch (string const & e) {
+		cerr << e << endl;
+		ret = 1;
+	}
+
 	if (argc == 1) { // any argument = non-blocking install
 		cout << "Press enter to exit..." << endl;
 		cin.get();
