@@ -13,7 +13,7 @@ This program is an (early) attempt at providing the best of both worlds, while w
 then copy the content of the "WololoKingdoms/out" folder to your AOC folder, then you can use it as a mod in Voobly.
 
 ## How to use (without Voobly)
-[You will need UserPatch](http://userpatch.aiscripters.net/)
+[You will need UserPatch](http://userpatch.aiscripters.net/)  
 [Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder,
 copy language_x1_p1.dll from your AOC installation and paste it next to WololoKingdoms.exe, launch WololoKingdoms.exe, the program will detect the dll file and patch it on top of doing it's usual operations,
 make a backup just in case and replace your language_x1_p1.dll by the patched one (larger than 1 MB),
