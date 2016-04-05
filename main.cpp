@@ -12,7 +12,7 @@
 
 using namespace std;
 
-string const version = "1.0-beta3";
+string const version = "1.0-beta4";
 
 void fileCopy(string const src, string const dst) {
 	boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
@@ -48,8 +48,13 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *out) {
 		string number = line.substr(0, spaceIdx);
 		try {
 			int nb = stoi(number);
-			if (nb >= 120168 && nb <= 120176) { // descriptions of the new civs in the expansion
-				nb -= 100000; // descriptions of the new civs in the base game
+			if (nb >= 20150 && nb <= 20167) {
+				// skip the old civ descriptions
+				continue;
+			}
+			if (nb >= 120150 && nb <= 120176) { // descriptions of the civs in the expansion
+				// replace the old descriptions of the civs in the base game
+				nb -= 100000;
 				number = to_string(nb);
 			}
 		}

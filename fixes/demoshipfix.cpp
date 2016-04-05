@@ -23,7 +23,7 @@ void demoshipPatch(genie::DatFile *aocDat) {
 	size_t const warGalleyTechId = 155;
 	size_t const heavyDemoShipTechId = 233;
 	size_t const feudalAgeId = 1;
-	size_t const demoRaftIdxInFeudal = 1;
+	size_t const demoRaftIdxInFeudal = 2;
 	size_t const dockBuildingConnectionId = 1;
 	size_t const demoRaftIdxInDock = 3;
 	size_t const demoRaftIdxInUnitConnections = 119;
