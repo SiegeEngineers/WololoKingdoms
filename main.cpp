@@ -3,6 +3,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
+#include "genie/lang/LangFile.h"
 #include "wololo/fix.h"
 #include "wololo/Drs.h"
 #include "fixes/berbersutfix.h"
@@ -41,13 +42,14 @@ void listAssetFiles(string const path, vector<string> *listOfSlpFiles, std::vect
 	}
 }
 
-void convertLanguageFile(std::ifstream *in, std::ofstream *out) {
+void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll) {
 	string line;
 	while (getline(*in, line)) {
 		int spaceIdx = line.find(' ');
 		string number = line.substr(0, spaceIdx);
+		int nb;
 		try {
-			int nb = stoi(number);
+			nb = stoi(number);
 			if (nb >= 20150 && nb <= 20167) {
 				// skip the old civ descriptions
 				continue;
@@ -63,7 +65,11 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *out) {
 		}
 		line = line.substr(spaceIdx+2, line.size() - spaceIdx - 3);
 		boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion
-		*out << number << '=' << line << endl;
+		*iniOut << number << '=' << line << endl;
+		if (generateLangDll) {
+			boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+			dllOut->setString(nb, line);
+		}
 	}
 }
 
@@ -246,6 +252,7 @@ int main(int argc, char *argv[]) {
 	string const drsOutPath = "out/Voobly Mods/AOC/Data Mods/AK/Data/gamedata_x1_p1.drs";
 	string const assetsPath = "../resources/_common/drs/gamedata_x2/";
 	string const outputDatPath = "out/Voobly Mods/AOC/Data Mods/AK/Data/empires2_x1_p1.dat";
+	string const langDllPath = "language_x1_p1.dll";
 
 
 	int ret = 0;
@@ -267,7 +274,22 @@ int main(int argc, char *argv[]) {
 		cout << endl << "Converting the language file..." << endl;
 		ifstream langIn(keyValuesStringsPath);
 		ofstream langOut(languageIniPath);
-		convertLanguageFile(&langIn, &langOut);
+		genie::LangFile langDll;
+		bool patchLangDll = boost::filesystem::exists(langDllPath);
+		if (patchLangDll) {
+			langDll.load(langDllPath.c_str());
+			langDll.setGameVersion(genie::GameVersion::GV_TC);
+		}
+		else {
+			cout << langDllPath << " not found, skipping dll patching for UserPatch." << endl;
+		}
+		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll);
+		if (patchLangDll) {
+			langDll.save();
+			cout << langDllPath << " patched." << endl;
+		}
+
+
 
 		cout << "Preparing ressources files..." << endl;
 		ofstream versionOut(versionIniPath);
@@ -300,7 +322,7 @@ int main(int argc, char *argv[]) {
 
 		aocDat.saveAs(outputDatPath.c_str());
 
-		cout << endl << "Conversion complete, you can put \"out/Voobly Mods/\" into your AOE2 folder" << endl;
+		cout << endl << "Conversion complete, you can put \"out/Voobly Mods/\" into your AOE2 folder." << endl;
 	}
 	catch (exception const & e) {
 		cerr << e.what() << endl;

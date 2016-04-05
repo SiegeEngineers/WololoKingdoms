@@ -8,8 +8,17 @@ The original AOC version with UserPatch doesn't suffer from as many issues, and 
 However, people playing on this version of the engine are missing out on great contents provided by the expansions released for AOE2HD.
 This program is an (early) attempt at providing the best of both worlds, while waiting for an even better game engine (openage)
 
-## How to use
-[Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder, launch WololoKingdoms.exe, then copy the content of the "WololoKingdoms/out" folder to your AOC folder, then you can use it as a mod in Voobly.
+## How to use (with Voobly)
+[Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder, launch WololoKingdoms.exe,
+then copy the content of the "WololoKingdoms/out" folder to your AOC folder, then you can use it as a mod in Voobly.
+
+## How to use (without Voobly)
+[You will need UserPatch](http://userpatch.aiscripters.net/)
+[Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder,
+copy language_x1_p1.dll from your AOC installation and paste it next to WololoKingdoms.exe, launch WololoKingdoms.exe, the program will detect the dll file and patch it on top of doing it's usual operations,
+make a backup just in case and replace your language_x1_p1.dll by the patched one (larger than 1 MB),
+then copy the content of the "WololoKingdoms/out/Voobly Mods/AOC/Data Mods/AK" into a "Games" folder in your base AOC folder,
+rename and move Games/AK/age2_x1.xml to Games/AK.xml, you can now launch the mod using age2_x1.exe GAME=AK
 
 ## Limitations
 Because of the features missing from the original AOC engine, not everything from the expansions can be replicated, this includes :
