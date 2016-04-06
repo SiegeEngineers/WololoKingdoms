@@ -11,11 +11,12 @@
 #include "fixes/portuguesefix.h"
 #include "fixes/ethiopiansfreepikeupgradefix.h"
 #include "fixes/maliansfreeminingupgradefix.h"
+#include "fixes/ai900unitidfix.h"
 
 
 using namespace std;
 
-string const version = "1.0-beta5";
+string const version = "1.0-beta6";
 
 void fileCopy(string const src, string const dst) {
 	boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
@@ -317,10 +318,11 @@ int main(int argc, char *argv[]) {
 
 		wololo::Fix fixes[] = {
 			wololo::berbersUTFix,
-			wololo::demoShipFix,
+//			wololo::demoShipFix,
 			wololo::etiopiansFreePikeUpgradeFix,
 			wololo::maliansFreeMiningUpgradeFix,
-			wololo::portugueseFix
+			wololo::portugueseFix,
+			wololo::ai900UnitIdFix
 		};
 		for (size_t i = 0, nbPatches = sizeof fixes / sizeof (wololo::Fix); i < nbPatches; i++) {
 			cout << "Applying DAT patch " << i+1 << " of " << nbPatches << ": " << fixes[i].name << endl;
