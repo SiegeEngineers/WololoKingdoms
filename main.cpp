@@ -53,6 +53,13 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		int nb;
 		try {
 			nb = stoi(number);
+			if (nb == 0xFFFF) {
+				/*
+				 * this one seems to be used by AOC for dynamically-generated strings
+				 * (like market tributes), maybe it's the maximum the game can read ?
+				*/
+				continue;
+			}
 			if (nb >= 20150 && nb <= 20167) {
 				// skip the old civ descriptions
 				continue;
@@ -66,7 +73,9 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		catch (invalid_argument const & e){
 			continue;
 		}
-		line = line.substr(spaceIdx+2, line.size() - spaceIdx - 3);
+		int slashSlashIdx = line.find(" //");
+		int end = slashSlashIdx != -1 ? slashSlashIdx : line.size();
+		line = line.substr(spaceIdx+2, end - spaceIdx - 3);
 		boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion
 		*iniOut << number << '=' << line << endl;
 		if (generateLangDll) {
