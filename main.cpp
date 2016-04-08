@@ -12,11 +12,12 @@
 #include "fixes/ethiopiansfreepikeupgradefix.h"
 #include "fixes/maliansfreeminingupgradefix.h"
 #include "fixes/ai900unitidfix.h"
+#include "fixes/hotkeysfix.h"
 
 
 using namespace std;
 
-string const version = "1.0-beta6";
+string const version = "1.0-beta7";
 
 void fileCopy(string const src, string const dst) {
 	boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
@@ -329,6 +330,7 @@ int main(int argc, char *argv[]) {
 			wololo::berbersUTFix,
 //			wololo::demoShipFix,
 			wololo::etiopiansFreePikeUpgradeFix,
+			wololo::hotkeysFix,
 			wololo::maliansFreeMiningUpgradeFix,
 			wololo::portugueseFix,
 			wololo::ai900UnitIdFix
