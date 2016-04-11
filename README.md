@@ -28,7 +28,7 @@ Because of the features missing from the original AOC engine, not everything fro
     - Kasbah must be researched by players on the team individually, it's price has been reduced (250->150 food and gold) 
     - Maghrabi Camels gives their camels +1 melee armor and +5hp instead of the regen.
     - These changes might be rebalanced in the future
-- The default bots can't play the new civilizations, however, [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) has been updated to support this conversion.
+- The default bots can't play the new civilizations, however, [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) has been updated to support this project.
 - There may be other things not working properly, I will add them to this list when they are reported
 
 If you have experience with AOC .exe editing, and are willing to share your work with the community, feel free to contact me so we can work on implementing the missing features.
@@ -44,3 +44,10 @@ If you want to share this with other people so you can play together, send them 
 The process for building it is kinda messy for now, you will need a compiled version of the Apre's DAT library :
 https://github.com/Tails8521/genieutils (I didn't change anything, just forked it, thanks a lot Apre and Tapsa for this library)
 I used Qt Creator for editing and building it, you will also need Boost installed.
+
+## Special thanks
+- Apre for the genieutils library
+- Tapsa for Advanced Genie Editor
+- Alqualunte for advices and testing
+- CheeseOnToast for making his [A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) compatible with this project
+- The Forgotten Empires team for two great expansions
