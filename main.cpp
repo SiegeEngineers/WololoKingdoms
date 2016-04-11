@@ -74,9 +74,15 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		catch (invalid_argument const & e){
 			continue;
 		}
-		int slashSlashIdx = line.find(" //");
-		int end = slashSlashIdx != -1 ? slashSlashIdx : line.size();
-		line = line.substr(spaceIdx+2, end - spaceIdx - 3);
+		int firstQuoteIdx = spaceIdx;
+		do {
+			firstQuoteIdx++;
+		} while (line[firstQuoteIdx] != '"');
+		int secondQuoteIdx = firstQuoteIdx;
+		do {
+			secondQuoteIdx++;
+		} while (line[secondQuoteIdx] != '"');
+		line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
 		boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion
 		*iniOut << number << '=' << line << endl;
 		if (generateLangDll) {
