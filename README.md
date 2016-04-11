@@ -25,10 +25,10 @@ Because of the features missing from the original AOC engine, not everything fro
 - As of now, the aim of this program is multiplayer random maps, converting campaigns etc. isn't planned. (you can play them on HD anyway, unless they manage to break the engine even more)
 - The feitoria and siege tower which can be built but don't work
 - The Unique technologies of the Berbers : which have been replaced by the following :
-    - Castle age UT is a team bonus, which has been reduced to 15% to make up for the fact you don't have to go castle and research it
-    - Imperial Age UT gives their camels +1 melee armor and +1 pierce armor instead of the regen.
+    - Kasbah must be researched by players on the team individually, it's price has been reduced (250->150 food and gold) 
+    - Maghrabi Camels gives their camels +1 melee armor and +5hp instead of the regen.
     - These changes might be rebalanced in the future
-- Bots can't play the new civilizations, however, using the AI files from the Forgotten Empires seems to work for the forgotten files, if you are an AI scripter, feel free to contribute.
+- The default bots can't play the new civilizations, however, [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) has been updated to support this conversion.
 - There may be other things not working properly, I will add them to this list when they are reported
 
 If you have experience with AOC .exe editing, and are willing to share your work with the community, feel free to contact me so we can work on implementing the missing features.
