@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<configuration game="age2_x1">
+<configuration game="aoak">
 	<name>Age of Empires II: African Kingdoms</name>
 	<path>AK</path>
 	<civilizations langId="10220" descId="20150" aiNameOffset="1140" uiBaseId="51100" uiStride="30" uiOffset="0">
@@ -27,9 +27,9 @@
 		<civilization id="21" name="incan" soundFile="stream\incas.mp3" scoutUnit="888" uniqueUnit="879" eliteUniqueUnit="881" uniqueUnitLine="879" uniqueUnitUpgrade="509" uniqueResearch="517" />
 		<civilization id="22" name="magyar" soundFile="stream\magyars.mp3" scoutUnit="448" uniqueUnit="869" eliteUniqueUnit="871" uniqueUnitLine="869" uniqueUnitUpgrade="472" uniqueResearch="515" />
 		<civilization id="23" name="slavic" soundFile="stream\slavs.mp3" scoutUnit="448" uniqueUnit="876" eliteUniqueUnit="878" uniqueUnitLine="876" uniqueUnitUpgrade="504" uniqueResearch="513" />
-		<civilization id="24" name="portuguese" soundFile="stream\portuguese.mp3" scoutUnit="448" uniqueUnit="1001" eliteUniqueUnit="1003" uniqueUnitLine="873" uniqueUnitUpgrade="563" uniqueResearch="602" />
-		<civilization id="25" name="ethiopians" soundFile="stream\ethiopians.mp3" scoutUnit="448" uniqueUnit="1016" eliteUniqueUnit="1018" uniqueUnitLine="1016" uniqueUnitUpgrade="569" uniqueResearch="604" />
-		<civilization id="26" name="malians" soundFile="stream\malians.mp3" scoutUnit="448" uniqueUnit="1013" eliteUniqueUnit="1015" uniqueUnitLine="1013" uniqueUnitUpgrade="567" uniqueResearch="606" />
-		<civilization id="27" name="berbers" soundFile="stream\berbers.mp3" scoutUnit="448" uniqueUnit="1007" eliteUniqueUnit="1009" uniqueUnitLine="1007" uniqueUnitUpgrade="565" uniqueResearch="608" />
+		<civilization id="24" name="portuguese" soundFile="stream\portuguese.mp3" scoutUnit="448" uniqueUnit="106" eliteUniqueUnit="114" uniqueUnitLine="106" uniqueUnitUpgrade="563" uniqueResearch="602" />
+		<civilization id="25" name="ethiopian" soundFile="stream\ethiopians.mp3" scoutUnit="448" uniqueUnit="453" eliteUniqueUnit="459" uniqueUnitLine="453" uniqueUnitUpgrade="569" uniqueResearch="604" />
+		<civilization id="26" name="malian" soundFile="stream\malians.mp3" scoutUnit="448" uniqueUnit="260" eliteUniqueUnit="418" uniqueUnitLine="260" uniqueUnitUpgrade="567" uniqueResearch="606" />
+		<civilization id="27" name="berbers" soundFile="stream\berbers.mp3" scoutUnit="448" uniqueUnit="203" eliteUniqueUnit="208" uniqueUnitLine="203" uniqueUnitUpgrade="565" uniqueResearch="608" />
 	</civilizations>
 </configuration>
