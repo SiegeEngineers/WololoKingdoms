@@ -24,6 +24,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1015, 418}, // Elite Gbeto, TROCK
 	{1016, 453}, // Shotel Warrior, DOLPH4
 	{1018, 459}, // Elite Shotel Warrior, FISH5
+	{1079, 732}, // Genitour placeholder, HKHAN_D
 	{1103, 703}, // Fire Galley, HKUSH_D
 	{1104, 706} // Demolition Raft, Saboteur (This one is special, and allows the Demolition raft to actually self-destruct since this attribute is hardcoded based on the id)
 };

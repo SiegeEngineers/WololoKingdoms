@@ -17,7 +17,7 @@
 
 using namespace std;
 
-string const version = "1.0-beta7";
+string const version = "1.0-beta8";
 
 void fileCopy(string const src, string const dst) {
 	boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
