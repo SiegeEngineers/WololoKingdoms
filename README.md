@@ -34,7 +34,8 @@ Because of the features missing from the original AOC engine, not everything fro
 If you have experience with AOC .exe editing, and are willing to share your work with the community, feel free to contact me so we can work on implementing the missing features.
 
 ## Known issues
-- Using the [HD compatibility patch](http://aoccs.net/) seems to cause interface issues with some civs, I'll try to investigate on this but it would be nice if someone could provide details about what works and what doesn't
+- Using the [HD compatibility patch](http://aoccs.net/) seems to cause interface issues with the following civs : Aztec, Berbers, Celts, Huns, Incas, Indians, Italians, Koreans, Magyars, Mayans, Mongols, Portuguese, Slavs, Spanish  
+So in the meantime you shouldn't play as them if you use the HD compatibility patch, use the CD version if you can (this glitch doesn't happen on the CD version)
 - Saboteurs (cheat unit) don't work properly due to a workaround related to Demolition rafts
 
 ## Keep in mind
