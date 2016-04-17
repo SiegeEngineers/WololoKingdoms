@@ -10,7 +10,7 @@ This program is an (early) attempt at providing the best of both worlds, while w
 
 ## How to use (with Voobly)
 [Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder, launch WololoKingdoms.exe,
-then copy the content of the "WololoKingdoms/out" folder to your AOC folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/AK) then you can use it as a mod in Voobly.
+then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/AK) then you can use it as a mod in Voobly.
 
 ## How to use (without Voobly)
 [You will need UserPatch](http://userpatch.aiscripters.net/)  
