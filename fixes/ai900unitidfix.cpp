@@ -135,7 +135,7 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 	}
 }
 
-void ai900unitidPatch(genie::DatFile *aocDat) {
+void ai900unitidPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
 	for (size_t i = 0; i < unitsIDtoSwap.size(); i++) {
 		swapUnits(aocDat, unitsIDtoSwap[i].first, unitsIDtoSwap[i].second);
 	}

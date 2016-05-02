@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void maliansMiningUpgradesPatch(genie::DatFile *aocDat) {
+void maliansMiningUpgradesPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
 	/*
 	 * In AOC, free tech effects must be in the civ tech tree in order to work
 	 */

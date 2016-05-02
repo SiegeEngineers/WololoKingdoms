@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void demoshipPatch(genie::DatFile *aocDat) {
+void demoshipPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
 	/*
 	 * The way self-destruct units work in AOE2 is harcoded into the .exe :
 	 * a set of units id (demo ships, petards...) will always suicide as they attack.

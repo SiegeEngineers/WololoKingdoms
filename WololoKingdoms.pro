@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     fixes/ethiopiansfreepikeupgradefix.cpp \
     fixes/maliansfreeminingupgradefix.cpp \
     fixes/ai900unitidfix.cpp \
-    fixes/hotkeysfix.cpp
+    fixes/hotkeysfix.cpp \
+    fixes/disablenonworkingunits.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -38,7 +39,8 @@ HEADERS += \
     fixes/ethiopiansfreepikeupgradefix.h \
     fixes/maliansfreeminingupgradefix.h \
     fixes/ai900unitidfix.h \
-    fixes/hotkeysfix.h
+    fixes/hotkeysfix.h \
+    fixes/disablenonworkingunits.h
 
 DISTFILES += \
     WololoKingdoms.ico

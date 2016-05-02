@@ -13,14 +13,26 @@
 #include "fixes/maliansfreeminingupgradefix.h"
 #include "fixes/ai900unitidfix.h"
 #include "fixes/hotkeysfix.h"
+#include "fixes/disablenonworkingunits.h"
 
 
 using namespace std;
 
-string const version = "1.0-beta8";
+string const version = "1.0";
 
-void fileCopy(string const src, string const dst) {
-	boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
+void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst) {
+	// recursive copy
+	//boost::filesystem::path currentPath(current->path());
+	if (boost::filesystem::is_directory(src)) {
+		for (boost::filesystem::directory_iterator current(src), end;current != end; ++current) {
+			boost::filesystem::path currentPath(current->path());
+			recCopy(currentPath, dst / currentPath.filename());
+		}
+	}
+	else {
+		boost::filesystem::copy_file(src, dst);
+	}
+
 }
 
 void listAssetFiles(string const path, vector<string> *listOfSlpFiles, std::vector<string> *listOfWavFiles) {
@@ -46,7 +58,7 @@ void listAssetFiles(string const path, vector<string> *listOfSlpFiles, std::vect
 	}
 }
 
-void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll) {
+void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
 	string line;
 	while (getline(*in, line)) {
 		int spaceIdx = line.find(' ');
@@ -74,17 +86,28 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		catch (invalid_argument const & e){
 			continue;
 		}
-		int firstQuoteIdx = spaceIdx;
-		do {
-			firstQuoteIdx++;
-		} while (line[firstQuoteIdx] != '"');
-		int secondQuoteIdx = firstQuoteIdx;
-		do {
-			secondQuoteIdx++;
-		} while (line[secondQuoteIdx] != '"');
-		line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
+
+		auto strReplace = langReplacement->find(nb);
+		if (strReplace != langReplacement->end()) {
+			// this string has been changed by one of our patches (modified attributes etc.)
+			line = strReplace->second;
+		}
+		else {
+			// load the string from the HD edition file
+			int firstQuoteIdx = spaceIdx;
+			do {
+				firstQuoteIdx++;
+			} while (line[firstQuoteIdx] != '"');
+			int secondQuoteIdx = firstQuoteIdx;
+			do {
+				secondQuoteIdx++;
+			} while (line[secondQuoteIdx] != '"');
+			line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
+		}
+
 		boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion
 		*iniOut << number << '=' << line << endl;
+
 		if (generateLangDll) {
 			boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
@@ -227,7 +250,7 @@ void uglyHudHack(string const inputDir) {
 			string dst = inputDir + "/" + to_string(slavHudFiles[baseIndex]+i) + ".slp";
 			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst)) > 0) {
 				string src = inputDir + "/" + to_string(slavHudFiles[baseIndex]) + ".slp";
-				fileCopy(src, dst);
+				recCopy(src, dst);
 			}
 		}
 	}
@@ -246,7 +269,7 @@ void copyCivIntroSounds(string const inputDir, string const outputDir) {
 	string const civs[] = {"italians", "indians", "incas", "magyars", "slavs",
 						   "portuguese", "ethiopians", "malians", "berbers"};
 	for (size_t i = 0; i < sizeof civs / sizeof (string); i++) {
-		fileCopy(inputDir + "/" + civs[i] + ".mp3", outputDir + "/" + civs[i] + ".mp3");
+		recCopy(inputDir + "/" + civs[i] + ".mp3", outputDir + "/" + civs[i] + ".mp3");
 	}
 }
 
@@ -268,21 +291,30 @@ int main(int argc, char *argv[]) {
 	string const aocDatPath = "../resources/_common/dat/empires2_x1_p1.dat";
 	string const hdDatPath = "../resources/_common/dat/empires2_x2_p1.dat";
 	string const keyValuesStringsPath = "../resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
-	string const languageIniPath = "out/Voobly Mods/AOC/Data Mods/AK/language.ini";
-	string const versionIniPath = "out/Voobly Mods/AOC/Data Mods/AK/version.ini";
+	string const languageIniPath = "out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/language.ini";
+	string const versionIniPath = "out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/version.ini";
 	string const civIntroSoundsInputPath = "../resources/_common/sound/civ/";
-	string const civIntroSoundsOutputPath = "out/Voobly Mods/AOC/Data Mods/AK/Sound/stream/";
+	string const civIntroSoundsOutputPath = "out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/stream/";
 	string const xmlPath = "age2_x1.xml";
-	string const xmlOutPath = "out/Voobly Mods/AOC/Data Mods/AK/age2_x1.xml";
-	string const drsOutPath = "out/Voobly Mods/AOC/Data Mods/AK/Data/gamedata_x1_p1.drs";
+	string const xmlPathUP = "WK_African_Kingdoms.xml";
+	string const xmlOutPath = "out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/age2_x1.xml";
+	string const xmlOutPathUP = "out/Games/WK_African_Kingdoms.xml";
+	string const drsOutPath = "out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/gamedata_x1_p1.drs";
 	string const assetsPath = "../resources/_common/drs/gamedata_x2/";
-	string const outputDatPath = "out/Voobly Mods/AOC/Data Mods/AK/Data/empires2_x1_p1.dat";
+	string const outputDatPath = "out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/empires2_x1_p1.dat";
 	string const langDllPath = "language_x1_p1.dll";
+	string const vooblyDir = "out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/";
+	string const uPDIR = "out/Games/WK_African_Kingdoms/";
 
 
 	int ret = 0;
 	try {
 		cout << "WololoKingdoms ver. " << version << endl;
+		boost::filesystem::remove_all("out/");
+		boost::filesystem::create_directories("out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data");
+		boost::filesystem::create_directories("out/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/stream");
+		boost::filesystem::create_directories("out/Games/WK_African_Kingdoms/Data");
+		boost::filesystem::create_directories("out/Games/WK_African_Kingdoms/Sound/stream");
 
 		cout << "Opening the AOC dat file..." << endl << endl;
 		genie::DatFile aocDat;
@@ -296,31 +328,13 @@ int main(int argc, char *argv[]) {
 		hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
 		hdDat.load(hdDatPath.c_str());
 
-		cout << endl << "Converting the language file..." << endl;
-		ifstream langIn(keyValuesStringsPath);
-		ofstream langOut(languageIniPath);
-		genie::LangFile langDll;
-		bool patchLangDll = boost::filesystem::exists(langDllPath);
-		if (patchLangDll) {
-			langDll.load(langDllPath.c_str());
-			langDll.setGameVersion(genie::GameVersion::GV_TC);
-		}
-		else {
-			cout << langDllPath << " not found, skipping dll patching for UserPatch." << endl;
-		}
-		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll);
-		if (patchLangDll) {
-			langDll.save();
-			cout << langDllPath << " patched." << endl;
-		}
-
-
 
 		cout << "Preparing ressources files..." << endl;
 		ofstream versionOut(versionIniPath);
 		versionOut << version << endl;
 		copyCivIntroSounds(civIntroSoundsInputPath, civIntroSoundsOutputPath);
-		fileCopy(xmlPath, xmlOutPath);
+		recCopy(xmlPath, xmlOutPath);
+		recCopy(xmlPathUP, xmlOutPathUP);
 		ofstream drsOut(drsOutPath, std::ios::binary);
 
 		cout << "Generating gamedata_x1_p1.drs..." << endl;
@@ -339,11 +353,32 @@ int main(int argc, char *argv[]) {
 			wololo::hotkeysFix,
 			wololo::maliansFreeMiningUpgradeFix,
 			wololo::portugueseFix,
+			wololo::disableNonWorkingUnits,
 			wololo::ai900UnitIdFix
 		};
+
+		map<int, string> langReplacement;
 		for (size_t i = 0, nbPatches = sizeof fixes / sizeof (wololo::Fix); i < nbPatches; i++) {
 			cout << "Applying DAT patch " << i+1 << " of " << nbPatches << ": " << fixes[i].name << endl;
-			fixes[i].patch(&aocDat);
+			fixes[i].patch(&aocDat, &langReplacement);
+		}
+
+		cout << endl << "Converting the language file..." << endl;
+		ifstream langIn(keyValuesStringsPath);
+		ofstream langOut(languageIniPath);
+		genie::LangFile langDll;
+		bool patchLangDll = boost::filesystem::exists(langDllPath);
+		if (patchLangDll) {
+			langDll.load(langDllPath.c_str());
+			langDll.setGameVersion(genie::GameVersion::GV_TC);
+		}
+		else {
+			cout << langDllPath << " not found, skipping dll patching for UserPatch." << endl;
+		}
+		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
+		if (patchLangDll) {
+			langDll.save();
+			cout << langDllPath << " patched." << endl;
 		}
 
 
@@ -351,7 +386,12 @@ int main(int argc, char *argv[]) {
 
 		aocDat.saveAs(outputDatPath.c_str());
 
-		cout << endl << "Conversion complete, you can put \"out/Voobly Mods/\" into your AOE2 folder." << endl;
+		cout << endl << "Copying the files for UserPatch..." << endl;
+
+		recCopy(vooblyDir + "/Data", uPDIR + "/Data");
+		recCopy(vooblyDir + "/Sound", uPDIR + "/Sound");
+
+		cout << "Conversion complete, open the \"out/\" folder and put it's content into your AOE2 folder." << endl;
 	}
 	catch (exception const & e) {
 		cerr << e.what() << endl;

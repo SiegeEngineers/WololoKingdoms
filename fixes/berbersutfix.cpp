@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void berbersUTPatch(genie::DatFile *aocDat) {
+void berbersUTPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
 	/*
 	 * None of the Berbers team bonuses work, and there's no real way around it without modifying the .exe
 	 * So we have to make them a bit different, it will require playtesting to see if it's balanced
@@ -12,6 +12,9 @@ void berbersUTPatch(genie::DatFile *aocDat) {
 	 * To compensate for the fact you don't even have to go castle and research it, it's effect is reduced from 25% to 15%
 	 * For the imperial one, the regen. is replaced by +1 melee armor and +5 hp
 	 */
+
+	(*langReplacement)[20176] = "Cavalry and Naval civilization \\n\\n· Villagers move +10% faster \\n· Stable units cost -20% (starting from Castle Age)\\n· Ships move +10% faster \\n\\n<b>Unique Units:<b> Camel Archer (cavalry archer), Genitour (mounted skirmisher)\\n\\n<b>Unique Techs:<b> Kasbah (Castles work +25% faster); Maghrabi Camels (Camel troops +1 melee armor, +5hp)\\n\\n<b>Team Bonus:<b> Genitour available in Archery Range, Kasbah available in Castle";
+	(*langReplacement)[28256] = "Research <b>Kasbah<b> (<cost>) \\nCastles work +25% faster.";
 
 	size_t const berbersTBonusTechId = 38;
 //	size_t const berbersUT1TechId = 607;
