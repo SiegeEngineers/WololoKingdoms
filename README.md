@@ -18,7 +18,7 @@ then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (y
 copy language_x1_p1.dll from your AOC installation and paste it next to WololoKingdoms.exe, launch WololoKingdoms.exe, the program will detect the dll file and patch it on top of doing it's usual operations,
 make a backup just in case and replace your language_x1_p1.dll by the patched one (larger than 1 MB),
 then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, launch userpatch setup like this :  
-`SetupAoC.exe -g:"WK_African_Kingdoms"` and install it, you can then launch the mod using  
+`SetupAoC.exe -g:WK_African_Kingdoms` and install it, you can then launch the mod using  
 `age2_x1/WK_African_Kingdoms.exe`
 
 ## Limitations
