@@ -11,7 +11,7 @@ This program is an (early) attempt at providing the best of both worlds, while w
 ## How to use (with Voobly)
 [Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder, launch WololoKingdoms.exe,
 then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms) then you can use it as a mod in Voobly.  
-- If you're using HD edition with the HD compatibility patch to run the game with Voobly, rename or remove the `compatslp` folder, otherwise you will have interface issues with most of the civs.  
+- If you're using HD edition with the HD compatibility patch to run the game with Voobly, rename or remove the `compatslp` folder, otherwise you will have [interface issues](https://imgur.com/a/xouXF) with most of the civs.  
 Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
 
 ## How to use (without Voobly)
