@@ -10,7 +10,9 @@ This program is an (early) attempt at providing the best of both worlds, while w
 
 ## How to use (with Voobly)
 [Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder, launch WololoKingdoms.exe,
-then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms) then you can use it as a mod in Voobly. If you're using HD edition with the HD compatibility patch to run the game with Voobly, rename or remove the `compatslp` folder, otherwise you will have interface issues with most of the civs.
+then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms) then you can use it as a mod in Voobly.  
+- If you're using HD edition with the HD compatibility patch to run the game with Voobly, rename or remove the `compatslp` folder, otherwise you will have interface issues with most of the civs.  
+Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
 
 ## How to use (without Voobly)
 [You will need UserPatch](http://userpatch.aiscripters.net/)  
@@ -36,7 +38,7 @@ Because of the features missing from the original AOC engine, not everything fro
 If you have experience with AOC .exe editing, and are willing to share your work with the community, feel free to contact me so we can work on implementing the missing features.
 
 ## Known issues
-- If [your interface is messed up](https://imgur.com/a/xouXF) with the [HD compatibility patch](http://aoccs.net/), all you need to do is rename or remove the `compatslp` folder to fix this.
+- If [your interface is messed up](https://imgur.com/a/xouXF) with the [HD compatibility patch](http://aoccs.net/), all you need to do is rename or remove the `compatslp` folder to fix this. Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
 - ~~Using the [HD compatibility patch](http://aoccs.net/) seems to cause interface issues with the following civs : Aztec, Berbers, Celts, Huns, Incas, Indians, Italians, Koreans, Magyars, Mayans, Mongols, Portuguese, Slavs, Spanish  
 So in the meantime you shouldn't play as them if you use the HD compatibility patch, use the CD version if you can (this glitch doesn't happen on the CD version)~~  
 - Saboteurs (cheat unit) don't work properly due to a workaround related to Demolition rafts
