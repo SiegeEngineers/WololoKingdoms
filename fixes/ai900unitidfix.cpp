@@ -26,7 +26,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1018, 459}, // Elite Shotel Warrior, FISH5
 	{1079, 732}, // Genitour placeholder, HKHAN_D
 	{1103, 703}, // Fire Galley, HKUSH_D
-	{1104, 706} // Demolition Raft, Saboteur (This one is special, and allows the Demolition raft to actually self-destruct since this attribute is hardcoded based on the id)
+	{1104, 527} // Demolition Raft, Demolition Ship (This one is special, and allows the Demolition raft to actually self-destruct since this attribute is hardcoded based on the id) // TODO test if the blast damage distance falloff actually works and notifiy AI creators about the change
 };
 
 

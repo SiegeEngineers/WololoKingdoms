@@ -18,7 +18,7 @@
 
 using namespace std;
 
-string const version = "1.0";
+string const version = "1.1";
 
 void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst) {
 	// recursive copy
