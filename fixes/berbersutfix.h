@@ -1,10 +1,10 @@
 #ifndef BERBERSUTFIX_H
 #define BERBERSUTFIX_H
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix berbersUTFix;
+extern DatPatch berbersUTFix;
 
 }
 

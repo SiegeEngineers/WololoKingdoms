@@ -35,12 +35,12 @@ HEADERS += \
     fixes/portuguesefix.h \
     fixes/demoshipfix.h \
     fixes/berbersutfix.h \
-    include/wololo/fix.h \
     fixes/ethiopiansfreepikeupgradefix.h \
     fixes/maliansfreeminingupgradefix.h \
     fixes/ai900unitidfix.h \
     fixes/hotkeysfix.h \
-    fixes/disablenonworkingunits.h
+    fixes/disablenonworkingunits.h \
+    include/wololo/datPatch.h
 
 DISTFILES += \
     WololoKingdoms.ico

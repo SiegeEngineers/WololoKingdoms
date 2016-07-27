@@ -1,11 +1,11 @@
-#ifndef FIX_H
-#define FIX_H
+#ifndef DATPATCH_H
+#define DATPATCH_H
 #include "genie/dat/DatFile.h"
 #include <map>
 
 namespace wololo {
 
-struct Fix {
+struct DatPatch {
 	void (*patch)(genie::DatFile*, std::map<int, std::string>*);
 	std::string name;
 };
@@ -14,4 +14,4 @@ struct Fix {
 
 
 
-#endif // FIX_H
+#endif // DATPATCH_H

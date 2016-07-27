@@ -1,10 +1,10 @@
 #ifndef AI900UNITIDFIX_H
 #define AI900UNITIDFIX_H
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix ai900UnitIdFix;
+extern DatPatch ai900UnitIdFix;
 
 }
 

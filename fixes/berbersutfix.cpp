@@ -1,5 +1,5 @@
 #include "berbersutfix.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
@@ -90,7 +90,7 @@ void berbersUTPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRepl
 	effectsPtr->insert(effectsPtr->end(), effectsToAdd.begin(), effectsToAdd.end());
 }
 
-Fix berbersUTFix = {
+DatPatch berbersUTFix = {
 	&berbersUTPatch,
 	"Berbers unique technologies alternative"
 };

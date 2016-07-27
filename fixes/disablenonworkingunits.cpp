@@ -1,5 +1,5 @@
 #include "disablenonworkingunits.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
@@ -18,7 +18,7 @@ void disableNonWorkingUnitsPatch(genie::DatFile *aocDat, std::map<int, std::stri
 
 }
 
-Fix disableNonWorkingUnits = {
+DatPatch disableNonWorkingUnits = {
 	&disableNonWorkingUnitsPatch,
 	"Disable Siege Tower and Feitoria"
 };

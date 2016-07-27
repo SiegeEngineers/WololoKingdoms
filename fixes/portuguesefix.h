@@ -1,10 +1,10 @@
 #ifndef PORTUGUESEFIX_H
 #define PORTUGUESEFIX_H
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix portugueseFix;
+extern DatPatch portugueseFix;
 
 }
 

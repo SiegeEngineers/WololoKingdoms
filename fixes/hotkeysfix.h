@@ -1,10 +1,10 @@
 #ifndef HOTKEYSFIX_H
 #define HOTKEYSFIX_H
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix hotkeysFix;
+extern DatPatch hotkeysFix;
 
 }
 

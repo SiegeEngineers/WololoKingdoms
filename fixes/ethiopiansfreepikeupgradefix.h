@@ -1,10 +1,10 @@
 #ifndef ETHIOPIANSFREEPIKEUPGRADEFIX_H
 #define ETHIOPIANSFREEPIKEUPGRADEFIX_H
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix etiopiansFreePikeUpgradeFix;
+extern DatPatch etiopiansFreePikeUpgradeFix;
 
 }
 

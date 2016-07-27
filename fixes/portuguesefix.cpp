@@ -1,5 +1,5 @@
 #include "portuguesefix.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
@@ -28,7 +28,7 @@ void PortuguesePatch(genie::DatFile *aocDat, std::map<int, std::string> *langRep
 	aocDat->Techages[portugueseBrokenTBonusTechId].Effects = std::vector<genie::TechageEffect>(); // nothing
 }
 
-Fix portugueseFix = {
+DatPatch portugueseFix = {
 	&PortuguesePatch,
 	"Portuguese civ crash fix"
 };

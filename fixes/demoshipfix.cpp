@@ -1,5 +1,5 @@
 #include "demoshipfix.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
@@ -57,7 +57,7 @@ void demoshipPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRepla
 	aocDat->TechTree.ResearchConnections[feudalAgeIdInResearchConnections].Units[demoRaftIdxInFeudalResearchConnection] = saboteurUnitId;
 }
 
-Fix demoShipFix = {
+DatPatch demoShipFix = {
 	&demoshipPatch,
 	"Demolition ships not exploding fix"
 };

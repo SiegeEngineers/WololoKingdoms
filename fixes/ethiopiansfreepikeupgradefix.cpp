@@ -1,5 +1,5 @@
 #include "ethiopiansfreepikeupgradefix.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
@@ -17,7 +17,7 @@ void ethiopiansPikePatch(genie::DatFile *aocDat, std::map<int, std::string> *lan
 	}
 }
 
-Fix etiopiansFreePikeUpgradeFix = {
+DatPatch etiopiansFreePikeUpgradeFix = {
 	&ethiopiansPikePatch,
 	"Ethiopians free pike/halbs upgrades not working fix"
 };

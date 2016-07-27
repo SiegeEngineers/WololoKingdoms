@@ -1,5 +1,5 @@
 #include "ai900unitidfix.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 #include "genie/dat/DatFile.h"
 
 namespace wololo {
@@ -141,7 +141,7 @@ void ai900unitidPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRe
 	}
 }
 
-Fix ai900UnitIdFix = {
+DatPatch ai900UnitIdFix = {
 	&ai900unitidPatch,
 	"AI can't use unit id over 900 workaround"
 };

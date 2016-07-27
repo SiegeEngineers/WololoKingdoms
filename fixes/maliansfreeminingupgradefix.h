@@ -1,10 +1,10 @@
 #ifndef MALIANSFREEMININGUPGRADEFIX_H
 #define MALIANSFREEMININGUPGRADEFIX_H
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix maliansFreeMiningUpgradeFix;
+extern DatPatch maliansFreeMiningUpgradeFix;
 
 }
 

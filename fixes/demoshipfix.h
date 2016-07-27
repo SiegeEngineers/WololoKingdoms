@@ -1,10 +1,10 @@
 #ifndef DEMOSHIPFIX_H
 #define DEMOSHIPFIX_H
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix demoShipFix;
+extern DatPatch demoShipFix;
 
 }
 

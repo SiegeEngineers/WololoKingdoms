@@ -1,5 +1,5 @@
 #include "hotkeysfix.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
@@ -24,7 +24,7 @@ void hotkeysPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	}
 }
 
-Fix hotkeysFix = {
+DatPatch hotkeysFix = {
 	&hotkeysPatch,
 	"Overlapping hotkeys fix"
 };

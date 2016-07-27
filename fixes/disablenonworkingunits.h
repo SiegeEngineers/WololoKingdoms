@@ -1,11 +1,11 @@
 #ifndef DISABLENONWORKINGUNITS_H
 #define DISABLENONWORKINGUNITS_H
 
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
-extern Fix disableNonWorkingUnits;
+extern DatPatch disableNonWorkingUnits;
 
 }
 

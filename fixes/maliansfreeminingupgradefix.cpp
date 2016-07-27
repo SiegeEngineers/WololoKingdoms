@@ -1,5 +1,5 @@
 #include "maliansfreeminingupgradefix.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 
 namespace wololo {
 
@@ -17,7 +17,7 @@ void maliansMiningUpgradesPatch(genie::DatFile *aocDat, std::map<int, std::strin
 	}
 }
 
-Fix maliansFreeMiningUpgradeFix = {
+DatPatch maliansFreeMiningUpgradeFix = {
 	&maliansMiningUpgradesPatch,
 	"Malians free gold mining upgrades not working fix"
 };

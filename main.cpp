@@ -4,7 +4,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
-#include "wololo/fix.h"
+#include "wololo/datPatch.h"
 #include "wololo/Drs.h"
 #include "fixes/berbersutfix.h"
 #include "fixes/demoshipfix.h"
@@ -346,7 +346,7 @@ int main(int argc, char *argv[]) {
 		cout << "Generating empires2_x1_p1.dat..." << endl;
 		transferHdDatElements(&hdDat, &aocDat);
 
-		wololo::Fix fixes[] = {
+		wololo::DatPatch patchTab[] = {
 			wololo::berbersUTFix,
 //			wololo::demoShipFix,
 			wololo::etiopiansFreePikeUpgradeFix,
@@ -358,9 +358,9 @@ int main(int argc, char *argv[]) {
 		};
 
 		map<int, string> langReplacement;
-		for (size_t i = 0, nbPatches = sizeof fixes / sizeof (wololo::Fix); i < nbPatches; i++) {
-			cout << "Applying DAT patch " << i+1 << " of " << nbPatches << ": " << fixes[i].name << endl;
-			fixes[i].patch(&aocDat, &langReplacement);
+		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {
+			cout << "Applying DAT patch " << i+1 << " of " << nbPatches << ": " << patchTab[i].name << endl;
+			patchTab[i].patch(&aocDat, &langReplacement);
 		}
 
 		cout << endl << "Converting the language file..." << endl;
