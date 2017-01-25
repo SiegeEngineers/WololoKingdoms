@@ -15,9 +15,10 @@ void berbersUTPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRepl
 
 	(*langReplacement)[20176] = "Cavalry and Naval civilization \\n\\n· Villagers move +10% faster \\n· Stable units cost -20% (starting from Castle Age)\\n· Ships move +10% faster \\n\\n<b>Unique Units:<b> Camel Archer (cavalry archer), Genitour (mounted skirmisher)\\n\\n<b>Unique Techs:<b> Kasbah (Castles work +25% faster); Maghrabi Camels (Camel troops +1 melee armor, +5hp)\\n\\n<b>Team Bonus:<b> Genitour available in Archery Range, Kasbah available in Castle";
 	(*langReplacement)[28256] = "Research <b>Kasbah<b> (<cost>) \\nCastles work +25% faster.";
+    (*langReplacement)[28257] = "Research <b>Maghrabi Camels<b> (<cost>) \\nCamel troops +1 Melee Armor, +5 HP.";
 
 	size_t const berbersTBonusTechId = 38;
-//	size_t const berbersUT1TechId = 607;
+    size_t const berbersUT1TechId = 607;
 	size_t const berbersUT2TechId = 608;
 	size_t const berbersUT1ResearchId = 578;
 	size_t const allCivKasbahResearchId = 799; // NEW
@@ -33,11 +34,19 @@ void berbersUTPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRepl
 	// decrease Kasbah cost from 250/250 to 150/150
 	aocDat->Researchs[berbersUT1ResearchId].ResourceCosts[0].Amount -= 100;
 	aocDat->Researchs[berbersUT1ResearchId].ResourceCosts[1].Amount -= 100;
+    //change the Kasbah tech to multiply instead of team multipy
+    aocDat->Techages[berbersUT1TechId].Effects[0].Type = 5;
+
+    if(aocDat->Researchs.size() < allCivKasbahDisableResearchId+1)
+        aocDat->Researchs.resize(allCivKasbahDisableResearchId+1);
 	// copy Kasbah research to the all-civ one
 	aocDat->Researchs[allCivKasbahResearchId] = aocDat->Researchs[berbersUT1ResearchId];
 	aocDat->Researchs[allCivKasbahResearchId].ButtonID = 4; // next to petard
 	aocDat->Researchs[allCivKasbahResearchId].Civ = -1;
-	aocDat->Researchs[allCivKasbahResearchId].Name = "all-civs Kasbah";
+    aocDat->Researchs[allCivKasbahResearchId].Name = "all-civs Kasbah";
+
+    if(aocDat->Techages.size() < allCivKasbahDisableTechId+1)
+        aocDat->Techages.resize(allCivKasbahDisableTechId+1);
 	// tech that disables the all civ Kasbah
 	aocDat->Techages[allCivKasbahDisableTechId] = aocDat->Techages[allCivGenitourDisableTechId];
 	aocDat->Techages[allCivKasbahDisableTechId].Effects[0].D = allCivKasbahResearchId;
@@ -52,7 +61,6 @@ void berbersUTPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRepl
 	effect = aocDat->Techages[berbersTBonusTechId].Effects[1]; // disable the disabling research (for genitours)
 	effect.D = allCivKasbahDisableResearchId;
 	aocDat->Techages[berbersTBonusTechId].Effects.push_back(effect);
-
 //	effect.Type = 5; // attribute modifier (multiply)
 //	effect.A = 82; // castle
 //	effect.C = 13; // working rate

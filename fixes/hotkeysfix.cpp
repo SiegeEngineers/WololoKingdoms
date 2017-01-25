@@ -8,7 +8,7 @@ void hotkeysPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	 *
 	 */
 
-	int const palissadeGateUnitId = 789; // no hotkey : good
+        int const palisadeGateUnitId = 789; // no hotkey : good
 //	int const feitoriaUnitId = 1021; // hotkey to delete (useless)
 //	int const siegeTowerUnitId = 1105; // hotkey to delete (useless)
 	int const cannonGalleonUnitId = 420; // we will use that hotkey for the genitour
