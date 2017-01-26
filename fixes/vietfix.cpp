@@ -19,10 +19,10 @@ void vietPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplaceme
     size_t const vietTBonusTechId = 653;
     size_t const vietUT2TechId = 669;
     size_t const vietUT2ResearchId = 629;
-    size_t const allCivPaperMoneyResearchId = 801; // NEW
-    size_t const allCivPaperMoneyDisableResearchId = 802; // NEW
+    size_t const allCivPaperMoneyResearchId = 802; // NEW
+    size_t const allCivPaperMoneyDisableResearchId = 803; // NEW
 	size_t const allCivGenitourDisableResearchId = 606;
-    size_t const allCivPaperMoneyDisableTechId = 802; // NEW
+    size_t const allCivPaperMoneyDisableTechId = 803; // NEW
 	size_t const allCivGenitourDisableTechId = 632;
     size_t const vietTechTreeTechId = 652;
 

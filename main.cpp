@@ -1,6 +1,9 @@
 #include <iostream>
 #include <set>
 #include <map>
+#include <algorithm>
+#include <cctype>
+
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
@@ -18,12 +21,15 @@
 #include "fixes/hotkeysfix.h"
 #include "fixes/disablenonworkingunits.h"
 
-std::string const version = "1.1";
+std::string const version = "2.0";
 
 void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst) {
     // recursive copy
     //boost::filesystem::path currentPath(current->path());
     if (boost::filesystem::is_directory(src)) {
+        if(!boost::filesystem::exists(dst)) {
+            boost::filesystem::create_directories(dst);
+        }
         for (boost::filesystem::directory_iterator current(src), end;current != end; ++current) {
             boost::filesystem::path currentPath(current->path());
             recCopy(currentPath, dst / currentPath.filename());
@@ -277,7 +283,7 @@ void uglyHudHack(std::string const inputDir) {
             std::string dst = inputDir + "/" + std::to_string(slavHudFiles[baseIndex]+i) + ".slp";
             if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
                 std::string src = inputDir + "/" + std::to_string(slavHudFiles[baseIndex]) + ".slp";
-                recCopy(src, dst);
+                boost::filesystem::copy_file(src, dst);
             }
         }
     }
@@ -296,7 +302,20 @@ void copyCivIntroSounds(std::string const inputDir, std::string const outputDir)
     std::string const civs[] = {"italians", "indians", "incas", "magyars", "slavs",
                            "portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
     for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
-        recCopy(inputDir + civs[i] + ".mp3", outputDir + civs[i] + ".mp3");
+        boost::filesystem::copy_file(inputDir + civs[i] + ".mp3", outputDir + civs[i] + ".mp3");
+    }
+}
+
+std::string tolower(std::string line) {
+    std::transform(line.begin(), line.end(), line.begin(), static_cast<int(*)(int)>(std::tolower));
+    return line;
+}
+
+void createMusicPlaylist(std::string inputDir, std::string const outputDir) {
+    boost::replace_all(inputDir, "/", "\\");
+    std::ofstream outputFile(outputDir);
+    for (int i = 1; i <= 23; i++ ) {
+        outputFile << inputDir << "xmusic" << std::to_string(i) << ".mp3" <<  std::endl;
     }
 }
 
@@ -312,53 +331,208 @@ void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
     aocDat->TechTree = hdDat->TechTree;
 }
 
+void hotkeySetup(std::string const HDPath, std::string const outPath) {
+
+    //TODO make the confusing logic clearer
+
+    std::string const nfz1Path = "Player1.nfz";
+    std::string const nfz2Path = "Player2.nfz";
+    std::string const aocHkiPath = "player1.hki";
+    std::string const hkiPath = HDPath + "Profiles/player0.hki";
+    std::string const hki1OutPath = outPath +  "player1.hki";
+    std::string const hki2OutPath = outPath +  "player2.hki";
+    std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Player.nfz";
+
+    std::cout << "Setting up Hotkeys..." << std::endl;
+    std::string line = ""; //stores the most recent line of input
+
+    if(boost::filesystem::exists(nfzOutPath)) {
+        std::cout << "It looks like you have set up your hotkeys for this mod before." << std::endl;
+        std::cout << "Do you want to keep your current hotkey setup?" << std::endl;
+
+        std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+        while(std::getline(std::cin, line)) {
+            if(tolower(line) == "n") {
+                boost::filesystem::remove(nfzOutPath);
+                break;
+            }
+            else if (tolower(line) == "y") break;
+            std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+        }
+    }
+    if(line != "y") {
+        std::cout << "Do you want to use your current AoC/Voobly Hotkeys for this mod?" << std::endl;
+        std::cout << "Note that this means new units might not have hotkeys or different ones that you expect!" << std::endl;
+        std::cout << "When answering no, this program will copy your current HD edition hotkeys instead" << std::endl;
+
+        std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+        while(std::getline(std::cin, line)) {
+            if(tolower(line) == "y" || tolower(line) == "n") break;
+            std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+        }
+
+        if(line == "y") {
+            boost::filesystem::copy_file(nfz1Path, nfzOutPath);
+            if(!boost::filesystem::exists(hki1OutPath))
+                boost::filesystem::copy_file(aocHkiPath, hki1OutPath);
+            line = "";
+        } else {
+            std::cout << "Do you want to use your current HD edition Hotkeys for (Voobly) AoC as well?" << std::endl;
+            std::cout << "WARNING! This will overwrite your current hotkey file if you have one!" << std::endl;
+
+            std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+            while(std::getline(std::cin, line)) {
+                if(tolower(line) == "y" || tolower(line) == "n") break;
+                std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+            }
+        }
+        if(line == "y") {
+            boost::filesystem::copy_file(nfz1Path, nfzOutPath);
+            if(boost::filesystem::exists(hki1OutPath))
+                boost::filesystem::remove(hki1OutPath);
+            boost::filesystem::copy_file(hkiPath, hki1OutPath);
+        } else if (line == "n") {
+            boost::filesystem::copy_file(nfz2Path, nfzOutPath);
+            if(!boost::filesystem::exists(hki2OutPath)) {
+                boost::filesystem::copy_file(hkiPath, hki2OutPath);
+                line == "y";
+            } else {
+                std::cout << "WARNING! This will overwrite one ofyour current hotkey files (player2.hki)!" << std::endl;
+                std::cout << "Do you want to continue anyway?" << std::endl;
+                std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+                while(std::getline(std::cin, line))
+                {
+                    std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+                    if(tolower(line) == "y") { //Asking the inverted question is clearer here, so the logic has to inverted again
+                        line = "n";
+                        break;
+                    } else if (tolower(line) == "n") {
+                        line = "y";
+                        break;
+                    }
+                }
+            }
+        }
+        if(tolower(line) == "n") {
+            boost::filesystem::remove(hki2OutPath);
+            boost::filesystem::copy(hkiPath, hki2OutPath);
+        }
+    }
+    std::cout << "Hotkey setup done." << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
 
     std::string HDPath = "../";
+
+    std::string const dls[] = {"C", "D", "E", "F", "G", "H"};
     if(!boost::filesystem::exists("../AoKDump")) {
-        std::string const dls[] = {"C", "D", "E", "F", "G", "H"};
-        HDPath = ":/Program Files (x86)/Steam/steamapps/common/Age2HD";
+        HDPath = ":/Program Files (x86)/Steam/steamapps/common/Age2HD/";
         for (size_t i = 0; i < sizeof dls / sizeof (std::string); i++) {
             if(boost::filesystem::exists(dls[i] + HDPath)) {
                 HDPath = dls[i] + HDPath;
                 break;
             }
         }
+        if(HDPath == "../") {
+            if(boost::filesystem::exists("../../AoKDump")) {
+                HDPath = "../../";
+            } else {
+                std::cout << "Could not find a HD installation, please put the WololoKingdoms folder into your HD installation folder (Age2HD)." << std::endl;
+                return -1;
+            }
+        }
     }
-    std::string outPath = HDPath+"/WololoKingdoms/out";
 
-    std::string const aocDatPath = HDPath + "/resources/_common/dat/empires2_x1_p1.dat";
-    std::string const hdDatPath = HDPath + "/resources/_common/dat/empires2_x2_p1.dat";
-    std::string const keyValuesStringsPath = HDPath + "/resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
-    std::string const languageIniPath = outPath + "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/language.ini";
-    std::string const versionIniPath = outPath +  "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/version.ini";
-    std::string const civIntroSoundsInputPath = HDPath + "/resources/_common/sound/civ/";
-    std::string const civIntroSoundsOutputPath = outPath + "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/stream/";
-    std::string const musicInputPath = "music.m3u";
-    //TODO create music.m3u based on HDPath
-    std::string const musicOutputPath = outPath + "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/music.m3u";
-    std::string const xmlPath = "age2_x1.xml";
-    std::string const xmlPathUP = "WK_African_Kingdoms.xml";
-    std::string const xmlOutPath = outPath +  "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/age2_x1.xml";
-    std::string const xmlOutPathUP = outPath +  "/Games/WK_African_Kingdoms.xml";
-    std::string const drsOutPath = outPath + "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/gamedata_x1_p1.drs";
-    std::string const assetsPath = HDPath + "/resources/_common/drs/gamedata_x2/";
-    std::string const outputDatPath = outPath + "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/empires2_x1_p1.dat";
-    std::string const langDllPath = "/language_x1_p1.dll";
-    std::string const vooblyDir = outPath + "/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/";
-    std::string const uPDIR = outPath + "/Games/WK_African_Kingdoms/";
+    if(boost::filesystem::exists(HDPath+"/compatslp")) {
+        recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
+        boost::filesystem::remove_all(HDPath+"/compatslp");
+    }
 
+
+    std::string outPath = ":/Program Files (x86)/Microsoft Games/Age of Empires II/";
+    bool aocFound = true;
+
+    for (size_t i = 0; i < sizeof dls / sizeof (std::string); i++) {
+        if(boost::filesystem::exists(dls[i] + outPath)) {
+            outPath = dls[i] + outPath;
+            break;
+        }
+        if(i + 1 == sizeof dls / sizeof (std::string) && boost::filesystem::exists(HDPath + "age2_x1")) {
+            outPath = HDPath;
+        } else {
+            aocFound = false;
+            outPath = HDPath+"WololoKingdoms/out";
+        }
+    }
+
+    //Debug only:
+    outPath = "C:/Program Files (x86)/Steam/steamapps/common/Age2HD/WololoKingdoms/out/";
+
+    std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
+    std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
+    std::string const keyValuesStringsPath = HDPath + "resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
+    std::string const languageIniPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/language.ini";
+    std::string const versionIniPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/version.ini";
+    std::string const soundsInputPath =HDPath + "resources/_common/sound/";
+    std::string const soundsOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/";
+    std::string const tauntInputPath = HDPath + "resources/en/sound/taunt/";
+    std::string const tauntOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Taunt/";
+    std::string const xmlPath = "WK_African_Kingdoms.xml";
+    std::string const xmlOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/age2_x1.xml";
+    std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Player.nfz";
+    std::string const langDllFile = "language_x1_p1.dll";
+    std::string const xmlOutPathUP = outPath +  "Games/WK_African_Kingdoms.xml";
+    std::string const aiInputPath = "Script.Ai";
+    std::string const drsOutPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/gamedata_x1_p1.drs";
+    std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
+    std::string const outputDatPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/empires2_x1_p1.dat";
+    std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/";
+    std::string const uPDIR = outPath + "Games/WK_African_Kingdoms/";
+
+    std::string langDllPath = langDllFile;
 
     int ret = 0;
 
     try {
         std::cout << "WololoKingdoms ver. " << version << std::endl;
-        boost::filesystem::remove_all(outPath+"/");
-        boost::filesystem::create_directories(outPath+"/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data");
-        boost::filesystem::create_directories(outPath+"/Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/stream");
-        boost::filesystem::create_directories(outPath+"/Games/WK_African_Kingdoms/Data");
-        boost::filesystem::create_directories(outPath+"/Games/WK_African_Kingdoms/Sound/stream");
+        if(boost::filesystem::exists(nfzOutPath)) { //Avoid deleting Player.nfz
+            boost::filesystem::copy_file(nfzOutPath, outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
+        }
+        boost::filesystem::remove_all(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms");
+        boost::filesystem::remove_all(outPath+"Games/WK_African_Kingdoms");
+        boost::filesystem::remove(outPath+"Games/WK_African_Kingdoms.xml");
+        boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data");
+        boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/stream");
+        boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Taunt");
+        if(boost::filesystem::exists(outPath+"Voobly Mods/AOC/Data Mods/player.nfz")) {
+            boost::filesystem::copy_file(outPath+"Voobly Mods/AOC/Data Mods/player.nfz", nfzOutPath);
+            boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
+        }
+
+        std::cout << "Preparing resource files..." << std::endl;
+        std::ofstream versionOut(versionIniPath);
+        versionOut << version << std::endl;
+        copyCivIntroSounds(soundsInputPath + "civ/", soundsOutputPath + "stream/");
+        createMusicPlaylist(soundsInputPath + "music/", soundsOutputPath + "music.m3u");
+        recCopy(vooblyDir + "Sound", uPDIR + "Sound");
+        recCopy(tauntInputPath, tauntOutputPath);
+        recCopy(vooblyDir + "Taunt", uPDIR + "Taunt");
+
+        //HOTKEYS disabled for debug
+        //hotkeySetup(HDPath, outPath);
+
+        boost::filesystem::copy_file(xmlPath, xmlOutPath);
+        boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
+        if (aocFound) {
+            outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/"; //Debug only
+            recCopy(outPath+"Random", vooblyDir+"Script.Rm");
+            recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
+        }
+		//If wanted, the BruteForce AI could be included as a "standard" AI.
+        //recCopy(aiInputPath, vooblyDir+"Script.Ai");
+        //recCopy(vooblyDir + "Script.Ai", uPDIR + "Script.Ai");
 
         std::cout << "Opening the AOC dat file..." << std::endl << std::endl;
 
@@ -367,22 +541,12 @@ int main(int argc, char *argv[])
         aocDat.setGameVersion(genie::GameVersion::GV_TC);
         aocDat.load(aocDatPath.c_str());
 
-
-
         std::cout << std::endl << "Opening the AOE2HD dat file..." << std::endl << std::endl;
         genie::DatFile hdDat;
         hdDat.setVerboseMode(true);
         hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
         hdDat.load(hdDatPath.c_str());
 
-
-        std::cout << "Preparing resource files..." << std::endl;
-        std::ofstream versionOut(versionIniPath);
-        versionOut << version << std::endl;
-        copyCivIntroSounds(civIntroSoundsInputPath, civIntroSoundsOutputPath);
-        recCopy(musicInputPath,musicOutputPath);
-        recCopy(xmlPath, xmlOutPath);
-        recCopy(xmlPathUP, xmlOutPathUP);
         std::ofstream drsOut(drsOutPath, std::ios::binary);
 
         std::cout << "Generating gamedata_x1_p1.drs..." << std::endl;
@@ -409,6 +573,13 @@ int main(int argc, char *argv[])
 
 
         std::map<int, std::string> langReplacement;
+        langReplacement[20162] = "Infantry civilization \\n\\n· Infantry move 15% faster \\n· Lumberjacks work 15% faster \\n· Siege weapons fire 20% faster \\n· Can convert sheep even if enemy units are next to them. \\n\\n<b>Unique Unit:<b> Woad Raider (infantry) \\n\\n<b>Unique Techs:<b> Stronghold (Castles and towers fire 20% faster); Furor Celtica (Siege Workshop units have +40% HP)\\n\\n<b>Team Bonus:<b> Siege Workshops work 20% faster";
+        langReplacement[20166] = "Cavalry civilization \\n\\n· Do not need houses, but start with -100 wood \\n· Cavalry Archers cost -10% Castle, -20% Imperial Age \\n· Trebuchets +35% accuracy against units \\n\\n<b>Unique Unit:<b> Tarkan (cavalry) \\n\\n<b>Unique Techs:<b> Marauders (Create Tarkans at stables); Atheism (+100 years Relic, Wonder victories; Spies/Treason costs -50%)\\n\\n<b>Team Bonus:<b> Stables work 20% faster";
+        langReplacement[20170] = "Infantry civilization \\n\\n· Start with a free llama \\n· Villagers affected by Blacksmith upgrades \\n· Houses support 10 population \\n· Buildings cost -15% stone\\n\\n<b>Unique Units:<b> Kamayuk (infantry), Slinger (archer)\\n\\n<b>Unique Techs:<b> Andean Sling (Skirmishers and Slingers no minimum range); Couriers (Kamayuks, Slingers, Eagles +1 armor/+2 pierce armor)\\n\\n<b>Team Bonus:<b> Farms built 2x faster";
+        langReplacement[20165] = "Archer civilization \\n\\n· Start with +1 villager, but -50 food \\n· Resources last 15% longer \\n· Archers cost -10% Feudal, -20% Castle, -30% Imperial Age \\n\\n<b>Unique Unit:<b> Plumed Archer (archer) \\n\\n<b>Unique Techs:<b> Obsidian Arrows (Archers, Crossbowmen and Arbalests +12 attack vs. Towers/Stone Walls, +6 attack vs. other buildings); El Dorado (Eagle Warriors have +40 hit points)\\n\\n<b>Team Bonus:<b> Walls cost -50%";
+        langReplacement[20158] = "Camel and naval civilization \\n· Market trade cost only 5% \\n· Market costs -75 wood \\n· Transport Ships 2x hit points, \\n 2x carry capacity \\n· Galleys attack 20% faster \\n· Cavalry archers +4 attack vs. buildings \\n\\n<b>Unique Unit:<b> Mameluke (camel) \\n\\n<b>Unique Techs:<b> Madrasah (Killed monks return 33% of their cost); Zealotry (Camels, Mamelukes +30 hit points)\\n\\n<b>Team Bonus:<b> Foot archers +2 attack vs. buildings";
+        langReplacement[20163] = "Gunpowder and Monk civilization \\n\\n· Builders work 30% faster \\n· Blacksmith upgrades don't cost gold \\n· Cannon Galleons fire faster and with Ballistics) \\n· Gunpowder units fire 15% faster\\n\\n<b>Unique Units:<b> Conquistador (mounted hand cannoneer), Missionary (mounted Monk) \\n\\n<b>Unique Techs:<b> Inquisition (Monks convert faster); Supremacy (villagers better in combat)\\n\\n<b>Team Bonus:<b> Trade units generate +25% gold";
+
 
         for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {
             std::cout << "Applying DAT patch " << i+1 << " of " << nbPatches << ": " << patchTab[i].name << std::endl;
@@ -420,7 +591,14 @@ int main(int argc, char *argv[])
         std::ofstream langOut(languageIniPath);
         genie::LangFile langDll;
         bool patchLangDll = boost::filesystem::exists(langDllPath);
+        if(!patchLangDll && aocFound) {
+            outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/"; //Debug only
+            langDllPath = outPath + langDllPath;
+            patchLangDll = boost::filesystem::exists(langDllPath);
+        }
         if (patchLangDll) {
+            boost::filesystem::copy_file(langDllPath,uPDIR+langDllFile);
+            langDllPath = uPDIR+langDllFile;
             langDll.load(langDllPath.c_str());
             langDll.setGameVersion(genie::GameVersion::GV_TC);
         }
@@ -440,10 +618,14 @@ int main(int argc, char *argv[])
 
         std::cout << std::endl << "Copying the files for UserPatch..." << std::endl;
 
-        recCopy(vooblyDir + "/Data", uPDIR + "/Data");
-        recCopy(vooblyDir + "/Sound", uPDIR + "/Sound");
+        recCopy(vooblyDir + "Data", uPDIR + "Data");
 
-        std::cout << "Conversion complete, open the \"out/\" folder and put it's content into your AOE2 folder." << std::endl;
+        if (aocFound) {
+            std::cout << "Conversion complete! The WololoKingdoms mod is now part of your AoC installation." << std::endl;
+        } else {
+            std::cout << "Conversion complete. Installer did not find your AoC installation - \\n" <<
+                         "open the \"out/\" folder and put its contents into your AOE2 folder to make it work." << std::endl;
+        }    
     }
     catch (std::exception const & e) {
         std::cerr << e.what() << std::endl;
