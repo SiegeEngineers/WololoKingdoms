@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     fixes/hotkeysfix.cpp \
     fixes/disablenonworkingunits.cpp \
     fixes/vietfix.cpp \
-    fixes/malayfix.cpp
+    fixes/malayfix.cpp \
+    fixes/feitoriafix.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -44,7 +45,8 @@ HEADERS += \
     fixes/disablenonworkingunits.h \
     include/wololo/datPatch.h \
     fixes/vietfix.h \
-    fixes/malayfix.h
+    fixes/malayfix.h \
+    fixes/feitoriafix.h
 
 DISTFILES += \
     WololoKingdoms.ico
