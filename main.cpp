@@ -423,6 +423,8 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 
 int main(int argc, char *argv[])
 {
+    //(de)activate some stuff for debugging (bit ugly)
+    bool debug = true;
 
     std::string HDPath = "../";
 
@@ -435,7 +437,7 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-        if(HDPath == "../") {
+        if(HDPath == ":/Program Files (x86)/Steam/steamapps/common/Age2HD/") {
             if(boost::filesystem::exists("../../AoKDump")) {
                 HDPath = "../../";
             } else {
@@ -445,30 +447,38 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(boost::filesystem::exists(HDPath+"/compatslp")) {
-        recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
-        boost::filesystem::remove_all(HDPath+"/compatslp");
-    }
-
 
     std::string outPath = ":/Program Files (x86)/Microsoft Games/Age of Empires II/";
-    bool aocFound = true;
+    bool aocFound = false;
+    bool compatPatch = false;
 
     for (size_t i = 0; i < sizeof dls / sizeof (std::string); i++) {
         if(boost::filesystem::exists(dls[i] + outPath)) {
             outPath = dls[i] + outPath;
+            aocFound = true;
             break;
-        }
-        if(i + 1 == sizeof dls / sizeof (std::string) && boost::filesystem::exists(HDPath + "age2_x1")) {
-            outPath = HDPath;
         } else {
-            aocFound = false;
+            std::cout << dls[i] + outPath + "not found" << std::endl;
+        }
+    }   
+    if(!aocFound) {
+        if(boost::filesystem::exists(HDPath + "age2_x1")) {
+            outPath = HDPath;
+            if(boost::filesystem::exists(HDPath+"/compatslp")) {
+                recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
+                boost::filesystem::remove_all(HDPath+"/compatslp");
+                compatPatch = true;
+            }
+            aocFound = true;
+        } else {
+            std::cout << HDPath + "age2_x1" + "not found" << std::endl;
             outPath = HDPath+"WololoKingdoms/out/";
         }
     }
 
     //Debug only:
-    outPath = "C:/Program Files (x86)/Steam/steamapps/common/Age2HD/WololoKingdoms/out/";
+    if(debug)
+        outPath = "C:/Program Files (x86)/Steam/steamapps/common/Age2HD/WololoKingdoms/out/";
 
     std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
     std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
@@ -490,6 +500,8 @@ int main(int argc, char *argv[])
     std::string const outputDatPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/empires2_x1_p1.dat";
     std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/";
     std::string const uPDIR = outPath + "Games/WK_African_Kingdoms/";
+    std::string const UPModdedExe = "WK_African_Kingdoms";
+    std::string const UPExe = "SetupAoc.exe";
 
     std::string langDllPath = langDllFile;
 
@@ -498,6 +510,7 @@ int main(int argc, char *argv[])
     try {
         std::cout << "WololoKingdoms ver. " << version << std::endl;
         if(boost::filesystem::exists(nfzOutPath)) { //Avoid deleting Player.nfz
+            boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
             boost::filesystem::copy_file(nfzOutPath, outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
         }
         boost::filesystem::remove_all(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms");
@@ -521,12 +534,14 @@ int main(int argc, char *argv[])
         recCopy(vooblyDir + "Taunt", uPDIR + "Taunt");
 
         //HOTKEYS disabled for debug
-        //hotkeySetup(HDPath, outPath);
+        if(!debug)
+            hotkeySetup(HDPath, outPath);
 
         boost::filesystem::copy_file(xmlPath, xmlOutPath);
         boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
         if (aocFound) {
-            outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/"; //Debug only
+            if(debug) //Debug only
+                outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/";
             recCopy(outPath+"Random", vooblyDir+"Script.Rm");
             recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
         }
@@ -592,14 +607,18 @@ int main(int argc, char *argv[])
         genie::LangFile langDll;
         bool patchLangDll = boost::filesystem::exists(langDllPath);
         if(!patchLangDll && aocFound) {
-            outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/"; //Debug only
+            if(debug) //Debug only
+                outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/";
             langDllPath = outPath + langDllPath;
             patchLangDll = boost::filesystem::exists(langDllPath);
         }
         if (patchLangDll) {
-            boost::filesystem::copy_file(langDllPath,uPDIR+langDllFile);
-            langDllPath = uPDIR+langDllFile;
-            langDll.load(langDllPath.c_str());
+            /*
+             * Apparently langDll.save() doesn't work if admin permissions are required, even if they are give
+             * We'll copy the file into the WK folder, patch it there and copy it back instead.
+             */
+            boost::filesystem::copy_file(langDllPath,langDllFile);
+            langDll.load((langDllFile).c_str());
             langDll.setGameVersion(genie::GameVersion::GV_TC);
         }
         else {
@@ -608,6 +627,7 @@ int main(int argc, char *argv[])
         convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
         if (patchLangDll) {
             langDll.save();
+            boost::filesystem::copy_file(langDllFile,uPDIR+langDllFile);
             std::cout << langDllPath << " patched." << std::endl;
         }
 
@@ -620,11 +640,39 @@ int main(int argc, char *argv[])
 
         recCopy(vooblyDir + "Data", uPDIR + "Data");
 
+
+
         if (aocFound) {
-            std::cout << "Conversion complete! The WololoKingdoms mod is now part of your AoC installation." << std::endl;
+            std::cout << "Conversion complete! The WololoKingdoms mod is now part of your AoC installation." << std::endl << std::endl;
+            if(compatPatch) {
+                std::cout << "NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2')." << std::endl;
+                std::cout << "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored." << std::endl << std::endl;
+            }
+            if (patchLangDll && !debug) {
+                std::cout << "Do you want to create an additional installation with Userpatch that can be used without Voobly?" << std::endl;
+                std::cout << "(This will launch in an extra window, simply close it after the installation is done.)" << std::endl;
+                std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+                std::string line;
+                while(std::getline(std::cin, line)) {
+                    if(tolower(line) == "y" || tolower(line) == "n") break;
+                    std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+                }
+                if(tolower(line) == "y") {
+                    std::string backupPath = outPath+"old_language_x1_p1_"+std::to_string(boost::filesystem::file_size(langDllPath))+".dll";
+                    if(!boost::filesystem::exists(backupPath))
+                        boost::filesystem::rename(langDllPath,backupPath);
+                    else
+                        boost::filesystem::remove(langDllPath);
+                    boost::filesystem::copy_file(uPDIR+langDllFile,langDllPath);
+                    if(!boost::filesystem::exists(outPath+UPExe))
+                        boost::filesystem::copy_file(UPExe, outPath+UPExe);
+                    system(("\""+outPath+UPExe+"\" -g:"+UPModdedExe).c_str());
+                    std::cout << std::endl << UPModdedExe << ".exe installation for playing without Voobly created in the age2_x1 folder." << std::endl << std::endl;
+                }
+            }
         } else {
-            std::cout << "Conversion complete. Installer did not find your AoC installation - \\n" <<
-                         "open the \"out/\" folder and put its contents into your AOE2 folder to make it work." << std::endl;
+            std::cout << "Conversion complete. Installer did not find your AoC installation - " << std::endl;
+            std::cout << "open the \"out/\" folder and put its contents into your AOE2 folder to make it work." << std::endl << std::endl;
         }    
     }
     catch (std::exception const & e) {
