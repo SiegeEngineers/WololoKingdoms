@@ -46,3 +46,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.user
+lib/release_libgenieutils.dll
+lib/release_libgenieutils.dll.a
+lib/libgenieutils.dll
