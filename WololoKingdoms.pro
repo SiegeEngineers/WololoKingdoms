@@ -17,7 +17,9 @@ SOURCES += main.cpp \
     fixes/maliansfreeminingupgradefix.cpp \
     fixes/ai900unitidfix.cpp \
     fixes/hotkeysfix.cpp \
-    fixes/disablenonworkingunits.cpp
+    fixes/disablenonworkingunits.cpp \
+    fixes/vietfix.cpp \
+    fixes/malayfix.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -40,7 +42,9 @@ HEADERS += \
     fixes/ai900unitidfix.h \
     fixes/hotkeysfix.h \
     fixes/disablenonworkingunits.h \
-    include/wololo/datPatch.h
+    include/wololo/datPatch.h \
+    fixes/vietfix.h \
+    fixes/malayfix.h
 
 DISTFILES += \
     WololoKingdoms.ico
