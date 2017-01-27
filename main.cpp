@@ -463,7 +463,7 @@ int main(int argc, char *argv[])
             outPath = HDPath;
         } else {
             aocFound = false;
-            outPath = HDPath+"WololoKingdoms/out";
+            outPath = HDPath+"WololoKingdoms/out/";
         }
     }
 
