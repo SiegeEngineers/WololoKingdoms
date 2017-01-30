@@ -3,6 +3,7 @@
 #include <map>
 #include <algorithm>
 #include <cctype>
+#include <string>
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -20,6 +21,7 @@
 #include "fixes/ai900unitidfix.h"
 #include "fixes/hotkeysfix.h"
 #include "fixes/disablenonworkingunits.h"
+#include "fixes/feitoriafix.h"
 
 std::string const version = "2.0";
 
@@ -300,7 +302,7 @@ void cleanTheUglyHudHack(std::string const inputDir) {
 
 void copyCivIntroSounds(std::string const inputDir, std::string const outputDir) {
 	std::string const civs[] = {"italians", "indians", "incas", "magyars", "slavs",
-						   "portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
+								"portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
 	for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
 		boost::filesystem::copy_file(inputDir + civs[i] + ".mp3", outputDir + civs[i] + ".mp3");
 	}
@@ -460,7 +462,7 @@ int main(int argc, char *argv[])
 		} else {
 			std::cout << dls[i] + outPath + "not found" << std::endl;
 		}
-	}   
+	}
 	if(!aocFound) {
 		if(boost::filesystem::exists(HDPath + "age2_x1")) {
 			outPath = HDPath;
@@ -476,9 +478,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	//Debug only:
-	if(debug)
-		outPath = "C:/Program Files (x86)/Steam/steamapps/common/Age2HD/WololoKingdoms/out/";
 
 	std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
 	std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
@@ -540,8 +539,6 @@ int main(int argc, char *argv[])
 		boost::filesystem::copy_file(xmlPath, xmlOutPath);
 		boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
 		if (aocFound) {
-			if(debug) //Debug only
-				outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/";
 			recCopy(outPath+"Random", vooblyDir+"Script.Rm");
 			recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
 		}
@@ -577,13 +574,14 @@ int main(int argc, char *argv[])
 			wololo::berbersUTFix,
 			wololo::vietFix,
 			wololo::malayFix,
-//			wololo::demoShipFix,
-			wololo::etiopiansFreePikeUpgradeFix,
+			//			wololo::demoShipFix,
+			wololo::ethiopiansFreePikeUpgradeFix,
 			wololo::hotkeysFix,
 			wololo::maliansFreeMiningUpgradeFix,
 			wololo::portugueseFix,
 			wololo::disableNonWorkingUnits,
-			wololo::ai900UnitIdFix
+			wololo::ai900UnitIdFix,
+			wololo::feitoriaFix
 		};
 
 
@@ -607,17 +605,18 @@ int main(int argc, char *argv[])
 		genie::LangFile langDll;
 		bool patchLangDll = boost::filesystem::exists(langDllPath);
 		if(!patchLangDll && aocFound) {
-			if(debug) //Debug only
-				outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/";
 			langDllPath = outPath + langDllPath;
 			patchLangDll = boost::filesystem::exists(langDllPath);
 		}
+		if(debug)
+			patchLangDll = false;
 		if (patchLangDll) {
 			/*
 			 * Apparently langDll.save() doesn't work if admin permissions are required, even if they are give
 			 * We'll copy the file into the WK folder, patch it there and copy it back instead.
 			 */
-			boost::filesystem::copy_file(langDllPath,langDllFile);
+			if(!boost::filesystem::exists(langDllFile))
+				boost::filesystem::copy_file(langDllPath,langDllFile);
 			langDll.load((langDllFile).c_str());
 			langDll.setGameVersion(genie::GameVersion::GV_TC);
 		}
@@ -628,6 +627,7 @@ int main(int argc, char *argv[])
 		if (patchLangDll) {
 			langDll.save();
 			boost::filesystem::copy_file(langDllFile,uPDIR+langDllFile);
+			boost::filesystem::remove(langDllFile);
 			std::cout << langDllPath << " patched." << std::endl;
 		}
 
@@ -673,7 +673,7 @@ int main(int argc, char *argv[])
 		} else {
 			std::cout << "Conversion complete. Installer did not find your AoC installation - " << std::endl;
 			std::cout << "open the \"out/\" folder and put its contents into your AOE2 folder to make it work." << std::endl << std::endl;
-		}	
+		}
 	}
 	catch (std::exception const & e) {
 		std::cerr << e.what() << std::endl;

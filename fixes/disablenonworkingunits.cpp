@@ -13,7 +13,7 @@ void disableNonWorkingUnitsPatch(genie::DatFile *aocDat, std::map<int, std::stri
 
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		aocDat->Civs[civIndex].Units[siegeTowerUnitId].Creatable.TrainLocationID = 0;
-		aocDat->Civs[civIndex].Units[feitoriaUnitId].Creatable.TrainLocationID = 0;
+        //aocDat->Civs[civIndex].Units[feitoriaUnitId].Creatable.TrainLocationID = 0;
 	}
 
 }
