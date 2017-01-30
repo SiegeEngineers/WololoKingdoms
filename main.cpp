@@ -426,7 +426,7 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 int main(int argc, char *argv[])
 {
 	//(de)activate some stuff for debugging (bit ugly)
-	bool debug = false;
+	bool debug = true;
 
 	std::string HDPath = "../";
 
@@ -478,9 +478,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	//Debug only:
-	if(debug)
-		outPath = "C:/Program Files (x86)/Steam/steamapps/common/Age2HD/WololoKingdoms/out/";
 
 	std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
 	std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
@@ -542,8 +539,6 @@ int main(int argc, char *argv[])
 		boost::filesystem::copy_file(xmlPath, xmlOutPath);
 		boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
 		if (aocFound) {
-			if(debug) //Debug only
-				outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/";
 			recCopy(outPath+"Random", vooblyDir+"Script.Rm");
 			recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
 		}
@@ -610,8 +605,6 @@ int main(int argc, char *argv[])
 		genie::LangFile langDll;
 		bool patchLangDll = boost::filesystem::exists(langDllPath);
 		if(!patchLangDll && aocFound) {
-			if(debug) //Debug only
-				outPath = "C:/Program Files (x86)/Microsoft Games/Age of Empires II/";
 			langDllPath = outPath + langDllPath;
 			patchLangDll = boost::filesystem::exists(langDllPath);
 		}

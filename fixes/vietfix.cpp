@@ -63,19 +63,69 @@ void vietPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplaceme
 	aocDat->Techages[vietTBonusTechId].Effects.push_back(effect);
 
 	//Civ Bonus Fix
-	//This would reveal everything until the first LC or mill is built - probably too strong :|
 	/*
-	genie::TechageEffect effect2;
+	 * This lets the spies effect run for 15 seconds
+	 * It uses the same technique as the incan llama bonus
+	 */
+
+	size_t const incaTechTree = 3;
 	size_t const vietLosBonusTechId = 698;
 	size_t const vietLosBonusResearchId = 665;
-	size_t const LosResource = 183;
+	size_t const losResource = 183;
+	size_t const incaScout = 888;
+	size_t const incaEagle = 889;
+	size_t const deadArcher = 3;
+	size_t const incaLlamaCreation = 1118;
+	size_t const vietScout = 1387;
+	size_t const vietScoutCav = 1388;
+	size_t const vietTimerCreation = 1389;
+	size_t const vietTimer = 1386;
+	size_t const vietBuild = 1390;
+	size_t const scoutCav = 448;
+	size_t const oldAcademy = 0;
 	aocDat->Researchs[vietLosBonusResearchId].ResearchTime = 0;
-	int reqRes[] = {110,258,108,122,282,-1};
-	aocDat->Researchs[vietLosBonusResearchId].RequiredTechs = std::vector<short> (reqRes, reqRes + sizeof(reqRes) / sizeof(int));
-	aocDat->Techages[vietLosBonusTechId].Effects[0].A = 183;
 
-	aocDat->Civs[31].Resources[LosResource] = 1;
-	*/
+	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
+		//The original scout dies into two units - one becomes a scout cav, the other to disable the spies resarch
+		aocDat->Civs[civIndex].Units[vietScout] = aocDat->Civs[civIndex].Units[incaScout];
+		aocDat->Civs[civIndex].Units[vietScout].Building.Annexes[0].UnitID = vietScoutCav;
+		aocDat->Civs[civIndex].Units[vietScout].Building.Annexes[1].UnitID = vietTimerCreation;
+		//This unit creates the standard scout cav
+		aocDat->Civs[civIndex].Units[vietScoutCav] = aocDat->Civs[civIndex].Units[incaEagle];
+		aocDat->Civs[civIndex].Units[vietScoutCav].DeadUnitID = scoutCav;
+		//This unit creates a decaying unit used as a timer
+		aocDat->Civs[civIndex].Units[vietTimerCreation] = aocDat->Civs[civIndex].Units[incaLlamaCreation];
+		aocDat->Civs[civIndex].Units[vietTimerCreation].DeadUnitID = vietTimer;
+		//This unit is used as a timer
+		aocDat->Civs[civIndex].Units[vietTimer] = aocDat->Civs[civIndex].Units[deadArcher];
+		aocDat->Civs[civIndex].Units[vietTimer].StandingGraphic = {-1,-1};
+		aocDat->Civs[civIndex].Units[vietTimer].DeadUnitID = vietBuild;
+		aocDat->Civs[civIndex].Units[vietTimer].ResourceStorages[0].Amount = 15;
+		//This unit researches the disabling tech for the LOS bonus
+		aocDat->Civs[civIndex].Units[vietBuild] = aocDat->Civs[civIndex].Units[oldAcademy];
+		aocDat->Civs[civIndex].Units[vietBuild].Building.ResearchID = 665;
+
+		//ID Fixes
+		aocDat->Civs[civIndex].Units[vietScoutCav].ID1 = vietScoutCav;
+		aocDat->Civs[civIndex].Units[vietScoutCav].ID2 = vietScoutCav;
+		aocDat->Civs[civIndex].Units[vietScoutCav].ID3 = vietScoutCav;
+		aocDat->Civs[civIndex].Units[vietScout].ID1 = vietScout;
+		aocDat->Civs[civIndex].Units[vietScout].ID2 = vietScout;
+		aocDat->Civs[civIndex].Units[vietScout].ID3 = vietScout;
+		aocDat->Civs[civIndex].Units[vietTimerCreation].ID1 = vietTimerCreation;
+		aocDat->Civs[civIndex].Units[vietTimerCreation].ID2 = vietTimerCreation;
+		aocDat->Civs[civIndex].Units[vietTimerCreation].ID3 = vietTimerCreation;
+		aocDat->Civs[civIndex].Units[vietTimer].ID1 = vietTimer;
+		aocDat->Civs[civIndex].Units[vietTimer].ID2 = vietTimer;
+		aocDat->Civs[civIndex].Units[vietTimer].ID3 = vietTimer;
+		aocDat->Civs[civIndex].Units[vietBuild].ID1 = vietBuild;
+		aocDat->Civs[civIndex].Units[vietBuild].ID2 = vietBuild;
+		aocDat->Civs[civIndex].Units[vietBuild].ID3 = vietBuild;
+	}
+
+	aocDat->Techages[vietLosBonusTechId].Effects[0].A = losResource;
+	aocDat->Civs[31].Resources[losResource] = 1;
+
 
 }
 
