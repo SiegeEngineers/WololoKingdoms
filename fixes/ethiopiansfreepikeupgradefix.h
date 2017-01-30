@@ -4,7 +4,7 @@
 
 namespace wololo {
 
-extern DatPatch etiopiansFreePikeUpgradeFix;
+extern DatPatch ethiopiansFreePikeUpgradeFix;
 
 }
 
