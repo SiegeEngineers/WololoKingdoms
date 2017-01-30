@@ -275,16 +275,31 @@ void makeDrs(std::string const inputDir ,std::ofstream *out) {
 
 void uglyHudHack(std::string const inputDir) {
 	/*
+	 * We have more than 30 civs, so we need to space the interface files further apart
+	 * This adds +10 for each gap between different file types
+	 */
+	int const HudFiles[] = {51131, 51161};
+	for (size_t baseIndex = sizeof HudFiles / sizeof (int); baseIndex >= 1; baseIndex--) {
+		for (int i = 22; i >= 0; i--) {
+			std::string dst = inputDir + std::to_string(HudFiles[baseIndex-1]+i+baseIndex*10) + ".slp";
+			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
+				std::string src = inputDir + std::to_string(HudFiles[baseIndex-1]+i) + ".slp";
+				boost::filesystem::rename(src, dst);
+			}
+		}
+	}
+
+	/*
 	 * copies the Slav hud files for AK civs, the good way of doing this would be to extract
 	 * the actual AK civs hud files from
 	 * Age2HD\resources\_common\slp\game_b[24-27].slp correctly, but I haven't found a way yet
 	 */
-	int const slavHudFiles[] = {51123, 51153, 51183};
+	int const slavHudFiles[] = {51123, 51163, 51203};
 	for (size_t baseIndex = 0; baseIndex < sizeof slavHudFiles / sizeof (int); baseIndex++) {
 		for (size_t i = 1; i <= 8; i++) {
-			std::string dst = inputDir + "/" + std::to_string(slavHudFiles[baseIndex]+i) + ".slp";
+			std::string dst = inputDir + std::to_string(slavHudFiles[baseIndex]+i) + ".slp";
 			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
-				std::string src = inputDir + "/" + std::to_string(slavHudFiles[baseIndex]) + ".slp";
+				std::string src = inputDir + std::to_string(slavHudFiles[baseIndex]) + ".slp";
 				boost::filesystem::copy_file(src, dst);
 			}
 		}
@@ -292,12 +307,23 @@ void uglyHudHack(std::string const inputDir) {
 }
 
 void cleanTheUglyHudHack(std::string const inputDir) {
-	int const slavHudFiles[] = {51123, 51153, 51183};
+	int const slavHudFiles[] = {51123, 51163, 51203};
 	for (size_t baseIndex = 0; baseIndex < sizeof slavHudFiles / sizeof (int); baseIndex++) {
 		for (size_t i = 1; i <= 8; i++) {
-			boost::filesystem::remove(inputDir + "/" + std::to_string(slavHudFiles[baseIndex]+i) + ".slp");
+			boost::filesystem::remove(inputDir + std::to_string(slavHudFiles[baseIndex]+i) + ".slp");
 		}
 	}
+	int const HudFiles[] = {51141, 51181};
+	for (size_t baseIndex = 1; baseIndex <= sizeof HudFiles / sizeof (int); baseIndex++) {
+		for (int i = 0; i <= 22; i++) {
+			std::string dst = inputDir + std::to_string(HudFiles[baseIndex-1]+i-baseIndex*10) + ".slp";
+			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
+				std::string src = inputDir + std::to_string(HudFiles[baseIndex-1]+i) + ".slp";
+				boost::filesystem::rename(src, dst);
+			}
+		}
+	}
+
 }
 
 void copyCivIntroSounds(std::string const inputDir, std::string const outputDir) {
