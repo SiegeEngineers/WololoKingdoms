@@ -97,6 +97,28 @@ DWORD ConvertUnicode2CP(const wchar_t *szText, std::string &resultString, UINT c
   return ERROR_SUCCESS;
 }
 
+DWORD ConvertCP2Unicode(const char *szText, std::wstring &resultString, UINT codePage = CP_ACP)
+{
+  resultString.clear();
+  if (strlen(szText) <= 0)
+	return ERROR_SUCCESS;
+  int iRes = MultiByteToWideChar(codePage, 0, szText, -1, NULL, 0);
+  if (iRes <= 0)
+	return GetLastError();
+  wchar_t *szTemp = new wchar_t[iRes];
+
+  iRes = MultiByteToWideChar(codePage, 0, szText, -1, szTemp, iRes);
+  if (iRes <= 0)
+  {
+	delete [] szTemp;
+	return GetLastError();
+  }
+
+  resultString = szTemp;
+  delete [] szTemp;
+  return ERROR_SUCCESS;
+}
+
 std::wstring strtowstr( const std::string& as )
 {
 			// deal with trivial case of empty string
@@ -110,6 +132,24 @@ std::wstring strtowstr( const std::string& as )
 
 			// convert old string to new string
 	::MultiByteToWideChar( CP_UTF8, 0, as.c_str(), (int)as.length(), &ret[0], (int)ret.length() );
+
+			// return new string ( compiler should optimize this away )
+	return ret;
+}
+
+std::string wstrtostr( const std::wstring& as )
+{
+			// deal with trivial case of empty string
+	if( as.empty() )    return std::string();
+
+			// determine required length of new string
+	size_t reqLength = ::WideCharToMultiByte( CP_UTF8, 0, as.c_str(), (int)as.length(), 0, 0, 0, 0 );
+
+			// construct new string of required length
+	std::string ret( reqLength, L'\0' );
+
+			// convert old string to new string
+	::WideCharToMultiByte( CP_UTF8, 0, as.c_str(), (int)as.length(), &ret[0], (int)ret.length(), 0, 0 );
 
 			// return new string ( compiler should optimize this away )
 	return ret;
@@ -186,7 +226,7 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 			line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
 		}
 
-		boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion
+		//boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion, not needed anymore?
 
 		//convert UTF-8 into ANSI
 
@@ -202,7 +242,7 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 				dllOut->setString(nb, line);
 			}
 			catch (std::string const & e) {
-				boost::replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
+				boost::replace_all(line, "·", "-"); // non-english dll files don't seem to like that character
 				dllOut->setString(nb, line);
 			}
 		}
@@ -562,6 +602,7 @@ int main(int argc, char *argv[])
 	std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
 	std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
 	std::string const keyValuesStringsPath = HDPath + "resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
+	std::string const modLangPath = "language.ini";
 	std::string const languageIniPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/language.ini";
 	std::string const versionIniPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/version.ini";
 	std::string const soundsInputPath =HDPath + "resources/_common/sound/";
@@ -678,6 +719,39 @@ int main(int argc, char *argv[])
 			std::cout << "Applying DAT patch " << i+1 << " of " << nbPatches << ": " << patchTab[i].name << std::endl;
 			patchTab[i].patch(&aocDat, &langReplacement);
 		}
+
+		std::cout << std::endl << "Do you want to replace the original tech tree and unit descriptions with more detailed descriptions (Attack speed, hidden bonuses etc.)?" << std::endl;
+		std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+		std::string line;
+		while(std::getline(std::cin, line)) {
+			if(tolower(line) == "y" || tolower(line) == "n") break;
+			std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+		}
+		if(tolower(line) == "y") {
+			/*
+			 * Load modded strings instead of normal HD strings into lang replacement
+			 */
+			std::ifstream modLang(modLangPath);
+			while (std::getline(modLang, line)) {
+				int spaceIdx = line.find('=');
+				std::string number = line.substr(0, spaceIdx);
+				int nb;
+				try {
+					nb = stoi(number);
+				}
+				catch (std::invalid_argument const & e){
+					continue;
+				}
+				line = line.substr(spaceIdx + 1, std::string::npos);
+
+				std::wstring outputLine;
+				ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
+				boost::replace_all(line, "\n", "\\n");
+				line = wstrtostr(outputLine);
+				langReplacement[nb] = line;
+			}
+		}
+
 
 		std::cout << std::endl << "Converting the language file..." << std::endl;
 		std::ifstream langIn(keyValuesStringsPath);
