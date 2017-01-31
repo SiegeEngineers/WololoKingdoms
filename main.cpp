@@ -30,7 +30,7 @@
 #include "fixes/disablenonworkingunits.h"
 #include "fixes/feitoriafix.h"
 
-std::string const version = "2.0";
+std::string const version = "2.1";
 
 void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst) {
 	// recursive copy

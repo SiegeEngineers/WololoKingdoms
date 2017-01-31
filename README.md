@@ -1,5 +1,5 @@
 # WololoKingdoms
-A program for converting AOE2HD expansions files to the original AOC engine format.
+A program for converting AOE2HD expansions files (The Forgotten, African Kingdoms and Rise of the Rajas) to the original AOC engine format.
 
 ## Why ?
 People who play AOE2:HD are probably aware of all the issues currently affecting the game : lobbies not starting,
@@ -7,41 +7,47 @@ desyncs, restore function not working, lag issues etc.
 The original AOC version with UserPatch doesn't suffer from as many issues, and is overall a way more stable and usable version of the engine.
 However, people playing on this version of the engine are missing out on great contents provided by the expansions released for AOE2HD.
 This program is an (early) attempt at providing the best of both worlds, while waiting for an even better game engine (openage)
+Usage of the converter should hopefully be intuitive, but there are more detailed instructions below if needed.
 
 ## How to use (with Voobly)
-[Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder, launch WololoKingdoms.exe,
-then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms) then you can use it as a mod in Voobly.  
+[Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract the Zip and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
+If the installer was not able to find your AoC/Voobly installation, then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms) then you can use it as a mod in Voobly.  
 - If you're using HD edition with the HD compatibility patch to run the game with Voobly, rename or remove the `compatslp` folder, otherwise you will have [interface issues](https://imgur.com/a/xouXF) with most of the civs.  
 Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
+To use the mod in a Voobly game, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms African Kingdoms". You can then launch as normal!
 
 ## How to use (without Voobly)
-[You will need UserPatch](http://userpatch.aiscripters.net/)  
-[Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it into your "Age2HD" folder,
-copy language_x1_p1.dll from your AOC installation and paste it next to WololoKingdoms.exe, launch WololoKingdoms.exe, the program will detect the dll file and patch it on top of doing it's usual operations,
-make a backup just in case and replace your language_x1_p1.dll by the patched one (larger than 1 MB),
-then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, launch userpatch setup like this :  
-`SetupAoC.exe -g:WK_African_Kingdoms` and install it, you can then launch the mod using  
-`age2_x1/WK_African_Kingdoms.exe`
+[Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it and launch as usual.
+If the installer is not able to find your AoC/Voobly installation, copy language_x1_p1.dll from your AOC installation and paste it next to WololoKingdoms.exe then launch WololoKingdoms.exe.
+The program will detect the dll file and patch it on top of doing it's usual operations, then ask you at the end if you want to create the seperate exe (Answer "y").
+If the installer wasn't able to find your AoC installation, then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder.
+You can launch the game using the `age2_x1/WK_African_Kingdoms.exe`
 
 ## Limitations
 Because of the features missing from the original AOC engine, not everything from the expansions can be replicated, this includes :
 - As of now, the aim of this program is multiplayer random maps, converting campaigns etc. isn't planned. (you can play them on HD anyway, unless they manage to break the engine even more)
-- The feitoria and siege tower don't work and are disabled for now.
+- The Siege tower and Burmese team bonus don't work and are disabled for now.
 - The Unique technologies of the Berbers : which have been replaced by the following :
     - Kasbah must be researched by players on the team individually, it's price has been reduced (250->150 food and gold) 
     - Maghrabi Camels gives their camels +1 melee armor and +5hp instead of the regen.
-    - These changes might be rebalanced in the future
-- The default bots can't play the new civilizations, however, [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) has been updated to support this project.
-- The hotkey menu is hardcoded, but this shouldn't be a big deal, as most of the new units are either unique units, or in the existing unit lines. Use the Cannon Galleon hotkey to make Genitours.
+- The Unique technology of the Vietnamese, Paper Money, has to be researched by players on the team individually. It now gives 300G for 600F.
+- Khmer villagers garrisoning in houses will drop off resources.
+- The Vietnamese bonus of revealing enemy locations gives 15 seconds of full vision, but turns completely black again afterwards.
+- These changes might be rebalanced in the future
+- The default bots can't play the new civilizations, however, [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) has been updated to support up to the African Kingdoms civilizations. Rise of the Rajas civs AI support is not available atm.
+- The hotkey menu is hardcoded, but this shouldn't be a big deal, as most of the new units are either unique units, or in the existing unit lines. Use the following hotkeys:
+	- Cannon Galleon hotkey to make Genitours
+	- Wonder hotkey to make Palisade Gates
+	- Outpost hotkey to make Feitorias
+	- Camel hotkey for Battle Elephants
+	- Longboat hotkey for Caravels
 - There may be other things not working properly, I will add them to this list when they are reported
 
 If you have experience with AOC .exe editing, and are willing to share your work with the community, feel free to contact me so we can work on implementing the missing features.
 
 ## Known issues
-- If [your interface is messed up](https://imgur.com/a/xouXF) with the [HD compatibility patch](http://aoccs.net/), all you need to do is rename or remove the `compatslp` folder to fix this. Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
-- ~~Using the [HD compatibility patch](http://aoccs.net/) seems to cause interface issues with the following civs : Aztec, Berbers, Celts, Huns, Incas, Indians, Italians, Koreans, Magyars, Mayans, Mongols, Portuguese, Slavs, Spanish  
-So in the meantime you shouldn't play as them if you use the HD compatibility patch, use the CD version if you can (this glitch doesn't happen on the CD version)~~  
-- Saboteurs (cheat unit) don't work properly due to a workaround related to Demolition rafts
+- If you use the [HD compatibility patch](http://aoccs.net/) Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored. The reason is that the converter renamed the `compatslp` folder to fix [interface issues](https://imgur.com/a/xouXF).
+
 
 ## Keep in mind
 The Forgotten team has made a fantastic work with their expansions and, while this is probably not the way they expected their expansions to be played, I hope they can understand that many people are disapointed with the current state of AOE2HD engine.
@@ -55,6 +61,7 @@ I used Qt Creator for editing and building it, you will also need Boost installe
 ## Special thanks
 - Apre for the genieutils library
 - Tapsa for Advanced Genie Editor
+- Jineapple for helping with the Rise of the Rajas conversion and convenience features
 - Alqualunte for advices and testing
 - CheeseOnToast for making his [A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) compatible with this project
-- The Forgotten Empires team for two great expansions
+- The Forgotten Empires team for three great expansions
