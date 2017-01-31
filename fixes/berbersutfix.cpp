@@ -13,7 +13,7 @@ void berbersUTPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRepl
 	 * For the imperial one, the regen. is replaced by +1 melee armor and +5 hp
 	 */
 
-	(*langReplacement)[20176] = "Cavalry and Naval civilization \\n\\n· Villagers move +10% faster \\n· Stable units cost -20% (starting from Castle Age)\\n· Ships move +10% faster \\n\\n<b>Unique Units:<b> Camel Archer (cavalry archer), Genitour (mounted skirmisher)\\n\\n<b>Unique Techs:<b> Kasbah (Castles work +25% faster); Maghrabi Camels (Camel troops +1 melee armor, +5hp)\\n\\n<b>Team Bonus:<b> Genitour available in Archery Range, Kasbah available in Castle";
+	(*langReplacement)[20176] = "Cavalry and Naval civilization \\n\\n· Villagers move +10% faster \\n· Stable units cost -15/20% in Castle/Imperial Age\\n· Ships move +10% faster \\n\\n<b>Unique Units:<b> Camel Archer (cavalry archer), Genitour (mounted skirmisher)\\n\\n<b>Unique Techs:<b> Kasbah (Castles work +25% faster); Maghrabi Camels (Camel troops +1 melee armor, +5hp)\\n\\n<b>Team Bonus:<b> Genitour available in Archery Range, Kasbah available in Castle";
 	(*langReplacement)[28256] = "Research <b>Kasbah<b> (<cost>) \\nCastles work +25% faster.";
 	(*langReplacement)[28257] = "Research <b>Maghrabi Camels<b> (<cost>) \\nCamel troops +1 Melee Armor, +5 HP.";
 

@@ -11,10 +11,10 @@ Usage of the converter should hopefully be intuitive, but there are more detaile
 
 ## How to use (with Voobly)
 [Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract the Zip and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
-If the installer was not able to find your AoC/Voobly installation, then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. The folder structure should look like this: Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms) then you can use it as a mod in Voobly.  
+If the installer was not able to find your AoC/Voobly installation, then copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. 
+The folder structure should look like this: Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms) then you can use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms African Kingdoms". You can then launch as normal).  
 - If you're using HD edition with the HD compatibility patch to run the game with Voobly, rename or remove the `compatslp` folder, otherwise you will have [interface issues](https://imgur.com/a/xouXF) with most of the civs.  
 Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
-To use the mod in a Voobly game, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms African Kingdoms". You can then launch as normal!
 
 ## How to use (without Voobly)
 [Download the latest release](https://github.com/Tails8521/WololoKingdoms/releases), extract it and launch as usual.

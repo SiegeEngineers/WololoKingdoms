@@ -68,7 +68,6 @@ void vietPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplaceme
 	 * It uses the same technique as the incan llama bonus
 	 */
 
-	size_t const incaTechTree = 3;
 	size_t const vietLosBonusTechId = 698;
 	size_t const vietLosBonusResearchId = 665;
 	size_t const losResource = 183;
@@ -124,14 +123,14 @@ void vietPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplaceme
 	}
 
 	aocDat->Techages[vietLosBonusTechId].Effects[0].A = losResource;
-	aocDat->Civs[31].Resources[losResource] = 1;
-
-
+	effect = aocDat->Techages[vietLosBonusTechId].Effects[0];
+	effect.D = 1;
+	aocDat->Techages[vietTechTreeTechId].Effects.push_back(effect);
 }
 
 DatPatch vietFix = {
 	&vietPatch,
-	"Vietnamese Paper Money alternative"
+	"Vietnamese LoS Bonus and Paper Money alternative"
 };
 
 }
