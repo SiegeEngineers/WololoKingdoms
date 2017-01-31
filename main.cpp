@@ -5,6 +5,13 @@
 #include <cctype>
 #include <string>
 
+#include <windows.h>
+#include <tchar.h>
+#include <string>
+#include <assert.h>
+#include <locale>
+#include <codecvt>
+
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
@@ -23,7 +30,7 @@
 #include "fixes/disablenonworkingunits.h"
 #include "fixes/feitoriafix.h"
 
-std::string const version = "2.0";
+std::string const version = "2.1";
 
 void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst) {
 	// recursive copy
@@ -68,9 +75,49 @@ void listAssetFiles(std::string const path, std::vector<std::string> *listOfSlpF
 
 }
 
+DWORD ConvertUnicode2CP(const wchar_t *szText, std::string &resultString, UINT codePage = CP_ACP)
+{
+  resultString.clear();
+  if (wcslen(szText) <= 0)
+	return ERROR_SUCCESS;
+  int iRes = WideCharToMultiByte(codePage, 0, szText, -1, NULL, 0, NULL, NULL);
+  if (iRes <= 0)
+	return GetLastError();
+  char *szTemp = new char[iRes];
+
+  iRes = WideCharToMultiByte(codePage, 0, szText, -1, szTemp, iRes, NULL, NULL);
+  if (iRes <= 0)
+  {
+	delete [] szTemp;
+	return GetLastError();
+  }
+
+  resultString = szTemp;
+  delete [] szTemp;
+  return ERROR_SUCCESS;
+}
+
+std::wstring strtowstr( const std::string& as )
+{
+			// deal with trivial case of empty string
+	if( as.empty() )    return std::wstring();
+
+			// determine required length of new string
+	size_t reqLength = ::MultiByteToWideChar( CP_UTF8, 0, as.c_str(), (int)as.length(), 0, 0 );
+
+			// construct new string of required length
+	std::wstring ret( reqLength, L'\0' );
+
+			// convert old string to new string
+	::MultiByteToWideChar( CP_UTF8, 0, as.c_str(), (int)as.length(), &ret[0], (int)ret.length() );
+
+			// return new string ( compiler should optimize this away )
+	return ret;
+}
+
 void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
 	std::string line;
-	while (getline(*in, line)) {
+	while (std::getline(*in, line)) {
 		int spaceIdx = line.find(' ');
 		std::string number = line.substr(0, spaceIdx);
 		int nb;
@@ -140,7 +187,14 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		}
 
 		boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion
-		*iniOut << number << '=' << line <<  std::endl;
+
+		//convert UTF-8 into ANSI
+
+		std::wstring wideLine = strtowstr(line);
+		std::string outputLine;
+		ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
+
+		*iniOut << number << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
 			boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
@@ -452,7 +506,7 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 int main(int argc, char *argv[])
 {
 	//(de)activate some stuff for debugging (bit ugly)
-	bool debug = true;
+	bool debug = false;
 
 	std::string HDPath = "../";
 
