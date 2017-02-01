@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     fixes/disablenonworkingunits.cpp \
     fixes/vietfix.cpp \
     fixes/malayfix.cpp \
-    fixes/feitoriafix.cpp
+    fixes/feitoriafix.cpp \
+    paths.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -46,7 +47,8 @@ HEADERS += \
     include/wololo/datPatch.h \
     fixes/vietfix.h \
     fixes/malayfix.h \
-    fixes/feitoriafix.h
+    fixes/feitoriafix.h \
+    paths.h
 
 DISTFILES += \
     WololoKingdoms.ico

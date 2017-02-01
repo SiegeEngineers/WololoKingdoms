@@ -10,12 +10,13 @@
 #include <string>
 #include <assert.h>
 #include <locale>
-#include <codecvt>
+// #include <codecvt>
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
+#include "paths.h"
 #include "wololo/datPatch.h"
 #include "wololo/Drs.h"
 #include "fixes/berbersutfix.h"
@@ -548,86 +549,38 @@ int main(int argc, char *argv[])
 	//(de)activate some stuff for debugging (bit ugly)
 	bool debug = false;
 
-	std::string HDPath = "../";
-
-	std::string const dls[] = {"C", "D", "E", "F", "G", "H"};
-	if(!boost::filesystem::exists("../AoKDump")) {
-		HDPath = ":/Program Files (x86)/Steam/steamapps/common/Age2HD/";
-		for (size_t i = 0; i < sizeof dls / sizeof (std::string); i++) {
-			if(boost::filesystem::exists(dls[i] + HDPath)) {
-				HDPath = dls[i] + HDPath;
-				break;
-			}
-		}
-		if(HDPath == ":/Program Files (x86)/Steam/steamapps/common/Age2HD/") {
-			if(boost::filesystem::exists("../../AoKDump")) {
-				HDPath = "../../";
-			} else {
-				std::cout << "Could not find a HD installation, please put the WololoKingdoms folder into your HD installation folder (Age2HD)." << std::endl;
-				return -1;
-			}
-		}
-	}
-
-
-	std::string outPath = ":/Program Files (x86)/Microsoft Games/Age of Empires II/";
-	bool aocFound = false;
-	bool compatPatch = false;
-
-	for (size_t i = 0; i < sizeof dls / sizeof (std::string); i++) {
-		if(boost::filesystem::exists(dls[i] + outPath)) {
-			outPath = dls[i] + outPath;
-			aocFound = true;
-			break;
-		} else {
-			std::cout << dls[i] + outPath + "not found" << std::endl;
-		}
-	}
-	if(!aocFound) {
-		if(boost::filesystem::exists(HDPath + "age2_x1")) {
-			outPath = HDPath;
-			if(boost::filesystem::exists(HDPath+"/compatslp")) {
-				recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
-				boost::filesystem::remove_all(HDPath+"/compatslp");
-				compatPatch = true;
-			}
-			aocFound = true;
-		} else {
-			std::cout << HDPath + "age2_x1" + "not found" << std::endl;
-			outPath = HDPath+"WololoKingdoms/out/";
-		}
-	}
-
-
-	std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
-	std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
-	std::string const keyValuesStringsPath = HDPath + "resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
-	std::string const modLangPath = "language.ini";
-	std::string const languageIniPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/language.ini";
-	std::string const versionIniPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/version.ini";
-	std::string const soundsInputPath =HDPath + "resources/_common/sound/";
-	std::string const soundsOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/";
-	std::string const tauntInputPath = HDPath + "resources/en/sound/taunt/";
-	std::string const tauntOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Taunt/";
-	std::string const xmlPath = "WK_African_Kingdoms.xml";
-	std::string const xmlOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/age2_x1.xml";
-	std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Player.nfz";
-	std::string const langDllFile = "language_x1_p1.dll";
-	std::string const xmlOutPathUP = outPath +  "Games/WK_African_Kingdoms.xml";
-	std::string const aiInputPath = "Script.Ai";
-	std::string const drsOutPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/gamedata_x1_p1.drs";
-	std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
-	std::string const outputDatPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/empires2_x1_p1.dat";
-	std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/";
-	std::string const uPDIR = outPath + "Games/WK_African_Kingdoms/";
-	std::string const UPModdedExe = "WK_African_Kingdoms";
-	std::string const UPExe = "SetupAoc.exe";
-
-	std::string langDllPath = langDllFile;
-
 	int ret = 0;
 
 	try {
+
+		std::string HDPath = getHDPath();
+		std::string outPath = getOutPath(HDPath);
+		std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
+		std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
+		std::string const keyValuesStringsPath = HDPath + "resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
+		std::string const modLangPath = "language.ini";
+		std::string const languageIniPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/language.ini";
+		std::string const versionIniPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/version.ini";
+		std::string const soundsInputPath =HDPath + "resources/_common/sound/";
+		std::string const soundsOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/";
+		std::string const tauntInputPath = HDPath + "resources/en/sound/taunt/";
+		std::string const tauntOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Taunt/";
+		std::string const xmlPath = "WK_African_Kingdoms.xml";
+		std::string const xmlOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/age2_x1.xml";
+		std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Player.nfz";
+		std::string const langDllFile = "language_x1_p1.dll";
+		std::string langDllPath = langDllFile;
+		std::string const xmlOutPathUP = outPath +  "Games/WK_African_Kingdoms.xml";
+		std::string const aiInputPath = "Script.Ai";
+		std::string const drsOutPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/gamedata_x1_p1.drs";
+		std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
+		std::string const outputDatPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/empires2_x1_p1.dat";
+		std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/";
+		std::string const uPDIR = outPath + "Games/WK_African_Kingdoms/";
+		std::string const UPModdedExe = "WK_African_Kingdoms";
+		std::string const UPExe = "SetupAoc.exe";
+
+
 		std::cout << "WololoKingdoms ver. " << version << std::endl;
 		if(boost::filesystem::exists(nfzOutPath)) { //Avoid deleting Player.nfz
 			boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
@@ -659,6 +612,7 @@ int main(int argc, char *argv[])
 
 		boost::filesystem::copy_file(xmlPath, xmlOutPath);
 		boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
+		boolean aocFound = outPath != HDPath+"WololoKingdoms/out/";
 		if (aocFound) {
 			recCopy(outPath+"Random", vooblyDir+"Script.Rm");
 			recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
@@ -798,7 +752,9 @@ int main(int argc, char *argv[])
 
 		if (aocFound) {
 			std::cout << "Conversion complete! The WololoKingdoms mod is now part of your AoC installation." << std::endl << std::endl;
-			if(compatPatch) {
+			if(boost::filesystem::exists(HDPath+"/compatslp")) {
+				recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
+				boost::filesystem::remove_all(HDPath+"/compatslp");
 				std::cout << "NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2')." << std::endl;
 				std::cout << "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored." << std::endl << std::endl;
 			}
