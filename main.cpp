@@ -4,13 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
-
 #include <windows.h>
-#include <tchar.h>
-#include <string>
-#include <assert.h>
-#include <locale>
-// #include <codecvt>
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -30,6 +24,7 @@
 #include "fixes/hotkeysfix.h"
 #include "fixes/disablenonworkingunits.h"
 #include "fixes/feitoriafix.h"
+#include "fixes/burmesefix.h"
 
 std::string const version = "2.1";
 
@@ -456,69 +451,60 @@ void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
 
 void hotkeySetup(std::string const HDPath, std::string const outPath) {
 
-	//TODO make the confusing logic clearer
-
 	std::string const nfz1Path = "Player1.nfz";
 	std::string const nfz2Path = "Player2.nfz";
 	std::string const aocHkiPath = "player1.hki";
 	std::string const hkiPath = HDPath + "Profiles/player0.hki";
 	std::string const hki1OutPath = outPath +  "player1.hki";
 	std::string const hki2OutPath = outPath +  "player2.hki";
-	std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Player.nfz";
+	std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
 
-	std::cout << "Setting up Hotkeys..." << std::endl;
-	std::string line = ""; //stores the most recent line of input
+	std::cout << std::endl << "Setting up Hotkeys..." << std::endl;
+	std::string line = "n"; //stores the most recent line of input
 
 	if(boost::filesystem::exists(nfzOutPath)) {
-		std::cout << "It looks like you have set up your hotkeys for this mod before." << std::endl;
+		std::cout << std::endl << "It looks like you have set up your hotkeys for this mod before." << std::endl;
 		std::cout << "Do you want to keep your current hotkey setup?" << std::endl;
 
 		std::cout << "Type y or n (Yes/No) to continue." << std::endl;
 		while(std::getline(std::cin, line)) {
 			if(tolower(line) == "n") {
 				boost::filesystem::remove(nfzOutPath);
+				std::cout << std::endl;
 				break;
 			}
 			else if (tolower(line) == "y") break;
 			std::cout << "Type y or n (Yes/No) to continue." << std::endl;
 		}
 	}
-	if(line != "y") {
-		std::cout << "Do you want to use your current AoC/Voobly Hotkeys for this mod?" << std::endl;
-		std::cout << "Note that this means new units might not have hotkeys or different ones that you expect!" << std::endl;
-		std::cout << "When answering no, this program will copy your current HD edition hotkeys instead" << std::endl;
+	if(line == "n") {
+		std::cout << "You have three options:" << std::endl << std::endl;
+		std::cout << "1) Use your current AoC/Voobly hotkeys for this mod" << std::endl << std::endl;
 
-		std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+		std::cout << "2) Use your current HD edition hotkeys for this mod and standard (Voobly) AoC as well - " << std::endl
+		<< "   WARNING! This will overwrite your current hotkey file if you have one!" << std::endl << std::endl;
+
+		std::cout << "3) Use your current HD edition hotkeys only for this mod" << std::endl << std::endl;
+		//std::cout << "4) Do nothing (Default HD edition hotkeys are used initially)" << std::endl << std::endl;
+		std::cout << "Type 1, 2 or 3 to continue." << std::endl;
 		while(std::getline(std::cin, line)) {
-			if(tolower(line) == "y" || tolower(line) == "n") break;
-			std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+			if(tolower(line) == "1" || tolower(line) == "2" || tolower(line) == "3") break;
+			std::cout << "Type 1, 2 or 3 to continue." << std::endl;
 		}
-
-		if(line == "y") {
+		if(line == "1") {
 			boost::filesystem::copy_file(nfz1Path, nfzOutPath);
 			if(!boost::filesystem::exists(hki1OutPath))
 				boost::filesystem::copy_file(aocHkiPath, hki1OutPath);
 			line = "";
-		} else {
-			std::cout << "Do you want to use your current HD edition Hotkeys for (Voobly) AoC as well?" << std::endl;
-			std::cout << "WARNING! This will overwrite your current hotkey file if you have one!" << std::endl;
-
-			std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-			while(std::getline(std::cin, line)) {
-				if(tolower(line) == "y" || tolower(line) == "n") break;
-				std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-			}
-		}
-		if(line == "y") {
+		} else if(line == "2") {
 			boost::filesystem::copy_file(nfz1Path, nfzOutPath);
 			if(boost::filesystem::exists(hki1OutPath))
 				boost::filesystem::remove(hki1OutPath);
 			boost::filesystem::copy_file(hkiPath, hki1OutPath);
-		} else if (line == "n") {
+		} else if(line == "3") {
 			boost::filesystem::copy_file(nfz2Path, nfzOutPath);
 			if(!boost::filesystem::exists(hki2OutPath)) {
 				boost::filesystem::copy_file(hkiPath, hki2OutPath);
-				line == "y";
 			} else {
 				std::cout << "WARNING! This will overwrite one ofyour current hotkey files (player2.hki)!" << std::endl;
 				std::cout << "Do you want to continue anyway?" << std::endl;
@@ -526,19 +512,12 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 				while(std::getline(std::cin, line))
 				{
 					std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-					if(tolower(line) == "y") { //Asking the inverted question is clearer here, so the logic has to inverted again
-						line = "n";
-						break;
-					} else if (tolower(line) == "n") {
-						line = "y";
-						break;
+					if(tolower(line) == "y") {
+						boost::filesystem::remove(hki2OutPath);
+						boost::filesystem::copy(hkiPath, hki2OutPath);
 					}
 				}
 			}
-		}
-		if(tolower(line) == "n") {
-			boost::filesystem::remove(hki2OutPath);
-			boost::filesystem::copy(hkiPath, hki2OutPath);
 		}
 	}
 	std::cout << "Hotkey setup done." << std::endl;
@@ -559,25 +538,26 @@ int main(int argc, char *argv[])
 		std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
 		std::string const keyValuesStringsPath = HDPath + "resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
 		std::string const modLangPath = "language.ini";
-		std::string const languageIniPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/language.ini";
-		std::string const versionIniPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/version.ini";
+		std::string const languageIniPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/language.ini";
+		std::string const versionIniPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/version.ini";
 		std::string const soundsInputPath =HDPath + "resources/_common/sound/";
-		std::string const soundsOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/";
+		std::string const soundsOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Sound/";
 		std::string const tauntInputPath = HDPath + "resources/en/sound/taunt/";
-		std::string const tauntOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Taunt/";
-		std::string const xmlPath = "WK_African_Kingdoms.xml";
-		std::string const xmlOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/age2_x1.xml";
-		std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Player.nfz";
+		std::string const tauntOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Taunt/";
+		std::string const xmlPath = "WK.xml";
+		std::string const xmlOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/age2_x1.xml";
+		std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
 		std::string const langDllFile = "language_x1_p1.dll";
 		std::string langDllPath = langDllFile;
-		std::string const xmlOutPathUP = outPath +  "Games/WK_African_Kingdoms.xml";
+		std::string const xmlOutPathUP = outPath +  "Games/WK.xml";
 		std::string const aiInputPath = "Script.Ai";
-		std::string const drsOutPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/gamedata_x1_p1.drs";
+		std::string const mapInputPath = "Script.Rm";
+		std::string const drsOutPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Data/gamedata_x1_p1.drs";
 		std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
-		std::string const outputDatPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data/empires2_x1_p1.dat";
-		std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/";
-		std::string const uPDIR = outPath + "Games/WK_African_Kingdoms/";
-		std::string const UPModdedExe = "WK_African_Kingdoms";
+		std::string const outputDatPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Data/empires2_x1_p1.dat";
+		std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
+		std::string const uPDIR = outPath + "Games/WK/";
+		std::string const UPModdedExe = "WK";
 		std::string const UPExe = "SetupAoc.exe";
 
 
@@ -586,12 +566,12 @@ int main(int argc, char *argv[])
 			boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
 			boost::filesystem::copy_file(nfzOutPath, outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
 		}
-		boost::filesystem::remove_all(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms");
-		boost::filesystem::remove_all(outPath+"Games/WK_African_Kingdoms");
-		boost::filesystem::remove(outPath+"Games/WK_African_Kingdoms.xml");
-		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Data");
-		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Sound/stream");
-		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms African Kingdoms/Taunt");
+		boost::filesystem::remove_all(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms");
+		boost::filesystem::remove_all(outPath+"Games/WK");
+		boost::filesystem::remove(outPath+"Games/WK.xml");
+		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms/Data");
+		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms/Sound/stream");
+		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms/Taunt");
 		if(boost::filesystem::exists(outPath+"Voobly Mods/AOC/Data Mods/player.nfz")) {
 			boost::filesystem::copy_file(outPath+"Voobly Mods/AOC/Data Mods/player.nfz", nfzOutPath);
 			boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
@@ -615,8 +595,11 @@ int main(int argc, char *argv[])
 		boolean aocFound = outPath != HDPath+"WololoKingdoms/out/";
 		if (aocFound) {
 			recCopy(outPath+"Random", vooblyDir+"Script.Rm");
-			recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
 		}
+		recCopy(mapInputPath, vooblyDir+"Script.Rm");
+		recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
+
+
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		//recCopy(aiInputPath, vooblyDir+"Script.Ai");
 		//recCopy(vooblyDir + "Script.Ai", uPDIR + "Script.Ai");
@@ -655,8 +638,9 @@ int main(int argc, char *argv[])
 			wololo::maliansFreeMiningUpgradeFix,
 			wololo::portugueseFix,
 			wololo::disableNonWorkingUnits,
-			wololo::ai900UnitIdFix,
-			wololo::feitoriaFix
+			wololo::feitoriaFix,
+			wololo::burmeseFix,
+			wololo::ai900UnitIdFix
 		};
 
 
