@@ -1,0 +1,340 @@
+/* ********* GOLD RUSH ********** */
+/* 21 DEC 99 */
+
+#include_drs random_map.def 54000
+#const BURMESE_REVEALER  		1378
+#const RELIC_TERRAIN  		27
+
+/* ****************************************************** */
+<PLAYER_SETUP>
+  random_placement  /* note this is only currently valid entry */
+
+/* ****************************************************** */
+<LAND_GENERATION>
+base_terrain GRASS
+
+/*  CREATE BADLANDS IN THE MIDDLE */
+
+/* EMPTY LAND */
+create_land 
+{
+  terrain_type                     DIRT
+  land_percent                     85 
+  left_border                      15
+  right_border                     15
+  top_border                       15
+  bottom_border                    15
+  zone 16
+  min_placement_distance           100
+}
+
+/* GOOD STUFF */
+
+create_land 
+{
+  terrain_type                     DIRT
+  land_percent                     5
+  left_border                      40
+  right_border                     40
+  top_border                       40
+  bottom_border                    40 
+  zone 15
+  land_id                          22
+ }
+
+create_player_lands 
+{            
+  terrain_type                     GRASS
+  land_percent                     50
+  base_size                        9
+  other_zone_avoidance_distance    7
+  set_zone_by_team
+}
+
+/* ****************************************************** */
+<TERRAIN_GENERATION>
+
+create_terrain FOREST
+{
+  base_terrain                   GRASS
+  spacing_to_other_terrain_types 5
+  land_percent                   12
+  number_of_clumps               10
+  set_avoid_player_start_areas     
+  set_scale_by_groups
+}
+
+create_terrain FOREST
+{
+  base_terrain                   GRASS
+  spacing_to_other_terrain_types 5
+  land_percent                   5
+  number_of_clumps               20
+  set_avoid_player_start_areas     
+  set_scale_by_groups
+}
+
+/* LAKEAGE */
+
+create_terrain WATER
+{
+  base_terrain                   GRASS
+  land_percent                 1
+  number_of_clumps             4
+  spacing_to_other_terrain_types 1
+  set_avoid_player_start_areas
+  set_flat_terrain_only
+}
+
+create_terrain MED_WATER
+{
+  base_terrain                   WATER
+  land_percent                   1
+  number_of_clumps               4
+  spacing_to_other_terrain_types 1
+  set_avoid_player_start_areas
+  set_flat_terrain_only
+}
+
+create_terrain DESERT
+{
+  base_terrain                   DIRT
+  number_of_clumps               24
+  spacing_to_other_terrain_types 1
+  land_percent                   8
+  set_scale_by_size
+}
+
+create_terrain GRASS3
+{
+  base_terrain                   GRASS
+  number_of_clumps               24
+  spacing_to_other_terrain_types 1
+  land_percent                   2
+  set_scale_by_size
+}
+
+create_terrain RELIC_TERRAIN
+{
+	number_of_tiles 1
+	set_avoid_player_start_areas
+	number_of_clumps 5
+ 	base_terrain        		GRASS3
+}
+
+/* ****************************************************** */
+<OBJECTS_GENERATION>
+
+/* PLAYER START OBJECTS */
+
+#include_drs std_resources.inc 54101
+
+create_object TOWN_CENTER
+{
+  set_place_for_every_player
+  group_placement_radius     18
+  min_distance_to_players    0
+  max_distance_to_players    0
+}
+
+create_object VILLAGER
+{
+  set_place_for_every_player
+  min_distance_to_players       6
+  max_distance_to_players       6
+ }
+
+create_object SCOUT
+{
+  number_of_objects             1
+  set_place_for_every_player
+  min_distance_to_players       7
+  max_distance_to_players       9
+ }
+
+create_object RELIC 
+{
+	number_of_objects 5
+	terrain_to_place_on RELIC_TERRAIN
+	set_gaia_object_only 
+}
+
+create_object BURMESE_REVEALER
+{
+	number_of_objects 10
+	terrain_to_place_on RELIC_TERRAIN 
+	set_place_for_every_player
+}
+
+create_object DEER
+{
+   number_of_objects 6
+   set_loose_grouping
+   set_gaia_object_only
+   set_place_for_every_player
+   min_distance_to_players    19
+}
+
+/* RESOURCES IN THE MIDDLE */
+
+create_object GOLD
+{
+  terrain_to_place_on        DIRT
+  number_of_objects          12
+  number_of_groups           6
+  group_variance             4  
+  group_placement_radius     2
+  set_tight_grouping
+  set_gaia_object_only
+  min_distance_group_placement  5
+  place_on_specific_land_id    22 
+  max_distance_to_players      14 
+}
+
+create_object WOLF
+{
+  terrain_to_place_on       DIRT
+  number_of_objects          4
+  number_of_groups           4
+  set_loose_grouping
+  set_gaia_object_only
+  min_distance_to_players    25
+}
+
+/* SCATTERED STONE */
+
+create_object STONE
+{
+  number_of_groups           1    
+  number_of_objects          6
+  group_placement_radius     2
+  set_tight_grouping
+  set_gaia_object_only
+  set_scaling_to_player_number
+  min_distance_to_players       20
+  max_distance_to_players       45 
+  min_distance_group_placement  9
+}
+
+if LARGE_MAP
+create_object STONE
+{
+  number_of_groups           1    
+  number_of_objects          6
+  group_placement_radius     2
+  set_tight_grouping
+  set_gaia_object_only
+  min_distance_to_players       40
+  max_distance_to_players       120
+  min_distance_group_placement  9
+}
+endif
+
+if HUGE_MAP
+create_object STONE
+{
+  number_of_groups           2    
+  number_of_objects          6
+  group_placement_radius     2
+  set_tight_grouping
+  set_gaia_object_only
+  min_distance_to_players       40
+  max_distance_to_players       120
+  min_distance_group_placement  9
+}
+endif
+
+if GIGANTIC_MAP
+create_object STONE
+{
+  number_of_groups           3    
+  number_of_objects          4
+  group_placement_radius     2
+  set_tight_grouping
+  set_gaia_object_only
+  min_distance_to_players       40
+  max_distance_to_players       120
+  min_distance_group_placement  9
+}
+endif
+
+/* ***** PRETTY TREES ********* */
+
+create_object OAKTREE
+{
+  number_of_objects          30
+  set_gaia_object_only
+  set_scaling_to_map_size
+  min_distance_to_players    8
+}
+
+create_object SHORE_FISH
+{
+  number_of_objects                   5
+  set_scaling_to_map_size
+  min_distance_group_placement         3
+  set_gaia_object_only
+}
+
+create_object SKELETON
+{
+   number_of_objects  14
+   set_scaling_to_map_size
+   set_gaia_object_only
+   terrain_to_place_on     DIRT
+}
+
+/* ****************************************************** */
+
+<ELEVATION_GENERATION>
+
+create_elevation        5
+{
+  base_terrain                GRASS
+  number_of_clumps 		14
+  number_of_tiles 		2000
+  set_scale_by_groups
+  set_scale_by_size           
+}
+
+create_elevation        7
+{
+  base_terrain                DIRT
+  number_of_clumps 		14
+  number_of_tiles 		2000
+  set_scale_by_groups
+  set_scale_by_size           
+}
+
+<CLIFF_GENERATION>
+
+min_number_of_cliffs 5
+max_number_of_cliffs 10
+min_length_of_cliff  4
+max_length_of_cliff  10
+cliff_curliness      10
+min_distance_cliffs  3     
+
+
+/* ****************************************************** */
+/* <CONNECTION_GENERATION>
+create_connect_teams_lands
+{
+  replace_terrain GRASS         DESERT
+  replace_terrain WATER         SHALLOW
+  replace_terrain FOREST        DIRT2
+  replace_terrain PALM_DESERT   DIRT2
+  terrain_cost    WATER         7
+  terrain_cost    FOREST        7
+  terrain_cost    PALM_DESERT   7
+  terrain_cost    SHALLOW       3
+  terrain_cost    DESERT        1
+  terrain_cost    GRASS         2
+  terrain_cost    BEACH         7
+  terrain_size    WATER         2       1
+  terrain_size    GRASS         0       0
+  terrain_size    FOREST        0       0
+  terrain_size    PALM_DESERT   0       0
+  terrain_size    DESERT        0       0
+} */
+

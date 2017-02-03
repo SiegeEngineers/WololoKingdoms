@@ -1,0 +1,33 @@
+/* ********* BLIND RANDOM ********** */
+/* 25 spr 01 */
+
+
+/* Note: random_map.def is automatically included in every rms script */
+
+
+start_random
+  percent_chance 12
+    #include_drs WK_Arabia.rms 54201
+
+  percent_chance 13
+    #include_drs WK_Arena.rms 54202
+
+  percent_chance 12
+    #include_drs WK_Black_Forest.rms 54203
+
+  percent_chance 13
+    #include_drs WK_Gold_Rush.rms 54209
+
+  percent_chance 12
+    #include_drs WK_Green_Arabia.rms 54210
+
+  percent_chance 13
+    #include_drs WK_Islands.rms 54211
+
+  percent_chance 12
+    #include_drs WK_Nomad.rms 54212
+
+  percent_chance 13
+    #include_drs WK_Team_Islands.rms 54213
+
+end_random
