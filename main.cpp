@@ -562,6 +562,11 @@ int main(int argc, char *argv[])
 
 
 		std::cout << "WololoKingdoms ver. " << version << std::endl;
+		if(!boost::filesystem::exists(HDPath+"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
+			std::cout << "You don't have all Expansions installed! You need to own all HD DLCs for this mod to work!" << std::endl;
+			ret = 1;
+			return ret;
+		}
 		if(boost::filesystem::exists(nfzOutPath)) { //Avoid deleting Player.nfz
 			boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
 			boost::filesystem::copy_file(nfzOutPath, outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
