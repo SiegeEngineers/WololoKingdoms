@@ -195,6 +195,14 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 				} else continue; //Skip other Ai names
 			}
 			if (nb >= 120150 && nb <= 120180) { // descriptions of the civs in the expansion
+				//These civ descriptions can be too long for the tech tree, we'll take out some newlines
+				if (nb == 120156 || nb == 120155) {
+					boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
+				}
+				if (nb == 120167) {
+					boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
+					boost::replace_all(line, "\\n\\n<b>Unique Tech", "\\n<b>Unique Tech");
+				}
 				// replace the old descriptions of the civs in the base game
 				nb -= 100000;
 				number = std::to_string(nb);
@@ -222,8 +230,6 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 			line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
 		}
 
-		//boost::replace_all(line, "·", "\xb7"); // Workaround for UCS-2 to UTF-8 conversion, not needed anymore?
-
 		//convert UTF-8 into ANSI
 
 		std::wstring wideLine = strtowstr(line);
@@ -233,12 +239,13 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		*iniOut << number << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
+			boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
 			boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
 				dllOut->setString(nb, line);
 			}
 			catch (std::string const & e) {
-				boost::replace_all(line, "·", "-"); // non-english dll files don't seem to like that character
+				boost::replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
 				dllOut->setString(nb, line);
 			}
 		}
@@ -525,9 +532,6 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 
 int main(int argc, char *argv[])
 {
-	//(de)activate some stuff for debugging (bit ugly)
-	bool debug = false;
-
 	int ret = 0;
 
 	try {
@@ -581,6 +585,7 @@ int main(int argc, char *argv[])
 			boost::filesystem::copy_file(outPath+"Voobly Mods/AOC/Data Mods/player.nfz", nfzOutPath);
 			boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
 		}
+		boost::filesystem::create_directories(uPDIR + "Data");
 
 		std::cout << "Preparing resource files..." << std::endl;
 		std::ofstream versionOut(versionIniPath);
@@ -591,9 +596,7 @@ int main(int argc, char *argv[])
 		recCopy(tauntInputPath, tauntOutputPath);
 		recCopy(vooblyDir + "Taunt", uPDIR + "Taunt");
 
-		//HOTKEYS disabled for debug
-		if(!debug)
-			hotkeySetup(HDPath, outPath);
+		hotkeySetup(HDPath, outPath);
 
 		boost::filesystem::copy_file(xmlPath, xmlOutPath);
 		boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
@@ -705,12 +708,10 @@ int main(int argc, char *argv[])
 			langDllPath = outPath + langDllPath;
 			patchLangDll = boost::filesystem::exists(langDllPath);
 		}
-		if(debug)
-			patchLangDll = false;
 		if (patchLangDll) {
 			/*
-			 * Apparently langDll.save() doesn't work if admin permissions are required, even if they are give
-			 * We'll copy the file into the WK folder, patch it there and copy it back instead.
+			 * Apparently langDll.save() doesn't work if admin permissions are required, even if they are given
+			 * Just to be sure, we'll copy the file into the WK folder, patch it there and then copy it into the appropriate folder
 			 */
 			if(!boost::filesystem::exists(langDllFile))
 				boost::filesystem::copy_file(langDllPath,langDllFile);
@@ -723,9 +724,9 @@ int main(int argc, char *argv[])
 		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
 		if (patchLangDll) {
 			langDll.save();
-			boost::filesystem::copy_file(langDllFile,uPDIR+langDllFile);
+			boost::filesystem::copy_file(langDllFile,uPDIR+"data/"+langDllFile);
 			boost::filesystem::remove(langDllFile);
-			std::cout << langDllPath << " patched." << std::endl;
+			std::cout << langDllFile << " patched." << std::endl;
 		}
 
 
@@ -747,7 +748,7 @@ int main(int argc, char *argv[])
 				std::cout << "NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2')." << std::endl;
 				std::cout << "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored." << std::endl << std::endl;
 			}
-			if (patchLangDll && !debug) {
+			if (patchLangDll) {
 				std::cout << "Do you want to create an additional installation with Userpatch that can be used without Voobly?" << std::endl;
 				std::cout << "(This will launch in an extra window, simply close it after the installation is done.)" << std::endl;
 				std::cout << "Type y or n (Yes/No) to continue." << std::endl;
@@ -757,14 +758,14 @@ int main(int argc, char *argv[])
 					std::cout << "Type y or n (Yes/No) to continue." << std::endl;
 				}
 				if(tolower(line) == "y") {
-					std::string backupPath = outPath+"old_language_x1_p1_"+std::to_string(boost::filesystem::file_size(langDllPath))+".dll";
-					if(!boost::filesystem::exists(backupPath))
-						boost::filesystem::rename(langDllPath,backupPath);
-					else
-						boost::filesystem::remove(langDllPath);
-					boost::filesystem::copy_file(uPDIR+langDllFile,langDllPath);
-					if(!boost::filesystem::exists(outPath+UPExe))
+					if(boost::filesystem::exists(outPath+UPExe)) {
+						if(boost::filesystem::file_size(UPExe) != boost::filesystem::file_size((outPath+UPExe))) {
+							boost::filesystem::remove(outPath+UPExe);
+							boost::filesystem::copy_file(UPExe, outPath+UPExe);
+						}
+					} else {
 						boost::filesystem::copy_file(UPExe, outPath+UPExe);
+					}
 					system(("\""+outPath+UPExe+"\" -g:"+UPModdedExe).c_str());
 					std::cout << std::endl << UPModdedExe << ".exe installation for playing without Voobly created in the age2_x1 folder." << std::endl << std::endl;
 				}

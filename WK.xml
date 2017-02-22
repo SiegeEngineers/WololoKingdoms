@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<configuration game="aoak">
+<configuration game="wk">
 	<name>Age of Empires II: African Kingdoms</name>
-	<path>WK_African_Kingdoms</path>
+	<path>WK</path>
 	<civilizations langId="10270" descId="20150" aiNameOffset="1140" uiBaseId="51100" uiStride="40" uiOffset="0">
 		<civilization id="0" name="gaia" soundFile="stream\random.mp3" scoutUnit="448" uniqueUnit="0" eliteUniqueUnit="0" uniqueUnitLine="0" uniqueUnitUpgrade="0" uniqueResearch="0" />
 		<civilization id="2" name="briton" soundFile="stream\british.mp3" scoutUnit="448" uniqueUnit="8" eliteUniqueUnit="530" uniqueUnitLine="-277" uniqueUnitUpgrade="360" uniqueResearch="3" />
