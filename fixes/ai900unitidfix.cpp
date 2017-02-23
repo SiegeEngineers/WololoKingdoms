@@ -25,7 +25,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1016, 453}, // Shotel Warrior, DOLPH4
 	{1018, 459}, // Elite Shotel Warrior, FISH5
 	{1079, 732}, // Genitour placeholder, HKHAN_D
-	{1103, 703}, // Fire Galley, HKUSH_D
+	{1103, 529}, // Fire Galley, Fire Ship (Switching it with a random unit seems to mess up the tech tree)
 	{1120, 760}, // Ballista Elephant, BHUSK_D
 	{1122, 891}, // Elite Ballista Ele, SGTWR_D
 	{1123, 836}, // Karambit, HORSW_D
