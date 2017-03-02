@@ -166,34 +166,25 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 				*/
 				continue;
 			}
-			if(nb >= 6080 && nb <= 6152 && (nb%20 <= 2)) {
-				continue; //Need those lines for AI names
-			}
 			if (nb >= 20150 && nb <= 20167) {
 				// skip the old civ descriptions
 				continue;
 			}
-			if (nb >= 106000 && nb <= 106152) { // descriptions of the civs in the expansion
-				// replace the old descriptions of the civs in the base game
-				nb -= 100000;
-				if(nb == 6060) { //Only space for 7 Berber AI names
-					line.replace(8,2,"7");
-					number = std::to_string(nb);
-				} else if (nb >= 6068 && nb <= 6072) { //Skip those above 7 for Berbers
-					continue;
-				} else if (nb < 6080) { //All other AK Ai names are fine
-					number = std::to_string(nb);
-					/* AoR Ai names clash with "create unit x" lines when extended text is switched off
-					 * Those are not suuper important though, so each civ gets 2 Ai names anyway
-					 * Hopefully not more than 2 Ais will have the same aor civ in one game
-					 * */
-				} else if(nb%20 == 0) {
-					line.replace(8,2,"2");
-					number = std::to_string(nb);
-				} else if (nb%20 == 1 || nb%20 == 2) {
-					number = std::to_string(nb);
-				} else continue; //Skip other Ai names
+			/*
+			 * Conquerors AI names start at 5800 (5800 = 4660+1140, so offset 1140 in the xml file)
+			 * However, there's only space for 10 civ AI names. We'll shift AI names to 11500+ instead (offset 6840 or 1140+5700)
+			 */
+
+			if (nb >= 5800 && nb < 6000) {
+				nb += 5700;
+				number = std::to_string(nb);
 			}
+			if (nb >= 106000 && nb < 106160) { //AK&AoR AI names have 10xxxx id, get rid of the 10, then shift
+				nb -= 100000;
+				nb += 5700;
+				number = std::to_string(nb);
+			}
+
 			if (nb >= 120150 && nb <= 120180) { // descriptions of the civs in the expansion
 				//These civ descriptions can be too long for the tech tree, we'll take out some newlines
 				if (nb == 120156 || nb == 120155) {
