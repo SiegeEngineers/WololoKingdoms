@@ -11,6 +11,7 @@
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 #include "paths.h"
+#include "conversions.h"
 #include "wololo/datPatch.h"
 #include "wololo/Drs.h"
 #include "fixes/berbersutfix.h"
@@ -69,86 +70,6 @@ void listAssetFiles(std::string const path, std::vector<std::string> *listOfSlpF
 		}
 	}
 
-}
-
-DWORD ConvertUnicode2CP(const wchar_t *szText, std::string &resultString, UINT codePage = CP_ACP)
-{
-  resultString.clear();
-  if (wcslen(szText) <= 0)
-	return ERROR_SUCCESS;
-  int iRes = WideCharToMultiByte(codePage, 0, szText, -1, NULL, 0, NULL, NULL);
-  if (iRes <= 0)
-	return GetLastError();
-  char *szTemp = new char[iRes];
-
-  iRes = WideCharToMultiByte(codePage, 0, szText, -1, szTemp, iRes, NULL, NULL);
-  if (iRes <= 0)
-  {
-	delete [] szTemp;
-	return GetLastError();
-  }
-
-  resultString = szTemp;
-  delete [] szTemp;
-  return ERROR_SUCCESS;
-}
-
-DWORD ConvertCP2Unicode(const char *szText, std::wstring &resultString, UINT codePage = CP_ACP)
-{
-  resultString.clear();
-  if (strlen(szText) <= 0)
-	return ERROR_SUCCESS;
-  int iRes = MultiByteToWideChar(codePage, 0, szText, -1, NULL, 0);
-  if (iRes <= 0)
-	return GetLastError();
-  wchar_t *szTemp = new wchar_t[iRes];
-
-  iRes = MultiByteToWideChar(codePage, 0, szText, -1, szTemp, iRes);
-  if (iRes <= 0)
-  {
-	delete [] szTemp;
-	return GetLastError();
-  }
-
-  resultString = szTemp;
-  delete [] szTemp;
-  return ERROR_SUCCESS;
-}
-
-std::wstring strtowstr( const std::string& as )
-{
-			// deal with trivial case of empty string
-	if( as.empty() )    return std::wstring();
-
-			// determine required length of new string
-	size_t reqLength = ::MultiByteToWideChar( CP_UTF8, 0, as.c_str(), (int)as.length(), 0, 0 );
-
-			// construct new string of required length
-	std::wstring ret( reqLength, L'\0' );
-
-			// convert old string to new string
-	::MultiByteToWideChar( CP_UTF8, 0, as.c_str(), (int)as.length(), &ret[0], (int)ret.length() );
-
-			// return new string ( compiler should optimize this away )
-	return ret;
-}
-
-std::string wstrtostr( const std::wstring& as )
-{
-			// deal with trivial case of empty string
-	if( as.empty() )    return std::string();
-
-			// determine required length of new string
-	size_t reqLength = ::WideCharToMultiByte( CP_UTF8, 0, as.c_str(), (int)as.length(), 0, 0, 0, 0 );
-
-			// construct new string of required length
-	std::string ret( reqLength, L'\0' );
-
-			// convert old string to new string
-	::WideCharToMultiByte( CP_UTF8, 0, as.c_str(), (int)as.length(), &ret[0], (int)ret.length(), 0, 0 );
-
-			// return new string ( compiler should optimize this away )
-	return ret;
 }
 
 void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
@@ -366,8 +287,14 @@ void uglyHudHack(std::string const inputDir) {
 	 * We have more than 30 civs, so we need to space the interface files further apart
 	 * This adds +10 for each gap between different file types
 	 */
-	int const HudFiles[] = {51131, 51161};
+	int const HudFiles[] = {51131, 51161, 51191};
 	for (size_t baseIndex = sizeof HudFiles / sizeof (int); baseIndex >= 1; baseIndex--) {
+		for (int i = 1; i < 8; i++) {
+				std::string src = inputDir + std::to_string(HudFiles[baseIndex-1]-i) + ".slp";
+				boost::filesystem::remove(src);
+		}
+		if (baseIndex == 3)
+			continue;
 		for (int i = 22; i >= 0; i--) {
 			std::string dst = inputDir + std::to_string(HudFiles[baseIndex-1]+i+baseIndex*10) + ".slp";
 			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
@@ -509,11 +436,12 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 				std::cout << "Type y or n (Yes/No) to continue." << std::endl;
 				while(std::getline(std::cin, line))
 				{
-					std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-					if(tolower(line) == "y") {
-						boost::filesystem::remove(hki2OutPath);
-						boost::filesystem::copy(hkiPath, hki2OutPath);
-					}
+					std::cout << "Type y or n (Yes/No) to continue." << std::endl;					
+					if(tolower(line) == "y" || tolower(line) == "n") break;
+				}
+				if(tolower(line) == "y") {
+					boost::filesystem::remove(hki2OutPath);
+					boost::filesystem::copy(hkiPath, hki2OutPath);
 				}
 			}
 		}
@@ -529,28 +457,29 @@ int main(int argc, char *argv[])
 
 		std::string HDPath = getHDPath();
 		std::string outPath = getOutPath(HDPath);
+		std::string vooblyDataModPath = outPath + "Voobly Mods/AOC/Data Mods/";
+		std::string vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
 		std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
 		std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
 		std::string const keyValuesStringsPath = HDPath + "resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
 		std::string const modLangPath = "language.ini";
-		std::string const languageIniPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/language.ini";
-		std::string const versionIniPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/version.ini";
+		std::string const languageIniPath = vooblyDir + "language.ini";
+		std::string const versionIniPath = vooblyDir +  "version.ini";
 		std::string const soundsInputPath =HDPath + "resources/_common/sound/";
-		std::string const soundsOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Sound/";
+		std::string const soundsOutputPath = vooblyDir + "Sound/";
 		std::string const tauntInputPath = HDPath + "resources/en/sound/taunt/";
-		std::string const tauntOutputPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Taunt/";
+		std::string const tauntOutputPath = vooblyDir + "Taunt/";
 		std::string const xmlPath = "WK.xml";
-		std::string const xmlOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/age2_x1.xml";
-		std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
+		std::string const xmlOutPath = vooblyDir +  "age2_x1.xml";
+		std::string const nfzOutPath = vooblyDir +  "Player.nfz";
 		std::string const langDllFile = "language_x1_p1.dll";
 		std::string langDllPath = langDllFile;
 		std::string const xmlOutPathUP = outPath +  "Games/WK.xml";
 		std::string const aiInputPath = "Script.Ai";
 		std::string const mapInputPath = "Script.Rm";
-		std::string const drsOutPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Data/gamedata_x1_p1.drs";
+		std::string const drsOutPath = vooblyDir + "Data/gamedata_x1_p1.drs";
 		std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
-		std::string const outputDatPath = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/Data/empires2_x1_p1.dat";
-		std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
+		std::string const outputDatPath = vooblyDir + "Data/empires2_x1_p1.dat";
 		std::string const uPDIR = outPath + "Games/WK/";
 		std::string const UPModdedExe = "WK";
 		std::string const UPExe = "SetupAoc.exe";
@@ -559,22 +488,21 @@ int main(int argc, char *argv[])
 		std::cout << "WololoKingdoms ver. " << version << std::endl;
 		if(!boost::filesystem::exists(HDPath+"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
 			std::cout << "You don't have all Expansions installed! You need to own all HD DLCs for this mod to work!" << std::endl;
-			ret = 1;
-			return ret;
+			return 1;
 		}
-		if(boost::filesystem::exists(nfzOutPath)) { //Avoid deleting Player.nfz
-			boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
-			boost::filesystem::copy_file(nfzOutPath, outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
+		if(boost::filesystem::exists(nfzOutPath)) { //Avoid deleting hotkey files
+			boost::filesystem::remove(vooblyDataModPath+"player.nfz");
+			boost::filesystem::copy_file(nfzOutPath, vooblyDataModPath+"player.nfz");
 		}
-		boost::filesystem::remove_all(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms");
+		boost::filesystem::remove_all(vooblyDir);
 		boost::filesystem::remove_all(outPath+"Games/WK");
 		boost::filesystem::remove(outPath+"Games/WK.xml");
-		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms/Data");
-		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms/Sound/stream");
-		boost::filesystem::create_directories(outPath+"Voobly Mods/AOC/Data Mods/WololoKingdoms/Taunt");
-		if(boost::filesystem::exists(outPath+"Voobly Mods/AOC/Data Mods/player.nfz")) {
-			boost::filesystem::copy_file(outPath+"Voobly Mods/AOC/Data Mods/player.nfz", nfzOutPath);
-			boost::filesystem::remove(outPath+"Voobly Mods/AOC/Data Mods/player.nfz");
+		boost::filesystem::create_directories(vooblyDir+"Data");
+		boost::filesystem::create_directories(vooblyDir+"Sound/stream");
+		boost::filesystem::create_directories(vooblyDir+"Taunt");
+		if(boost::filesystem::exists(vooblyDataModPath+"player.nfz")) {
+			boost::filesystem::copy_file(vooblyDataModPath+"player.nfz", nfzOutPath);
+			boost::filesystem::remove(vooblyDataModPath+"player.nfz");
 		}
 		boost::filesystem::create_directories(uPDIR + "Data");
 
@@ -588,6 +516,10 @@ int main(int argc, char *argv[])
 		recCopy(vooblyDir + "Taunt", uPDIR + "Taunt");
 
 		hotkeySetup(HDPath, outPath);
+
+		if(boost::filesystem::exists(vooblyDir+"player.nfz")) {
+			recCopy(vooblyDir + "player.nfz", uPDIR + "player.nfz");
+		}
 
 		boost::filesystem::copy_file(xmlPath, xmlOutPath);
 		boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
@@ -619,9 +551,22 @@ int main(int argc, char *argv[])
 		std::ofstream drsOut(drsOutPath, std::ios::binary);
 
 		std::cout << "Generating gamedata_x1_p1.drs..." << std::endl;
-		uglyHudHack(assetsPath);
-		makeDrs(assetsPath, &drsOut);
-		cleanTheUglyHudHack(assetsPath);
+		try {
+			uglyHudHack(assetsPath);
+			makeDrs(assetsPath, &drsOut);
+			cleanTheUglyHudHack(assetsPath);
+		} catch(const boost::filesystem::filesystem_error& e) {
+			int const HudFiles[] = {51131, 51161, 51191};
+			for (size_t baseIndex = 0; baseIndex < sizeof HudFiles / sizeof (int); baseIndex++) {
+				for (int i = 1; i < 8; i++) {
+					std::string src = assetsPath + std::to_string(HudFiles[baseIndex]-i) + ".slp";
+					boost::filesystem::remove(src);
+				}
+			}
+			std::cout << "The following error occured while converting: " << e.code().message() << std::endl;
+			std::cout << "Please verify your HD game files and try running the converter again" << std::endl;
+			return 1;
+		}
 
 
 		std::cout << "Generating empires2_x1_p1.dat..." << std::endl;
@@ -700,30 +645,62 @@ int main(int argc, char *argv[])
 		std::ifstream langIn(keyValuesStringsPath);
 		std::ofstream langOut(languageIniPath);
 		genie::LangFile langDll;
-		bool patchLangDll = boost::filesystem::exists(langDllPath);
-		if(!patchLangDll && aocFound) {
+		bool patchLangDll;
+		if(!aocFound)
+			patchLangDll = boost::filesystem::exists(langDllPath);
+		else {
 			langDllPath = outPath + langDllPath;
 			patchLangDll = boost::filesystem::exists(langDllPath);
+			if(patchLangDll)
+			{
+				if(boost::filesystem::exists(langDllFile))
+					boost::filesystem::remove(langDllFile);
+				boost::filesystem::copy_file(langDllPath,langDllFile);
+			}
 		}
 		if (patchLangDll) {
-			/*
-			 * Apparently langDll.save() doesn't work if admin permissions are required, even if they are given
-			 * Just to be sure, we'll copy the file into the WK folder, patch it there and then copy it into the appropriate folder
-			 */
-			if(!boost::filesystem::exists(langDllFile))
+			try {
+				langDll.load((langDllFile).c_str());
+				langDll.setGameVersion(genie::GameVersion::GV_TC);
+			} catch (const std::ifstream::failure& e) {
+				//Try deleting and re-copying
+				boost::filesystem::remove(langDllFile);
 				boost::filesystem::copy_file(langDllPath,langDllFile);
-			langDll.load((langDllFile).c_str());
-			langDll.setGameVersion(genie::GameVersion::GV_TC);
+				try {
+					langDll.load((langDllFile).c_str());
+					langDll.setGameVersion(genie::GameVersion::GV_TC);
+				} catch (const std::ifstream::failure& e) {
+					boost::filesystem::remove(langDllFile);
+					std::cout << std::endl << "!!Couldn't read the language dll file, it might be corrupt." << std::endl;
+					std::cout << "You can still play this via Voobly, but for offline play the converter needs a valid language_x1_p1.dll file to write to." << std::endl;
+					patchLangDll = false;
+				}
+			}
 		}
 		else {
 			std::cout << langDllPath << " not found, skipping dll patching for UserPatch." << std::endl;
 		}
 		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
 		if (patchLangDll) {
-			langDll.save();
-			boost::filesystem::copy_file(langDllFile,uPDIR+"data/"+langDllFile);
-			boost::filesystem::remove(langDllFile);
-			std::cout << langDllFile << " patched." << std::endl;
+			try {
+				langDll.save();
+				boost::filesystem::copy_file(langDllFile,uPDIR+"data/"+langDllFile);
+				boost::filesystem::remove(langDllFile);
+				std::cout << langDllFile << " patched." << std::endl;
+			} catch (const std::ofstream::failure& e) {
+				std::cout << "Error, trying again" << std::endl;
+				try {
+					langDll.save();
+					boost::filesystem::copy_file(langDllFile,uPDIR+"data/"+langDllFile);
+					boost::filesystem::remove(langDllFile);
+					std::cout << langDllFile << " patched." << std::endl;
+				} catch (const std::ofstream::failure& e) {
+					std::cout << std::endl << "!!Couldn't write to the language_x1_p1.dll file!!" << std::endl;
+					std::cout << "Try running the converter again, if it still doesn't work, your language_x1_p1.dll file may be corrupt" << std::endl;
+					std::cout << "You can still play this via Voobly, but for offline play the converter needs a valid language_x1_p1.dll file to write to." << std::endl;
+					patchLangDll = false;
+				}
+			}
 		}
 
 
