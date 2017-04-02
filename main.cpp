@@ -26,6 +26,7 @@
 #include "fixes/disablenonworkingunits.h"
 #include "fixes/feitoriafix.h"
 #include "fixes/burmesefix.h"
+#include "fixes/incafix.h"
 
 std::string const version = "2.1";
 
@@ -573,6 +574,7 @@ int main(int argc, char *argv[])
 		transferHdDatElements(&hdDat, &aocDat);
 
 		wololo::DatPatch patchTab[] = {
+
 			wololo::berbersUTFix,
 			wololo::vietFix,
 			wololo::malayFix,
@@ -584,6 +586,7 @@ int main(int argc, char *argv[])
 			wololo::disableNonWorkingUnits,
 			wololo::feitoriaFix,
 			wololo::burmeseFix,
+			wololo::incaFix,
 			wololo::ai900UnitIdFix
 		};
 
