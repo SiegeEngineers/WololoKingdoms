@@ -661,6 +661,7 @@ int main(int argc, char *argv[])
 				boost::filesystem::copy_file(langDllPath,langDllFile);
 			}
 		}
+		bool dllPatched = true;
 		if (patchLangDll) {
 			try {
 				langDll.load((langDllFile).c_str());
@@ -674,8 +675,7 @@ int main(int argc, char *argv[])
 					langDll.setGameVersion(genie::GameVersion::GV_TC);
 				} catch (const std::ifstream::failure& e) {
 					boost::filesystem::remove(langDllFile);
-					std::cout << std::endl << "!!Couldn't read the language dll file, it might be corrupt." << std::endl;
-					std::cout << "You can still play this via Voobly, but for offline play the converter needs a valid language_x1_p1.dll file to write to." << std::endl;
+					dllPatched = false;
 					patchLangDll = false;
 				}
 			}
@@ -698,9 +698,7 @@ int main(int argc, char *argv[])
 					boost::filesystem::remove(langDllFile);
 					std::cout << langDllFile << " patched." << std::endl;
 				} catch (const std::ofstream::failure& e) {
-					std::cout << std::endl << "!!Couldn't write to the language_x1_p1.dll file!!" << std::endl;
-					std::cout << "Try running the converter again, if it still doesn't work, your language_x1_p1.dll file may be corrupt" << std::endl;
-					std::cout << "You can still play this via Voobly, but for offline play the converter needs a valid language_x1_p1.dll file to write to." << std::endl;
+					dllPatched = false;
 					patchLangDll = false;
 				}
 			}
@@ -725,16 +723,20 @@ int main(int argc, char *argv[])
 				std::cout << "NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2')." << std::endl;
 				std::cout << "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored." << std::endl << std::endl;
 			}
-			if (patchLangDll) {
-				std::cout << "Do you want to create an additional installation with Userpatch that can be used without Voobly?" << std::endl;
-				std::cout << "(This will launch in an extra window, simply close it after the installation is done.)" << std::endl;
+			std::cout << "Do you want to create an additional installation with Userpatch that can be used without Voobly?" << std::endl;
+			std::cout << "(This will launch in an extra window, simply close it after the installation is done.)" << std::endl;
+			std::cout << "Type y or n (Yes/No) to continue." << std::endl;
+			std::string line;
+			while(std::getline(std::cin, line)) {
+				if(tolower(line) == "y" || tolower(line) == "n") break;
 				std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-				std::string line;
-				while(std::getline(std::cin, line)) {
-					if(tolower(line) == "y" || tolower(line) == "n") break;
-					std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-				}
-				if(tolower(line) == "y") {
+			}
+			if(tolower(line) == "y") {
+				if (!dllPatched) {
+					std::cout << std::endl << "!!Couldn't read/write the language_x1_p1.dll file." << std::endl;
+					std::cout << "Try running the converter again, if it still doesn't work, your language_x1_p1.dll file may be corrupt" << std::endl;
+					std::cout << "You can still play this via Voobly, but for offline play the converter needs a valid language_x1_p1.dll file to write to." << std::endl;
+				} else {
 					if(boost::filesystem::exists(outPath+UPExe)) {
 						if(boost::filesystem::file_size(UPExe) != boost::filesystem::file_size((outPath+UPExe))) {
 							boost::filesystem::remove(outPath+UPExe);
