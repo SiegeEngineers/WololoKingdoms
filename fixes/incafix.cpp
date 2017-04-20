@@ -15,7 +15,6 @@ void incaPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplaceme
 
 	if(aocDat->Researchs.size() < llamaResearchID+1)
 		aocDat->Researchs.resize(llamaResearchID+1);
-	// copy Kasbah research to the all-civ one
 	aocDat->Researchs[llamaResearchID].TechageID = llamaTechID;
 	aocDat->Researchs[llamaResearchID].Civ = 21;
 	aocDat->Researchs[llamaResearchID].Name = "Llama bonus";

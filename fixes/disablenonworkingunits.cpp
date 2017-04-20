@@ -9,11 +9,9 @@ void disableNonWorkingUnitsPatch(genie::DatFile *aocDat, std::map<int, std::stri
 	 */
 
 	size_t const siegeTowerUnitId = 1105;
-	size_t const feitoriaUnitId = 1021;
 
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		aocDat->Civs[civIndex].Units[siegeTowerUnitId].Creatable.TrainLocationID = 0;
-        //aocDat->Civs[civIndex].Units[feitoriaUnitId].Creatable.TrainLocationID = 0;
 		aocDat->Civs[civIndex].Units[1221].HideInEditor = 1;
 		for (size_t unitIndex = 1224; unitIndex <= 1374; unitIndex++) {
 			aocDat->Civs[civIndex].Units[unitIndex].HideInEditor = 1;
@@ -27,7 +25,7 @@ void disableNonWorkingUnitsPatch(genie::DatFile *aocDat, std::map<int, std::stri
 
 DatPatch disableNonWorkingUnits = {
 	&disableNonWorkingUnitsPatch,
-	"Disable Siege Tower and Feitoria"
+	"Disable Siege Tower"
 };
 
 }

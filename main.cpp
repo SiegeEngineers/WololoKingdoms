@@ -152,14 +152,14 @@ void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFi
 		*iniOut << number << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
-			boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
-			boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+			boost::replace_all(outputLine, "·", "\xb7"); // Dll can't handle that character.
+			boost::replace_all(outputLine, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
-				dllOut->setString(nb, line);
+				dllOut->setString(nb, outputLine);
 			}
 			catch (std::string const & e) {
-				boost::replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
-				dllOut->setString(nb, line);
+				boost::replace_all(outputLine, "\xb7", "-"); // non-english dll files don't seem to like that character
+				dllOut->setString(nb, outputLine);
 			}
 		}
 
@@ -718,6 +718,8 @@ int main(int argc, char *argv[])
 		if (aocFound) {
 			std::cout << "Conversion complete! The WololoKingdoms mod is now part of your AoC installation." << std::endl << std::endl;
 			if(boost::filesystem::exists(HDPath+"/compatslp")) {
+				if(boost::filesystem::exists(HDPath+"/compatslp2"))
+					boost::filesystem::remove_all(HDPath+"/compatslp2");
 				recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
 				boost::filesystem::remove_all(HDPath+"/compatslp");
 				std::cout << "NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2')." << std::endl;
