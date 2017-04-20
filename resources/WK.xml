@@ -34,6 +34,6 @@
 		<civilization id="28" name="khmer" soundFile="stream\khmer.mp3" scoutUnit="448" uniqueUnit="760" eliteUniqueUnit="891" uniqueUnitLine="760" uniqueUnitUpgrade="615" uniqueResearch="623" />
 		<civilization id="29" name="malay" soundFile="stream\malay.mp3" scoutUnit="448" uniqueUnit="836" eliteUniqueUnit="830" uniqueUnitLine="836" uniqueUnitUpgrade="617" uniqueResearch="625" />
 		<civilization id="30" name="burmese" soundFile="stream\burmese.mp3" scoutUnit="448" uniqueUnit="823" eliteUniqueUnit="811" uniqueUnitLine="823" uniqueUnitUpgrade="619" uniqueResearch="627" />
-		<civilization id="31" name="vietnamese" soundFile="stream\vietnamese.mp3" scoutUnit="1387" uniqueUnit="784" eliteUniqueUnit="782" uniqueUnitLine="784" uniqueUnitUpgrade="621" uniqueResearch="629" />
+		<civilization id="31" name="vietnamese" soundFile="stream\vietnamese.mp3" scoutUnit="448" uniqueUnit="784" eliteUniqueUnit="782" uniqueUnitLine="784" uniqueUnitUpgrade="621" uniqueResearch="629" />
 	</civilizations>
 </configuration>
