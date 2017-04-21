@@ -373,17 +373,45 @@ void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
 	aocDat->Researchs = hdDat->Researchs;
 	aocDat->UnitLines = hdDat->UnitLines;
 	aocDat->TechTree = hdDat->TechTree;
+
+	//Copy Forest Terrains
+	aocDat->TerrainBlock.TerrainsUsed2 = 42;
+	aocDat->TerrainsUsed1 = 42;
+	int terrainswaps[] = {15,48,16,49,26,50};
+	for(size_t i = 0; i < 6; i=i+2) {
+		aocDat->TerrainBlock.Terrains[terrainswaps[i]] = hdDat->TerrainBlock.Terrains[terrainswaps[i+1]];
+		aocDat->TerrainBlock.Terrains[terrainswaps[i]].SLP = 15000;
+		aocDat->TerrainBlock.Terrains[terrainswaps[i]].Name2 = "g_des";
+		for(size_t j = 0; j < aocDat->TerrainRestrictions.size(); j++) {
+			aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[terrainswaps[i]] = hdDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[terrainswaps[i+1]];
+			aocDat->TerrainRestrictions[j].TerrainPassGraphics[terrainswaps[i]] = hdDat->TerrainRestrictions[j].TerrainPassGraphics[terrainswaps[i+1]];
+		}
+	}
+	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
+	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
+	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
+	int tNew = 41;
+	int tOld = 56;
+	aocDat->TerrainBlock.Terrains[tNew] = hdDat->TerrainBlock.Terrains[tOld];
+	aocDat->TerrainBlock.Terrains[tNew].TerrainToDraw = 10;
+	for(size_t i = 0; i < aocDat->TerrainRestrictions.size(); i++) {
+		aocDat->TerrainRestrictions[i].PassableBuildableDmgMultiplier.push_back(hdDat->TerrainRestrictions[i].PassableBuildableDmgMultiplier[tOld]);
+		aocDat->TerrainRestrictions[i].TerrainPassGraphics.push_back(hdDat->TerrainRestrictions[i].TerrainPassGraphics[tOld]);
+	}
+
 }
 
 void hotkeySetup(std::string const HDPath, std::string const outPath) {
 
-	std::string const nfz1Path = "Player1.nfz";
+	std::string const nfzPath = "Player1.nfz";
 	std::string const nfz2Path = "Player2.nfz";
 	std::string const aocHkiPath = "player1.hki";
 	std::string const hkiPath = HDPath + "Profiles/player0.hki";
-	std::string const hki1OutPath = outPath +  "player1.hki";
+	std::string const hkiOutPath = outPath +  "player1.hki";
 	std::string const hki2OutPath = outPath +  "player2.hki";
+	std::string const modHkiOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
 	std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
+	std::string const nfz2OutPath = outPath +  "Games/WololoKingdoms/Player.nfz";
 
 	std::cout << std::endl << "Setting up Hotkeys..." << std::endl;
 	std::string line = "n"; //stores the most recent line of input
@@ -418,26 +446,33 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 			std::cout << "Type 1, 2 or 3 to continue." << std::endl;
 		}
 		if(line == "1") {
-			boost::filesystem::copy_file(nfz1Path, nfzOutPath);
-			if(!boost::filesystem::exists(hki1OutPath))
-				boost::filesystem::copy_file(aocHkiPath, hki1OutPath);
+			boost::filesystem::copy_file(nfzPath, nfzOutPath);
+			if(!boost::filesystem::exists(hkiOutPath))
+				boost::filesystem::copy_file(aocHkiPath, hkiOutPath);
 			line = "";
 		} else if(line == "2") {
-			boost::filesystem::copy_file(nfz1Path, nfzOutPath);
-			if(boost::filesystem::exists(hki1OutPath))
-				boost::filesystem::remove(hki1OutPath);
-			boost::filesystem::copy_file(hkiPath, hki1OutPath);
+			boost::filesystem::copy_file(nfzPath, nfzOutPath);
+			if(boost::filesystem::exists(hkiOutPath))
+				boost::filesystem::remove(hkiOutPath);
+			boost::filesystem::copy_file(hkiPath, hkiOutPath);
 		} else if(line == "3") {
-			boost::filesystem::copy_file(nfz2Path, nfzOutPath);
+			boost::filesystem::copy_file(nfzPath, nfzOutPath);
+			if(boost::filesystem::exists(modHkiOutPath))
+				boost::filesystem::remove(modHkiOutPath);
+			boost::filesystem::copy(hkiPath, modHkiOutPath);
+			if(boost::filesystem::exists(nfz2OutPath))
+				boost::filesystem::remove(nfz2OutPath);
+			boost::filesystem::copy(nfz2Path,nfz2OutPath);
+
 			if(!boost::filesystem::exists(hki2OutPath)) {
-				boost::filesystem::copy_file(hkiPath, hki2OutPath);
+				boost::filesystem::copy(hkiPath,hki2OutPath);
 			} else {
 				std::cout << "WARNING! This will overwrite one ofyour current hotkey files (player2.hki)!" << std::endl;
 				std::cout << "Do you want to continue anyway?" << std::endl;
 				std::cout << "Type y or n (Yes/No) to continue." << std::endl;
 				while(std::getline(std::cin, line))
 				{
-					std::cout << "Type y or n (Yes/No) to continue." << std::endl;					
+					std::cout << "Type y or n (Yes/No) to continue." << std::endl;
 					if(tolower(line) == "y" || tolower(line) == "n") break;
 				}
 				if(tolower(line) == "y") {
@@ -445,6 +480,7 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 					boost::filesystem::copy(hkiPath, hki2OutPath);
 				}
 			}
+
 		}
 	}
 	std::cout << "Hotkey setup done." << std::endl;
@@ -481,8 +517,8 @@ int main(int argc, char *argv[])
 		std::string const drsOutPath = vooblyDir + "Data/gamedata_x1_p1.drs";
 		std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
 		std::string const outputDatPath = vooblyDir + "Data/empires2_x1_p1.dat";
-		std::string const uPDIR = outPath + "Games/WK/";
-		std::string const UPModdedExe = "WK";
+		std::string const uPDIR = outPath + "Games/WololoKingdoms/";
+		std::string const UPModdedExe = "WololoKingdoms";
 		std::string const UPExe = "SetupAoc.exe";
 
 
@@ -496,7 +532,7 @@ int main(int argc, char *argv[])
 			boost::filesystem::copy_file(nfzOutPath, vooblyDataModPath+"player.nfz");
 		}
 		boost::filesystem::remove_all(vooblyDir);
-		boost::filesystem::remove_all(outPath+"Games/WK");
+		boost::filesystem::remove_all(outPath+"Games/WololoKingdoms");
 		boost::filesystem::remove(outPath+"Games/WK.xml");
 		boost::filesystem::create_directories(vooblyDir+"Data");
 		boost::filesystem::create_directories(vooblyDir+"Sound/stream");
@@ -518,9 +554,11 @@ int main(int argc, char *argv[])
 
 		hotkeySetup(HDPath, outPath);
 
+		/*
 		if(boost::filesystem::exists(vooblyDir+"player.nfz")) {
 			recCopy(vooblyDir + "player.nfz", uPDIR + "player.nfz");
 		}
+		*/
 
 		boost::filesystem::copy_file(xmlPath, xmlOutPath);
 		boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
