@@ -31,9 +31,9 @@
 		<civilization id="25" name="ethiopian" soundFile="stream\ethiopians.mp3" scoutUnit="448" uniqueUnit="453" eliteUniqueUnit="459" uniqueUnitLine="453" uniqueUnitUpgrade="569" uniqueResearch="575" />
 		<civilization id="26" name="malian" soundFile="stream\malians.mp3" scoutUnit="448" uniqueUnit="260" eliteUniqueUnit="418" uniqueUnitLine="260" uniqueUnitUpgrade="567" uniqueResearch="577" />
 		<civilization id="27" name="berbers" soundFile="stream\berbers.mp3" scoutUnit="448" uniqueUnit="203" eliteUniqueUnit="208" uniqueUnitLine="203" uniqueUnitUpgrade="565" uniqueResearch="579" />
-		<civilization id="28" name="khmer" soundFile="stream\khmer.mp3" scoutUnit="448" uniqueUnit="1120" eliteUniqueUnit="1122" uniqueUnitLine="1120" uniqueUnitUpgrade="615" uniqueResearch="623" />
-		<civilization id="29" name="malay" soundFile="stream\malay.mp3" scoutUnit="448" uniqueUnit="1123" eliteUniqueUnit="1125" uniqueUnitLine="1123" uniqueUnitUpgrade="617" uniqueResearch="625" />
-		<civilization id="30" name="burmese" soundFile="stream\burmese.mp3" scoutUnit="448" uniqueUnit="1126" eliteUniqueUnit="1128" uniqueUnitLine="1126" uniqueUnitUpgrade="619" uniqueResearch="627" />
-		<civilization id="31" name="vietnamese" soundFile="stream\vietnamese.mp3" scoutUnit="1387" uniqueUnit="1129" eliteUniqueUnit="1131" uniqueUnitLine="1129" uniqueUnitUpgrade="621" uniqueResearch="629" />
+		<civilization id="28" name="khmer" soundFile="stream\khmer.mp3" scoutUnit="448" uniqueUnit="760" eliteUniqueUnit="891" uniqueUnitLine="760" uniqueUnitUpgrade="615" uniqueResearch="623" />
+		<civilization id="29" name="malay" soundFile="stream\malay.mp3" scoutUnit="448" uniqueUnit="836" eliteUniqueUnit="830" uniqueUnitLine="836" uniqueUnitUpgrade="617" uniqueResearch="625" />
+		<civilization id="30" name="burmese" soundFile="stream\burmese.mp3" scoutUnit="448" uniqueUnit="823" eliteUniqueUnit="811" uniqueUnitLine="823" uniqueUnitUpgrade="619" uniqueResearch="627" />
+		<civilization id="31" name="vietnamese" soundFile="stream\vietnamese.mp3" scoutUnit="1387" uniqueUnit="784" eliteUniqueUnit="782" uniqueUnitLine="784" uniqueUnitUpgrade="621" uniqueResearch="629" />
 	</civilizations>
 </configuration>
