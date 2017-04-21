@@ -424,6 +424,7 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 		while(std::getline(std::cin, line)) {
 			if(tolower(line) == "n") {
 				boost::filesystem::remove(nfzOutPath);
+				boost::filesystem::remove(nfz2OutPath);
 				std::cout << std::endl;
 				break;
 			}
@@ -447,6 +448,7 @@ void hotkeySetup(std::string const HDPath, std::string const outPath) {
 		}
 		if(line == "1") {
 			boost::filesystem::copy_file(nfzPath, nfzOutPath);
+			boost::filesystem::copy(nfzPath,nfz2OutPath);
 			if(!boost::filesystem::exists(hkiOutPath))
 				boost::filesystem::copy_file(aocHkiPath, hkiOutPath);
 			line = "";
@@ -509,6 +511,7 @@ int main(int argc, char *argv[])
 		std::string const xmlPath = "WK.xml";
 		std::string const xmlOutPath = vooblyDir +  "age2_x1.xml";
 		std::string const nfzOutPath = vooblyDir +  "Player.nfz";
+		std::string const nfz2OutPath = outPath + "Games/WololoKingdoms/Player.nfz";
 		std::string const langDllFile = "language_x1_p1.dll";
 		std::string langDllPath = langDllFile;
 		std::string const xmlOutPathUP = outPath +  "Games/WK.xml";
@@ -517,8 +520,8 @@ int main(int argc, char *argv[])
 		std::string const drsOutPath = vooblyDir + "Data/gamedata_x1_p1.drs";
 		std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
 		std::string const outputDatPath = vooblyDir + "Data/empires2_x1_p1.dat";
-		std::string const uPDIR = outPath + "Games/WololoKingdoms/";
-		std::string const UPModdedExe = "WololoKingdoms";
+		std::string const upDir = outPath + "Games/WololoKingdoms/";
+		std::string const UPModdedExe = "WK";
 		std::string const UPExe = "SetupAoc.exe";
 
 
@@ -531,32 +534,41 @@ int main(int argc, char *argv[])
 			boost::filesystem::remove(vooblyDataModPath+"player.nfz");
 			boost::filesystem::copy_file(nfzOutPath, vooblyDataModPath+"player.nfz");
 		}
+		if(boost::filesystem::exists(nfz2OutPath)) {
+			boost::filesystem::remove(outPath+"Games/player.nfz");
+			boost::filesystem::copy_file(nfz2OutPath, outPath+"Games/player.nfz");
+		}
 		boost::filesystem::remove_all(vooblyDir);
 		boost::filesystem::remove_all(outPath+"Games/WololoKingdoms");
 		boost::filesystem::remove(outPath+"Games/WK.xml");
 		boost::filesystem::create_directories(vooblyDir+"Data");
 		boost::filesystem::create_directories(vooblyDir+"Sound/stream");
 		boost::filesystem::create_directories(vooblyDir+"Taunt");
+		boost::filesystem::create_directories(upDir);
 		if(boost::filesystem::exists(vooblyDataModPath+"player.nfz")) {
 			boost::filesystem::copy_file(vooblyDataModPath+"player.nfz", nfzOutPath);
 			boost::filesystem::remove(vooblyDataModPath+"player.nfz");
 		}
-		boost::filesystem::create_directories(uPDIR + "Data");
+		if(boost::filesystem::exists(outPath+"Games/player.nfz")) {
+			boost::filesystem::copy_file(outPath+"Games/player.nfz", nfz2OutPath);
+			boost::filesystem::remove(outPath+"Games/player.nfz");
+		}
+		boost::filesystem::create_directories(upDir + "Data");
 
 		std::cout << "Preparing resource files..." << std::endl;
 		std::ofstream versionOut(versionIniPath);
 		versionOut << version << std::endl;
 		copyCivIntroSounds(soundsInputPath + "civ/", soundsOutputPath + "stream/");
 		createMusicPlaylist(soundsInputPath + "music/", soundsOutputPath + "music.m3u");
-		recCopy(vooblyDir + "Sound", uPDIR + "Sound");
+		recCopy(vooblyDir + "Sound", upDir + "Sound");
 		recCopy(tauntInputPath, tauntOutputPath);
-		recCopy(vooblyDir + "Taunt", uPDIR + "Taunt");
+		recCopy(vooblyDir + "Taunt", upDir + "Taunt");
 
 		hotkeySetup(HDPath, outPath);
 
 		/*
 		if(boost::filesystem::exists(vooblyDir+"player.nfz")) {
-			recCopy(vooblyDir + "player.nfz", uPDIR + "player.nfz");
+			recCopy(vooblyDir + "player.nfz", upDir + "player.nfz");
 		}
 		*/
 
@@ -567,12 +579,12 @@ int main(int argc, char *argv[])
 			recCopy(outPath+"Random", vooblyDir+"Script.Rm");
 		}
 		recCopy(mapInputPath, vooblyDir+"Script.Rm");
-		recCopy(vooblyDir + "Script.Rm", uPDIR + "Script.Rm");
+		recCopy(vooblyDir + "Script.Rm", upDir + "Script.Rm");
 
 
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		//recCopy(aiInputPath, vooblyDir+"Script.Ai");
-		//recCopy(vooblyDir + "Script.Ai", uPDIR + "Script.Ai");
+		//recCopy(vooblyDir + "Script.Ai", upDir + "Script.Ai");
 
 		std::cout << "Opening the AOC dat file..." << std::endl << std::endl;
 
@@ -725,14 +737,14 @@ int main(int argc, char *argv[])
 		if (patchLangDll) {
 			try {
 				langDll.save();
-				boost::filesystem::copy_file(langDllFile,uPDIR+"data/"+langDllFile);
+				boost::filesystem::copy_file(langDllFile,upDir+"data/"+langDllFile);
 				boost::filesystem::remove(langDllFile);
 				std::cout << langDllFile << " patched." << std::endl;
 			} catch (const std::ofstream::failure& e) {
 				std::cout << "Error, trying again" << std::endl;
 				try {
 					langDll.save();
-					boost::filesystem::copy_file(langDllFile,uPDIR+"data/"+langDllFile);
+					boost::filesystem::copy_file(langDllFile,upDir+"data/"+langDllFile);
 					boost::filesystem::remove(langDllFile);
 					std::cout << langDllFile << " patched." << std::endl;
 				} catch (const std::ofstream::failure& e) {
@@ -749,7 +761,7 @@ int main(int argc, char *argv[])
 
 		std::cout << std::endl << "Copying the files for UserPatch..." << std::endl;
 
-		recCopy(vooblyDir + "Data", uPDIR + "Data");
+		recCopy(vooblyDir + "Data", upDir + "Data");
 
 
 
