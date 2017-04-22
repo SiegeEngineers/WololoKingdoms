@@ -17,7 +17,7 @@ void demoshipPatch(genie::DatFile *aocDat, std::map<int, std::string> *langRepla
 	effect.Type = 0; // set attribute
 	effect.A = demoShipUnitId;
 	effect.C = 40;
-	effect.D = 64;
+	effect.D = 96;
 	aocDat->Techages[darkAgeTechId].Effects.push_back(effect);
 	//effect.A = heavyDemoShipUnitId;
 	//aocDat->Techages[demoRaftTechId].Effects.push_back(effect);
