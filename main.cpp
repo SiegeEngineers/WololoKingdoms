@@ -374,6 +374,7 @@ void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
 	aocDat->UnitLines = hdDat->UnitLines;
 	aocDat->TechTree = hdDat->TechTree;
 
+	/*
 	//Copy Forest Terrains
 	aocDat->TerrainBlock.TerrainsUsed2 = 42;
 	aocDat->TerrainsUsed1 = 42;
@@ -398,6 +399,7 @@ void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
 		aocDat->TerrainRestrictions[i].PassableBuildableDmgMultiplier.push_back(hdDat->TerrainRestrictions[i].PassableBuildableDmgMultiplier[tOld]);
 		aocDat->TerrainRestrictions[i].TerrainPassGraphics.push_back(hdDat->TerrainRestrictions[i].TerrainPassGraphics[tOld]);
 	}
+	*/
 
 }
 
