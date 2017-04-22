@@ -82,11 +82,24 @@ void burmesePatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	aocDat->Civs[0].Units[relic].ID1 = relic;
 	aocDat->Civs[0].Units[relic].ID2 = relic;
 	aocDat->Civs[0].Units[relic].ID3 = relic; */
+
+
+	/*
+	 * Free upgrades have to be part of the tech tree effect in AoC
+	 */
+
+
+	size_t const burmeseRelicTech = 685;
+	size_t const burmeseTechTree = 650;
+
+	for (size_t i = 0; i < aocDat->Techages[burmeseRelicTech].Effects.size(); i++) {
+		aocDat->Techages[burmeseTechTree].Effects.push_back(aocDat->Techages[burmeseRelicTech].Effects[i]);
+	}
 }
 
 DatPatch burmeseFix = {
 	&burmesePatch,
-	"Burmese relic LoS Team bonus alternative"
+	"Burmese relic LoS Team bonus alternative and Lumbercamp upgrade fix"
 };
 
 }
