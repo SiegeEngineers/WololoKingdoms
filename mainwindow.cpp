@@ -78,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	} );
 	QObject::connect( this->ui->runButton, SIGNAL( clicked() ), this, SLOT(run()) );
 
-	std::cout << "WololoKingdoms ver. " << version << std::endl;
+	this->ui->label->setText(("WololoKingdoms ver. " + version).c_str());
 	if(!boost::filesystem::exists(HDPath+"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
 		this->ui->runButton->setDisabled(true);
 		return;
@@ -520,27 +520,21 @@ void MainWindow::hotkeySetup() {
 
 		if(!boost::filesystem::exists(hki2OutPath)) {
 			boost::filesystem::copy(hkiPath,hki2OutPath);
-		} /*else {
-			std::cout << "WARNING! This will overwrite one ofyour current hotkey files (player2.hki)!" << std::endl;
-			std::cout << "Do you want to continue anyway?" << std::endl;
-			std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-			while(std::getline(std::cin, line))
-			{
-				std::cout << "Type y or n (Yes/No) to continue." << std::endl;
-				if(tolower(line) == "y" || tolower(line) == "n") break;
-			}
-			if(tolower(line) == "y") {
-				boost::filesystem::remove(hki2OutPath);
-				boost::filesystem::copy(hkiPath, hki2OutPath);
-			}
-		}*/
-
+		} else {
+			if(boost::filesystem::exists(hki2OutPath+".bak"))
+				boost::filesystem::remove(hki2OutPath+".bak");
+			boost::filesystem::copy(hki2OutPath,hki2OutPath+".bak");
+			boost::filesystem::remove(hki2OutPath);
+			boost::filesystem::copy(hkiPath, hki2OutPath);
+		}
 	}
 }
 
 int MainWindow::run()
 {
+	this->ui->label->setText("Working...");
 	this->setEnabled(false);
+	this->ui->label->repaint();
 	QDialog* dialog;
 	int ret = 0;
 
@@ -598,7 +592,9 @@ int MainWindow::run()
 		}
 		boost::filesystem::create_directories(upDir + "Data");
 
-		std::cout << "Preparing resource files..." << std::endl;
+		this->ui->label->setText("Working...\n"
+								 "Preparing resource files...");
+		this->ui->label->repaint();
 		std::ofstream versionOut(versionIniPath);
 		versionOut << version << std::endl;
 		copyCivIntroSounds(soundsInputPath + "civ/", soundsOutputPath + "stream/");
@@ -629,14 +625,18 @@ int MainWindow::run()
 		//recCopy(aiInputPath, vooblyDir+"Script.Ai");
 		//recCopy(vooblyDir + "Script.Ai", upDir + "Script.Ai");
 
-		std::cout << "Opening the AOC dat file..." << std::endl << std::endl;
+		this->ui->label->setText("Working...\n"
+								 "Opening the AOC dat file...");
+		this->ui->label->repaint();
 
 		genie::DatFile aocDat;
 		aocDat.setVerboseMode(true);
 		aocDat.setGameVersion(genie::GameVersion::GV_TC);
 		aocDat.load(aocDatPath.c_str());
 
-		std::cout << std::endl << "Opening the AOE2HD dat file..." << std::endl << std::endl;
+		this->ui->label->setText("Working...\n"
+								 "Opening the AOE2HD dat file...");
+		this->ui->label->repaint();
 		genie::DatFile hdDat;
 		hdDat.setVerboseMode(true);
 		hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
@@ -644,7 +644,9 @@ int MainWindow::run()
 
 		std::ofstream drsOut(drsOutPath, std::ios::binary);
 
-		std::cout << "Generating gamedata_x1_p1.drs..." << std::endl;
+		this->ui->label->setText("Working...\n"
+								 "Generating gamedata_x1_p1.drs...");
+		this->ui->label->repaint();
 		try {
 			uglyHudHack(assetsPath);
 			makeDrs(assetsPath, &drsOut);
@@ -657,13 +659,15 @@ int MainWindow::run()
 					boost::filesystem::remove(src);
 				}
 			}
-			std::cout << "The following error occured while converting: " << e.code().message() << std::endl;
-			std::cout << "Please verify your HD game files and try running the converter again" << std::endl;
+			dialog = new Dialog(this,"The following error occured while converting: " + e.code().message() + "\n"
+						 "Please verify your HD game files and try running the converter again");
 			return 1;
 		}
 
 
-		std::cout << "Generating empires2_x1_p1.dat..." << std::endl;
+		this->ui->label->setText("Working...\n"
+								 "Generating empires2_x1_p1.dat...");
+		this->ui->label->repaint();
 		transferHdDatElements(&hdDat, &aocDat);
 
 		wololo::DatPatch patchTab[] = {
@@ -698,9 +702,10 @@ int MainWindow::run()
 		langReplacement[26190] = "Create <b> Imperial Skirmisher<b> (<cost>) \\nVietnamese mercenary unit, available when teamed with a Vietnamese player. Stronger than Elite Skirmisher. Attack bonus vs. archers. <i> Upgrades: attack, range, armor (Blacksmith); attack, accuracy (University); accuracy (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
 		langReplacement[26419] = "Create <b> Imperial Camel<b> (<cost>) \nUnique Indian upgrade. Stronger than Heavy Camel. Attack bonus vs. cavalry. <i> Upgrades: attack, armor (Blacksmith); speed, hit points (Stable); creation speed (Castle); more resistant to Monks (Monastery).<i> \n<hp> <attack> <armor> <piercearmor> <range>";
 
-
-		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {
-			std::cout << "Applying DAT patch " << i+1 << " of " << nbPatches << ": " << patchTab[i].name << std::endl;
+		this->ui->label->setText("Working...\n"
+							 "Applying DAT patches...");
+		this->ui->label->repaint();
+		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {			
 			patchTab[i].patch(&aocDat, &langReplacement);
 		}
 
@@ -772,7 +777,11 @@ int MainWindow::run()
 			}
 		}
 		else {
-			std::cout << langDllPath << " not found, skipping dll patching for UserPatch." << std::endl;
+			if(this->ui->createExe->isChecked()) {
+				this->ui->label->setText(("Working...\n"
+									  + langDllPath + " not found, skipping dll patching for UserPatch.").c_str());
+				this->ui->label->repaint();
+			}
 		}
 		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
 		if (patchLangDll) {
@@ -780,14 +789,20 @@ int MainWindow::run()
 				langDll.save();
 				boost::filesystem::copy_file(langDllFile,upDir+"data/"+langDllFile);
 				boost::filesystem::remove(langDllFile);
-				std::cout << langDllFile << " patched." << std::endl;
+				this->ui->label->setText(("Working...\n"
+								  + langDllFile + " patched.").c_str());
+				this->ui->label->repaint();
 			} catch (const std::ofstream::failure& e) {
-				std::cout << "Error, trying again" << std::endl;
+				this->ui->label->setText("Working...\n"
+								 "Error, trying again");
+				this->ui->label->repaint();
 				try {
 					langDll.save();
 					boost::filesystem::copy_file(langDllFile,upDir+"data/"+langDllFile);
 					boost::filesystem::remove(langDllFile);
-					std::cout << langDllFile << " patched." << std::endl;
+					this->ui->label->setText(("Working...\n"
+								  + langDllFile + " patched.").c_str());
+					this->ui->label->repaint();
 				} catch (const std::ofstream::failure& e) {
 					dllPatched = false;
 					patchLangDll = false;
@@ -795,12 +810,11 @@ int MainWindow::run()
 			}
 		}
 
-
-		std::cout << std::endl;
-
 		aocDat.saveAs(outputDatPath.c_str());
 
-		std::cout << std::endl << "Copying the files for UserPatch..." << std::endl;
+		this->ui->label->setText("Working...\n"
+								 "Copying the files for UserPatch...");
+		this->ui->label->repaint();
 
 		recCopy(vooblyDir + "Data", upDir + "Data");
 
@@ -825,23 +839,25 @@ int MainWindow::run()
 					}
 					system(("\""+outPath+UPExe+"\" -g:"+UPModdedExe).c_str());
 					dialog = new Dialog(this,"Conversion complete! The WololoKingdoms mod is now available as a Voobly Mod and "
-											 "as a separate" + UPModdedExe + ".exe in the age2_x1 folder.");
+											 "as a separate " + UPModdedExe + ".exe in the age2_x1 folder.");
 					dialog->exec();
 				}
 			} else {
 				dialog = new Dialog(this,"Conversion complete! The WololoKingdoms mod is now part of your AoC installation.");
 				dialog->exec();
 			}
-
+			this->ui->label->setText("Done!");
 			if(boost::filesystem::exists(HDPath+"/compatslp")) {
 				if(boost::filesystem::exists(HDPath+"/compatslp2"))
 					boost::filesystem::remove_all(HDPath+"/compatslp2");
 				recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
 				boost::filesystem::remove_all(HDPath+"/compatslp");
-				//this->ui->label->setText("NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2').\n"
-				//						 "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored.");
+				this->ui->label->setText("Done! NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2').\n"
+										 "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored.");
+
 			}
 		} else {
+			this->ui->label->setText("Done! Open the \"out/\" folder and put its contents into your AoE2 folder to make it work.");
 			dialog = new Dialog(this,"Conversion complete. Installer did not find your AoE2 installation - \n"
 						"open the \"out/\" folder and put its contents into your AoE2 folder to make it work.");
 		}
@@ -856,6 +872,7 @@ int MainWindow::run()
 	}
 
 	this->setEnabled(true);
+	this->ui->label->repaint();
 	return ret;
 }
 

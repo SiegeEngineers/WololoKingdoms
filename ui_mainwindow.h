@@ -18,6 +18,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
@@ -42,6 +43,7 @@ public:
     QComboBox *hotkeyChoice;
     QPushButton *hotkeyTip;
     QPushButton *runButton;
+    QLabel *label;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -118,6 +120,10 @@ public:
         runButton = new QPushButton(centralWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
         runButton->setGeometry(QRect(160, 230, 75, 23));
+        label = new QLabel(centralWidget);
+        label->setObjectName(QStringLiteral("label"));
+        label->setGeometry(QRect(0, 160, 401, 61));
+        label->setAlignment(Qt::AlignCenter);
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -147,6 +153,7 @@ public:
         );
         hotkeyTip->setText(QString());
         runButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
+        label->setText(QApplication::translate("MainWindow", "TextLabel", Q_NULLPTR));
     } // retranslateUi
 
 };
