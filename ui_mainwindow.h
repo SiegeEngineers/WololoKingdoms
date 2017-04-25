@@ -33,15 +33,20 @@ public:
     QWidget *centralWidget;
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
-    QHBoxLayout *horizontalLayout_3;
-    QCheckBox *replaceTooltips;
-    QPushButton *languageTip;
-    QHBoxLayout *horizontalLayout_2;
-    QCheckBox *createExe;
-    QPushButton *exeTip;
     QHBoxLayout *horizontalLayout_4;
     QComboBox *hotkeyChoice;
     QPushButton *hotkeyTip;
+    QHBoxLayout *horizontalLayout_3;
+    QCheckBox *replaceTooltips;
+    QPushButton *tooltipTip;
+    QHBoxLayout *horizontalLayout_2;
+    QCheckBox *createExe;
+    QPushButton *exeTip;
+    QComboBox *languageChoice;
+    QHBoxLayout *horizontalLayout;
+    QCheckBox *useGrid;
+    QCheckBox *useWalls;
+    QCheckBox *usePw;
     QPushButton *runButton;
     QLabel *label;
     QToolBar *mainToolBar;
@@ -51,53 +56,17 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(400, 300);
+        MainWindow->resize(426, 422);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
         gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
-        gridLayoutWidget->setGeometry(QRect(30, 10, 291, 141));
+        gridLayoutWidget->setGeometry(QRect(30, 10, 316, 231));
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_3 = new QHBoxLayout();
-        horizontalLayout_3->setSpacing(6);
-        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-        replaceTooltips = new QCheckBox(gridLayoutWidget);
-        replaceTooltips->setObjectName(QStringLiteral("replaceTooltips"));
-
-        horizontalLayout_3->addWidget(replaceTooltips);
-
-        languageTip = new QPushButton(gridLayoutWidget);
-        languageTip->setObjectName(QStringLiteral("languageTip"));
-        languageTip->setMaximumSize(QSize(25, 16777215));
-        languageTip->setToolTipDuration(0);
-
-        horizontalLayout_3->addWidget(languageTip);
-
-
-        gridLayout->addLayout(horizontalLayout_3, 5, 0, 1, 1);
-
-        horizontalLayout_2 = new QHBoxLayout();
-        horizontalLayout_2->setSpacing(6);
-        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        createExe = new QCheckBox(gridLayoutWidget);
-        createExe->setObjectName(QStringLiteral("createExe"));
-
-        horizontalLayout_2->addWidget(createExe);
-
-        exeTip = new QPushButton(gridLayoutWidget);
-        exeTip->setObjectName(QStringLiteral("exeTip"));
-        exeTip->setMaximumSize(QSize(25, 16777215));
-        exeTip->setToolTipDuration(0);
-
-        horizontalLayout_2->addWidget(exeTip);
-
-
-        gridLayout->addLayout(horizontalLayout_2, 6, 0, 1, 1);
-
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setSpacing(6);
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
@@ -115,14 +84,76 @@ public:
         horizontalLayout_4->addWidget(hotkeyTip);
 
 
-        gridLayout->addLayout(horizontalLayout_4, 4, 0, 1, 1);
+        gridLayout->addLayout(horizontalLayout_4, 6, 0, 1, 1);
+
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        replaceTooltips = new QCheckBox(gridLayoutWidget);
+        replaceTooltips->setObjectName(QStringLiteral("replaceTooltips"));
+
+        horizontalLayout_3->addWidget(replaceTooltips);
+
+        tooltipTip = new QPushButton(gridLayoutWidget);
+        tooltipTip->setObjectName(QStringLiteral("tooltipTip"));
+        tooltipTip->setMaximumSize(QSize(25, 16777215));
+        tooltipTip->setToolTipDuration(0);
+
+        horizontalLayout_3->addWidget(tooltipTip);
+
+
+        gridLayout->addLayout(horizontalLayout_3, 7, 0, 1, 1);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        createExe = new QCheckBox(gridLayoutWidget);
+        createExe->setObjectName(QStringLiteral("createExe"));
+
+        horizontalLayout_2->addWidget(createExe);
+
+        exeTip = new QPushButton(gridLayoutWidget);
+        exeTip->setObjectName(QStringLiteral("exeTip"));
+        exeTip->setMaximumSize(QSize(25, 16777215));
+        exeTip->setToolTipDuration(0);
+
+        horizontalLayout_2->addWidget(exeTip);
+
+
+        gridLayout->addLayout(horizontalLayout_2, 8, 0, 1, 1);
+
+        languageChoice = new QComboBox(gridLayoutWidget);
+        languageChoice->setObjectName(QStringLiteral("languageChoice"));
+
+        gridLayout->addWidget(languageChoice, 5, 0, 1, 1);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        useGrid = new QCheckBox(gridLayoutWidget);
+        useGrid->setObjectName(QStringLiteral("useGrid"));
+
+        horizontalLayout->addWidget(useGrid);
+
+        useWalls = new QCheckBox(gridLayoutWidget);
+        useWalls->setObjectName(QStringLiteral("useWalls"));
+
+        horizontalLayout->addWidget(useWalls);
+
+        usePw = new QCheckBox(gridLayoutWidget);
+        usePw->setObjectName(QStringLiteral("usePw"));
+
+        horizontalLayout->addWidget(usePw);
+
+
+        gridLayout->addLayout(horizontalLayout, 9, 0, 1, 1);
 
         runButton = new QPushButton(centralWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
-        runButton->setGeometry(QRect(160, 230, 75, 23));
+        runButton->setGeometry(QRect(160, 330, 75, 23));
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(0, 160, 401, 61));
+        label->setGeometry(QRect(0, 260, 401, 61));
         label->setAlignment(Qt::AlignCenter);
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
@@ -140,10 +171,6 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", Q_NULLPTR));
-        replaceTooltips->setText(QApplication::translate("MainWindow", "Improve tooltips and tech tree descriptions", Q_NULLPTR));
-        languageTip->setText(QString());
-        createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", Q_NULLPTR));
-        exeTip->setText(QString());
         hotkeyChoice->clear();
         hotkeyChoice->insertItems(0, QStringList()
          << QApplication::translate("MainWindow", "Choose which hotkeys to use...", Q_NULLPTR)
@@ -152,6 +179,13 @@ public:
          << QApplication::translate("MainWindow", "Use HD hotkeys for this mod and AoC", Q_NULLPTR)
         );
         hotkeyTip->setText(QString());
+        replaceTooltips->setText(QApplication::translate("MainWindow", "Improve tooltips and tech tree descriptions", Q_NULLPTR));
+        tooltipTip->setText(QString());
+        createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", Q_NULLPTR));
+        exeTip->setText(QString());
+        useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
+        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
+        usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
         runButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
         label->setText(QApplication::translate("MainWindow", "TextLabel", Q_NULLPTR));
     } // retranslateUi

@@ -39,6 +39,12 @@
 std::string HDPath;
 std::string outPath;
 std::string const version = "2.1";
+std::vector<std::string> pwFiles;
+std::vector<std::string> gridFiles;
+std::vector<std::string> wallFiles;
+std::string pwInputDir = "resources/pussywood";
+std::string gridInputDir = "resources/grid";
+std::string wallsInputDir = "resources/short_walls";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,6 +56,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	HDPath = getHDPath();
 	outPath = getOutPath(HDPath);
 
+	QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
+			if(this->ui->languageChoice->currentIndex() != 2) {
+				this->ui->replaceTooltips->setEnabled(false);
+				this->ui->replaceTooltips->setChecked(false);
+			}
+	} );
+	
 	this->ui->hotkeyTip->setIcon(QIcon("question.png"));
 	this->ui->hotkeyTip->setIconSize(QSize(16,16));
 	this->ui->hotkeyTip->setWhatsThis("You can choose a hotkey file to use for the WololoKingdoms Mod. You have three options\n"
@@ -61,18 +74,19 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect( this->ui->hotkeyTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->hotkeyTip->mapToGlobal(QPoint(0,0)),this->ui->hotkeyTip->whatsThis());
 	} );
-	this->ui->languageTip->setIcon(QIcon("question.png"));
-	this->ui->languageTip->setIconSize(QSize(16,16));
-	this->ui->languageTip->setWhatsThis("This replaces the tooltips of units, technologies and buildings that are shown in the tech tree or in-game with extended help (F1) enabled\n"
+	this->ui->tooltipTip->setIcon(QIcon("question.png"));
+	this->ui->tooltipTip->setIconSize(QSize(16,16));
+	this->ui->tooltipTip->setWhatsThis("This replaces the tooltips of units, technologies and buildings that are shown in the tech tree or in-game with extended help (F1) enabled\n"
 										"It provides some error corrections, and more information such as research/creation time, attack speed, attack boni and more\n"
 										"This is available as a mod for Voobly (), selecting the checkbox will make it permanent (and available offline as well)\n"
 										"To remove it, you'll need to run the installer again with this checkbox unchecked");
-	QObject::connect( this->ui->languageTip, &QPushButton::clicked, this, [this]() {
-			QWhatsThis::showText(this->ui->languageTip->mapToGlobal(QPoint(0,0)),this->ui->languageTip->whatsThis());
+	QObject::connect( this->ui->tooltipTip, &QPushButton::clicked, this, [this]() {
+			QWhatsThis::showText(this->ui->tooltipTip->mapToGlobal(QPoint(0,0)),this->ui->tooltipTip->whatsThis());
 	} );
 	this->ui->exeTip->setIcon(QIcon("question.png"));
 	this->ui->exeTip->setIconSize(QSize(16,16));
-	this->ui->exeTip->setWhatsThis(("This creates a WK.exe in your " +outPath+"age2_x1 folder that can be used for playing WololoKingdoms without Voobly").c_str());
+	this->ui->exeTip->setWhatsThis(("This creates a WK.exe in your " +outPath+"age2_x1 folder that can be used for playing WololoKingdoms without Voobly"
+									"When checked an extra window for the Userpatch will open during the installation. Chosse the options you want, run it, and then close it.").c_str());
 	QObject::connect( this->ui->exeTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->exeTip->mapToGlobal(QPoint(0,0)),this->ui->exeTip->whatsThis());
 	} );
@@ -267,7 +281,16 @@ void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
 
 	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end(); it++) {
 		wololo::DrsFileInfo slp;
-		size_t size = boost::filesystem::file_size(inputDir + "/" + *it + ".slp");
+		size_t size;
+		if(std::lower_bound(pwFiles.begin(),pwFiles.end(),*it) != pwFiles.end()) {
+			size = boost::filesystem::file_size(pwInputDir + "/" + *it + ".slp");
+		} else if(std::lower_bound(gridFiles.begin(),gridFiles.end(),*it) != gridFiles.end()) {
+			size = boost::filesystem::file_size(gridInputDir + "/" + *it + ".slp");
+		} else if(std::lower_bound(wallFiles.begin(),wallFiles.end(),*it) != wallFiles.end()) {
+			size = boost::filesystem::file_size(wallsInputDir + "/" + *it + ".slp");
+		} else {
+			size = boost::filesystem::file_size(inputDir + "/" + *it + ".slp");
+		}
 		slp.file_id = stoi(*it);
 		slp.file_data_offset = offset;
 		slp.file_size = size;
@@ -352,7 +375,16 @@ void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
 
 	// now write the actual files
 	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end(); it++) {
-		std::ifstream srcStream(inputDir + "/" + *it + ".slp", std::ios::binary);
+		std::ifstream srcStream;
+		if(std::lower_bound(pwFiles.begin(),pwFiles.end(),*it) != pwFiles.end()) {
+			srcStream = std::ifstream(pwInputDir + "/" + *it + ".slp", std::ios::binary);
+		} else if(std::lower_bound(gridFiles.begin(),gridFiles.end(),*it) != gridFiles.end()) {
+			srcStream = std::ifstream(gridInputDir + "/" + *it + ".slp", std::ios::binary);
+		} else if(std::lower_bound(wallFiles.begin(),wallFiles.end(),*it) != wallFiles.end()) {
+			srcStream = std::ifstream(wallsInputDir + "/" + *it + ".slp", std::ios::binary);
+		} else {
+			srcStream = std::ifstream(inputDir + "/" + *it + ".slp", std::ios::binary);
+		}		
 		*out << srcStream.rdbuf();
 	}
 
@@ -484,48 +516,59 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 
 void MainWindow::hotkeySetup() {
 
-	std::string const nfzPath = "Player1.nfz";
+	std::string const nfz1Path = "Player1.nfz";
 	std::string const nfz2Path = "Player2.nfz";
+	std::string const nfz3Path = "Player3.nfz";
+	std::string const nfzPath = outPath+"player.nfz";
 	std::string const aocHkiPath = "player1.hki";
 	std::string const hkiPath = HDPath + "Profiles/player0.hki";
 	std::string const hkiOutPath = outPath +  "player1.hki";
 	std::string const hki2OutPath = outPath +  "player2.hki";
+	std::string const hki3OutPath = outPath +  "player3.hki";
 	std::string const modHkiOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
+	std::string const modHki2OutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
 	std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
-	std::string const nfz2OutPath = outPath +  "Games/WololoKingdoms/Player.nfz";
+	std::string const nfzUpOutPath = outPath +  "Games/WololoKingdoms/Player.nfz";
 
 	if(this->ui->hotkeyChoice->currentIndex() != 0) {
 		boost::filesystem::remove(nfzOutPath);
-		boost::filesystem::remove(nfz2OutPath);
+		boost::filesystem::remove(nfzUpOutPath);		
+		if(boost::filesystem::exists(nfzPath)) //Copy the Aoc Profile
+			boost::filesystem::copy_file(nfzPath, nfzOutPath);
+		else //otherwise copy the default profile included
+			boost::filesystem::copy_file(nfz1Path, nfzOutPath);
 	}
-
-	if(this->ui->hotkeyChoice->currentIndex() == 1) {
-		boost::filesystem::copy_file(nfzPath, nfzOutPath);
-		boost::filesystem::copy(nfzPath,nfz2OutPath);
-		if(!boost::filesystem::exists(hkiOutPath))
-			boost::filesystem::copy_file(aocHkiPath, hkiOutPath);
-	} else if(this->ui->hotkeyChoice->currentIndex() == 2) {
-		boost::filesystem::copy_file(nfzPath, nfzOutPath);
-		if(boost::filesystem::exists(hkiOutPath))
-			boost::filesystem::remove(hkiOutPath);
-		boost::filesystem::copy_file(hkiPath, hkiOutPath);
-	} else if(this->ui->hotkeyChoice->currentIndex() == 3) {
-		boost::filesystem::copy_file(nfzPath, nfzOutPath);
-		if(boost::filesystem::exists(modHkiOutPath))
-			boost::filesystem::remove(modHkiOutPath);
-		boost::filesystem::copy(hkiPath, modHkiOutPath);
-		if(boost::filesystem::exists(nfz2OutPath))
-			boost::filesystem::remove(nfz2OutPath);
-		boost::filesystem::copy(nfz2Path,nfz2OutPath);
-
-		if(!boost::filesystem::exists(hki2OutPath)) {
-			boost::filesystem::copy(hkiPath,hki2OutPath);
-		} else {
-			if(boost::filesystem::exists(hki2OutPath+".bak"))
-				boost::filesystem::remove(hki2OutPath+".bak");
-			boost::filesystem::copy(hki2OutPath,hki2OutPath+".bak");
-			boost::filesystem::remove(hki2OutPath);
-			boost::filesystem::copy(hkiPath, hki2OutPath);
+	if(this->ui->createExe->isChecked()) { //Profiles for UP
+		if (this->ui->hotkeyChoice->currentIndex() == 1 || this->ui->hotkeyChoice->currentIndex() == 3) {		
+			if(boost::filesystem::exists(nfzPath)) //Copy the Aoc Profile
+				boost::filesystem::copy_file(nfzPath,nfzUpOutPath);
+			else //otherwise copy the default profile included
+				boost::filesystem::copy_file(nfz1Path,nfzUpOutPath);
+		} 
+		if(this->ui->hotkeyChoice->currentIndex() == 2) { 
+			boost::filesystem::copy_file(nfz2Path,nfzUpOutPath);
+		}
+	} 
+	//Copy hotkey files
+	if (this->ui->hotkeyChoice->currentIndex() == 2) {		
+		boost::filesystem::copy_file(hkiPath, modHkiOutPath,boost::filesystem::copy_option::overwrite_if_exists);
+		if(boost::filesystem::exists(hki2OutPath))
+			boost::filesystem::copy_file(hkiPath, modHki2OutPath,boost::filesystem::copy_option::overwrite_if_exists);
+		if(this->ui->createExe->isChecked()) {			
+			if(boost::filesystem::exists(hki2OutPath)) {
+				boost::filesystem::copy_file(hkiPath, hki3OutPath);
+			} else {
+				boost::filesystem::copy_file(nfz3Path,nfzUpOutPath);
+				boost::filesystem::copy_file(hkiPath, hki2OutPath);				
+			}
+		}
+	}
+	if(this->ui->hotkeyChoice->currentIndex() == 3) {	
+		boost::filesystem::copy_file(hkiOutPath, hkiOutPath+".bak",boost::filesystem::copy_option::overwrite_if_exists);
+		boost::filesystem::copy_file(hkiPath, hkiOutPath,boost::filesystem::copy_option::overwrite_if_exists);
+		if(boost::filesystem::exists(hki2OutPath)) {
+			boost::filesystem::copy_file(hki2OutPath, hki2OutPath+".bak",boost::filesystem::copy_option::overwrite_if_exists);
+			boost::filesystem::copy_file(hkiPath, hki2OutPath,boost::filesystem::copy_option::overwrite_if_exists);
 		}
 	}
 }
@@ -539,11 +582,22 @@ int MainWindow::run()
 	int ret = 0;
 
 	try {
-		std::string vooblyDataModPath = outPath + "Voobly Mods/AOC/Data Mods/";
-		std::string vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
+		std::string language;
+		switch(this->ui->languageChoice->currentIndex()) {
+			case 0: language = "br"; break;
+			case 1: language = "de"; break;
+			case 2: language = "en"; break;
+			case 3: language = "es"; break;
+			case 4: language = "fr"; break;
+			case 5: language = "it"; break;
+			case 6: language = "nl"; break;
+			default: language = "en";
+		}
+		std::string const keyValuesStringsPath = HDPath + "resources/"+language+"/strings/key-value/key-value-strings-utf8.txt";
+		std::string const vooblyDataModPath = outPath + "Voobly Mods/AOC/Data Mods/";
+		std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
 		std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
 		std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
-		std::string const keyValuesStringsPath = HDPath + "resources/en/strings/key-value/key-value-strings-utf8.txt"; // TODO pick other languages
 		std::string const modLangPath = "language.ini";
 		std::string const languageIniPath = vooblyDir + "language.ini";
 		std::string const versionIniPath = vooblyDir +  "version.ini";
@@ -554,7 +608,7 @@ int MainWindow::run()
 		std::string const xmlPath = "WK.xml";
 		std::string const xmlOutPath = vooblyDir +  "age2_x1.xml";
 		std::string const nfzOutPath = vooblyDir +  "Player.nfz";
-		std::string const nfz2OutPath = outPath + "Games/WololoKingdoms/Player.nfz";
+		std::string const nfzUpOutPath = outPath + "Games/WololoKingdoms/Player.nfz";
 		std::string const langDllFile = "language_x1_p1.dll";
 		std::string langDllPath = langDllFile;
 		std::string const xmlOutPathUP = outPath +  "Games/WK.xml";
@@ -566,15 +620,19 @@ int MainWindow::run()
 		std::string const upDir = outPath + "Games/WololoKingdoms/";
 		std::string const UPModdedExe = "WK";
 		std::string const UPExe = "SetupAoc.exe";
+		
+		if(this->ui->usePw->isChecked())
+			listAssetFiles(pwInputDir, &pwFiles, NULL);
+		if(this->ui->useGrid->isChecked())
+			listAssetFiles(gridInputDir, &gridFiles, NULL);
+		if(this->ui->useWalls->isChecked())
+			listAssetFiles(wallsInputDir, &wallFiles, NULL);
+	
 
-		if(boost::filesystem::exists(nfzOutPath)) { //Avoid deleting hotkey files
-			boost::filesystem::remove(vooblyDataModPath+"player.nfz");
-			boost::filesystem::copy_file(nfzOutPath, vooblyDataModPath+"player.nfz");
-		}
-		if(boost::filesystem::exists(nfz2OutPath)) {
-			boost::filesystem::remove(outPath+"Games/player.nfz");
-			boost::filesystem::copy_file(nfz2OutPath, outPath+"Games/player.nfz");
-		}
+		if(boost::filesystem::exists(nfzOutPath)) //Avoid deleting profile files
+			boost::filesystem::rename(nfzOutPath, vooblyDataModPath+"player.nfz");
+		if(boost::filesystem::exists(nfzUpOutPath))
+			boost::filesystem::rename(nfzUpOutPath, outPath+"Games/player.nfz");
 		boost::filesystem::remove_all(vooblyDir);
 		boost::filesystem::remove_all(outPath+"Games/WololoKingdoms");
 		boost::filesystem::remove(outPath+"Games/WK.xml");
@@ -582,14 +640,10 @@ int MainWindow::run()
 		boost::filesystem::create_directories(vooblyDir+"Sound/stream");
 		boost::filesystem::create_directories(vooblyDir+"Taunt");
 		boost::filesystem::create_directories(upDir);
-		if(boost::filesystem::exists(vooblyDataModPath+"player.nfz")) {
-			boost::filesystem::copy_file(vooblyDataModPath+"player.nfz", nfzOutPath);
-			boost::filesystem::remove(vooblyDataModPath+"player.nfz");
-		}
-		if(boost::filesystem::exists(outPath+"Games/player.nfz")) {
-			boost::filesystem::copy_file(outPath+"Games/player.nfz", nfz2OutPath);
-			boost::filesystem::remove(outPath+"Games/player.nfz");
-		}
+		if(boost::filesystem::exists(vooblyDataModPath+"player.nfz")) //copy back profile files if required
+			boost::filesystem::rename(vooblyDataModPath+"player.nfz", nfzOutPath);
+		if(boost::filesystem::exists(outPath+"Games/player.nfz"))
+			boost::filesystem::rename(outPath+"Games/player.nfz", nfzUpOutPath);
 		boost::filesystem::create_directories(upDir + "Data");
 
 		this->ui->label->setText("Working...\n"
@@ -690,17 +744,19 @@ int MainWindow::run()
 
 		std::map<int, std::string> langReplacement;
 		//Fix errors in civ descriptions
-		langReplacement[20162] = "Infantry civilization \\n\\n· Infantry move 15% faster \\n· Lumberjacks work 15% faster \\n· Siege weapons fire 20% faster \\n· Can convert sheep even if enemy units are next to them. \\n\\n<b>Unique Unit:<b> Woad Raider (infantry) \\n\\n<b>Unique Techs:<b> Stronghold (Castles and towers fire 20% faster); Furor Celtica (Siege Workshop units have +40% HP)\\n\\n<b>Team Bonus:<b> Siege Workshops work 20% faster";
-		langReplacement[20166] = "Cavalry civilization \\n\\n· Do not need houses, but start with -100 wood \\n· Cavalry Archers cost -10% Castle, -20% Imperial Age \\n· Trebuchets +35% accuracy against units \\n\\n<b>Unique Unit:<b> Tarkan (cavalry) \\n\\n<b>Unique Techs:<b> Marauders (Create Tarkans at stables); Atheism (+100 years Relic, Wonder victories; Spies/Treason costs -50%)\\n\\n<b>Team Bonus:<b> Stables work 20% faster";
-		langReplacement[20170] = "Infantry civilization \\n\\n· Start with a free llama \\n· Villagers affected by Blacksmith upgrades \\n· Houses support 10 population \\n· Buildings cost -15% stone\\n\\n<b>Unique Units:<b> Kamayuk (infantry), Slinger (archer)\\n\\n<b>Unique Techs:<b> Andean Sling (Skirmishers and Slingers no minimum range); Couriers (Kamayuks, Slingers, Eagles +1 armor/+2 pierce armor)\\n\\n<b>Team Bonus:<b> Farms built 2x faster";
-		langReplacement[20165] = "Archer civilization \\n\\n· Start with +1 villager, but -50 food \\n· Resources last 15% longer \\n· Archers cost -10% Feudal, -20% Castle, -30% Imperial Age \\n\\n<b>Unique Unit:<b> Plumed Archer (archer) \\n\\n<b>Unique Techs:<b> Obsidian Arrows (Archers, Crossbowmen and Arbalests +12 attack vs. Towers/Stone Walls, +6 attack vs. other buildings); El Dorado (Eagle Warriors have +40 hit points)\\n\\n<b>Team Bonus:<b> Walls cost -50%";
-		langReplacement[20158] = "Camel and naval civilization \\n· Market trade cost only 5% \\n· Market costs -75 wood \\n· Transport Ships 2x hit points, \\n 2x carry capacity \\n· Galleys attack 20% faster \\n· Cavalry archers +4 attack vs. buildings \\n\\n<b>Unique Unit:<b> Mameluke (camel) \\n\\n<b>Unique Techs:<b> Madrasah (Killed monks return 33% of their cost); Zealotry (Camels, Mamelukes +30 hit points)\\n\\n<b>Team Bonus:<b> Foot archers +2 attack vs. buildings";
-		langReplacement[20163] = "Gunpowder and Monk civilization \\n\\n· Builders work 30% faster \\n· Blacksmith upgrades don't cost gold \\n· Cannon Galleons fire faster and with Ballistics) \\n· Gunpowder units fire 15% faster\\n\\n<b>Unique Units:<b> Conquistador (mounted hand cannoneer), Missionary (mounted Monk) \\n\\n<b>Unique Techs:<b> Inquisition (Monks convert faster); Supremacy (villagers better in combat)\\n\\n<b>Team Bonus:<b> Trade units generate +25% gold";
-		//Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
-		langReplacement[26137] = "Create <b> Genitour<b> (<cost>) \\nBerber mercenary unit, available when teamed with a Berber player. Mounted skirmisher. Effective against Archers.<i> Upgrades: speed, hit points (Stable); attack, range, armor (Blacksmith); attack, accuracy (University); accuracy, armor, to Elite Genitour 500F, 450W (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
-		langReplacement[26139] = "Create <b> Elite Genitour<b> (<cost>) \\nBerber mercenary unit, available when teamed with a Berber player. Stronger than Genitour.<i> Upgrades: speed, hit points (Stable); attack, range, armor (Blacksmith); attack, accuracy (University); accuracy, armor (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
-		langReplacement[26190] = "Create <b> Imperial Skirmisher<b> (<cost>) \\nVietnamese mercenary unit, available when teamed with a Vietnamese player. Stronger than Elite Skirmisher. Attack bonus vs. archers. <i> Upgrades: attack, range, armor (Blacksmith); attack, accuracy (University); accuracy (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
-		langReplacement[26419] = "Create <b> Imperial Camel<b> (<cost>) \nUnique Indian upgrade. Stronger than Heavy Camel. Attack bonus vs. cavalry. <i> Upgrades: attack, armor (Blacksmith); speed, hit points (Stable); creation speed (Castle); more resistant to Monks (Monastery).<i> \n<hp> <attack> <armor> <piercearmor> <range>";
+		if (language == "en") {
+			langReplacement[20162] = "Infantry civilization \\n\\n· Infantry move 15% faster \\n· Lumberjacks work 15% faster \\n· Siege weapons fire 20% faster \\n· Can convert sheep even if enemy units are next to them. \\n\\n<b>Unique Unit:<b> Woad Raider (infantry) \\n\\n<b>Unique Techs:<b> Stronghold (Castles and towers fire 20% faster); Furor Celtica (Siege Workshop units have +40% HP)\\n\\n<b>Team Bonus:<b> Siege Workshops work 20% faster";
+			langReplacement[20166] = "Cavalry civilization \\n\\n· Do not need houses, but start with -100 wood \\n· Cavalry Archers cost -10% Castle, -20% Imperial Age \\n· Trebuchets +35% accuracy against units \\n\\n<b>Unique Unit:<b> Tarkan (cavalry) \\n\\n<b>Unique Techs:<b> Marauders (Create Tarkans at stables); Atheism (+100 years Relic, Wonder victories; Spies/Treason costs -50%)\\n\\n<b>Team Bonus:<b> Stables work 20% faster";
+			langReplacement[20170] = "Infantry civilization \\n\\n· Start with a free llama \\n· Villagers affected by Blacksmith upgrades \\n· Houses support 10 population \\n· Buildings cost -15% stone\\n\\n<b>Unique Units:<b> Kamayuk (infantry), Slinger (archer)\\n\\n<b>Unique Techs:<b> Andean Sling (Skirmishers and Slingers no minimum range); Couriers (Kamayuks, Slingers, Eagles +1 armor/+2 pierce armor)\\n\\n<b>Team Bonus:<b> Farms built 2x faster";
+			langReplacement[20165] = "Archer civilization \\n\\n· Start with +1 villager, but -50 food \\n· Resources last 15% longer \\n· Archers cost -10% Feudal, -20% Castle, -30% Imperial Age \\n\\n<b>Unique Unit:<b> Plumed Archer (archer) \\n\\n<b>Unique Techs:<b> Obsidian Arrows (Archers, Crossbowmen and Arbalests +12 attack vs. Towers/Stone Walls, +6 attack vs. other buildings); El Dorado (Eagle Warriors have +40 hit points)\\n\\n<b>Team Bonus:<b> Walls cost -50%";
+			langReplacement[20158] = "Camel and naval civilization \\n· Market trade cost only 5% \\n· Market costs -75 wood \\n· Transport Ships 2x hit points, \\n 2x carry capacity \\n· Galleys attack 20% faster \\n· Cavalry archers +4 attack vs. buildings \\n\\n<b>Unique Unit:<b> Mameluke (camel) \\n\\n<b>Unique Techs:<b> Madrasah (Killed monks return 33% of their cost); Zealotry (Camels, Mamelukes +30 hit points)\\n\\n<b>Team Bonus:<b> Foot archers +2 attack vs. buildings";
+			langReplacement[20163] = "Gunpowder and Monk civilization \\n\\n· Builders work 30% faster \\n· Blacksmith upgrades don't cost gold \\n· Cannon Galleons fire faster and with Ballistics) \\n· Gunpowder units fire 15% faster\\n\\n<b>Unique Units:<b> Conquistador (mounted hand cannoneer), Missionary (mounted Monk) \\n\\n<b>Unique Techs:<b> Inquisition (Monks convert faster); Supremacy (villagers better in combat)\\n\\n<b>Team Bonus:<b> Trade units generate +25% gold";
+			//Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
+			langReplacement[26137] = "Create <b> Genitour<b> (<cost>) \\nBerber mercenary unit, available when teamed with a Berber player. Mounted skirmisher. Effective against Archers.<i> Upgrades: speed, hit points (Stable); attack, range, armor (Blacksmith); attack, accuracy (University); accuracy, armor, to Elite Genitour 500F, 450W (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
+			langReplacement[26139] = "Create <b> Elite Genitour<b> (<cost>) \\nBerber mercenary unit, available when teamed with a Berber player. Stronger than Genitour.<i> Upgrades: speed, hit points (Stable); attack, range, armor (Blacksmith); attack, accuracy (University); accuracy, armor (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
+			langReplacement[26190] = "Create <b> Imperial Skirmisher<b> (<cost>) \\nVietnamese mercenary unit, available when teamed with a Vietnamese player. Stronger than Elite Skirmisher. Attack bonus vs. archers. <i> Upgrades: attack, range, armor (Blacksmith); attack, accuracy (University); accuracy (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
+			langReplacement[26419] = "Create <b> Imperial Camel<b> (<cost>) \nUnique Indian upgrade. Stronger than Heavy Camel. Attack bonus vs. cavalry. <i> Upgrades: attack, armor (Blacksmith); speed, hit points (Stable); creation speed (Castle); more resistant to Monks (Monastery).<i> \n<hp> <attack> <armor> <piercearmor> <range>";
+		}
 
 		this->ui->label->setText("Working...\n"
 							 "Applying DAT patches...");
@@ -847,13 +903,19 @@ int MainWindow::run()
 				dialog->exec();
 			}
 			this->ui->label->setText("Done!");
-			if(boost::filesystem::exists(HDPath+"/compatslp")) {
-				if(boost::filesystem::exists(HDPath+"/compatslp2"))
-					boost::filesystem::remove_all(HDPath+"/compatslp2");
-				recCopy(HDPath+"/compatslp",HDPath+"/compatslp2");
-				boost::filesystem::remove_all(HDPath+"/compatslp");
+			if(boost::filesystem::exists(outPath+"/compatslp")) {
+				if(boost::filesystem::exists(outPath+"/compatslp2"))
+					boost::filesystem::remove_all(outPath+"/compatslp2");
+				recCopy(outPath+"/compatslp",outPath+"/compatslp2");
+				boost::filesystem::remove_all(outPath+"/compatslp");
 				this->ui->label->setText("Done! NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2').\n"
 										 "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored.");
+				if(this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
+					if(boost::filesystem::file_size(outPath+"/data/blendomatic.dat") < 400000) {
+						boost::filesystem::rename(outPath+"/data/blendomatic.dat",outPath+"/data/blendomatic.dat.bak");
+						boost::filesystem::rename(outPath+"/data/blendomatic_x1.dat",outPath+"/data/blendomatic.dat");
+					}
+				}
 
 			}
 		} else {

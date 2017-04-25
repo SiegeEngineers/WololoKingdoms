@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>426</width>
+    <height>422</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,69 +19,15 @@
      <rect>
       <x>30</x>
       <y>10</y>
-      <width>291</width>
-      <height>141</height>
+      <width>316</width>
+      <height>231</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <property name="bottomMargin">
       <number>0</number>
      </property>
-     <item row="5" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QCheckBox" name="replaceTooltips">
-         <property name="text">
-          <string>Improve tooltips and tech tree descriptions</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="languageTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
      <item row="6" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QCheckBox" name="createExe">
-         <property name="text">
-          <string>Create an offline installation</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="exeTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="4" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <property name="bottomMargin">
         <number>0</number>
@@ -128,13 +74,95 @@
        </item>
       </layout>
      </item>
+     <item row="7" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QCheckBox" name="replaceTooltips">
+         <property name="text">
+          <string>Improve tooltips and tech tree descriptions</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="tooltipTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="8" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="createExe">
+         <property name="text">
+          <string>Create an offline installation</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="exeTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="5" column="0">
+      <widget class="QComboBox" name="languageChoice"/>
+     </item>
+     <item row="9" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QCheckBox" name="useGrid">
+         <property name="text">
+          <string>Grid</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="useWalls">
+         <property name="text">
+          <string>Short Walls</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="usePw">
+         <property name="text">
+          <string>Small Trees</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </widget>
    <widget class="QPushButton" name="runButton">
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>230</y>
+      <y>330</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -147,7 +175,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>160</y>
+      <y>260</y>
       <width>401</width>
       <height>61</height>
      </rect>
