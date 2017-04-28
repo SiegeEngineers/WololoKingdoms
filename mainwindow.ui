@@ -79,7 +79,7 @@
        <item>
         <widget class="QCheckBox" name="replaceTooltips">
          <property name="text">
-          <string>Improve tooltips and tech tree descriptions</string>
+          <string>Improve tooltips and tech tree</string>
          </property>
         </widget>
        </item>
@@ -129,7 +129,66 @@
       </layout>
      </item>
      <item row="5" column="0">
-      <widget class="QComboBox" name="languageChoice"/>
+      <widget class="QComboBox" name="languageChoice">
+       <property name="currentIndex">
+        <number>2</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>Português-Brasil (Portuguese-Brasil)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Deutsch (German)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>English</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Español (Spanish)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Français (French)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Italiano (Italian)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>日本語 (Japanese)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>한국어 (Korean)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Nederlands (Dutch)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>русский (Russian)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>简体中文 (Simplified Chinese)</string>
+        </property>
+       </item>
+      </widget>
      </item>
      <item row="9" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">

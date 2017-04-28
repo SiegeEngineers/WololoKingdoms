@@ -8,9 +8,11 @@
 #include "paths.h"
 #include "conversions.h"
 
+namespace fs = boost::filesystem;
+
 typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE,PBOOL);
 
-std::string extractHDPath(std::string steamPath) {
+fs::path extractHDPath(std::string steamPath) {
 	std::string line;
 	std::string HDPath;
 	std::ifstream manifest((steamPath+"/steamapps/appmanifest_221380.acf").c_str());
@@ -24,11 +26,11 @@ std::string extractHDPath(std::string steamPath) {
 			break;
 		}
 	}
-	return HDPath;
+	return fs::path(HDPath);
 }
 
-std::string getHDPath() {
-	std::string HDPath = "../";
+fs::path getHDPath() {
+	fs::path HDPath("../");
 	TCHAR temp[300];
 	unsigned long size = sizeof(temp);
 	HKEY hKey;
@@ -95,17 +97,17 @@ std::string getHDPath() {
 	}
 	*/
 
-	if(!boost::filesystem::exists(HDPath+"/Launcher.exe")) {
+	if(!boost::filesystem::exists(HDPath/"/Launcher.exe")) {
 		if(boost::filesystem::exists("../../Launcher.exe")) {
-			HDPath = "../../";
+			HDPath = fs::path("../../");
 		} else {
-			throw std::runtime_error("Could not find a HD installation, please put the WololoKingdoms.exe into your HD installation folder (Age2HD).");
+			return "";
 		}
 	}
 	return HDPath;
 }
 
-std::string getOutPath(std::string HDPath) {
+fs::path getOutPath(fs::path HDPath) {
 
 	TCHAR temp[300];
 	unsigned long size = sizeof(temp);
@@ -119,17 +121,16 @@ std::string getOutPath(std::string HDPath) {
 		RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\DirectPlay\\Applications\\Age of Empires II - The Conquerors Expansion", 0, KEY_READ, &hKey);
 	RegQueryValueEx(hKey, L"CurrentDirectory", NULL, NULL, reinterpret_cast<LPBYTE>(temp), &size);
 	RegCloseKey(hKey);
-	std::string outPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp)))+"/");
+	fs::path outPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
 	bool aocFound = false;
 	if(boost::filesystem::exists(outPath))
 		aocFound = true;
 	if(!aocFound) {
-		if(boost::filesystem::exists(HDPath + "age2_x1")) {
+		if(boost::filesystem::exists(HDPath / "age2_x1")) {
 			outPath = HDPath;
 			aocFound = true;
 		} else {
-			std::cout << HDPath + "age2_x1" + "not found" << std::endl;
-			outPath = HDPath+"WololoKingdoms/out/";
+			outPath = HDPath/"WololoKingdoms/out/";
 		}
 	}
 	return outPath;

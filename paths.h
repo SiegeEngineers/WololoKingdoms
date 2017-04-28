@@ -1,7 +1,9 @@
 #ifndef PATHS_H
 #define PATHS_H
 
-std::string getHDPath();
-std::string getOutPath(std::string HDPath);
+#include <boost/filesystem.hpp>
+
+boost::filesystem::path getHDPath();
+boost::filesystem::path getOutPath(boost::filesystem::path HDPath);
 
 #endif // PATHS_H

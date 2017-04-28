@@ -34,36 +34,48 @@
 #include <QWhatsThis>
 #include <QPoint>
 
+namespace fs = boost::filesystem;
 
-
-std::string HDPath;
-std::string outPath;
+fs::path HDPath;
+fs::path outPath;
 std::string const version = "2.1";
-std::vector<std::string> pwFiles;
-std::vector<std::string> gridFiles;
-std::vector<std::string> wallFiles;
-std::string pwInputDir = "resources/pussywood";
-std::string gridInputDir = "resources/grid";
-std::string wallsInputDir = "resources/short_walls";
+std::string language;
+std::map<std::string, std::string> translation;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
+	language = "en";
 	ui->setupUi(this);
+	changeLanguage(language);
 
 	HDPath = getHDPath();
 	outPath = getOutPath(HDPath);
 
 	QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
-			if(this->ui->languageChoice->currentIndex() != 2) {
-				this->ui->replaceTooltips->setEnabled(false);
-				this->ui->replaceTooltips->setChecked(false);
-			}
+		switch(this->ui->languageChoice->currentIndex()) {
+			case 0: language = "br"; break;
+			case 1: language = "de"; break;
+			case 2: language = "en"; break;
+			case 3: language = "es"; break;
+			case 4: language = "fr"; break;
+			case 5: language = "it"; break;
+			case 6: language = "jp"; break;
+			case 7: language = "ko"; break;
+			case 8: language = "nl"; break;
+			case 9: language = "ru"; break;
+			case 10: language = "zh"; break;
+			default: language = "en";
+		}
+		changeLanguage(language);
+		if(this->ui->languageChoice->currentIndex() != 2) {
+			this->ui->replaceTooltips->setEnabled(false);
+			this->ui->replaceTooltips->setChecked(false);
+		}
 	} );
 	
-	this->ui->hotkeyTip->setIcon(QIcon("question.png"));
+	this->ui->hotkeyTip->setIcon(QIcon("resources/question.png"));
 	this->ui->hotkeyTip->setIconSize(QSize(16,16));
 	this->ui->hotkeyTip->setWhatsThis("You can choose a hotkey file to use for the WololoKingdoms Mod. You have three options\n"
 									  "1) Use current AoC/Voobly hotkeys: This looks for a player1.hki file in your AoE2 installation folder, "
@@ -74,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect( this->ui->hotkeyTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->hotkeyTip->mapToGlobal(QPoint(0,0)),this->ui->hotkeyTip->whatsThis());
 	} );
-	this->ui->tooltipTip->setIcon(QIcon("question.png"));
+	this->ui->tooltipTip->setIcon(QIcon("resources/question.png"));
 	this->ui->tooltipTip->setIconSize(QSize(16,16));
 	this->ui->tooltipTip->setWhatsThis("This replaces the tooltips of units, technologies and buildings that are shown in the tech tree or in-game with extended help (F1) enabled\n"
 										"It provides some error corrections, and more information such as research/creation time, attack speed, attack boni and more\n"
@@ -83,30 +95,21 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect( this->ui->tooltipTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->tooltipTip->mapToGlobal(QPoint(0,0)),this->ui->tooltipTip->whatsThis());
 	} );
-	this->ui->exeTip->setIcon(QIcon("question.png"));
+	this->ui->exeTip->setIcon(QIcon("resources/question.png"));
 	this->ui->exeTip->setIconSize(QSize(16,16));
-	this->ui->exeTip->setWhatsThis(("This creates a WK.exe in your " +outPath+"age2_x1 folder that can be used for playing WololoKingdoms without Voobly"
+	this->ui->exeTip->setWhatsThis(("This creates a WK.exe in your " +outPath.string() +"age2_x1 folder that can be used for playing WololoKingdoms without Voobly"
 									"When checked an extra window for the Userpatch will open during the installation. Chosse the options you want, run it, and then close it.").c_str());
 	QObject::connect( this->ui->exeTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->exeTip->mapToGlobal(QPoint(0,0)),this->ui->exeTip->whatsThis());
 	} );
-	QObject::connect( this->ui->runButton, SIGNAL( clicked() ), this, SLOT(run()) );
+	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
 
 	this->ui->label->setText(("WololoKingdoms ver. " + version).c_str());
-	if(!boost::filesystem::exists(HDPath+"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
+	if(!fs::exists(HDPath/"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
 		this->ui->runButton->setDisabled(true);
 		return;
 	}
 
-	std::string vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
-	std::string const nfzOutPath = vooblyDir +  "Player.nfz";
-
-	if(boost::filesystem::exists(nfzOutPath)) {
-		this->ui->hotkeyChoice->setItemText(0,"Keep the current hotkey setup");
-	} else {
-		this->ui->runButton->setDisabled(true);
-		QObject::connect( this->ui->hotkeyChoice, SIGNAL( currentIndexChanged(int) ), this, SLOT(check(int)) );
-	}
 }
 
 MainWindow::~MainWindow()
@@ -114,34 +117,63 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::changeLanguage(std::string language) {
 
-void MainWindow::check(int index) {
-	if (index != 0)
-		this->ui->runButton->setDisabled(false);
-	else
+	std::string line;
+	std::ifstream translationFile("resources/"+language+".txt");
+	while (std::getline(translationFile, line)) {
+		int index = line.find('=');
+		translation[line.substr(0, index)] = line.substr(index+1, std::string::npos);
+	}
+	this->ui->runButton->setText(translation["runButton"].c_str());
+	this->ui->replaceTooltips->setText(translation["replaceTooltips"].c_str());
+	this->ui->createExe->setText(translation["createExe"].c_str());
+	this->ui->useGrid->setText(translation["useGrid"].c_str());
+	this->ui->usePw->setText(translation["usePw"].c_str());
+	this->ui->useWalls->setText(translation["useWalls"].c_str());
+	this->ui->hotkeyChoice->setItemText(1,translation["hotkeys1"].c_str());
+	this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"].c_str());
+	this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
+
+	fs::path vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
+	fs::path nfzOutPath = vooblyDir / "Player.nfz";
+
+	if(fs::exists(nfzOutPath)) {
+		this->ui->hotkeyChoice->setItemText(0,translation["hotkeys0"].c_str());
+	} else {
+		this->ui->hotkeyChoice->setItemText(0,translation["hotkeyChoice"].c_str());
 		this->ui->runButton->setDisabled(true);
-
+		QObject::connect( this->ui->hotkeyChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]{
+			if (this->ui->hotkeyChoice->currentIndex() != 0)
+				this->ui->runButton->setDisabled(false);
+			else
+				this->ui->runButton->setDisabled(true);
+		} );
+	}
+	qApp->processEvents();
 }
 
-void MainWindow::recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst) {
+void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool force) {
 	// recursive copy
-	//boost::filesystem::path currentPath(current->path());
-	if (boost::filesystem::is_directory(src)) {
-		if(!boost::filesystem::exists(dst)) {
-			boost::filesystem::create_directories(dst);
+	//fs::path currentPath(current->path());
+	if (fs::is_directory(src)) {
+		if(!fs::exists(dst)) {
+			fs::create_directories(dst);
 		}
-		for (boost::filesystem::directory_iterator current(src), end;current != end; ++current) {
-			boost::filesystem::path currentPath(current->path());
-			recCopy(currentPath, dst / currentPath.filename());
+		for (fs::directory_iterator current(src), end;current != end; ++current) {
+			fs::path currentPath(current->path());
+			recCopy(currentPath, dst / currentPath.filename(), force);
 		}
 	}
 	else {
-		boost::filesystem::copy_file(src, dst);
+		if (force)
+			fs::copy_file(src, dst, fs::copy_option::overwrite_if_exists);
+		else
+			fs::copy_file(src, dst);
 	}
-
 }
 
-void MainWindow::listAssetFiles(std::string const path, std::vector<std::string> *listOfSlpFiles, std::vector<std::string> *listOfWavFiles) {
+void MainWindow::listAssetFiles(fs::path path, std::vector<std::string> *listOfSlpFiles, std::vector<std::string> *listOfWavFiles) {
 	const std::set<std::string> exclude = {
 		// Exclude Forgotten Empires leftovers
 		"50163", // Forgotten Empires loading screen
@@ -151,7 +183,7 @@ void MainWindow::listAssetFiles(std::string const path, std::vector<std::string>
 		"53209" // ???
 	};
 
-	for (boost::filesystem::directory_iterator end, it(path); it != end; it++) {
+	for (fs::directory_iterator end, it(path); it != end; it++) {
 		std::string fileName = it->path().stem().string();
 		if (exclude.find(fileName) == exclude.end()) {
 			std::string extension = it->path().extension().string();
@@ -240,7 +272,11 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 
 		std::wstring wideLine = strtowstr(line);
 		std::string outputLine;
-		ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
+		//if(language!="zh")
+			ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
+		//else
+		//	ConvertUnicode2CP(wideLine.c_str(), outputLine, 1386);
+
 
 		*iniOut << number << '=' << outputLine <<  std::endl;
 
@@ -259,14 +295,32 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 	}
 }
 
-void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
+void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInputDir, std::ofstream *out) {
+
+	this->ui->label->setText("Working...\n"
+							 "Looking for files to copy...");
+	this->ui->label->repaint();
 	const int numberOfTables = 2; // slp and wav
 
 	std::vector<std::string> slpFilesNames;
 	std::vector<std::string> wavFilesNames;
+	std::vector<std::string> moddedFilesNames;
 	listAssetFiles(inputDir, &slpFilesNames, &wavFilesNames);
+	listAssetFiles(moddedInputDir, &moddedFilesNames, NULL);
 
-	int numberOfSlpFiles = slpFilesNames.size();
+	int numberOfSlpFiles = 0;
+	std::vector<std::string>::iterator modIt = moddedFilesNames.begin();
+	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end();) {
+		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
+		if(comp == 0) {
+			modIt++;
+			it++;
+		} else if (comp < 0) {
+			modIt++;
+		} else
+			it++;
+		numberOfSlpFiles++;
+	}
 	int numberOfWavFiles = wavFilesNames.size();
 	int offsetOfFirstFile = sizeof (wololo::DrsHeader) +
 			sizeof (wololo::DrsTableInfo) * numberOfTables +
@@ -279,19 +333,25 @@ void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
 	std::vector<wololo::DrsFileInfo> slpFiles;
 	std::vector<wololo::DrsFileInfo> wavFiles;
 
-	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end(); it++) {
+	modIt = moddedFilesNames.begin();
+	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end();) {
 		wololo::DrsFileInfo slp;
+		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
 		size_t size;
-		if(std::lower_bound(pwFiles.begin(),pwFiles.end(),*it) != pwFiles.end()) {
-			size = boost::filesystem::file_size(pwInputDir + "/" + *it + ".slp");
-		} else if(std::lower_bound(gridFiles.begin(),gridFiles.end(),*it) != gridFiles.end()) {
-			size = boost::filesystem::file_size(gridInputDir + "/" + *it + ".slp");
-		} else if(std::lower_bound(wallFiles.begin(),wallFiles.end(),*it) != wallFiles.end()) {
-			size = boost::filesystem::file_size(wallsInputDir + "/" + *it + ".slp");
+		if(comp == 0) {
+			size = fs::file_size(moddedInputDir + "/" + *modIt + ".slp");
+			slp.file_id = stoi(*modIt);
+			modIt++;
+			it++;
+		} else if (comp < 0) {
+			size = fs::file_size(moddedInputDir + "/" + *modIt + ".slp");
+			slp.file_id = stoi(*modIt);
+			modIt++;
 		} else {
-			size = boost::filesystem::file_size(inputDir + "/" + *it + ".slp");
+			size = fs::file_size(inputDir + "/" + *it + ".slp");
+			slp.file_id = stoi(*it);
+			it++;
 		}
-		slp.file_id = stoi(*it);
 		slp.file_data_offset = offset;
 		slp.file_size = size;
 		offset += size;
@@ -299,7 +359,7 @@ void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
 	}
 	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
 		wololo::DrsFileInfo wav;
-		size_t size = boost::filesystem::file_size(inputDir + "/" + *it + ".wav");
+		size_t size = fs::file_size(inputDir + "/" + *it + ".wav");
 		wav.file_id = stoi(*it);
 		wav.file_data_offset = offset;
 		wav.file_size = size;
@@ -340,6 +400,9 @@ void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
 	};
 
 
+	this->ui->label->setText("Working...\n"
+							 "Write to gamedata_x1_p1.drs...");
+	this->ui->label->repaint();
 	// now write the actual drs file
 
 	// header
@@ -373,19 +436,29 @@ void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
 		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
 	}
 
+
+	this->ui->label->setText("Working...\n"
+							 "Copying files to gamedata_x1_p1.drs...");
+	this->ui->label->repaint();
 	// now write the actual files
-	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end(); it++) {
-		std::ifstream srcStream;
-		if(std::lower_bound(pwFiles.begin(),pwFiles.end(),*it) != pwFiles.end()) {
-			srcStream = std::ifstream(pwInputDir + "/" + *it + ".slp", std::ios::binary);
-		} else if(std::lower_bound(gridFiles.begin(),gridFiles.end(),*it) != gridFiles.end()) {
-			srcStream = std::ifstream(gridInputDir + "/" + *it + ".slp", std::ios::binary);
-		} else if(std::lower_bound(wallFiles.begin(),wallFiles.end(),*it) != wallFiles.end()) {
-			srcStream = std::ifstream(wallsInputDir + "/" + *it + ".slp", std::ios::binary);
+	modIt = moddedFilesNames.begin();
+	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end();) {
+		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
+		if(comp == 0) {
+			std::ifstream srcStream = std::ifstream(moddedInputDir + "/" + *modIt + ".slp", std::ios::binary);
+			*out << srcStream.rdbuf();
+			it++;
+			modIt++;
+		} else if (comp < 0) {
+			std::ifstream srcStream = std::ifstream(moddedInputDir + "/" + *modIt + ".slp", std::ios::binary);
+			*out << srcStream.rdbuf();
+			modIt++;
 		} else {
-			srcStream = std::ifstream(inputDir + "/" + *it + ".slp", std::ios::binary);
-		}		
-		*out << srcStream.rdbuf();
+			std::ifstream srcStream = std::ifstream(inputDir + "/" + *it + ".slp", std::ios::binary);
+			*out << srcStream.rdbuf();
+			it++;
+		}
+
 	}
 
 	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
@@ -394,25 +467,19 @@ void MainWindow::makeDrs(std::string const inputDir ,std::ofstream *out) {
 	}
 }
 
-void MainWindow::uglyHudHack(std::string const inputDir) {
+void MainWindow::uglyHudHack(std::string const inputDir, std::string const moddedDir) {
 	/*
 	 * We have more than 30 civs, so we need to space the interface files further apart
 	 * This adds +10 for each gap between different file types
 	 */
-	int const HudFiles[] = {51131, 51161, 51191};
-	for (size_t baseIndex = sizeof HudFiles / sizeof (int); baseIndex >= 1; baseIndex--) {
-		for (int i = 1; i < 8; i++) {
-				std::string src = inputDir + std::to_string(HudFiles[baseIndex-1]-i) + ".slp";
-				boost::filesystem::remove(src);
-		}
-		if (baseIndex == 3)
-			continue;
-		for (int i = 22; i >= 0; i--) {
-			std::string dst = inputDir + std::to_string(HudFiles[baseIndex-1]+i+baseIndex*10) + ".slp";
-			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
-				std::string src = inputDir + std::to_string(HudFiles[baseIndex-1]+i) + ".slp";
-				boost::filesystem::rename(src, dst);
-			}
+	this->ui->label->repaint();
+	int const HudFiles[] = {51100, 51130, 51160};
+	for (size_t baseIndex = 0; baseIndex < sizeof HudFiles / sizeof (int); baseIndex++) {
+		for (int i = 1; i < 24; i++) {
+			std::string dst = moddedDir + std::to_string(HudFiles[baseIndex]+i+baseIndex*10) + ".slp";
+			std::string src = inputDir + std::to_string(HudFiles[baseIndex]+i) + ".slp";
+			if(fs::exists(src))
+				fs::copy_file(src, dst);
 		}
 	}
 
@@ -424,40 +491,18 @@ void MainWindow::uglyHudHack(std::string const inputDir) {
 	int const slavHudFiles[] = {51123, 51163, 51203};
 	for (size_t baseIndex = 0; baseIndex < sizeof slavHudFiles / sizeof (int); baseIndex++) {
 		for (size_t i = 1; i <= 8; i++) {
-			std::string dst = inputDir + std::to_string(slavHudFiles[baseIndex]+i) + ".slp";
-			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
-				std::string src = inputDir + std::to_string(slavHudFiles[baseIndex]) + ".slp";
-				boost::filesystem::copy_file(src, dst);
-			}
+			std::string dst = moddedDir + std::to_string(slavHudFiles[baseIndex]+i) + ".slp";
+			std::string src = moddedDir + std::to_string(slavHudFiles[baseIndex]) + ".slp";
+			fs::copy_file(src, dst);
 		}
 	}
 }
 
-void MainWindow::cleanTheUglyHudHack(std::string const inputDir) {
-	int const slavHudFiles[] = {51123, 51163, 51203};
-	for (size_t baseIndex = 0; baseIndex < sizeof slavHudFiles / sizeof (int); baseIndex++) {
-		for (size_t i = 1; i <= 8; i++) {
-			boost::filesystem::remove(inputDir + std::to_string(slavHudFiles[baseIndex]+i) + ".slp");
-		}
-	}
-	int const HudFiles[] = {51141, 51181};
-	for (size_t baseIndex = 1; baseIndex <= sizeof HudFiles / sizeof (int); baseIndex++) {
-		for (int i = 0; i <= 22; i++) {
-			std::string dst = inputDir + std::to_string(HudFiles[baseIndex-1]+i-baseIndex*10) + ".slp";
-			if (! (boost::filesystem::exists(dst) && boost::filesystem::file_size(dst) > 0)) {
-				std::string src = inputDir + std::to_string(HudFiles[baseIndex-1]+i) + ".slp";
-				boost::filesystem::rename(src, dst);
-			}
-		}
-	}
-
-}
-
-void MainWindow::copyCivIntroSounds(std::string const inputDir, std::string const outputDir) {
+void MainWindow::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
 	std::string const civs[] = {"italians", "indians", "incas", "magyars", "slavs",
 								"portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
 	for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
-		boost::filesystem::copy_file(inputDir + civs[i] + ".mp3", outputDir + civs[i] + ".mp3");
+		fs::copy_file(inputDir / (civs[i] + ".mp3"), outputDir / (civs[i] + ".mp3"));
 	}
 }
 
@@ -516,168 +561,173 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 
 void MainWindow::hotkeySetup() {
 
-	std::string const nfz1Path = "Player1.nfz";
-	std::string const nfz2Path = "Player2.nfz";
-	std::string const nfz3Path = "Player3.nfz";
-	std::string const nfzPath = outPath+"player.nfz";
-	std::string const aocHkiPath = "player1.hki";
-	std::string const hkiPath = HDPath + "Profiles/player0.hki";
-	std::string const hkiOutPath = outPath +  "player1.hki";
-	std::string const hki2OutPath = outPath +  "player2.hki";
-	std::string const hki3OutPath = outPath +  "player3.hki";
-	std::string const modHkiOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
-	std::string const modHki2OutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
-	std::string const nfzOutPath = outPath +  "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
-	std::string const nfzUpOutPath = outPath +  "Games/WololoKingdoms/Player.nfz";
+	fs::path nfz1Path("resources/Player1.nfz");
+	fs::path nfz2Path("resources/Player2.nfz");
+	fs::path nfz3Path("resources/Player3.nfz");
+	fs::path nfzPath = outPath / "player.nfz";
+	fs::path aocHkiPath("resources/player1.hki");
+	fs::path hkiPath = HDPath / ("Profiles/player0.hki");
+	fs::path hkiOutPath = outPath / "player1.hki";
+	fs::path hki2OutPath = outPath / "player2.hki";
+	fs::path hki3OutPath = outPath / "player3.hki";
+	fs::path modHkiOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
+	fs::path modHki2OutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
+	fs::path nfzOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
+	fs::path nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
 
 	if(this->ui->hotkeyChoice->currentIndex() != 0) {
-		boost::filesystem::remove(nfzOutPath);
-		boost::filesystem::remove(nfzUpOutPath);		
-		if(boost::filesystem::exists(nfzPath)) //Copy the Aoc Profile
-			boost::filesystem::copy_file(nfzPath, nfzOutPath);
+		fs::remove(nfzOutPath);
+		fs::remove(nfzUpOutPath);
+		if(fs::exists(nfzPath)) //Copy the Aoc Profile
+			fs::copy_file(nfzPath, nfzOutPath);
 		else //otherwise copy the default profile included
-			boost::filesystem::copy_file(nfz1Path, nfzOutPath);
+			fs::copy_file(nfz1Path, nfzOutPath);
 	}
 	if(this->ui->createExe->isChecked()) { //Profiles for UP
 		if (this->ui->hotkeyChoice->currentIndex() == 1 || this->ui->hotkeyChoice->currentIndex() == 3) {		
-			if(boost::filesystem::exists(nfzPath)) //Copy the Aoc Profile
-				boost::filesystem::copy_file(nfzPath,nfzUpOutPath);
+			if(fs::exists(nfzPath)) //Copy the Aoc Profile
+				fs::copy_file(nfzPath,nfzUpOutPath);
 			else //otherwise copy the default profile included
-				boost::filesystem::copy_file(nfz1Path,nfzUpOutPath);
+				fs::copy_file(nfz1Path,nfzUpOutPath);
 		} 
 		if(this->ui->hotkeyChoice->currentIndex() == 2) { 
-			boost::filesystem::copy_file(nfz2Path,nfzUpOutPath);
+			fs::copy_file(nfz2Path,nfzUpOutPath);
 		}
 	} 
 	//Copy hotkey files
+	if (this->ui->hotkeyChoice->currentIndex() == 1 && !fs::exists(hkiOutPath))
+		fs::copy_file(aocHkiPath, hkiOutPath);
 	if (this->ui->hotkeyChoice->currentIndex() == 2) {		
-		boost::filesystem::copy_file(hkiPath, modHkiOutPath,boost::filesystem::copy_option::overwrite_if_exists);
-		if(boost::filesystem::exists(hki2OutPath))
-			boost::filesystem::copy_file(hkiPath, modHki2OutPath,boost::filesystem::copy_option::overwrite_if_exists);
+		fs::copy_file(hkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
+		if(fs::exists(hki2OutPath))
+			fs::copy_file(hkiPath, modHki2OutPath,fs::copy_option::overwrite_if_exists);
 		if(this->ui->createExe->isChecked()) {			
-			if(boost::filesystem::exists(hki2OutPath)) {
-				boost::filesystem::copy_file(hkiPath, hki3OutPath);
+			if(fs::exists(hki2OutPath)) {
+				fs::copy_file(hkiPath, hki3OutPath);
 			} else {
-				boost::filesystem::copy_file(nfz3Path,nfzUpOutPath);
-				boost::filesystem::copy_file(hkiPath, hki2OutPath);				
+				fs::copy_file(nfz3Path,nfzUpOutPath);
+				fs::copy_file(hkiPath, hki2OutPath);
 			}
 		}
 	}
 	if(this->ui->hotkeyChoice->currentIndex() == 3) {	
-		boost::filesystem::copy_file(hkiOutPath, hkiOutPath+".bak",boost::filesystem::copy_option::overwrite_if_exists);
-		boost::filesystem::copy_file(hkiPath, hkiOutPath,boost::filesystem::copy_option::overwrite_if_exists);
-		if(boost::filesystem::exists(hki2OutPath)) {
-			boost::filesystem::copy_file(hki2OutPath, hki2OutPath+".bak",boost::filesystem::copy_option::overwrite_if_exists);
-			boost::filesystem::copy_file(hkiPath, hki2OutPath,boost::filesystem::copy_option::overwrite_if_exists);
+		fs::copy_file(hkiOutPath, hkiOutPath/".bak",fs::copy_option::overwrite_if_exists);
+		fs::copy_file(hkiPath, hkiOutPath,fs::copy_option::overwrite_if_exists);
+		if(fs::exists(hki2OutPath)) {
+			fs::copy_file(hki2OutPath, hki2OutPath/".bak",fs::copy_option::overwrite_if_exists);
+			fs::copy_file(hkiPath, hki2OutPath,fs::copy_option::overwrite_if_exists);
 		}
 	}
 }
 
 int MainWindow::run()
 {
-	this->ui->label->setText("Working...");
 	this->setEnabled(false);
+	this->ui->label->setText("Working...");
 	this->ui->label->repaint();
+	qApp->processEvents();
 	QDialog* dialog;
 	int ret = 0;
 
 	try {
-		std::string language;
-		switch(this->ui->languageChoice->currentIndex()) {
-			case 0: language = "br"; break;
-			case 1: language = "de"; break;
-			case 2: language = "en"; break;
-			case 3: language = "es"; break;
-			case 4: language = "fr"; break;
-			case 5: language = "it"; break;
-			case 6: language = "nl"; break;
-			default: language = "en";
-		}
-		std::string const keyValuesStringsPath = HDPath + "resources/"+language+"/strings/key-value/key-value-strings-utf8.txt";
-		std::string const vooblyDataModPath = outPath + "Voobly Mods/AOC/Data Mods/";
-		std::string const vooblyDir = outPath + "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
-		std::string const aocDatPath = HDPath + "resources/_common/dat/empires2_x1_p1.dat";
-		std::string const hdDatPath = HDPath + "resources/_common/dat/empires2_x2_p1.dat";
-		std::string const modLangPath = "language.ini";
-		std::string const languageIniPath = vooblyDir + "language.ini";
-		std::string const versionIniPath = vooblyDir +  "version.ini";
-		std::string const soundsInputPath =HDPath + "resources/_common/sound/";
-		std::string const soundsOutputPath = vooblyDir + "Sound/";
-		std::string const tauntInputPath = HDPath + "resources/en/sound/taunt/";
-		std::string const tauntOutputPath = vooblyDir + "Taunt/";
-		std::string const xmlPath = "WK.xml";
-		std::string const xmlOutPath = vooblyDir +  "age2_x1.xml";
-		std::string const nfzOutPath = vooblyDir +  "Player.nfz";
-		std::string const nfzUpOutPath = outPath + "Games/WololoKingdoms/Player.nfz";
-		std::string const langDllFile = "language_x1_p1.dll";
-		std::string langDllPath = langDllFile;
-		std::string const xmlOutPathUP = outPath +  "Games/WK.xml";
-		std::string const aiInputPath = "Script.Ai";
-		std::string const mapInputPath = "Script.Rm";
-		std::string const drsOutPath = vooblyDir + "Data/gamedata_x1_p1.drs";
-		std::string const assetsPath = HDPath + "resources/_common/drs/gamedata_x2/";
-		std::string const outputDatPath = vooblyDir + "Data/empires2_x1_p1.dat";
-		std::string const upDir = outPath + "Games/WololoKingdoms/";
+		fs::path keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
+		fs::path vooblyDataModPath = outPath / ("Voobly Mods/AOC/Data Mods/");
+		fs::path vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
+		std::string aocDatPath = HDPath.string() + "resources/_common/dat/empires2_x1_p1.dat";
+		std::string hdDatPath = HDPath.string() + "resources/_common/dat/empires2_x2_p1.dat";
+		fs::path modLangPath("resources/language.ini");
+		fs::path languageIniPath = vooblyDir / "language.ini";
+		std::string versionIniPath = vooblyDir.string() + "version.ini";
+		fs::path soundsInputPath = HDPath / "resources/_common/sound/";
+		fs::path soundsOutputPath = vooblyDir / "Sound/";
+		fs::path tauntInputPath = HDPath / "resources/en/sound/taunt/";
+		fs::path tauntOutputPath = vooblyDir / "Taunt/";
+		fs::path xmlPath("resources/WK.xml");
+		fs::path xmlOutPath = vooblyDir / "age2_x1.xml";
+		fs::path nfzOutPath = vooblyDir / "Player.nfz";
+		fs::path nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
+		fs::path langDllFile("language_x1_p1.dll");
+		fs::path langDllPath = langDllFile;
+		fs::path xmlOutPathUP = outPath / "Games/WK.xml";
+		fs::path aiInputPath("resources/Script.Ai");
+		fs::path mapInputPath("resources/Script.Rm");
+		std::string drsOutPath = vooblyDir.string() + "Data/gamedata_x1_p1.drs";
+		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
+		fs::path moddedAssetsPath("assets/");
+		fs::path outputDatPath = vooblyDir / "Data/empires2_x1_p1.dat";
+		fs::path upDir = outPath / "Games/WololoKingdoms/";
 		std::string const UPModdedExe = "WK";
-		std::string const UPExe = "SetupAoc.exe";
+		fs::path UPExe("resources/SetupAoc.exe");
+		fs::path UPExeOut = outPath / "SetupAoc.exe";
+		fs::path pwInputDir("resources/pussywood");
+		fs::path gridInputDir("resources/grid");
+		fs::path wallsInputDir("resources/short_walls");
 		
+		fs::remove_all(moddedAssetsPath);
+		fs::create_directories(moddedAssetsPath);
+
+		if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
+			this->ui->label->setText("Working...\n"
+									 "Preparing modded replacement files...");
+			this->ui->label->repaint();
+		}
 		if(this->ui->usePw->isChecked())
-			listAssetFiles(pwInputDir, &pwFiles, NULL);
+			recCopy(pwInputDir, moddedAssetsPath);
 		if(this->ui->useGrid->isChecked())
-			listAssetFiles(gridInputDir, &gridFiles, NULL);
+			recCopy(gridInputDir, moddedAssetsPath);
 		if(this->ui->useWalls->isChecked())
-			listAssetFiles(wallsInputDir, &wallFiles, NULL);
+			recCopy(wallsInputDir, moddedAssetsPath);
 	
 
-		if(boost::filesystem::exists(nfzOutPath)) //Avoid deleting profile files
-			boost::filesystem::rename(nfzOutPath, vooblyDataModPath+"player.nfz");
-		if(boost::filesystem::exists(nfzUpOutPath))
-			boost::filesystem::rename(nfzUpOutPath, outPath+"Games/player.nfz");
-		boost::filesystem::remove_all(vooblyDir);
-		boost::filesystem::remove_all(outPath+"Games/WololoKingdoms");
-		boost::filesystem::remove(outPath+"Games/WK.xml");
-		boost::filesystem::create_directories(vooblyDir+"Data");
-		boost::filesystem::create_directories(vooblyDir+"Sound/stream");
-		boost::filesystem::create_directories(vooblyDir+"Taunt");
-		boost::filesystem::create_directories(upDir);
-		if(boost::filesystem::exists(vooblyDataModPath+"player.nfz")) //copy back profile files if required
-			boost::filesystem::rename(vooblyDataModPath+"player.nfz", nfzOutPath);
-		if(boost::filesystem::exists(outPath+"Games/player.nfz"))
-			boost::filesystem::rename(outPath+"Games/player.nfz", nfzUpOutPath);
-		boost::filesystem::create_directories(upDir + "Data");
+		if(fs::exists(nfzOutPath)) //Avoid deleting profile files
+			fs::rename(nfzOutPath, vooblyDataModPath/"player.nfz");
+		if(fs::exists(nfzUpOutPath))
+			fs::rename(nfzUpOutPath, outPath/"Games/player.nfz");
+		fs::remove_all(vooblyDir);
+		fs::remove_all(outPath/"Games/WololoKingdoms");
+		fs::remove(outPath/"Games/WK.xml");
+		fs::create_directories(vooblyDir/"Data");
+		fs::create_directories(vooblyDir/"Sound/stream");
+		fs::create_directories(vooblyDir/"Taunt");
+		fs::create_directories(upDir);
+		if(fs::exists(vooblyDataModPath/"player.nfz")) //copy back profile files if required
+			fs::rename(vooblyDataModPath/"player.nfz", nfzOutPath);
+		if(fs::exists(outPath/"Games/player.nfz"))
+			fs::rename(outPath/"Games/player.nfz", nfzUpOutPath);
+		fs::create_directories(upDir / "Data");
 
 		this->ui->label->setText("Working...\n"
 								 "Preparing resource files...");
 		this->ui->label->repaint();
 		std::ofstream versionOut(versionIniPath);
 		versionOut << version << std::endl;
-		copyCivIntroSounds(soundsInputPath + "civ/", soundsOutputPath + "stream/");
-		createMusicPlaylist(soundsInputPath + "music/", soundsOutputPath + "music.m3u");
-		recCopy(vooblyDir + "Sound", upDir + "Sound");
+		copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
+		createMusicPlaylist(soundsInputPath.string() + "music/", soundsOutputPath.string() + "music.m3u");
+		recCopy(vooblyDir / "Sound", upDir / "Sound");
 		recCopy(tauntInputPath, tauntOutputPath);
-		recCopy(vooblyDir + "Taunt", upDir + "Taunt");
+		recCopy(vooblyDir / "Taunt", upDir / "Taunt");
 
 		hotkeySetup();
 
 		/*
-		if(boost::filesystem::exists(vooblyDir+"player.nfz")) {
-			recCopy(vooblyDir + "player.nfz", upDir + "player.nfz");
+		if(fs::exists(vooblyDir/"player.nfz")) {
+			recCopy(vooblyDir / "player.nfz", upDir / "player.nfz");
 		}
 		*/
 
-		boost::filesystem::copy_file(xmlPath, xmlOutPath);
-		boost::filesystem::copy_file(xmlPath, xmlOutPathUP);
-		boolean aocFound = outPath != HDPath+"WololoKingdoms/out/";
+		fs::copy_file(xmlPath, xmlOutPath);
+		fs::copy_file(xmlPath, xmlOutPathUP);
+		boolean aocFound = outPath != HDPath/"WololoKingdoms/out/";
 		if (aocFound) {
-			recCopy(outPath+"Random", vooblyDir+"Script.Rm");
+			recCopy(outPath/"Random", vooblyDir/"Script.Rm");
 		}
-		recCopy(mapInputPath, vooblyDir+"Script.Rm");
-		recCopy(vooblyDir + "Script.Rm", upDir + "Script.Rm");
+		recCopy(mapInputPath, vooblyDir/"Script.Rm");
+		recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm");
 
 
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
-		//recCopy(aiInputPath, vooblyDir+"Script.Ai");
-		//recCopy(vooblyDir + "Script.Ai", upDir + "Script.Ai");
+		//recCopy(aiInputPath, vooblyDir/"Script.Ai");
+		//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
 
 		this->ui->label->setText("Working...\n"
 								 "Opening the AOC dat file...");
@@ -699,25 +749,12 @@ int MainWindow::run()
 		std::ofstream drsOut(drsOutPath, std::ios::binary);
 
 		this->ui->label->setText("Working...\n"
-								 "Generating gamedata_x1_p1.drs...");
+								 "Fixing Interface Files...");
 		this->ui->label->repaint();
-		try {
-			uglyHudHack(assetsPath);
-			makeDrs(assetsPath, &drsOut);
-			cleanTheUglyHudHack(assetsPath);
-		} catch(const boost::filesystem::filesystem_error& e) {
-			int const HudFiles[] = {51131, 51161, 51191};
-			for (size_t baseIndex = 0; baseIndex < sizeof HudFiles / sizeof (int); baseIndex++) {
-				for (int i = 1; i < 8; i++) {
-					std::string src = assetsPath + std::to_string(HudFiles[baseIndex]-i) + ".slp";
-					boost::filesystem::remove(src);
-				}
-			}
-			dialog = new Dialog(this,"The following error occured while converting: " + e.code().message() + "\n"
-						 "Please verify your HD game files and try running the converter again");
-			return 1;
-		}
+		uglyHudHack(assetsPath.string(),moddedAssetsPath.string());
+		makeDrs(assetsPath.string(), moddedAssetsPath.string(), &drsOut);
 
+		fs::remove_all(moddedAssetsPath);
 
 		this->ui->label->setText("Working...\n"
 								 "Generating empires2_x1_p1.dat...");
@@ -770,7 +807,7 @@ int MainWindow::run()
 			 * Load modded strings instead of normal HD strings into lang replacement
 			 */
 			std::string line;
-			std::ifstream modLang(modLangPath);
+			std::ifstream modLang(modLangPath.string());
 			while (std::getline(modLang, line)) {
 				int spaceIdx = line.find('=');
 				std::string number = line.substr(0, spaceIdx);
@@ -792,22 +829,22 @@ int MainWindow::run()
 		}
 
 
-		std::ifstream langIn(keyValuesStringsPath);
-		std::ofstream langOut(languageIniPath);
+		std::ifstream langIn(keyValuesStringsPath.string());
+		std::ofstream langOut(languageIniPath.string());
 		genie::LangFile langDll;
 
 		bool patchLangDll;
 		if(this->ui->createExe->isChecked()) {
 			if(!aocFound)
-				patchLangDll = boost::filesystem::exists(langDllPath);
+				patchLangDll = fs::exists(langDllPath);
 			else {
-				langDllPath = outPath + langDllPath;
-				patchLangDll = boost::filesystem::exists(langDllPath);
+				langDllPath = outPath / langDllPath;
+				patchLangDll = fs::exists(langDllPath);
 				if(patchLangDll)
 				{
-					if(boost::filesystem::exists(langDllFile))
-						boost::filesystem::remove(langDllFile);
-					boost::filesystem::copy_file(langDllPath,langDllFile);
+					if(fs::exists(langDllFile))
+						fs::remove(langDllFile);
+					fs::copy_file(langDllPath,langDllFile);
 				}
 			}
 		} else {
@@ -816,17 +853,17 @@ int MainWindow::run()
 		bool dllPatched = true;
 		if (patchLangDll) {
 			try {
-				langDll.load((langDllFile).c_str());
+				langDll.load((langDllFile.string()).c_str());
 				langDll.setGameVersion(genie::GameVersion::GV_TC);
 			} catch (const std::ifstream::failure& e) {
 				//Try deleting and re-copying
-				boost::filesystem::remove(langDllFile);
-				boost::filesystem::copy_file(langDllPath,langDllFile);
+				fs::remove(langDllFile);
+				fs::copy_file(langDllPath,langDllFile);
 				try {
-					langDll.load((langDllFile).c_str());
+					langDll.load((langDllFile.string()).c_str());
 					langDll.setGameVersion(genie::GameVersion::GV_TC);
 				} catch (const std::ifstream::failure& e) {
-					boost::filesystem::remove(langDllFile);
+					fs::remove(langDllFile);
 					dllPatched = false;
 					patchLangDll = false;
 				}
@@ -835,7 +872,7 @@ int MainWindow::run()
 		else {
 			if(this->ui->createExe->isChecked()) {
 				this->ui->label->setText(("Working...\n"
-									  + langDllPath + " not found, skipping dll patching for UserPatch.").c_str());
+									  + langDllPath.string() + " not found, skipping dll patching for UserPatch.").c_str());
 				this->ui->label->repaint();
 			}
 		}
@@ -843,10 +880,10 @@ int MainWindow::run()
 		if (patchLangDll) {
 			try {
 				langDll.save();
-				boost::filesystem::copy_file(langDllFile,upDir+"data/"+langDllFile);
-				boost::filesystem::remove(langDllFile);
+				fs::copy_file(langDllFile,upDir/"data/"/langDllFile);
+				fs::remove(langDllFile);
 				this->ui->label->setText(("Working...\n"
-								  + langDllFile + " patched.").c_str());
+								  + langDllFile.string() + " patched.").c_str());
 				this->ui->label->repaint();
 			} catch (const std::ofstream::failure& e) {
 				this->ui->label->setText("Working...\n"
@@ -854,10 +891,10 @@ int MainWindow::run()
 				this->ui->label->repaint();
 				try {
 					langDll.save();
-					boost::filesystem::copy_file(langDllFile,upDir+"data/"+langDllFile);
-					boost::filesystem::remove(langDllFile);
+					fs::copy_file(langDllFile,upDir/"data/"/langDllFile);
+					fs::remove(langDllFile);
 					this->ui->label->setText(("Working...\n"
-								  + langDllFile + " patched.").c_str());
+								  + langDllFile.string() + " patched.").c_str());
 					this->ui->label->repaint();
 				} catch (const std::ofstream::failure& e) {
 					dllPatched = false;
@@ -866,13 +903,13 @@ int MainWindow::run()
 			}
 		}
 
-		aocDat.saveAs(outputDatPath.c_str());
+		aocDat.saveAs(outputDatPath.string().c_str());
 
 		this->ui->label->setText("Working...\n"
 								 "Copying the files for UserPatch...");
 		this->ui->label->repaint();
 
-		recCopy(vooblyDir + "Data", upDir + "Data");
+		recCopy(vooblyDir / "Data", upDir / "Data");
 
 
 
@@ -885,15 +922,15 @@ int MainWindow::run()
 											  "You can still play this via Voobly, but for offline play the converter needs a valid language_x1_p1.dll file to write to.");
 					dialog->exec();
 				} else {
-					if(boost::filesystem::exists(outPath+UPExe)) {
-						if(boost::filesystem::file_size(UPExe) != boost::filesystem::file_size((outPath+UPExe))) {
-							boost::filesystem::remove(outPath+UPExe);
-							boost::filesystem::copy_file(UPExe, outPath+UPExe);
+					if(fs::exists(UPExeOut)) {
+						if(fs::file_size(UPExe) != fs::file_size((UPExeOut))) {
+							fs::remove(UPExeOut);
+							fs::copy_file(UPExe, UPExeOut);
 						}
 					} else {
-						boost::filesystem::copy_file(UPExe, outPath+UPExe);
+						fs::copy_file(UPExe, UPExeOut);
 					}
-					system(("\""+outPath+UPExe+"\" -g:"+UPModdedExe).c_str());
+					system(("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
 					dialog = new Dialog(this,"Conversion complete! The WololoKingdoms mod is now available as a Voobly Mod and "
 											 "as a separate " + UPModdedExe + ".exe in the age2_x1 folder.");
 					dialog->exec();
@@ -903,17 +940,17 @@ int MainWindow::run()
 				dialog->exec();
 			}
 			this->ui->label->setText("Done!");
-			if(boost::filesystem::exists(outPath+"/compatslp")) {
-				if(boost::filesystem::exists(outPath+"/compatslp2"))
-					boost::filesystem::remove_all(outPath+"/compatslp2");
-				recCopy(outPath+"/compatslp",outPath+"/compatslp2");
-				boost::filesystem::remove_all(outPath+"/compatslp");
+			if(fs::exists(outPath/"/compatslp")) {
+				if(fs::exists(outPath/"/compatslp2"))
+					fs::remove_all(outPath/"/compatslp2");
+				recCopy(outPath/"/compatslp",outPath/"/compatslp2");
+				fs::remove_all(outPath/"/compatslp");
 				this->ui->label->setText("Done! NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2').\n"
 										 "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored.");
 				if(this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
-					if(boost::filesystem::file_size(outPath+"/data/blendomatic.dat") < 400000) {
-						boost::filesystem::rename(outPath+"/data/blendomatic.dat",outPath+"/data/blendomatic.dat.bak");
-						boost::filesystem::rename(outPath+"/data/blendomatic_x1.dat",outPath+"/data/blendomatic.dat");
+					if(fs::file_size(outPath/"/data/blendomatic.dat") < 400000) {
+						fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
+						fs::rename(outPath/"/data/blendomatic_x1.dat",outPath/"/data/blendomatic.dat");
 					}
 				}
 
@@ -921,15 +958,18 @@ int MainWindow::run()
 		} else {
 			this->ui->label->setText("Done! Open the \"out/\" folder and put its contents into your AoE2 folder to make it work.");
 			dialog = new Dialog(this,"Conversion complete. Installer did not find your AoE2 installation - \n"
-						"open the \"out/\" folder and put its contents into your AoE2 folder to make it work.");
+						"open the \"out/\" folder and put its contents into your AoE2 folder to make it work.");			
+			dialog->exec();
 		}
 	}
 	catch (std::exception const & e) {
-		std::cerr << e.what() << std::endl;
+		dialog = new Dialog(this,"There was an exception! Please pass this error on to Jineapple:"+std::string()+e.what());		
+		dialog->exec();
 		ret = 1;
 	}
-	catch (std::string const & e) {
-		std::cerr << e << std::endl;
+	catch (std::string const & e) {		
+		dialog = new Dialog(this,"There was an exception! Please pass this error on to Jineapple: "+e);		
+		dialog->exec();
 		ret = 1;
 	}
 

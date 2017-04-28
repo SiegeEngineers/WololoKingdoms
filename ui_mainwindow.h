@@ -165,6 +165,9 @@ public:
 
         retranslateUi(MainWindow);
 
+        languageChoice->setCurrentIndex(2);
+
+
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
@@ -179,10 +182,24 @@ public:
          << QApplication::translate("MainWindow", "Use HD hotkeys for this mod and AoC", Q_NULLPTR)
         );
         hotkeyTip->setText(QString());
-        replaceTooltips->setText(QApplication::translate("MainWindow", "Improve tooltips and tech tree descriptions", Q_NULLPTR));
+        replaceTooltips->setText(QApplication::translate("MainWindow", "Improve tooltips and tech tree", Q_NULLPTR));
         tooltipTip->setText(QString());
         createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", Q_NULLPTR));
         exeTip->setText(QString());
+        languageChoice->clear();
+        languageChoice->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "Portugu\303\252s-Brasil (Portuguese-Brasil)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Deutsch (German)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "English", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Espa\303\261ol (Spanish)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Fran\303\247ais (French)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Italiano (Italian)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "\346\227\245\346\234\254\350\252\236 (Japanese)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "\355\225\234\352\265\255\354\226\264 (Korean)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Nederlands (Dutch)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "\347\256\200\344\275\223\344\270\255\346\226\207 (Simplified Chinese)", Q_NULLPTR)
+        );
         useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
         useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
         usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
