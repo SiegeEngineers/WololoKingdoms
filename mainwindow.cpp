@@ -48,10 +48,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	language = "en";
 	ui->setupUi(this);
-	changeLanguage(language);
-
 	HDPath = getHDPath();
 	outPath = getOutPath(HDPath);
+	changeLanguage(language);
 
 	QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
 		switch(this->ui->languageChoice->currentIndex()) {
@@ -278,8 +277,6 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 			boost::replace_all(outputLine, "·", "\xb7"); // Dll can't handle that character.
 			boost::replace_all(outputLine, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
-				if(nb >= 1004)
-					std::cout << "breakpoint here";
 				dllOut->setString(nb, outputLine);
 			}
 			catch (std::string const & e) {
@@ -596,18 +593,22 @@ void MainWindow::hotkeySetup() {
 			fs::copy_file(hkiPath, modHki2OutPath,fs::copy_option::overwrite_if_exists);
 		if(this->ui->createExe->isChecked()) {			
 			if(fs::exists(hki2OutPath)) {
-				fs::copy_file(hkiPath, hki3OutPath);
+				fs::copy_file(hkiPath, hki3OutPath, fs::copy_option::overwrite_if_exists);
+				fs::copy_file(nfz3Path,nfzUpOutPath, fs::copy_option::overwrite_if_exists);
 			} else {
-				fs::copy_file(nfz3Path,nfzUpOutPath);
 				fs::copy_file(hkiPath, hki2OutPath);
 			}
 		}
 	}
 	if(this->ui->hotkeyChoice->currentIndex() == 3) {	
-		fs::copy_file(hkiOutPath, hkiOutPath/".bak",fs::copy_option::overwrite_if_exists);
+		fs::path backup = hkiOutPath;
+		backup+=".bak";
+		fs::copy_file(hkiOutPath, backup,fs::copy_option::overwrite_if_exists);
 		fs::copy_file(hkiPath, hkiOutPath,fs::copy_option::overwrite_if_exists);
 		if(fs::exists(hki2OutPath)) {
-			fs::copy_file(hki2OutPath, hki2OutPath/".bak",fs::copy_option::overwrite_if_exists);
+			backup = hki2OutPath;
+			backup+=".bak";
+			fs::copy_file(hki2OutPath, backup,fs::copy_option::overwrite_if_exists);
 			fs::copy_file(hkiPath, hki2OutPath,fs::copy_option::overwrite_if_exists);
 		}
 	}
@@ -688,39 +689,37 @@ int MainWindow::run()
 			fs::rename(vooblyDataModPath/"player.nfz", nfzOutPath);
 		if(fs::exists(outPath/"Games/player.nfz"))
 			fs::rename(outPath/"Games/player.nfz", nfzUpOutPath);
-		fs::create_directories(upDir / "Data");
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingFiles"]).c_str());
 		this->ui->label->repaint();
 		std::ofstream versionOut(versionIniPath);
 		versionOut << version << std::endl;
+
+		boolean aocFound = outPath != HDPath/"WololoKingdoms/out/";
 		copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
 		createMusicPlaylist(soundsInputPath.string() + "music/", soundsOutputPath.string() + "music.m3u");
-		recCopy(vooblyDir / "Sound", upDir / "Sound");
 		recCopy(tauntInputPath, tauntOutputPath);
-		recCopy(vooblyDir / "Taunt", upDir / "Taunt");
-
-		hotkeySetup();
-
-		/*
-		if(fs::exists(vooblyDir/"player.nfz")) {
-			recCopy(vooblyDir / "player.nfz", upDir / "player.nfz");
-		}
-		*/
-
 		fs::copy_file(xmlPath, xmlOutPath);
-		fs::copy_file(xmlPath, xmlOutPathUP);
-		boolean aocFound = outPath != HDPath/"WololoKingdoms/out/";
 		if (aocFound) {
 			recCopy(outPath/"Random", vooblyDir/"Script.Rm");
 		}
 		recCopy(mapInputPath, vooblyDir/"Script.Rm");
-		recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm");
-
 
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		//recCopy(aiInputPath, vooblyDir/"Script.Ai");
-		//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
+
+		if(this->ui->createExe->isChecked()) {
+			fs::create_directories(upDir / "Data");
+			recCopy(vooblyDir / "Sound", upDir / "Sound");
+			recCopy(vooblyDir / "Taunt", upDir / "Taunt");
+			fs::copy_file(xmlPath, xmlOutPathUP);
+			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm");
+			//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
+		}
+		hotkeySetup();
+
+
+
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingAoc"]).c_str());
 		this->ui->label->repaint();
@@ -859,7 +858,7 @@ int MainWindow::run()
 		else {
 			if(this->ui->createExe->isChecked()) {
 				line = translation["working"]+"\n"+translation["workingNoDll"];
-				boost::replace_all(line,"<drs>",langDllPath.string());
+				boost::replace_all(line,"<dll>",langDllPath.string());
 				this->ui->label->setText(line.c_str());
 				this->ui->label->repaint();
 			}
@@ -868,7 +867,7 @@ int MainWindow::run()
 		if (patchLangDll) {
 			try {
 				line = translation["working"]+"\n"+translation["workingDll"];
-				boost::replace_all(line,"<drs>",langDllFile.string());
+				boost::replace_all(line,"<dll>",langDllFile.string());
 				langDll.save();
 				fs::copy_file(langDllFile,upDir/"data/"/langDllFile);
 				fs::remove(langDllFile);
@@ -895,13 +894,12 @@ int MainWindow::run()
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingUp"]).c_str());
 		this->ui->label->repaint();
 
-		recCopy(vooblyDir / "Data", upDir / "Data");
-
 
 
 		if (aocFound) {
 
 			if(this->ui->createExe->isChecked()) {
+				recCopy(vooblyDir / "Data", upDir / "Data");
 				if (!dllPatched) {
 					dialog = new Dialog(this, translation["dialogNoDll"].c_str());
 					dialog->exec();
