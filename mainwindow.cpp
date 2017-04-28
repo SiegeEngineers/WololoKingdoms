@@ -603,7 +603,8 @@ void MainWindow::hotkeySetup() {
 	if(this->ui->hotkeyChoice->currentIndex() == 3) {	
 		fs::path backup = hkiOutPath;
 		backup+=".bak";
-		fs::copy_file(hkiOutPath, backup,fs::copy_option::overwrite_if_exists);
+		if(fs::exists(hkiOutPath))
+			fs::copy_file(hkiOutPath, backup,fs::copy_option::overwrite_if_exists);
 		fs::copy_file(hkiPath, hkiOutPath,fs::copy_option::overwrite_if_exists);
 		if(fs::exists(hki2OutPath)) {
 			backup = hki2OutPath;
