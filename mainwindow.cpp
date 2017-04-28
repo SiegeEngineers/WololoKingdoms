@@ -77,28 +77,21 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	this->ui->hotkeyTip->setIcon(QIcon("resources/question.png"));
 	this->ui->hotkeyTip->setIconSize(QSize(16,16));
-	this->ui->hotkeyTip->setWhatsThis("You can choose a hotkey file to use for the WololoKingdoms Mod. You have three options\n"
-									  "1) Use current AoC/Voobly hotkeys: This looks for a player1.hki file in your AoE2 installation folder, "
-									  "which is what would be used when playing standard AoC via Voobly. If it can't find such a file, it will use the default AoC hotkeys\n"
-									  "2) Use HD hotkeys for this mod only: This looks for a player0.hki file in your HD installation folder and uses those for the WololoKingdoms mod\n"
-									  "3) Use HD hotkeys for this mod and AoC: Same as 2), but this will use your current HD hotkeys for standard AoC via Voobly as well and overwrite your current ones\n\n"
-									  "If you've run this installer before, you'll also get an option to keep the current hotkey setup.");
+	this->ui->hotkeyTip->setWhatsThis(translation["hotkeyTip"].c_str());
 	QObject::connect( this->ui->hotkeyTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->hotkeyTip->mapToGlobal(QPoint(0,0)),this->ui->hotkeyTip->whatsThis());
 	} );
 	this->ui->tooltipTip->setIcon(QIcon("resources/question.png"));
 	this->ui->tooltipTip->setIconSize(QSize(16,16));
-	this->ui->tooltipTip->setWhatsThis("This replaces the tooltips of units, technologies and buildings that are shown in the tech tree or in-game with extended help (F1) enabled\n"
-										"It provides some error corrections, and more information such as research/creation time, attack speed, attack boni and more\n"
-										"This is available as a mod for Voobly (), selecting the checkbox will make it permanent (and available offline as well)\n"
-										"To remove it, you'll need to run the installer again with this checkbox unchecked");
+	this->ui->tooltipTip->setWhatsThis(translation["tooltipTip"].c_str());
 	QObject::connect( this->ui->tooltipTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->tooltipTip->mapToGlobal(QPoint(0,0)),this->ui->tooltipTip->whatsThis());
 	} );
 	this->ui->exeTip->setIcon(QIcon("resources/question.png"));
 	this->ui->exeTip->setIconSize(QSize(16,16));
-	this->ui->exeTip->setWhatsThis(("This creates a WK.exe in your " +outPath.string() +"age2_x1 folder that can be used for playing WololoKingdoms without Voobly"
-									"When checked an extra window for the Userpatch will open during the installation. Chosse the options you want, run it, and then close it.").c_str());
+	std::string line = translation["exeTip"];
+	boost::replace_all(line, "<folder>", outPath.string()+"\age2_x1");
+	this->ui->exeTip->setWhatsThis(line.c_str());
 	QObject::connect( this->ui->exeTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->exeTip->mapToGlobal(QPoint(0,0)),this->ui->exeTip->whatsThis());
 	} );
@@ -122,6 +115,7 @@ void MainWindow::changeLanguage(std::string language) {
 	std::string line;
 	std::ifstream translationFile("resources/"+language+".txt");
 	while (std::getline(translationFile, line)) {
+		boost::replace_all(line, "\\n", "\n");
 		int index = line.find('=');
 		translation[line.substr(0, index)] = line.substr(index+1, std::string::npos);
 	}
@@ -284,6 +278,8 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 			boost::replace_all(outputLine, "·", "\xb7"); // Dll can't handle that character.
 			boost::replace_all(outputLine, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
+				if(nb >= 1004)
+					std::cout << "breakpoint here";
 				dllOut->setString(nb, outputLine);
 			}
 			catch (std::string const & e) {
@@ -297,8 +293,7 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 
 void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInputDir, std::ofstream *out) {
 
-	this->ui->label->setText("Working...\n"
-							 "Looking for files to copy...");
+	this->ui->label->setText((translation["working"]+"\n"+translation["workingDrs"]).c_str());
 	this->ui->label->repaint();
 	const int numberOfTables = 2; // slp and wav
 
@@ -400,8 +395,7 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	};
 
 
-	this->ui->label->setText("Working...\n"
-							 "Write to gamedata_x1_p1.drs...");
+	this->ui->label->setText((translation["working"]+"\n"+translation["workingDrs2"]).c_str());
 	this->ui->label->repaint();
 	// now write the actual drs file
 
@@ -437,8 +431,7 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	}
 
 
-	this->ui->label->setText("Working...\n"
-							 "Copying files to gamedata_x1_p1.drs...");
+	this->ui->label->setText((translation["working"]+"\n"+translation["workingDrs3"]).c_str());
 	this->ui->label->repaint();
 	// now write the actual files
 	modIt = moddedFilesNames.begin();
@@ -623,7 +616,7 @@ void MainWindow::hotkeySetup() {
 int MainWindow::run()
 {
 	this->setEnabled(false);
-	this->ui->label->setText("Working...");
+	this->ui->label->setText(translation["working"].c_str());
 	this->ui->label->repaint();
 	qApp->processEvents();
 	QDialog* dialog;
@@ -662,13 +655,14 @@ int MainWindow::run()
 		fs::path pwInputDir("resources/pussywood");
 		fs::path gridInputDir("resources/grid");
 		fs::path wallsInputDir("resources/short_walls");
+
+		std::string line;
 		
 		fs::remove_all(moddedAssetsPath);
 		fs::create_directories(moddedAssetsPath);
 
 		if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
-			this->ui->label->setText("Working...\n"
-									 "Preparing modded replacement files...");
+			this->ui->label->setText((translation["working"]+"\n"+translation["workingMods"]).c_str());
 			this->ui->label->repaint();
 		}
 		if(this->ui->usePw->isChecked())
@@ -696,8 +690,7 @@ int MainWindow::run()
 			fs::rename(outPath/"Games/player.nfz", nfzUpOutPath);
 		fs::create_directories(upDir / "Data");
 
-		this->ui->label->setText("Working...\n"
-								 "Preparing resource files...");
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingFiles"]).c_str());
 		this->ui->label->repaint();
 		std::ofstream versionOut(versionIniPath);
 		versionOut << version << std::endl;
@@ -729,8 +722,7 @@ int MainWindow::run()
 		//recCopy(aiInputPath, vooblyDir/"Script.Ai");
 		//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
 
-		this->ui->label->setText("Working...\n"
-								 "Opening the AOC dat file...");
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingAoc"]).c_str());
 		this->ui->label->repaint();
 
 		genie::DatFile aocDat;
@@ -738,8 +730,7 @@ int MainWindow::run()
 		aocDat.setGameVersion(genie::GameVersion::GV_TC);
 		aocDat.load(aocDatPath.c_str());
 
-		this->ui->label->setText("Working...\n"
-								 "Opening the AOE2HD dat file...");
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingHD"]).c_str());
 		this->ui->label->repaint();
 		genie::DatFile hdDat;
 		hdDat.setVerboseMode(true);
@@ -748,16 +739,14 @@ int MainWindow::run()
 
 		std::ofstream drsOut(drsOutPath, std::ios::binary);
 
-		this->ui->label->setText("Working...\n"
-								 "Fixing Interface Files...");
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingInterface"]).c_str());
 		this->ui->label->repaint();
 		uglyHudHack(assetsPath.string(),moddedAssetsPath.string());
 		makeDrs(assetsPath.string(), moddedAssetsPath.string(), &drsOut);
 
 		fs::remove_all(moddedAssetsPath);
 
-		this->ui->label->setText("Working...\n"
-								 "Generating empires2_x1_p1.dat...");
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingDat"]).c_str());
 		this->ui->label->repaint();
 		transferHdDatElements(&hdDat, &aocDat);
 
@@ -795,8 +784,7 @@ int MainWindow::run()
 			langReplacement[26419] = "Create <b> Imperial Camel<b> (<cost>) \nUnique Indian upgrade. Stronger than Heavy Camel. Attack bonus vs. cavalry. <i> Upgrades: attack, armor (Blacksmith); speed, hit points (Stable); creation speed (Castle); more resistant to Monks (Monastery).<i> \n<hp> <attack> <armor> <piercearmor> <range>";
 		}
 
-		this->ui->label->setText("Working...\n"
-							 "Applying DAT patches...");
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingPatches"]).c_str());
 		this->ui->label->repaint();
 		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {			
 			patchTab[i].patch(&aocDat, &langReplacement);
@@ -806,7 +794,6 @@ int MainWindow::run()
 			/*
 			 * Load modded strings instead of normal HD strings into lang replacement
 			 */
-			std::string line;
 			std::ifstream modLang(modLangPath.string());
 			while (std::getline(modLang, line)) {
 				int spaceIdx = line.find('=');
@@ -871,30 +858,30 @@ int MainWindow::run()
 		}
 		else {
 			if(this->ui->createExe->isChecked()) {
-				this->ui->label->setText(("Working...\n"
-									  + langDllPath.string() + " not found, skipping dll patching for UserPatch.").c_str());
+				line = translation["working"]+"\n"+translation["workingNoDll"];
+				boost::replace_all(line,"<drs>",langDllPath.string());
+				this->ui->label->setText(line.c_str());
 				this->ui->label->repaint();
 			}
 		}
 		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
 		if (patchLangDll) {
 			try {
+				line = translation["working"]+"\n"+translation["workingDll"];
+				boost::replace_all(line,"<drs>",langDllFile.string());
 				langDll.save();
 				fs::copy_file(langDllFile,upDir/"data/"/langDllFile);
 				fs::remove(langDllFile);
-				this->ui->label->setText(("Working...\n"
-								  + langDllFile.string() + " patched.").c_str());
+				this->ui->label->setText(line.c_str());
 				this->ui->label->repaint();
 			} catch (const std::ofstream::failure& e) {
-				this->ui->label->setText("Working...\n"
-								 "Error, trying again");
+				this->ui->label->setText(translation["workingError"].c_str());
 				this->ui->label->repaint();
 				try {
 					langDll.save();
 					fs::copy_file(langDllFile,upDir/"data/"/langDllFile);
 					fs::remove(langDllFile);
-					this->ui->label->setText(("Working...\n"
-								  + langDllFile.string() + " patched.").c_str());
+					this->ui->label->setText(line.c_str());
 					this->ui->label->repaint();
 				} catch (const std::ofstream::failure& e) {
 					dllPatched = false;
@@ -905,8 +892,7 @@ int MainWindow::run()
 
 		aocDat.saveAs(outputDatPath.string().c_str());
 
-		this->ui->label->setText("Working...\n"
-								 "Copying the files for UserPatch...");
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingUp"]).c_str());
 		this->ui->label->repaint();
 
 		recCopy(vooblyDir / "Data", upDir / "Data");
@@ -917,9 +903,7 @@ int MainWindow::run()
 
 			if(this->ui->createExe->isChecked()) {
 				if (!dllPatched) {
-					dialog = new Dialog(this, "Couldn't read/write the language_x1_p1.dll file!\n"
-											  "Try running the converter again, if it still doesn't work, your language_x1_p1.dll file may be corrupt\n"
-											  "You can still play this via Voobly, but for offline play the converter needs a valid language_x1_p1.dll file to write to.");
+					dialog = new Dialog(this, translation["dialogNoDll"].c_str());
 					dialog->exec();
 				} else {
 					if(fs::exists(UPExeOut)) {
@@ -931,22 +915,22 @@ int MainWindow::run()
 						fs::copy_file(UPExe, UPExeOut);
 					}
 					system(("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
-					dialog = new Dialog(this,"Conversion complete! The WololoKingdoms mod is now available as a Voobly Mod and "
-											 "as a separate " + UPModdedExe + ".exe in the age2_x1 folder.");
+					line = translation["dialogExe"];
+					boost::replace_all(line,"<exe>",UPModdedExe);
+					dialog = new Dialog(this,line.c_str());
 					dialog->exec();
 				}
 			} else {
-				dialog = new Dialog(this,"Conversion complete! The WololoKingdoms mod is now part of your AoC installation.");
+				dialog = new Dialog(this,translation["dialogDone"].c_str());
 				dialog->exec();
 			}
-			this->ui->label->setText("Done!");
+			this->ui->label->setText(translation["workingDone"].c_str());
 			if(fs::exists(outPath/"/compatslp")) {
 				if(fs::exists(outPath/"/compatslp2"))
 					fs::remove_all(outPath/"/compatslp2");
 				recCopy(outPath/"/compatslp",outPath/"/compatslp2");
 				fs::remove_all(outPath/"/compatslp");
-				this->ui->label->setText("Done! NOTE: To make this mod work with the HD compatibility patch, the 'compatslp' folder has been renamed (to 'compatslp2').\n"
-										 "Voobly will give you an error message that the game is not correctly installed when joining a lobby, but that can safely be ignored.");
+				this->ui->label->setText(translation["workingCP"].c_str());
 				if(this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
 					if(fs::file_size(outPath/"/data/blendomatic.dat") < 400000) {
 						fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
@@ -956,19 +940,18 @@ int MainWindow::run()
 
 			}
 		} else {
-			this->ui->label->setText("Done! Open the \"out/\" folder and put its contents into your AoE2 folder to make it work.");
-			dialog = new Dialog(this,"Conversion complete. Installer did not find your AoE2 installation - \n"
-						"open the \"out/\" folder and put its contents into your AoE2 folder to make it work.");			
+			this->ui->label->setText(translation["workingNoAoc"].c_str());
+			dialog = new Dialog(this,translation["dialogNoAoc"].c_str());
 			dialog->exec();
 		}
 	}
 	catch (std::exception const & e) {
-		dialog = new Dialog(this,"There was an exception! Please pass this error on to Jineapple:"+std::string()+e.what());		
+		dialog = new Dialog(this,translation["dialogException"]+std::string()+e.what());
 		dialog->exec();
 		ret = 1;
 	}
 	catch (std::string const & e) {		
-		dialog = new Dialog(this,"There was an exception! Please pass this error on to Jineapple: "+e);		
+		dialog = new Dialog(this,translation["dialogException"]+e);
 		dialog->exec();
 		ret = 1;
 	}
