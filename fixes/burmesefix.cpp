@@ -32,17 +32,22 @@ void burmesePatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	 */
 
 
-	size_t const burmeseRelicTech = 685;
+	size_t const burmeseLcTech = 685;
+	size_t const burmeseMonasteryTech = 689;
 	size_t const burmeseTechTree = 650;
 
-	for (size_t i = 0; i < aocDat->Techages[burmeseRelicTech].Effects.size(); i++) {
-		aocDat->Techages[burmeseTechTree].Effects.push_back(aocDat->Techages[burmeseRelicTech].Effects[i]);
+	for (size_t i = 0; i < aocDat->Techages[burmeseLcTech].Effects.size(); i++) {
+		aocDat->Techages[burmeseTechTree].Effects.push_back(aocDat->Techages[burmeseLcTech].Effects[i]);
+	}
+
+	for (size_t i = 0; i < aocDat->Techages[burmeseMonasteryTech].Effects.size(); i++) {
+		aocDat->Techages[burmeseTechTree].Effects.push_back(aocDat->Techages[burmeseMonasteryTech].Effects[i]);
 	}
 }
 
 DatPatch burmeseFix = {
 	&burmesePatch,
-	"Burmese relic LoS Team bonus and Lumbercamp upgrade fix"
+	"Burmese relic LoS Team bonus and Lumbercamp/Monastery upgrades fix"
 };
 
 }
