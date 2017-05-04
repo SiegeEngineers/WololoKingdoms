@@ -42,6 +42,13 @@ std::string const version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
 
+fs::path nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
+fs::path nfzOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
+fs::path modHkiOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
+fs::path modHki2OutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player2.hki";
+fs::path upHkiOutPath = outPath / "Games/WololoKingdoms/player1.hki";
+fs::path upHki2OutPath = outPath / "Games/WololoKingdoms/player2.hki";
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -552,55 +559,39 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 void MainWindow::hotkeySetup() {
 
 	fs::path nfz1Path("resources/Player1.nfz");
-	fs::path nfz2Path("resources/Player2.nfz");
-	fs::path nfz3Path("resources/Player3.nfz");
 	fs::path nfzPath = outPath / "player.nfz";
 	fs::path aocHkiPath("resources/player1.hki");
 	fs::path hkiPath = HDPath / ("Profiles/player0.hki");
 	fs::path hkiOutPath = outPath / "player1.hki";
 	fs::path hki2OutPath = outPath / "player2.hki";
-	fs::path hki3OutPath = outPath / "player3.hki";
-	fs::path modHkiOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
-	fs::path modHki2OutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
 	fs::path nfzOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
-	fs::path nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
 
-	if(this->ui->hotkeyChoice->currentIndex() != 0) {
-		fs::remove(nfzOutPath);
-		fs::remove(nfzUpOutPath);
-		if(fs::exists(nfzPath)) //Copy the Aoc Profile
-			fs::copy_file(nfzPath, nfzOutPath);
-		else //otherwise copy the default profile included
-			fs::copy_file(nfz1Path, nfzOutPath);
-	}
+	fs::remove(nfzOutPath);
+	fs::remove(nfzUpOutPath);
+	if(fs::exists(nfzPath)) //Copy the Aoc Profile
+		fs::copy_file(nfzPath, nfzOutPath);
+	else //otherwise copy the default profile included
+		fs::copy_file(nfz1Path, nfzOutPath);
 	if(this->ui->createExe->isChecked()) { //Profiles for UP
-		if (this->ui->hotkeyChoice->currentIndex() == 1 || this->ui->hotkeyChoice->currentIndex() == 3) {		
-			if(fs::exists(nfzPath)) //Copy the Aoc Profile
-				fs::copy_file(nfzPath,nfzUpOutPath);
-			else //otherwise copy the default profile included
-				fs::copy_file(nfz1Path,nfzUpOutPath);
-		} 
-		if(this->ui->hotkeyChoice->currentIndex() == 2) { 
-			fs::copy_file(nfz2Path,nfzUpOutPath);
-		}
-	} 
+		if(fs::exists(nfzPath)) //Copy the Aoc Profile
+			fs::copy_file(nfzPath,nfzUpOutPath);
+		else //otherwise copy the default profile included
+			fs::copy_file(nfz1Path,nfzUpOutPath);
+	}
 	//Copy hotkey files
 	if (this->ui->hotkeyChoice->currentIndex() == 1 && !fs::exists(hkiOutPath))
 		fs::copy_file(aocHkiPath, hkiOutPath);
-	if (this->ui->hotkeyChoice->currentIndex() == 2) {		
+	if (this->ui->hotkeyChoice->currentIndex() == 2) {
 		fs::copy_file(hkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
 		if(fs::exists(hki2OutPath))
 			fs::copy_file(hkiPath, modHki2OutPath,fs::copy_option::overwrite_if_exists);
-		if(this->ui->createExe->isChecked()) {			
-			if(fs::exists(hki2OutPath)) {
-				fs::copy_file(hkiPath, hki3OutPath, fs::copy_option::overwrite_if_exists);
-				fs::copy_file(nfz3Path,nfzUpOutPath, fs::copy_option::overwrite_if_exists);
-			} else {
-				fs::copy_file(hkiPath, hki2OutPath);
-			}
+		if(this->ui->createExe->isChecked()) {
+			fs::copy_file(hkiPath, upHkiOutPath,fs::copy_option::overwrite_if_exists);
+			if(fs::exists(hki2OutPath))
+				fs::copy_file(hkiPath, upHki2OutPath,fs::copy_option::overwrite_if_exists);
 		}
 	}
-	if(this->ui->hotkeyChoice->currentIndex() == 3) {	
+	if(this->ui->hotkeyChoice->currentIndex() == 3) {
 		fs::path backup = hkiOutPath;
 		backup+=".bak";
 		if(fs::exists(hkiOutPath))
@@ -639,7 +630,6 @@ int MainWindow::run()
 		fs::path tauntOutputPath = vooblyDir / "Taunt/";
 		fs::path xmlPath("resources/WK.xml");
 		fs::path xmlOutPath = vooblyDir / "age2_x1.xml";
-		fs::path nfzOutPath = vooblyDir / "Player.nfz";
 		fs::path nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
 		fs::path langDllFile("language_x1_p1.dll");
 		fs::path langDllPath = langDllFile;
@@ -675,10 +665,18 @@ int MainWindow::run()
 			recCopy(wallsInputDir, moddedAssetsPath);
 	
 
-		if(fs::exists(nfzOutPath)) //Avoid deleting profile files
+		if(fs::exists(nfzOutPath)) //Avoid deleting profile/hotkey files
 			fs::rename(nfzOutPath, vooblyDataModPath/"player.nfz");
 		if(fs::exists(nfzUpOutPath))
 			fs::rename(nfzUpOutPath, outPath/"Games/player.nfz");
+		if(fs::exists(modHkiOutPath))
+			fs::rename(modHkiOutPath, vooblyDataModPath/"player1.hki");
+		if(fs::exists(upHkiOutPath))
+			fs::rename(upHkiOutPath, outPath/"Games/player1.hki");
+		if(fs::exists(modHki2OutPath))
+			fs::rename(modHki2OutPath, vooblyDataModPath/"player2.hki");
+		if(fs::exists(upHki2OutPath))
+			fs::rename(upHki2OutPath, outPath/"Games/player2.hki");
 		fs::remove_all(vooblyDir);
 		fs::remove_all(outPath/"Games/WololoKingdoms");
 		fs::remove(outPath/"Games/WK.xml");
@@ -686,10 +684,18 @@ int MainWindow::run()
 		fs::create_directories(vooblyDir/"Sound/stream");
 		fs::create_directories(vooblyDir/"Taunt");
 		fs::create_directories(upDir);
-		if(fs::exists(vooblyDataModPath/"player.nfz")) //copy back profile files if required
+		if(fs::exists(vooblyDataModPath/"player.nfz")) //copy back profile/hotkey files if required
 			fs::rename(vooblyDataModPath/"player.nfz", nfzOutPath);
 		if(fs::exists(outPath/"Games/player.nfz"))
 			fs::rename(outPath/"Games/player.nfz", nfzUpOutPath);
+		if(fs::exists(vooblyDataModPath/"player1.hki"))
+			fs::rename(vooblyDataModPath/"player1.hki", modHkiOutPath);
+		if(fs::exists(outPath/"Games/player1.hki"))
+			fs::rename(outPath/"Games/player1.hki", upHkiOutPath);
+		if(fs::exists(vooblyDataModPath/"player2.hki"))
+			fs::rename(vooblyDataModPath/"player2.hki", modHki2OutPath);
+		if(fs::exists(outPath/"Games/player2.hki"))
+			fs::rename(outPath/"Games/player2.hki", upHki2OutPath);
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingFiles"]).c_str());
 		this->ui->label->repaint();
@@ -717,7 +723,8 @@ int MainWindow::run()
 			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm");
 			//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
 		}
-		hotkeySetup();
+		if(this->ui->hotkeyChoice->currentIndex() != 0)
+			hotkeySetup();
 
 
 
