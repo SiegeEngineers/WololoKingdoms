@@ -25,7 +25,7 @@ public slots:
 private:
 	Ui::MainWindow *ui;
 	void changeLanguage(std::string);
-	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool force = false);
+	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool skip = false);
 	void listAssetFiles(boost::filesystem::path path, std::vector<std::string> *listOfSlpFiles, std::vector<std::string> *listOfWavFiles);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
 	void makeDrs(std::string const inputDir, std::string const moddedInputDir, std::ofstream *out);

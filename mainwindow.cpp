@@ -153,7 +153,7 @@ void MainWindow::changeLanguage(std::string language) {
 	qApp->processEvents();
 }
 
-void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool force) {
+void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip) {
 	// recursive copy
 	//fs::path currentPath(current->path());
 	if (fs::is_directory(src)) {
@@ -162,13 +162,14 @@ void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool force) {
 		}
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-			recCopy(currentPath, dst / currentPath.filename(), force);
+			recCopy(currentPath, dst / currentPath.filename(), skip);
 		}
 	}
 	else {
-		if (force)
-			fs::copy_file(src, dst, fs::copy_option::overwrite_if_exists);
-		else
+		if (skip) {
+			boost::system::error_code ec;
+			fs::copy_file(src, dst, ec);
+		} else
 			fs::copy_file(src, dst);
 	}
 }
@@ -499,7 +500,8 @@ void MainWindow::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
 	std::string const civs[] = {"italians", "indians", "incas", "magyars", "slavs",
 								"portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
 	for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
-		fs::copy_file(inputDir / (civs[i] + ".mp3"), outputDir / (civs[i] + ".mp3"));
+		boost::system::error_code ec;
+		fs::copy_file(inputDir / (civs[i] + ".mp3"), outputDir / (civs[i] + ".mp3"), ec);
 	}
 }
 
@@ -617,7 +619,6 @@ int MainWindow::run()
 
 	try {
 		fs::path keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
-		fs::path vooblyDataModPath = outPath / ("Voobly Mods/AOC/Data Mods/");
 		fs::path vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
 		std::string aocDatPath = HDPath.string() + "resources/_common/dat/empires2_x1_p1.dat";
 		std::string hdDatPath = HDPath.string() + "resources/_common/dat/empires2_x2_p1.dat";
@@ -630,12 +631,11 @@ int MainWindow::run()
 		fs::path tauntOutputPath = vooblyDir / "Taunt/";
 		fs::path xmlPath("resources/WK.xml");
 		fs::path xmlOutPath = vooblyDir / "age2_x1.xml";
-		fs::path nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
 		fs::path langDllFile("language_x1_p1.dll");
 		fs::path langDllPath = langDllFile;
 		fs::path xmlOutPathUP = outPath / "Games/WK.xml";
-		fs::path aiInputPath("resources/Script.Ai");
-		fs::path mapInputPath("resources/Script.Rm");
+		//fs::path aiInputPath("resources/Script.Ai");
+		//fs::path mapInputPath("resources/Script.Rm");
 		std::string drsOutPath = vooblyDir.string() + "Data/gamedata_x1_p1.drs";
 		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
 		fs::path moddedAssetsPath("assets/");
@@ -664,38 +664,18 @@ int MainWindow::run()
 		if(this->ui->useWalls->isChecked())
 			recCopy(wallsInputDir, moddedAssetsPath);
 	
-
-		if(fs::exists(nfzOutPath)) //Avoid deleting profile/hotkey files
-			fs::rename(nfzOutPath, vooblyDataModPath/"player.nfz");
-		if(fs::exists(nfzUpOutPath))
-			fs::rename(nfzUpOutPath, outPath/"Games/player.nfz");
-		if(fs::exists(modHkiOutPath))
-			fs::rename(modHkiOutPath, vooblyDataModPath/"player1.hki");
-		if(fs::exists(upHkiOutPath))
-			fs::rename(upHkiOutPath, outPath/"Games/player1.hki");
-		if(fs::exists(modHki2OutPath))
-			fs::rename(modHki2OutPath, vooblyDataModPath/"player2.hki");
-		if(fs::exists(upHki2OutPath))
-			fs::rename(upHki2OutPath, outPath/"Games/player2.hki");
-		fs::remove_all(vooblyDir);
-		fs::remove_all(outPath/"Games/WololoKingdoms");
+		fs::remove_all(vooblyDir/"Data");
+		fs::remove_all(vooblyDir/"Script.Ai");
+		fs::remove(vooblyDir/"age2_x1.xml");
+		fs::remove(vooblyDir/"language.ini");
+		fs::remove(vooblyDir/"version.ini");
+		fs::remove_all(outPath/"Games/WololoKingdoms/Data");
 		fs::remove(outPath/"Games/WK.xml");
+		fs::remove(outPath/"version.ini");
 		fs::create_directories(vooblyDir/"Data");
 		fs::create_directories(vooblyDir/"Sound/stream");
 		fs::create_directories(vooblyDir/"Taunt");
 		fs::create_directories(upDir);
-		if(fs::exists(vooblyDataModPath/"player.nfz")) //copy back profile/hotkey files if required
-			fs::rename(vooblyDataModPath/"player.nfz", nfzOutPath);
-		if(fs::exists(outPath/"Games/player.nfz"))
-			fs::rename(outPath/"Games/player.nfz", nfzUpOutPath);
-		if(fs::exists(vooblyDataModPath/"player1.hki"))
-			fs::rename(vooblyDataModPath/"player1.hki", modHkiOutPath);
-		if(fs::exists(outPath/"Games/player1.hki"))
-			fs::rename(outPath/"Games/player1.hki", upHkiOutPath);
-		if(fs::exists(vooblyDataModPath/"player2.hki"))
-			fs::rename(vooblyDataModPath/"player2.hki", modHki2OutPath);
-		if(fs::exists(outPath/"Games/player2.hki"))
-			fs::rename(outPath/"Games/player2.hki", upHki2OutPath);
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingFiles"]).c_str());
 		this->ui->label->repaint();
@@ -705,22 +685,22 @@ int MainWindow::run()
 		boolean aocFound = outPath != HDPath/"WololoKingdoms/out/";
 		copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
 		createMusicPlaylist(soundsInputPath.string() + "music/", soundsOutputPath.string() + "music.m3u");
-		recCopy(tauntInputPath, tauntOutputPath);
+		recCopy(tauntInputPath, tauntOutputPath, true);
 		fs::copy_file(xmlPath, xmlOutPath);
 		if (aocFound) {
-			recCopy(outPath/"Random", vooblyDir/"Script.Rm");
+			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
 		}
-		recCopy(mapInputPath, vooblyDir/"Script.Rm");
+		//recCopy(mapInputPath, vooblyDir/"Script.Rm", true);
 
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		//recCopy(aiInputPath, vooblyDir/"Script.Ai");
 
 		if(this->ui->createExe->isChecked()) {
 			fs::create_directories(upDir / "Data");
-			recCopy(vooblyDir / "Sound", upDir / "Sound");
-			recCopy(vooblyDir / "Taunt", upDir / "Taunt");
+			recCopy(vooblyDir / "Sound", upDir / "Sound", true);
+			recCopy(vooblyDir / "Taunt", upDir / "Taunt", true);
 			fs::copy_file(xmlPath, xmlOutPathUP);
-			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm");
+			//recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", true);
 			//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
 		}
 		if(this->ui->hotkeyChoice->currentIndex() != 0)
