@@ -44,9 +44,11 @@ public:
     QPushButton *exeTip;
     QComboBox *languageChoice;
     QHBoxLayout *horizontalLayout;
+    QCheckBox *useNoSnow;
     QCheckBox *useGrid;
     QCheckBox *useWalls;
     QCheckBox *usePw;
+    QPushButton *modsTip;
     QPushButton *runButton;
     QLabel *label;
     QToolBar *mainToolBar;
@@ -61,7 +63,7 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
         gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
-        gridLayoutWidget->setGeometry(QRect(30, 10, 316, 231));
+        gridLayoutWidget->setGeometry(QRect(30, 10, 341, 231));
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -130,6 +132,11 @@ public:
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        useNoSnow = new QCheckBox(gridLayoutWidget);
+        useNoSnow->setObjectName(QStringLiteral("useNoSnow"));
+
+        horizontalLayout->addWidget(useNoSnow);
+
         useGrid = new QCheckBox(gridLayoutWidget);
         useGrid->setObjectName(QStringLiteral("useGrid"));
 
@@ -144,6 +151,13 @@ public:
         usePw->setObjectName(QStringLiteral("usePw"));
 
         horizontalLayout->addWidget(usePw);
+
+        modsTip = new QPushButton(gridLayoutWidget);
+        modsTip->setObjectName(QStringLiteral("modsTip"));
+        modsTip->setMaximumSize(QSize(25, 16777215));
+        modsTip->setToolTipDuration(0);
+
+        horizontalLayout->addWidget(modsTip);
 
 
         gridLayout->addLayout(horizontalLayout, 9, 0, 1, 1);
@@ -173,7 +187,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", Q_NULLPTR));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "WololoKingdoms", Q_NULLPTR));
         hotkeyChoice->clear();
         hotkeyChoice->insertItems(0, QStringList()
          << QApplication::translate("MainWindow", "Choose which hotkeys to use...", Q_NULLPTR)
@@ -200,9 +214,11 @@ public:
          << QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "\347\256\200\344\275\223\344\270\255\346\226\207 (Simplified Chinese)", Q_NULLPTR)
         );
+        useNoSnow->setText(QApplication::translate("MainWindow", "No Snow", Q_NULLPTR));
         useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
         useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
         usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
+        modsTip->setText(QString());
         runButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
         label->setText(QApplication::translate("MainWindow", "TextLabel", Q_NULLPTR));
     } // retranslateUi

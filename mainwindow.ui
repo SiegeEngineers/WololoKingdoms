@@ -19,7 +19,7 @@
      <rect>
       <x>30</x>
       <y>10</y>
-      <width>316</width>
+      <width>341</width>
       <height>231</height>
      </rect>
     </property>
@@ -193,6 +193,13 @@
      <item row="9" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QCheckBox" name="useNoSnow">
+         <property name="text">
+          <string>No Snow</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="useGrid">
          <property name="text">
           <string>Grid</string>
@@ -210,6 +217,22 @@
         <widget class="QCheckBox" name="usePw">
          <property name="text">
           <string>Small Trees</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="modsTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>

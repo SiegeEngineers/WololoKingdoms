@@ -31,8 +31,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialog.h"
+#include "linkfilter.h"
 #include <QWhatsThis>
 #include <QPoint>
+#include <QEvent>
 
 namespace fs = boost::filesystem;
 
@@ -91,15 +93,22 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->ui->tooltipTip->setIconSize(QSize(16,16));
 	this->ui->tooltipTip->setWhatsThis(translation["tooltipTip"].c_str());
 	QObject::connect( this->ui->tooltipTip, &QPushButton::clicked, this, [this]() {
-			QWhatsThis::showText(this->ui->tooltipTip->mapToGlobal(QPoint(0,0)),this->ui->tooltipTip->whatsThis());
+		QWhatsThis::showText(this->ui->tooltipTip->mapToGlobal(QPoint(0,0)),this->ui->tooltipTip->whatsThis());
 	} );
+
 	this->ui->exeTip->setIcon(QIcon("resources/question.png"));
 	this->ui->exeTip->setIconSize(QSize(16,16));
 	std::string line = translation["exeTip"];
-	boost::replace_all(line, "<folder>", outPath.string()+"\age2_x1");
+	boost::replace_all(line, "<folder>", outPath.string()+"\\age2_x1");
 	this->ui->exeTip->setWhatsThis(line.c_str());
 	QObject::connect( this->ui->exeTip, &QPushButton::clicked, this, [this]() {
-			QWhatsThis::showText(this->ui->exeTip->mapToGlobal(QPoint(0,0)),this->ui->exeTip->whatsThis());
+		QWhatsThis::showText(this->ui->exeTip->mapToGlobal(QPoint(0,0)),this->ui->exeTip->whatsThis());
+	} );
+	this->ui->modsTip->setIcon(QIcon("resources/question.png"));
+	this->ui->modsTip->setIconSize(QSize(16,16));
+	this->ui->modsTip->setWhatsThis(translation["modsTip"].c_str());
+	QObject::connect( this->ui->modsTip, &QPushButton::clicked, this, [this]() {
+			QWhatsThis::showText(this->ui->modsTip->mapToGlobal(QPoint(0,0)),this->ui->modsTip->whatsThis());
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
 
@@ -115,6 +124,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 void MainWindow::changeLanguage(std::string language) {
 
@@ -645,7 +655,9 @@ int MainWindow::run()
 		fs::path UPExe("resources/SetupAoc.exe");
 		fs::path UPExeOut = outPath / "SetupAoc.exe";
 		fs::path pwInputDir("resources/pussywood");
-		fs::path gridInputDir("resources/grid");
+		fs::path gridInputDir("resources/Grid No Snow");
+		fs::path gridNoSnowInputDir("resources/Grid");
+		fs::path noSnowInputDir("resources/No Snow");
 		fs::path wallsInputDir("resources/short_walls");
 
 		std::string line;
@@ -659,8 +671,15 @@ int MainWindow::run()
 		}
 		if(this->ui->usePw->isChecked())
 			recCopy(pwInputDir, moddedAssetsPath);
-		if(this->ui->useGrid->isChecked())
-			recCopy(gridInputDir, moddedAssetsPath);
+		if(this->ui->useGrid->isChecked()) {
+			if(this->ui->useNoSnow->isChecked())
+				recCopy(gridNoSnowInputDir, moddedAssetsPath);
+			else
+				recCopy(gridInputDir, moddedAssetsPath);
+		} else {
+			if(this->ui->useNoSnow->isChecked())
+				recCopy(noSnowInputDir, moddedAssetsPath);
+		}
 		if(this->ui->useWalls->isChecked())
 			recCopy(wallsInputDir, moddedAssetsPath);
 	
