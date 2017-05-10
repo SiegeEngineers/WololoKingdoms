@@ -29,6 +29,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1016, 453}, // Shotel Warrior, DOLPH4
 	{1018, 459}, // Elite Shotel Warrior, FISH5
 	{1103, 467}, // Fire Ship, Nonexistent
+	{1105, 494}, // Siege Tower, CVLRY_D
 	{1104, 653}, // Demolition Ship, HFALS_D
 	{1079, 732}, // Genitour placeholder, HKHAN_D
 	{1021, 734}, // Feitoria, Nonexistent
