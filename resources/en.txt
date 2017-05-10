@@ -2,6 +2,7 @@ hotkeyTip=You can choose a hotkey file to use for the WololoKingdoms Mod. You ha
 tooltipTip=This replaces the tooltips of units, technologies and buildings that are shown in the tech tree or in-game with extended help (F1) enabled<br \>It provides some error corrections, and more information such as research/creation time, attack speed, attack boni and more<br \>This is available as a mod for Voobly, selecting the checkbox will make it permanent (and available offline as well)<br \>To remove it, you'll need to run the installer again with this checkbox unchecked.
 modsTip=You can choose from the most common graphical mods to make them permanent (and available offline as well)\nTo remove the mods, you'll need to run the installer again with the checkboxes unchecked.
 exeTip=This creates a WK.exe in your <folder> folder that can be used for playing WololoKingdoms without Voobly\nWhen checked an extra window for the Userpatch will open during the installation. Choose the options you want, run it, and then close it.
+customHotkeys=Use the player1.hki in the install folder
 hotkeys0=Keep the current hotkey setup
 hotkeys1=Use current AoC/Voobly hotkeys
 hotkeys2=Use HD hotkeys for this mod only

@@ -31,10 +31,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dialog.h"
-#include "linkfilter.h"
 #include <QWhatsThis>
 #include <QPoint>
-#include <QEvent>
 
 namespace fs = boost::filesystem;
 
@@ -44,12 +42,12 @@ std::string const version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
 
-fs::path nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
-fs::path nfzOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
-fs::path modHkiOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
-fs::path modHki2OutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player2.hki";
-fs::path upHkiOutPath = outPath / "Games/WololoKingdoms/player1.hki";
-fs::path upHki2OutPath = outPath / "Games/WololoKingdoms/player2.hki";
+fs::path nfzUpOutPath;
+fs::path nfzOutPath;
+fs::path modHkiOutPath;
+fs::path modHki2OutPath;
+fs::path upHkiOutPath;
+fs::path upHki2OutPath;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -60,6 +58,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	HDPath = getHDPath();
 	outPath = getOutPath(HDPath);
 	changeLanguage(language);
+
+	nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
+	nfzOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
+	modHkiOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
+	modHki2OutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player2.hki";
+	upHkiOutPath = outPath / "Games/WololoKingdoms/player1.hki";
+	upHki2OutPath = outPath / "Games/WololoKingdoms/player2.hki";
 
 	QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
 		switch(this->ui->languageChoice->currentIndex()) {
@@ -89,6 +94,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect( this->ui->hotkeyTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->hotkeyTip->mapToGlobal(QPoint(0,0)),this->ui->hotkeyTip->whatsThis());
 	} );
+	if(fs::exists("player1.hki")) {
+		this->ui->hotkeyChoice->setDisabled(true);
+		this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"].c_str());
+		this->ui->hotkeyTip->setDisabled(true);
+	}
 	this->ui->tooltipTip->setIcon(QIcon("resources/question.png"));
 	this->ui->tooltipTip->setIconSize(QSize(16,16));
 	this->ui->tooltipTip->setWhatsThis(translation["tooltipTip"].c_str());
@@ -573,6 +583,7 @@ void MainWindow::hotkeySetup() {
 	fs::path nfz1Path("resources/Player1.nfz");
 	fs::path nfzPath = outPath / "player.nfz";
 	fs::path aocHkiPath("resources/player1.hki");
+	fs::path customHkiPath("player1.hki");
 	fs::path hkiPath = HDPath / ("Profiles/player0.hki");
 	fs::path hkiOutPath = outPath / "player1.hki";
 	fs::path hki2OutPath = outPath / "player2.hki";
@@ -591,6 +602,17 @@ void MainWindow::hotkeySetup() {
 			fs::copy_file(nfz1Path,nfzUpOutPath);
 	}
 	//Copy hotkey files
+	if(fs::exists(customHkiPath)) {
+		fs::copy_file(customHkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
+		if(fs::exists(hki2OutPath))
+			fs::copy_file(customHkiPath, modHki2OutPath,fs::copy_option::overwrite_if_exists);
+		if(this->ui->createExe->isChecked()) {
+			fs::copy_file(customHkiPath, upHkiOutPath,fs::copy_option::overwrite_if_exists);
+			if(fs::exists(hki2OutPath))
+				fs::copy_file(customHkiPath, upHki2OutPath,fs::copy_option::overwrite_if_exists);
+		}
+		return;
+	}
 	if (this->ui->hotkeyChoice->currentIndex() == 1 && !fs::exists(hkiOutPath))
 		fs::copy_file(aocHkiPath, hkiOutPath);
 	if (this->ui->hotkeyChoice->currentIndex() == 2) {
@@ -722,7 +744,7 @@ int MainWindow::run()
 			//recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", true);
 			//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
 		}
-		if(this->ui->hotkeyChoice->currentIndex() != 0)
+		if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
 			hotkeySetup();
 
 
