@@ -539,6 +539,7 @@ void MainWindow::createMusicPlaylist(std::string inputDir, std::string const out
 }
 
 void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
+
 	aocDat->Sounds = hdDat->Sounds;
 	aocDat->GraphicPointers = hdDat->GraphicPointers;
 	aocDat->Graphics = hdDat->Graphics;
@@ -549,33 +550,36 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	aocDat->UnitLines = hdDat->UnitLines;
 	aocDat->TechTree = hdDat->TechTree;
 
-	/*
-	//Copy Forest Terrains
+	//Copy Terrains
 	aocDat->TerrainBlock.TerrainsUsed2 = 42;
 	aocDat->TerrainsUsed1 = 42;
-	int terrainswaps[] = {15,48,16,49,26,50};
-	for(size_t i = 0; i < 6; i=i+2) {
-		aocDat->TerrainBlock.Terrains[terrainswaps[i]] = hdDat->TerrainBlock.Terrains[terrainswaps[i+1]];
-		aocDat->TerrainBlock.Terrains[terrainswaps[i]].SLP = 15000;
-		aocDat->TerrainBlock.Terrains[terrainswaps[i]].Name2 = "g_des";
-		for(size_t j = 0; j < aocDat->TerrainRestrictions.size(); j++) {
-			aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[terrainswaps[i]] = hdDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[terrainswaps[i+1]];
-			aocDat->TerrainRestrictions[j].TerrainPassGraphics[terrainswaps[i]] = hdDat->TerrainRestrictions[j].TerrainPassGraphics[terrainswaps[i+1]];
-		}
-	}
+	terrainSwap(hdDat, aocDat, 16,54,15014,"g_ice"); //mangrove terrain
+	terrainSwap(hdDat, aocDat, 26,55,15014,"g_ice"); //mangrove forest
+	terrainSwap(hdDat, aocDat, 41,42,15000,"g_ice"); //baobab forest
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
-	int tNew = 41;
-	int tOld = 56;
-	aocDat->TerrainBlock.Terrains[tNew] = hdDat->TerrainBlock.Terrains[tOld];
-	aocDat->TerrainBlock.Terrains[tNew].TerrainToDraw = 10;
-	for(size_t i = 0; i < aocDat->TerrainRestrictions.size(); i++) {
-		aocDat->TerrainRestrictions[i].PassableBuildableDmgMultiplier.push_back(hdDat->TerrainRestrictions[i].PassableBuildableDmgMultiplier[tOld]);
-		aocDat->TerrainRestrictions[i].TerrainPassGraphics.push_back(hdDat->TerrainRestrictions[i].TerrainPassGraphics[tOld]);
-	}
-	*/
 
+	//terrainSwap(hdDat, aocDat, 15,42,15000,"g_ice"); //baobab forest
+}
+
+void MainWindow::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID, std::string name2) {
+	aocDat->TerrainBlock.Terrains[tNew] = hdDat->TerrainBlock.Terrains[tOld];
+	aocDat->TerrainBlock.Terrains[tNew].SLP = slpID;
+	//aocDat->TerrainBlock.Terrains[tNew].Name2 = name2;
+	if (tNew == 41) {
+		for(size_t j = 0; j < aocDat->TerrainRestrictions.size(); j++) {
+			aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier.push_back(hdDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[tOld]);
+			aocDat->TerrainRestrictions[j].TerrainPassGraphics.push_back(hdDat->TerrainRestrictions[j].TerrainPassGraphics[tOld]);
+			if (j == 4)
+				aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[tNew] = 1.2;
+		}
+	} else {
+		for(size_t j = 0; j < aocDat->TerrainRestrictions.size(); j++) {
+			aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[tNew] = hdDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[tOld];
+			aocDat->TerrainRestrictions[j].TerrainPassGraphics[tNew] = hdDat->TerrainRestrictions[j].TerrainPassGraphics[tOld];
+		}
+	}
 }
 
 void MainWindow::hotkeySetup() {
@@ -667,7 +671,7 @@ int MainWindow::run()
 		fs::path langDllPath = langDllFile;
 		fs::path xmlOutPathUP = outPath / "Games/WK.xml";
 		//fs::path aiInputPath("resources/Script.Ai");
-		//fs::path mapInputPath("resources/Script.Rm");
+		fs::path mapInputPath("resources/Script.Rm");
 		std::string drsOutPath = vooblyDir.string() + "Data/gamedata_x1_p1.drs";
 		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
 		fs::path moddedAssetsPath("assets/");
@@ -731,7 +735,7 @@ int MainWindow::run()
 		if (aocFound) {
 			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
 		}
-		//recCopy(mapInputPath, vooblyDir/"Script.Rm", true);
+		recCopy(mapInputPath, vooblyDir/"Script.Rm", true);
 
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		//recCopy(aiInputPath, vooblyDir/"Script.Ai");
@@ -741,7 +745,7 @@ int MainWindow::run()
 			recCopy(vooblyDir / "Sound", upDir / "Sound", true);
 			recCopy(vooblyDir / "Taunt", upDir / "Taunt", true);
 			fs::copy_file(xmlPath, xmlOutPathUP);
-			//recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", true);
+			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", true);
 			//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
 		}
 		if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
@@ -814,9 +818,11 @@ int MainWindow::run()
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingPatches"]).c_str());
 		this->ui->label->repaint();
+
 		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {			
 			patchTab[i].patch(&aocDat, &langReplacement);
 		}
+
 
 		if(this->ui->replaceTooltips->isChecked()) {
 			/*
