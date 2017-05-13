@@ -26,7 +26,7 @@ private:
 	Ui::MainWindow *ui;
 	void changeLanguage(std::string);
 	void copyHDMaps(boost::filesystem::path inputDir, boost::filesystem::path outputDir);
-	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID, std::string name2);
+	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID);
 	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool skip = false);
 	void listAssetFiles(boost::filesystem::path path, std::vector<std::string> *listOfSlpFiles, std::vector<std::string> *listOfWavFiles);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);

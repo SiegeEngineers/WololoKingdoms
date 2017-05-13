@@ -35,6 +35,8 @@
 #include <QWhatsThis>
 #include <QPoint>
 
+#include "JlCompress.h"
+
 namespace fs = boost::filesystem;
 
 fs::path HDPath;
@@ -602,57 +604,49 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 	}
 	std::set<fs::path> terrainOverrides;
 	std::vector<std::tuple<std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements;
-	replacements.push_back(std::make_tuple("DLC_RAINFOREST","56","21","resources/terrains/15010.slp",true,"PALMTREE","DLC_RAINTREE"));
+	replacements.push_back(std::make_tuple("DRAGONFOREST","56","21","resources/terrains/15029.slp",true,"SNOWPINETREE","DRAGONTREE"));
+	replacements.push_back(std::make_tuple("ACACIA_FOREST","50","13","resources/terrains/15010.slp",true,"PALMTREE","ACACIA_TREEE"));
+	replacements.push_back(std::make_tuple("DLC_RAINFOREST","48","10","resources/terrains/15011.slp",true,"FOREST_TREE","DLC_RAINTREE"));
+	replacements.push_back(std::make_tuple("DLC_MANGROVESHALLOW","54","16","resources/terrains/15030.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_MANGROVEFOREST","55","26","resources/terrains/15030.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_NEWSHALLOW","59","4","resources/terrains/15014.slp",false,"",""));
+	replacements.push_back(std::make_tuple("SAVANNAH","41","14","resources/terrains/15010.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DIRT4","42","3","resources/terrains/15007.slp",false,"",""));
+	replacements.push_back(std::make_tuple("MOORLAND","44","9","resources/terrains/15009.slp",false,"",""));
+	replacements.push_back(std::make_tuple("CRACKEDIT","45","6","resources/terrains/15000.slp",false,"",""));
+	replacements.push_back(std::make_tuple("QUICKSAND","46","40","resources/terrains/15018.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_ROCK","40","40","resources/terrains/15018.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_BEACH2","51","2","resources/terrains/15017.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_BEACH3","52","2","resources/terrains/15017.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_BEACH4","53","2","resources/terrains/15017.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_DRYROAD","43","25","resources/terrains/15019.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_WATER4","57","22","resources/terrains/15015.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_WATER5","58","1","resources/terrains/15002.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_DRYROAD","43","25","resources/terrains/15019.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_DRYROAD","43","25","resources/terrains/15019.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_JUNGLELEAVES","62","5","resources/terrains/15011.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_JUNGLEROAD","62","5","resources/terrains/15011.slp",false,"",""));
+	replacements.push_back(std::make_tuple("DLC_JUNGLEGRASS","61","39","resources/terrains/15031.slp",false,"",""));
 	for (std::vector<fs::path>::iterator it = mapNamesSorted.begin(); it != mapNamesSorted.end(); it++) {
 		std::ifstream input(inputDir.string()+it->filename().string());
 		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
 		for (std::vector<std::tuple<std::string,std::string,std::string,std::string,bool,std::string,std::string>>::iterator repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
-			if(str.find(std::get<0>(*it))!=std::string::npos) {
-				boost::replace_all(str, "#const "+std::get<0>(*it)+" "+std::get<1>(*it), "#const "+std::get<0>(*it)+" "+std::get<2>(*it));
-				terrainOverrides.insert(fs::path(std::get<3>(*it)));
-				if(std::get<4>(*it))
-					boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<5>(*it)+" "+std::get<6>(*it)+" 0\n");
+			if(str.find(std::get<0>(*repIt))!=std::string::npos) {
+				boost::replace_all(str, "#const "+std::get<0>(*repIt)+" "+std::get<1>(*repIt), "#const "+std::get<0>(*repIt)+" "+std::get<2>(*repIt));
+				fs::copy_file(fs::path("resources/terrains/"+(std::get<0>(*repIt)+".slp")),fs::path(std::get<3>(*repIt)),fs::copy_option::overwrite_if_exists);
+				//TODO only do the copy_file for beach terrain
+				terrainOverrides.insert(fs::path(std::get<3>(*repIt)));
+				if(std::get<4>(*repIt))
+					boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<5>(*repIt)+" "+std::get<6>(*repIt)+" 0\n");
 			}
 		}
-
-
-
-		if(str.find("DLC_RAINFOREST")!=std::string::npos) {
-			boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT PALMTREE DLC_RAINTREE 0\n");
-			terrainOverrides.insert(fs::path("resources/terrains/15010.slp"));
+		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
+			terrainOverrides.insert("resources/terrains/15004.slp");
+			terrainOverrides.insert("resources/terrains/15005.slp");
+			terrainOverrides.insert("resources/terrains/15021.slp");
+			terrainOverrides.insert("resources/terrains/15022.slp");
+			terrainOverrides.insert("resources/terrains/15023.slp");
 		}
-
-		boost::replace_all(str, "#const ACACIA_FOREST 50", "#const ACACIA_FOREST 13");
-		if(str.find("ACACIA_FOREST")!=std::string::npos) {
-			boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT PALMTREE ACACIA_TREE 0\n");
-			terrainOverrides.insert(fs::path("resources/terrains/15010.slp"));
-		}
-
-		boost::replace_all(str, "#const DRAGONFOREST 48", "#const DRAGONFOREST 10");
-		if(str.find("DRAGONFOREST")!=std::string::npos) {
-			boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT OAK_FOREST_TREE DRAGONTREE 0\n  effect_amount GAIA_UPGRADE_UNIT FOREST_TREE DRAGONTREE 0\n");
-			terrainOverrides.insert(fs::path("resources/terrains/15011.slp"));
-		}
-
-		boost::replace_all(str, "#const SAVANNAH 41", "#const SAVANNAH 14");
-		if(str.find("SAVANNAH")!=std::string::npos)
-			terrainOverrides.insert(fs::path("resources/terrains/15010.slp"));
-
-		boost::replace_all(str, "#const DIRT4 42", "#const DIRT4 3");
-		if(str.find("DIRT4")!=std::string::npos)
-			terrainOverrides.insert(fs::path("resources/terrains/15007.slp"));
-
-		boost::replace_all(str, "#const MOORLAND 44", "#const MOORLAND 9");
-		if(str.find("MOORLAND")!=std::string::npos)
-			terrainOverrides.insert(fs::path("resources/terrains/15009.slp"));
-
-		boost::replace_all(str, "#const CRACKEDIT 45", "#const CRACKEDIT 6");
-		if(str.find("CRACKEDIT")!=std::string::npos)
-			terrainOverrides.insert(fs::path("resources/terrains/15000.slp"));
-
-		boost::replace_all(str, "#const QUICKSAND 46", "#const QUICKSAND 40");
-		if(str.find("CRACKEDIT")!=std::string::npos)
-			terrainOverrides.insert(fs::path("resources/terrains/15018.slp"));
 
 		boost::replace_all(str, "#const BAOBAB 49", "#const BAOBAB 41");
 
@@ -666,17 +660,14 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			zip.open(QuaZip::mdAdd, NULL);
 			terrainOverrides.insert(fs::path(outputDir.string()+"/"+mapName));
 			for(std::set<fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
-				bool success;
 				QuaZipFile outFile(&zip);
 				QuaZipNewInfo fileInfo(QString((*files).filename().string().c_str()));
 				fileInfo.uncompressedSize = fs::file_size((*files));
-				success = outFile.open(QIODevice::WriteOnly,fileInfo,NULL,0,0,0,true);
+				outFile.open(QIODevice::WriteOnly,fileInfo,NULL,0,0,0,false);
 				QFile inFile;
 				inFile.setFileName((*files).string().c_str());
-				success = inFile.open(QIODevice::ReadOnly);
-				success = copyData(inFile, outFile);
-				success = outFile.getZipError()!=UNZ_OK;
-				std::cerr << outFile.getZipError();
+				inFile.open(QIODevice::ReadOnly);
+				copyData(inFile, outFile);
 				outFile.close();
 				inFile.close();
 			}
@@ -702,9 +693,9 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	//Copy Terrains
 	aocDat->TerrainBlock.TerrainsUsed2 = 42;
 	aocDat->TerrainsUsed1 = 42;
-	terrainSwap(hdDat, aocDat, 16,54,15014,"g_ice"); //mangrove terrain
-	terrainSwap(hdDat, aocDat, 26,55,15014,"g_ice"); //mangrove forest
-	terrainSwap(hdDat, aocDat, 41,49,15000,"g_ice"); //baobab forest
+	terrainSwap(hdDat, aocDat, 16,54,15030); //mangrove terrain
+	terrainSwap(hdDat, aocDat, 26,55,15030); //mangrove forest
+	terrainSwap(hdDat, aocDat, 41,49,15000); //baobab forest
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
@@ -712,10 +703,9 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	//terrainSwap(hdDat, aocDat, 15,42,15000,"g_ice"); //baobab forest
 }
 
-void MainWindow::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID, std::string name2) {
+void MainWindow::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID) {
 	aocDat->TerrainBlock.Terrains[tNew] = hdDat->TerrainBlock.Terrains[tOld];
 	aocDat->TerrainBlock.Terrains[tNew].SLP = slpID;
-	//aocDat->TerrainBlock.Terrains[tNew].Name2 = name2;
 	if (tNew == 41) {
 		for(size_t j = 0; j < aocDat->TerrainRestrictions.size(); j++) {
 			aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier.push_back(hdDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[tOld]);
