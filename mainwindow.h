@@ -25,6 +25,7 @@ public slots:
 private:
 	Ui::MainWindow *ui;
 	void changeLanguage(std::string);
+	void copyHDMaps(boost::filesystem::path inputDir, boost::filesystem::path outputDir);
 	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID, std::string name2);
 	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool skip = false);
 	void listAssetFiles(boost::filesystem::path path, std::vector<std::string> *listOfSlpFiles, std::vector<std::string> *listOfWavFiles);
@@ -36,6 +37,7 @@ private:
 	void createMusicPlaylist(std::string inputDir, std::string const outputDir);
 	void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat);
 	void hotkeySetup();
+	bool copyData(QIODevice &inFile, QIODevice &outFile);
 };
 
 #endif // MAINWINDOW_H

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
+#include <sstream>
 #include <windows.h>
 
 #include <boost/filesystem.hpp>
@@ -85,6 +86,8 @@ MainWindow::MainWindow(QWidget *parent) :
 		if(this->ui->languageChoice->currentIndex() != 2) {
 			this->ui->replaceTooltips->setEnabled(false);
 			this->ui->replaceTooltips->setChecked(false);
+		} else {
+			this->ui->replaceTooltips->setEnabled(true);
 		}
 	} );
 	
@@ -359,16 +362,16 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
 		size_t size;
 		if(comp == 0) {
-			size = fs::file_size(moddedInputDir + "/" + *modIt + ".slp");
+			size = fs::file_size(moddedInputDir + *modIt + ".slp");
 			slp.file_id = stoi(*modIt);
 			modIt++;
 			it++;
 		} else if (comp < 0) {
-			size = fs::file_size(moddedInputDir + "/" + *modIt + ".slp");
+			size = fs::file_size(moddedInputDir + *modIt + ".slp");
 			slp.file_id = stoi(*modIt);
 			modIt++;
 		} else {
-			size = fs::file_size(inputDir + "/" + *it + ".slp");
+			size = fs::file_size(inputDir + *it + ".slp");
 			slp.file_id = stoi(*it);
 			it++;
 		}
@@ -379,7 +382,7 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	}
 	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
 		wololo::DrsFileInfo wav;
-		size_t size = fs::file_size(inputDir + "/" + *it + ".wav");
+		size_t size = fs::file_size(inputDir + *it + ".wav");
 		wav.file_id = stoi(*it);
 		wav.file_data_offset = offset;
 		wav.file_size = size;
@@ -463,16 +466,16 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end();) {
 		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
 		if(comp == 0) {
-			std::ifstream srcStream = std::ifstream(moddedInputDir + "/" + *modIt + ".slp", std::ios::binary);
+			std::ifstream srcStream = std::ifstream(moddedInputDir + *modIt + ".slp", std::ios::binary);
 			*out << srcStream.rdbuf();
 			it++;
 			modIt++;
 		} else if (comp < 0) {
-			std::ifstream srcStream = std::ifstream(moddedInputDir + "/" + *modIt + ".slp", std::ios::binary);
+			std::ifstream srcStream = std::ifstream(moddedInputDir + *modIt + ".slp", std::ios::binary);
 			*out << srcStream.rdbuf();
 			modIt++;
 		} else {
-			std::ifstream srcStream = std::ifstream(inputDir + "/" + *it + ".slp", std::ios::binary);
+			std::ifstream srcStream = std::ifstream(inputDir + *it + ".slp", std::ios::binary);
 			*out << srcStream.rdbuf();
 			it++;
 		}
@@ -480,7 +483,7 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	}
 
 	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
-		std::ifstream srcStream(inputDir + "/" + *it + ".wav", std::ios::binary);
+		std::ifstream srcStream(inputDir + *it + ".wav", std::ios::binary);
 		*out << srcStream.rdbuf();
 	}
 }
@@ -538,6 +541,152 @@ void MainWindow::createMusicPlaylist(std::string inputDir, std::string const out
 	}
 }
 
+void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
+
+	const std::set<std::string> exclude = {
+		"Arabia",
+		"Archipelago",
+		"Arena",
+		"Baltic",
+		"Black_Forest",
+		"Blind_Random",
+		"Coastal",
+		"Continental",
+		"Crater_Lake",
+		"Fortress",
+		"Ghost_Lake",
+		"Gold_Rush",
+		"Highland",
+		"Islands",
+		"Mediterranean",
+		"Migration",
+		"Mongolia",
+		"nomad",
+		"Oasis",
+		"Rivers",
+		"Salt_Marsh",
+		"Scandinavia",
+		"Team_Islands",
+		"Yucatan"
+	};
+
+	std::vector<fs::path> mapNames;
+	std::vector<fs::path> mapNamesSorted;
+	std::vector<fs::path> existingMapNames;
+	for (fs::directory_iterator end, it(inputDir); it != end; it++) {
+		std::string stem = it->path().stem().string();
+		if (exclude.find(stem) == exclude.end()) {
+			std::string extension = it->path().extension().string();
+			if ((extension == ".rms" || extension == ".rms2") && stem.substr(0,10) != "real_world" && stem.substr(0,11) != "special_map" && stem.substr(0,3) != "CtR") {
+				mapNames.push_back(*it);
+			}
+		}
+	}
+	for (fs::directory_iterator end, it(outputDir); it != end; it++) {
+		existingMapNames.push_back(it->path());
+	}
+	sort(existingMapNames.begin(), existingMapNames.end());
+	sort(mapNames.begin(), mapNames.end());
+	std::vector<fs::path>::iterator modIt = existingMapNames.begin();
+	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end();) {
+		int comp = modIt != existingMapNames.end()?(modIt->stem().string()).compare(it->stem().string()):1;
+		if(comp == 0) {
+			it++;
+			modIt++;
+		} else if (comp < 0) {
+			modIt++;
+		} else {
+			mapNamesSorted.push_back(*it);
+			it++;
+		}
+	}
+	std::set<fs::path> terrainOverrides;
+	std::vector<std::tuple<std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements;
+	replacements.push_back(std::make_tuple("DLC_RAINFOREST","56","21","resources/terrains/15010.slp",true,"PALMTREE","DLC_RAINTREE"));
+	for (std::vector<fs::path>::iterator it = mapNamesSorted.begin(); it != mapNamesSorted.end(); it++) {
+		std::ifstream input(inputDir.string()+it->filename().string());
+		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
+		for (std::vector<std::tuple<std::string,std::string,std::string,std::string,bool,std::string,std::string>>::iterator repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
+			if(str.find(std::get<0>(*it))!=std::string::npos) {
+				boost::replace_all(str, "#const "+std::get<0>(*it)+" "+std::get<1>(*it), "#const "+std::get<0>(*it)+" "+std::get<2>(*it));
+				terrainOverrides.insert(fs::path(std::get<3>(*it)));
+				if(std::get<4>(*it))
+					boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<5>(*it)+" "+std::get<6>(*it)+" 0\n");
+			}
+		}
+
+
+
+		if(str.find("DLC_RAINFOREST")!=std::string::npos) {
+			boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT PALMTREE DLC_RAINTREE 0\n");
+			terrainOverrides.insert(fs::path("resources/terrains/15010.slp"));
+		}
+
+		boost::replace_all(str, "#const ACACIA_FOREST 50", "#const ACACIA_FOREST 13");
+		if(str.find("ACACIA_FOREST")!=std::string::npos) {
+			boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT PALMTREE ACACIA_TREE 0\n");
+			terrainOverrides.insert(fs::path("resources/terrains/15010.slp"));
+		}
+
+		boost::replace_all(str, "#const DRAGONFOREST 48", "#const DRAGONFOREST 10");
+		if(str.find("DRAGONFOREST")!=std::string::npos) {
+			boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT OAK_FOREST_TREE DRAGONTREE 0\n  effect_amount GAIA_UPGRADE_UNIT FOREST_TREE DRAGONTREE 0\n");
+			terrainOverrides.insert(fs::path("resources/terrains/15011.slp"));
+		}
+
+		boost::replace_all(str, "#const SAVANNAH 41", "#const SAVANNAH 14");
+		if(str.find("SAVANNAH")!=std::string::npos)
+			terrainOverrides.insert(fs::path("resources/terrains/15010.slp"));
+
+		boost::replace_all(str, "#const DIRT4 42", "#const DIRT4 3");
+		if(str.find("DIRT4")!=std::string::npos)
+			terrainOverrides.insert(fs::path("resources/terrains/15007.slp"));
+
+		boost::replace_all(str, "#const MOORLAND 44", "#const MOORLAND 9");
+		if(str.find("MOORLAND")!=std::string::npos)
+			terrainOverrides.insert(fs::path("resources/terrains/15009.slp"));
+
+		boost::replace_all(str, "#const CRACKEDIT 45", "#const CRACKEDIT 6");
+		if(str.find("CRACKEDIT")!=std::string::npos)
+			terrainOverrides.insert(fs::path("resources/terrains/15000.slp"));
+
+		boost::replace_all(str, "#const QUICKSAND 46", "#const QUICKSAND 40");
+		if(str.find("CRACKEDIT")!=std::string::npos)
+			terrainOverrides.insert(fs::path("resources/terrains/15018.slp"));
+
+		boost::replace_all(str, "#const BAOBAB 49", "#const BAOBAB 41");
+
+		std::string mapName = it->stem().string()+".rms";
+		std::ofstream out(outputDir.string()+"/"+mapName);
+		out << str;
+		out.close();
+
+		if (terrainOverrides.size() != 0) {
+			QuaZip zip(QString((outputDir.string()+"/ZR@"+mapName).c_str()));
+			zip.open(QuaZip::mdAdd, NULL);
+			terrainOverrides.insert(fs::path(outputDir.string()+"/"+mapName));
+			for(std::set<fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
+				bool success;
+				QuaZipFile outFile(&zip);
+				QuaZipNewInfo fileInfo(QString((*files).filename().string().c_str()));
+				fileInfo.uncompressedSize = fs::file_size((*files));
+				success = outFile.open(QIODevice::WriteOnly,fileInfo,NULL,0,0,0,true);
+				QFile inFile;
+				inFile.setFileName((*files).string().c_str());
+				success = inFile.open(QIODevice::ReadOnly);
+				success = copyData(inFile, outFile);
+				success = outFile.getZipError()!=UNZ_OK;
+				std::cerr << outFile.getZipError();
+				outFile.close();
+				inFile.close();
+			}
+			zip.close();
+		}
+		terrainOverrides.clear();
+		fs::remove(fs::path(outputDir.string()+"/"+mapName));
+	}
+}
+
 void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
 
 	aocDat->Sounds = hdDat->Sounds;
@@ -555,7 +704,7 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	aocDat->TerrainsUsed1 = 42;
 	terrainSwap(hdDat, aocDat, 16,54,15014,"g_ice"); //mangrove terrain
 	terrainSwap(hdDat, aocDat, 26,55,15014,"g_ice"); //mangrove forest
-	terrainSwap(hdDat, aocDat, 41,42,15000,"g_ice"); //baobab forest
+	terrainSwap(hdDat, aocDat, 41,49,15000,"g_ice"); //baobab forest
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
@@ -670,7 +819,7 @@ int MainWindow::run()
 		fs::path langDllFile("language_x1_p1.dll");
 		fs::path langDllPath = langDllFile;
 		fs::path xmlOutPathUP = outPath / "Games/WK.xml";
-		//fs::path aiInputPath("resources/Script.Ai");
+		fs::path aiInputPath("resources/Script.Ai");
 		fs::path mapInputPath("resources/Script.Rm");
 		std::string drsOutPath = vooblyDir.string() + "Data/gamedata_x1_p1.drs";
 		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
@@ -685,6 +834,7 @@ int MainWindow::run()
 		fs::path gridNoSnowInputDir("resources/Grid");
 		fs::path noSnowInputDir("resources/No Snow");
 		fs::path wallsInputDir("resources/short_walls");
+		fs::path gamedata_x1("resources/gamedata_x1.drs");
 
 		std::string line;
 		
@@ -710,13 +860,17 @@ int MainWindow::run()
 			recCopy(wallsInputDir, moddedAssetsPath);
 	
 		fs::remove_all(vooblyDir/"Data");
-		fs::remove_all(vooblyDir/"Script.Ai");
+		fs::remove_all(vooblyDir/"Script.Ai/Brutal");
+		fs::remove(vooblyDir/"Script.Ai/BruteForce.ai");
+		fs::remove(vooblyDir/"Script.Ai/BruteForce.per");
 		fs::remove(vooblyDir/"age2_x1.xml");
 		fs::remove(vooblyDir/"language.ini");
 		fs::remove(vooblyDir/"version.ini");
-		fs::remove_all(outPath/"Games/WololoKingdoms/Data");
+		fs::remove_all(upDir/"Data");
+		fs::remove_all(upDir/"Script.Ai/Brutal");
+		fs::remove(upDir/"Script.Ai/BruteForce.ai");
+		fs::remove(upDir/"Script.Ai/BruteForce.per");
 		fs::remove(outPath/"Games/WK.xml");
-		fs::remove(outPath/"version.ini");
 		fs::create_directories(vooblyDir/"Data");
 		fs::create_directories(vooblyDir/"Sound/stream");
 		fs::create_directories(vooblyDir/"Taunt");
@@ -736,9 +890,11 @@ int MainWindow::run()
 			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
 		}
 		recCopy(mapInputPath, vooblyDir/"Script.Rm", true);
+		copyHDMaps(assetsPath, vooblyDir/"Script.Rm");
+		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyDir/"Script.Rm");
 
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
-		//recCopy(aiInputPath, vooblyDir/"Script.Ai");
+		recCopy(aiInputPath, vooblyDir/"Script.Ai", true);
 
 		if(this->ui->createExe->isChecked()) {
 			fs::create_directories(upDir / "Data");
@@ -746,10 +902,11 @@ int MainWindow::run()
 			recCopy(vooblyDir / "Taunt", upDir / "Taunt", true);
 			fs::copy_file(xmlPath, xmlOutPathUP);
 			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", true);
-			//recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai");
+			recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai", true);
 		}
 		if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
 			hotkeySetup();
+		recCopy(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", false);
 
 
 
@@ -992,6 +1149,19 @@ int MainWindow::run()
 	this->setEnabled(true);
 	this->ui->label->repaint();
 	return ret;
+}
+
+bool MainWindow::copyData(QIODevice &inFile, QIODevice &outFile)
+{
+	while (!inFile.atEnd()) {
+		char buf[4096];
+		qint64 readLen = inFile.read(buf, 4096);
+		if (readLen <= 0)
+			return false;
+		if (outFile.write(buf, readLen) != readLen)
+			return false;
+	}
+	return true;
 }
 
 
