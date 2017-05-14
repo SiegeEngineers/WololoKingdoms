@@ -93,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		}
 	} );
 	
+	//TODO do this in a loop
 	this->ui->hotkeyTip->setIcon(QIcon("resources/question.png"));
 	this->ui->hotkeyTip->setIconSize(QSize(16,16));
 	this->ui->hotkeyTip->setWhatsThis(translation["hotkeyTip"].c_str());
@@ -125,6 +126,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->ui->modsTip->setWhatsThis(translation["modsTip"].c_str());
 	QObject::connect( this->ui->modsTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->modsTip->mapToGlobal(QPoint(0,0)),this->ui->modsTip->whatsThis());
+	} );
+	this->ui->mapsTip->setIcon(QIcon("resources/question.png"));
+	this->ui->mapsTip->setIconSize(QSize(16,16));
+	this->ui->mapsTip->setWhatsThis(translation["mapsTip"].c_str());
+	QObject::connect( this->ui->mapsTip, &QPushButton::clicked, this, [this]() {
+			QWhatsThis::showText(this->ui->mapsTip->mapToGlobal(QPoint(0,0)),this->ui->mapsTip->whatsThis());
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
 
@@ -620,6 +627,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 	replacements.push_back(std::make_tuple("MOORLAND","44","9","resources/terrains/15009.slp",false,"",""));
 	replacements.push_back(std::make_tuple("CRACKEDIT","45","6","resources/terrains/15000.slp",false,"",""));
 	replacements.push_back(std::make_tuple("QUICKSAND","46","40","resources/terrains/15018.slp",false,"",""));
+	replacements.push_back(std::make_tuple("BLACK","47","40","resources/terrains/15018.slp",false,"",""));
 	replacements.push_back(std::make_tuple("DLC_ROCK","40","40","resources/terrains/15018.slp",false,"",""));
 	replacements.push_back(std::make_tuple("DLC_BEACH2","51","2","resources/terrains/15017.slp",false,"",""));
 	replacements.push_back(std::make_tuple("DLC_BEACH3","52","2","resources/terrains/15017.slp",false,"",""));
@@ -635,14 +643,19 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 	for (std::vector<fs::path>::iterator it = mapNamesSorted.begin(); it != mapNamesSorted.end(); it++) {
 		std::ifstream input(inputDir.string()+it->filename().string());
 		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
+		boost::replace_all(str, "ACCACIA_FOREST", "ACACIA_FOREST");
+		boost::replace_all(str, "DLC_DIRT4", "DIRT4");
 		for (std::vector<std::tuple<std::string,std::string,std::string,std::string,bool,std::string,std::string>>::iterator repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
 			if(str.find(std::get<0>(*repIt))!=std::string::npos) {
 				boost::replace_all(str, "#const "+std::get<0>(*repIt)+" "+std::get<1>(*repIt), "#const "+std::get<0>(*repIt)+" "+std::get<2>(*repIt));
 				fs::copy_file(fs::path("resources/terrains/"+(std::get<0>(*repIt)+".slp")),fs::path(std::get<3>(*repIt)),fs::copy_option::overwrite_if_exists);
-				//TODO only do the copy_file for beach terrain
 				terrainOverrides.insert(fs::path(std::get<3>(*repIt)));
-				if(std::get<4>(*repIt))
-					boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<5>(*repIt)+" "+std::get<6>(*repIt)+" 0\n");
+				if(std::get<4>(*repIt)) {
+					if(str.find("<PLAYER_SETUP>")!=std::string::npos)
+						boost::replace_first(str, "<PLAYER_SETUP>\n","<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<5>(*repIt)+" "+std::get<6>(*repIt)+" 0\n");
+					else
+						boost::replace_first(str, "#include_drs random_map.def\n","#include_drs random_map.def\n<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<5>(*repIt)+" "+std::get<6>(*repIt)+" 0\n");
+				}
 			}
 		}
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
@@ -659,7 +672,9 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		std::ofstream out(outputDir.string()+"/"+mapName);
 		out << str;
 		out.close();
-
+		if (mapName.substr(0,3) == "rw_" || mapName.substr(0,3) == "sm_") {
+			terrainOverrides.insert(fs::path(inputDir.string()+"/"+it->stem().string()+".scx"));
+		}
 		if (terrainOverrides.size() != 0) {
 			QuaZip zip(QString((outputDir.string()+"/ZR@"+mapName).c_str()));
 			zip.open(QuaZip::mdAdd, NULL);
@@ -884,9 +899,11 @@ int MainWindow::run()
 		if (aocFound) {
 			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
 		}
-		recCopy(mapInputPath, vooblyDir/"Script.Rm", true);
+		//recCopy(mapInputPath, vooblyDir/"Script.Rm", true);
 		copyHDMaps(assetsPath, vooblyDir/"Script.Rm");
 		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyDir/"Script.Rm");
+		if(this->ui->copyMaps->isChecked())
+			copyHDMaps("resources/Script.Rm/", vooblyDir/"Script.Rm");
 
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		recCopy(aiInputPath, vooblyDir/"Script.Ai", true);
