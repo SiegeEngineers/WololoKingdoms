@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"].c_str());
 		this->ui->hotkeyTip->setDisabled(true);
 	}
+
 	this->ui->tooltipTip->setIcon(QIcon("resources/question.png"));
 	this->ui->tooltipTip->setIconSize(QSize(16,16));
 	this->ui->tooltipTip->setWhatsThis(translation["tooltipTip"].c_str());
@@ -585,7 +586,11 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		}
 	}
 	for (fs::directory_iterator end, it(outputDir); it != end; it++) {
-		existingMapNames.push_back(it->path());
+		std::string filename = it->path().filename().string();
+		if (filename.substr(0,3) == "ZR@")
+			existingMapNames.push_back(it->path().parent_path()/filename.substr(3,std::string::npos));
+		else
+			existingMapNames.push_back(it->path());
 	}
 	sort(existingMapNames.begin(), existingMapNames.end());
 	sort(mapNames.begin(), mapNames.end());
@@ -672,9 +677,9 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 				inFile.close();
 			}
 			zip.close();
+			fs::remove(fs::path(outputDir.string()+"/"+mapName));
 		}
 		terrainOverrides.clear();
-		fs::remove(fs::path(outputDir.string()+"/"+mapName));
 	}
 }
 
