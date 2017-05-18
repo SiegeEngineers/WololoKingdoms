@@ -28,6 +28,7 @@
 #include "fixes/feitoriafix.h"
 #include "fixes/burmesefix.h"
 #include "fixes/incafix.h"
+#include "fixes/smallfixes.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -646,6 +647,10 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		boost::replace_all(str, "ACCACIA_FOREST", "ACACIA_FOREST");
 		boost::replace_all(str, "DLC_DIRT4", "DIRT4");
 		for (std::vector<std::tuple<std::string,std::string,std::string,std::string,bool,std::string,std::string>>::iterator repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
+			if((std::get<0>(*repIt)=="DLC_WATER4"||std::get<0>(*repIt)=="DLC_WATER5") && (str.find("MED_WATER")!=std::string::npos || str.find("DEEP_WATER")!=std::string::npos)) {
+				boost::replace_all(str, "#const "+std::get<0>(*repIt)+" "+std::get<1>(*repIt), "#const "+std::get<0>(*repIt)+" "+std::get<2>(*repIt));
+				continue;
+			}
 			if(str.find(std::get<0>(*repIt))!=std::string::npos) {
 				boost::replace_all(str, "#const "+std::get<0>(*repIt)+" "+std::get<1>(*repIt), "#const "+std::get<0>(*repIt)+" "+std::get<2>(*repIt));
 				fs::copy_file(fs::path("resources/terrains/"+(std::get<0>(*repIt)+".slp")),fs::path(std::get<3>(*repIt)),fs::copy_option::overwrite_if_exists);
@@ -965,6 +970,7 @@ int MainWindow::run()
 			wololo::feitoriaFix,
 			wololo::burmeseFix,
 			wololo::incaFix,
+			wololo::smallFixes,
 			wololo::ai900UnitIdFix
 		};
 
