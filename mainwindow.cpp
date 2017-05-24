@@ -628,7 +628,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 	replacements.push_back(std::make_tuple("SAVANNAH","","SAVANNAH","41","14","resources/terrains/15010.slp",false,"",""));
 	replacements.push_back(std::make_tuple("DIRT4","((DLC_)?)DIRT4","$1DIRT4","42","3","resources/terrains/15007.slp",false,"",""));
 	replacements.push_back(std::make_tuple("MOORLAND","","MOORLAND","44","9","resources/terrains/15009.slp",false,"",""));
-	replacements.push_back(std::make_tuple("CRACKEDIT","","CRACKEDIT","45","6","resources/terrains/15000.slp",false,"",""));
+	replacements.push_back(std::make_tuple("CRACKEDIT","","CRACKEDIT","45","15","resources/terrains/15000.slp",false,"",""));
 	replacements.push_back(std::make_tuple("QUICKSAND","","QUICKSAND","46","40","resources/terrains/15018.slp",false,"",""));
 	replacements.push_back(std::make_tuple("BLACK","","BLACK","47","40","resources/terrains/15018.slp",false,"",""));
 	replacements.push_back(std::make_tuple("DLC_ROCK","","DLC_ROCK","40","40","resources/terrains/15018.slp",false,"",""));
@@ -734,7 +734,7 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
 
-	//terrainSwap(hdDat, aocDat, 15,42,15000,"g_ice"); //baobab forest
+	terrainSwap(hdDat, aocDat, 15,45,15000); //cracked sand
 }
 
 void MainWindow::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID) {
