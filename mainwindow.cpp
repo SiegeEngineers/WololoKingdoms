@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <windows.h>
+#include <regex>
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -649,23 +650,26 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 				boost::replace_all(str, "#const "+std::get<0>(*repIt)+" "+std::get<3>(*repIt), "#const "+std::get<0>(*repIt)+" "+std::get<4>(*repIt));
 				continue;
 			}
-			std::regex reg;
-			if(std::get<1>(*repIt)=="")
-				reg = std::regex("#const\\s+" +std::get<0>(*repIt)+ "\\s+" +std::get<3>(*repIt));
-			else
-				reg = std::regex("#const\\s+" +std::get<1>(*repIt)+ "\\s+" +std::get<3>(*repIt));
-			if(std::regex_search(str,reg)) {
-				str = std::regex_replace(str,reg, "#const "+std::get<2>(*repIt)+" "+std::get<4>(*repIt));
+			std::regex terrainConstDef;
+			std::regex terrainName;
+			if(std::get<1>(*repIt)=="") {
+				terrainConstDef = std::regex("#const\\s+" +std::get<0>(*repIt)+ "\\s+" +std::get<3>(*repIt));
+				terrainName = std::regex(std::get<0>(*repIt));
+			} else {
+				terrainConstDef = std::regex("#const\\s+" +std::get<1>(*repIt)+ "\\s+" +std::get<3>(*repIt));
+				terrainName = std::regex(std::get<1>(*repIt));
+			}
+			if(std::regex_search(str,terrainName)) {
+				str = std::regex_replace(str,terrainConstDef, "#const "+std::get<2>(*repIt)+" "+std::get<4>(*repIt));
 				fs::copy_file(fs::path("resources/terrains/"+(std::get<0>(*repIt)+".slp")),fs::path(std::get<5>(*repIt)),fs::copy_option::overwrite_if_exists);
 				terrainOverrides.insert(fs::path(std::get<5>(*repIt)));
 				if(std::get<6>(*repIt)) {
-					if(str.find("<PLAYER_SETUP>")!=std::string::npos) {
-						reg = std::regex("<PLAYER_SETUP>\\s*(\r*)\n");
-						str = std::regex_replace(str, reg,"<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
-					} else {
-						reg = std::regex("#include_drs\\s+random_map\.def\\s*(\r*)\n");
-						str = std::regex_replace(str, reg,"#include_drs random_map.def$1\n<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
-					}
+					if(str.find("<PLAYER_SETUP>")!=std::string::npos)
+						str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
+							"<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
+					else
+						str = std::regex_replace(str, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
+							"#include_drs random_map.def$1\n<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
 				}
 			}
 		}
@@ -676,8 +680,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			terrainOverrides.insert("resources/terrains/15022.slp");
 			terrainOverrides.insert("resources/terrains/15023.slp");
 		}
-		std::regex reg("#const\\s+BAOBAB\\s+49");
-		str = regex_replace(str, reg, "#const BAOBAB 16");
+		str = regex_replace(str, std::regex("#const\\s+BAOBAB\\s+49"), "#const BAOBAB 16");
 
 		std::string mapName = it->stem().string()+".rms";
 		std::ofstream out(outputDir.string()+"/"+mapName);
