@@ -46,6 +46,7 @@ fs::path outPath;
 std::string const version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
+bool secondAttempt = false;
 
 fs::path nfzUpOutPath;
 fs::path nfzOutPath;
@@ -188,7 +189,7 @@ void MainWindow::changeLanguage(std::string language) {
 	qApp->processEvents();
 }
 
-void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip) {
+void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
 	// recursive copy
 	//fs::path currentPath(current->path());
 	if (fs::is_directory(src)) {
@@ -197,14 +198,16 @@ void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip) {
 		}
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-			recCopy(currentPath, dst / currentPath.filename(), skip);
+			recCopy(currentPath, dst / currentPath.filename(), skip, force);
 		}
 	}
 	else {
 		if (skip) {
 			boost::system::error_code ec;
 			fs::copy_file(src, dst, ec);
-		} else
+		} else if (force)
+			fs::copy_file(src,dst,fs::copy_option::overwrite_if_exists);
+		else
 			fs::copy_file(src, dst);
 	}
 }
@@ -555,6 +558,8 @@ void MainWindow::createMusicPlaylist(std::string inputDir, std::string const out
 
 void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 
+	fs::path moddedAssetsPath = fs::path("map_temp/");
+
 	const std::set<std::string> exclude = {
 		"Arabia",
 		"Archipelago",
@@ -617,31 +622,33 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		}
 	}
 	std::set<fs::path> terrainOverrides;
-	std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements;
-	//<Name,Regex Pattern if needed,replace name,terrain ID, replace terrain ID,slp to replace,upgrade trees?,tree to replace,new tree>
-	replacements.push_back(std::make_tuple("DRAGONFOREST","DRAGONFORES(T?)","DRAGONFORES$1","48","21","resources/terrains/15029.slp",true,"SNOWPINETREE","DRAGONTREE"));
-	replacements.push_back(std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","13","resources/terrains/15010.slp",true,"PALMTREE","ACACIA_TREEE"));
-	replacements.push_back(std::make_tuple("DLC_RAINFOREST","","DLC_RAINFOREST","56","10","resources/terrains/15011.slp",true,"FOREST_TREE","DLC_RAINTREE"));
-	replacements.push_back(std::make_tuple("DLC_MANGROVESHALLOW","","DLC_MANGROVESHALLOW","54","41","resources/terrains/15030.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_MANGROVEFOREST","","DLC_MANGROVEFOREST","55","26","resources/terrains/15030.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_NEWSHALLOW","","DLC_NEWSHALLOW","59","4","resources/terrains/15014.slp",false,"",""));
-	replacements.push_back(std::make_tuple("SAVANNAH","","SAVANNAH","41","14","resources/terrains/15010.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DIRT4","((DLC_)?)DIRT4","$1DIRT4","42","3","resources/terrains/15007.slp",false,"",""));
-	replacements.push_back(std::make_tuple("MOORLAND","","MOORLAND","44","9","resources/terrains/15009.slp",false,"",""));
-	replacements.push_back(std::make_tuple("CRACKEDIT","","CRACKEDIT","45","15","resources/terrains/15000.slp",false,"",""));
-	replacements.push_back(std::make_tuple("QUICKSAND","","QUICKSAND","46","40","resources/terrains/15018.slp",false,"",""));
-	replacements.push_back(std::make_tuple("BLACK","","BLACK","47","40","resources/terrains/15018.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_ROCK","","DLC_ROCK","40","40","resources/terrains/15018.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_BEACH2","","DLC_BEACH2","51","2","resources/terrains/15017.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_BEACH3","","DLC_BEACH3","52","2","resources/terrains/15017.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_BEACH4","","DLC_BEACH4","53","2","resources/terrains/15017.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","resources/terrains/15019.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_WATER4","","DLC_WATER4","57","22","resources/terrains/15015.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_WATER5","","DLC_WATER5","58","1","resources/terrains/15002.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","resources/terrains/15019.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_JUNGLELEAVES","","DLC_JUNGLELEAVES","62","5","resources/terrains/15011.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_JUNGLEROAD","","DLC_JUNGLEROAD","62","5","resources/terrains/15011.slp",false,"",""));
-	replacements.push_back(std::make_tuple("DLC_JUNGLEGRASS","","DLC_JUNGLEGRASS","61","39","resources/terrains/15031.slp",false,"",""));
+	std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements = {
+		//<Name,Regex Pattern if needed,replace name,terrain ID, replace terrain ID,slp to replace,upgrade trees?,tree to replace,new tree>
+		std::make_tuple("DRAGONFOREST","DRAGONFORES(T?)","DRAGONFORES$1","48","21","15029.slp",true,"SNOWPINETREE","DRAGONTREE"),
+		std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","13","15010.slp",true,"PALMTREE","ACACIA_TREEE"),
+		std::make_tuple("DLC_RAINFOREST","","DLC_RAINFOREST","56","10","15011.slp",true,"FOREST_TREE","DLC_RAINTREE"),
+		std::make_tuple("BAOBAB","","BAOBAB","49","16","",false,"",""),
+		std::make_tuple("DLC_MANGROVESHALLOW","","DLC_MANGROVESHALLOW","54","41","15030.slp",false,"",""),
+		std::make_tuple("DLC_MANGROVEFOREST","","DLC_MANGROVEFOREST","55","26","15030.slp",false,"",""),
+		std::make_tuple("DLC_NEWSHALLOW","","DLC_NEWSHALLOW","59","4","15014.slp",false,"",""),
+		std::make_tuple("SAVANNAH","","SAVANNAH","41","14","15010.slp",false,"",""),
+		std::make_tuple("DIRT4","((DLC_)?)DIRT4","$1DIRT4","42","3","15007.slp",false,"",""),
+		std::make_tuple("MOORLAND","","MOORLAND","44","9","15009.slp",false,"",""),
+		std::make_tuple("CRACKEDIT","","CRACKEDIT","45","15","15000.slp",false,"",""),
+		std::make_tuple("QUICKSAND","","QUICKSAND","46","40","15018.slp",false,"",""),
+		std::make_tuple("BLACK","","BLACK","47","40","15018.slp",false,"",""),
+		std::make_tuple("DLC_ROCK","","DLC_ROCK","40","40","15018.slp",false,"",""),
+		std::make_tuple("DLC_BEACH2","","DLC_BEACH2","51","2","15017.slp",false,"",""),
+		std::make_tuple("DLC_BEACH3","","DLC_BEACH3","52","2","15017.slp",false,"",""),
+		std::make_tuple("DLC_BEACH4","","DLC_BEACH4","53","2","15017.slp",false,"",""),
+		std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","15019.slp",false,"",""),
+		std::make_tuple("DLC_WATER4","","DLC_WATER4","57","22","15015.slp",false,"",""),
+		std::make_tuple("DLC_WATER5","","DLC_WATER5","58","1","15002.slp",false,"",""),
+		std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","15019.slp",false,"",""),
+		std::make_tuple("DLC_JUNGLELEAVES","","DLC_JUNGLELEAVES","62","11","15006.slp",false,"",""),
+		std::make_tuple("DLC_JUNGLEROAD","","DLC_JUNGLEROAD","62","39","15031.slp",false,"",""),
+		std::make_tuple("DLC_JUNGLEGRASS","","DLC_JUNGLEGRASS","61","12","15008.slp",false,"","")
+	};
 	for (std::vector<fs::path>::iterator it = mapNamesSorted.begin(); it != mapNamesSorted.end(); it++) {
 		std::ifstream input(inputDir.string()+it->filename().string());
 		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
@@ -661,24 +668,26 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			}
 			if(std::regex_search(str,terrainName)) {
 				str = std::regex_replace(str,terrainConstDef, "#const "+std::get<2>(*repIt)+" "+std::get<4>(*repIt));
-				fs::copy_file(fs::path("resources/terrains/"+(std::get<0>(*repIt)+".slp")),fs::path(std::get<5>(*repIt)),fs::copy_option::overwrite_if_exists);
-				terrainOverrides.insert(fs::path(std::get<5>(*repIt)));
-				if(std::get<6>(*repIt)) {
-					if(str.find("<PLAYER_SETUP>")!=std::string::npos)
-						str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
-							"<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
-					else
-						str = std::regex_replace(str, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
-							"#include_drs random_map.def$1\n<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
+				if(std::get<5>(*repIt) != "") {
+					fs::copy_file(moddedAssetsPath/(std::get<0>(*repIt)+".slp"),moddedAssetsPath/std::get<5>(*repIt),fs::copy_option::overwrite_if_exists);
+					terrainOverrides.insert(moddedAssetsPath/std::get<5>(*repIt));
+					if(std::get<6>(*repIt)) {
+						if(str.find("<PLAYER_SETUP>")!=std::string::npos)
+							str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
+								"<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
+						else
+							str = std::regex_replace(str, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
+								"#include_drs random_map.def$1\n<PLAYER_SETUP>\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
+					}
 				}
 			}
 		}
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
-			terrainOverrides.insert("resources/terrains/15004.slp");
-			terrainOverrides.insert("resources/terrains/15005.slp");
-			terrainOverrides.insert("resources/terrains/15021.slp");
-			terrainOverrides.insert("resources/terrains/15022.slp");
-			terrainOverrides.insert("resources/terrains/15023.slp");
+			terrainOverrides.insert(moddedAssetsPath/"15004.slp");
+			terrainOverrides.insert(moddedAssetsPath/"15005.slp");
+			terrainOverrides.insert(moddedAssetsPath/"15021.slp");
+			terrainOverrides.insert(moddedAssetsPath/"15022.slp");
+			terrainOverrides.insert(moddedAssetsPath/"15023.slp");
 		}
 		str = regex_replace(str, std::regex("#const\\s+BAOBAB\\s+49"), "#const BAOBAB 16");
 
@@ -844,7 +853,6 @@ int MainWindow::run()
 		fs::path langDllPath = langDllFile;
 		fs::path xmlOutPathUP = outPath / "Games/WK.xml";
 		fs::path aiInputPath("resources/Script.Ai");
-		fs::path mapInputPath("resources/Script.Rm");
 		std::string drsOutPath = vooblyDir.string() + "Data/gamedata_x1_p1.drs";
 		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
 		fs::path moddedAssetsPath("assets/");
@@ -855,6 +863,9 @@ int MainWindow::run()
 		fs::path UPExeOut = outPath / "SetupAoc.exe";
 		fs::path pwInputDir("resources/pussywood");
 		fs::path gridInputDir("resources/Grid No Snow");
+		fs::path newTerrainInputDir("resources/terrains");
+		fs::path newGridTerrainInputDir("resources/new grid terrains");
+		fs::path tempMapDir("map_temp/");
 		fs::path gridNoSnowInputDir("resources/Grid");
 		fs::path noSnowInputDir("resources/No Snow");
 		fs::path wallsInputDir("resources/short_walls");
@@ -863,7 +874,9 @@ int MainWindow::run()
 		std::string line;
 		
 		fs::remove_all(moddedAssetsPath);
+		fs::remove_all(tempMapDir);
 		fs::create_directories(moddedAssetsPath);
+		fs::create_directories(tempMapDir);
 
 		if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
 			this->ui->label->setText((translation["working"]+"\n"+translation["workingMods"]).c_str());
@@ -872,11 +885,12 @@ int MainWindow::run()
 		if(this->ui->usePw->isChecked())
 			recCopy(pwInputDir, moddedAssetsPath);
 		if(this->ui->useGrid->isChecked()) {
+			recCopy(gridInputDir, moddedAssetsPath);
+			recCopy(newGridTerrainInputDir,tempMapDir);
 			if(this->ui->useNoSnow->isChecked())
-				recCopy(gridNoSnowInputDir, moddedAssetsPath);
-			else
-				recCopy(gridInputDir, moddedAssetsPath);
+				recCopy(gridNoSnowInputDir, moddedAssetsPath, false, true);
 		} else {
+			recCopy(newTerrainInputDir,tempMapDir);
 			if(this->ui->useNoSnow->isChecked())
 				recCopy(noSnowInputDir, moddedAssetsPath);
 		}
@@ -913,7 +927,6 @@ int MainWindow::run()
 		if (aocFound) {
 			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
 		}
-		//recCopy(mapInputPath, vooblyDir/"Script.Rm", true);
 		copyHDMaps(assetsPath, vooblyDir/"Script.Rm");
 		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyDir/"Script.Rm");
 		if(this->ui->copyMaps->isChecked())
@@ -960,6 +973,7 @@ int MainWindow::run()
 		makeDrs(assetsPath.string(), moddedAssetsPath.string(), &drsOut);
 
 		fs::remove_all(moddedAssetsPath);
+		fs::remove_all(tempMapDir);
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingDat"]).c_str());
 		this->ui->label->repaint();
@@ -1069,6 +1083,11 @@ int MainWindow::run()
 					langDll.setGameVersion(genie::GameVersion::GV_TC);
 				} catch (const std::ifstream::failure& e) {
 					fs::remove(langDllFile);
+					if(!secondAttempt) {
+						secondAttempt = true;
+						ret = run();
+						return ret;
+					}
 					dllPatched = false;
 					patchLangDll = false;
 				}
@@ -1102,8 +1121,14 @@ int MainWindow::run()
 					this->ui->label->setText(line.c_str());
 					this->ui->label->repaint();
 				} catch (const std::ofstream::failure& e) {
+					if(!secondAttempt) {
+						secondAttempt = true;
+						ret = run();
+						return ret;
+					}
 					dllPatched = false;
 					patchLangDll = false;
+
 				}
 			}
 		}
@@ -1165,11 +1190,13 @@ int MainWindow::run()
 	catch (std::exception const & e) {
 		dialog = new Dialog(this,translation["dialogException"]+std::string()+e.what());
 		dialog->exec();
+		this->ui->label->setText(translation["error"].c_str());
 		ret = 1;
 	}
 	catch (std::string const & e) {		
 		dialog = new Dialog(this,translation["dialogException"]+e);
 		dialog->exec();
+		this->ui->label->setText(translation["error"].c_str());
 		ret = 1;
 	}
 

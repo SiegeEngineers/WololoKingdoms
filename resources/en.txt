@@ -39,3 +39,4 @@ useGrid=Grid
 useWalls=Short Walls
 usePw=Small Trees
 runButton=Run
+error=An error occured.\nTry running the installer again.
