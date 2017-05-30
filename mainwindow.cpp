@@ -558,7 +558,11 @@ void MainWindow::createMusicPlaylist(std::string inputDir, std::string const out
 
 void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 
-	fs::path moddedAssetsPath = fs::path("map_temp/");
+	fs::path tempMapDir;
+	if(fs::exists("new_terrain_override"))
+		tempMapDir = fs::path("new_terrain_override/");
+	else
+		tempMapDir = fs::path("map_temp/");
 
 	const std::set<std::string> exclude = {
 		"Arabia",
@@ -669,8 +673,8 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			if(std::regex_search(str,terrainName)) {
 				str = std::regex_replace(str,terrainConstDef, "#const "+std::get<2>(*repIt)+" "+std::get<4>(*repIt));
 				if(std::get<5>(*repIt) != "") {
-					fs::copy_file(moddedAssetsPath/(std::get<0>(*repIt)+".slp"),moddedAssetsPath/std::get<5>(*repIt),fs::copy_option::overwrite_if_exists);
-					terrainOverrides.insert(moddedAssetsPath/std::get<5>(*repIt));
+					fs::copy_file(tempMapDir/(std::get<0>(*repIt)+".slp"),tempMapDir/std::get<5>(*repIt),fs::copy_option::overwrite_if_exists);
+					terrainOverrides.insert(tempMapDir/std::get<5>(*repIt));
 					if(std::get<6>(*repIt)) {
 						if(str.find("<PLAYER_SETUP>")!=std::string::npos)
 							str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
@@ -683,11 +687,11 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			}
 		}
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
-			terrainOverrides.insert(moddedAssetsPath/"15004.slp");
-			terrainOverrides.insert(moddedAssetsPath/"15005.slp");
-			terrainOverrides.insert(moddedAssetsPath/"15021.slp");
-			terrainOverrides.insert(moddedAssetsPath/"15022.slp");
-			terrainOverrides.insert(moddedAssetsPath/"15023.slp");
+			terrainOverrides.insert(tempMapDir/"15004.slp");
+			terrainOverrides.insert(tempMapDir/"15005.slp");
+			terrainOverrides.insert(tempMapDir/"15021.slp");
+			terrainOverrides.insert(tempMapDir/"15022.slp");
+			terrainOverrides.insert(tempMapDir/"15023.slp");
 		}
 		str = regex_replace(str, std::regex("#const\\s+BAOBAB\\s+49"), "#const BAOBAB 16");
 
@@ -866,6 +870,7 @@ int MainWindow::run()
 		fs::path newTerrainInputDir("resources/terrains");
 		fs::path newGridTerrainInputDir("resources/new grid terrains");
 		fs::path tempMapDir("map_temp/");
+		fs::path modOverrideDir("mod_override/");
 		fs::path gridNoSnowInputDir("resources/Grid");
 		fs::path noSnowInputDir("resources/No Snow");
 		fs::path wallsInputDir("resources/short_walls");
@@ -896,6 +901,8 @@ int MainWindow::run()
 		}
 		if(this->ui->useWalls->isChecked())
 			recCopy(wallsInputDir, moddedAssetsPath);
+		if(fs::exists(modOverrideDir))
+			recCopy(modOverrideDir, moddedAssetsPath, false, true);
 	
 		fs::remove_all(vooblyDir/"Data");
 		fs::remove_all(vooblyDir/"Script.Ai/Brutal");
