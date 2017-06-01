@@ -43,6 +43,7 @@ namespace fs = boost::filesystem;
 
 fs::path HDPath;
 fs::path outPath;
+fs::path moddedAssetsPath("assets/");
 std::string const version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
@@ -559,9 +560,10 @@ void MainWindow::createMusicPlaylist(std::string inputDir, std::string const out
 void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 
 	fs::path tempMapDir;
-	if(fs::exists("new_terrain_override"))
+	if(!fs::is_empty("new_terrain_override")) {
 		tempMapDir = fs::path("new_terrain_override/");
-	else
+		recCopy(fs::path("map_temp/"), tempMapDir, true);
+	} else
 		tempMapDir = fs::path("map_temp/");
 
 	const std::set<std::string> exclude = {
@@ -750,7 +752,7 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	terrainSwap(hdDat, aocDat, 15,45,15000); //cracked sand
 }
 
-void MainWindow::patchArchitectures(genie::DatFile *aocDat, fs::path HDPath, fs::path moddedAssetsPath) {
+void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
 						155, 179, 190, 209, 210, 234, 235, 236, 276, 463, 464, 465, 481, 482, 483, 484, 487, 488, 490, 491, 498,
@@ -759,97 +761,98 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat, fs::path HDPath, fs:
 	short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
 	short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9};
 	short burmese = 30; //These are used for ID reference
-
-	for(short c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
+	for(unsigned int c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
 		std::map<short,short> replacedGraphics;
-		short civ = civIDs[c];
 		//buildings
-		for(short b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
-			short buildingID = buildingIDs[b];
-			short oldGraphicID = aocDat->Civs[civ].Units[buildingID].StandingGraphic.first;
-			if(replacedGraphics[oldGraphicID] != 0)
-				aocDat->Civs[civ].Units[buildingID].StandingGraphic.first = replacedGraphics[oldGraphicID];
-			else {
-				std::vector<int> duplicatedGraphics;
-				short newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, oldGraphicID,
-													  aocDat->Civs[burmese].Units[buildingID].StandingGraphic.first,
-													  c, HDPath, moddedAssetsPath);
-				replacedGraphics[oldGraphicID] = newGraphicID;
-				aocDat->Civs[civ].Units[buildingID].StandingGraphic.first = newGraphicID;
-			}
-
-			//Construction Graphics for Gates, Walls, etc
-			oldGraphicID = aocDat->Civs[civ].Units[buildingID].Building.ConstructionGraphicID;
+		for(unsigned int b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
+			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].StandingGraphic.first,
+					aocDat->Civs[burmese].Units[buildingIDs[b]].StandingGraphic.first, c, replacedGraphics);
+			short oldGraphicID = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Building.ConstructionGraphicID;
 			if(oldGraphicID > 130 && oldGraphicID != 4248) { //exclude standard construction graphics for all civs
-				if(replacedGraphics[oldGraphicID] != 0)
-					aocDat->Civs[civ].Units[buildingID].Building.ConstructionGraphicID = replacedGraphics[oldGraphicID];
-				else {
-					std::vector<int> duplicatedGraphics;
-					short newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, oldGraphicID,
-														  aocDat->Civs[burmese].Units[buildingID].Building.ConstructionGraphicID,
-														  c, HDPath, moddedAssetsPath);
-					replacedGraphics[oldGraphicID] = newGraphicID;
-					aocDat->Civs[civ].Units[buildingID].Building.ConstructionGraphicID = newGraphicID;
-				}
+				replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Building.ConstructionGraphicID,
+							   aocDat->Civs[burmese].Units[buildingIDs[b]].Building.ConstructionGraphicID, c, replacedGraphics);
 			}
-
-			//Damage Graphics
-			std::vector<genie::unit::DamageGraphic>::iterator compIt = aocDat->Civs[burmese].Units[buildingID].DamageGraphics.begin();
-			for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civ].Units[buildingID].DamageGraphics.begin();
-				it != aocDat->Civs[civ].Units[buildingID].DamageGraphics.end(); it++) {
-				if(replacedGraphics[it->GraphicID] != 0)
-					it->GraphicID = replacedGraphics[it->GraphicID];
-				else {
-					std::vector<int> duplicatedGraphics;
-					short newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID,
-														 compIt->GraphicID, c, HDPath, moddedAssetsPath);
-					replacedGraphics[it->GraphicID] = newGraphicID;
-					it->GraphicID = newGraphicID;
-				}
+			std::vector<genie::unit::DamageGraphic>::iterator compIt = aocDat->Civs[burmese].Units[buildingIDs[b]].DamageGraphics.begin();
+			for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].DamageGraphics.begin();
+				it != aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].DamageGraphics.end(); it++) {
+				replaceGraphic(aocDat, &(it->GraphicID), compIt->GraphicID, c, replacedGraphics);
 				compIt++;
 			}
 		}
 		//units like ships
-		for(short u = 0; u < sizeof(unitIDs)/sizeof(short); u++) {
-			short unitID = unitIDs[u];
-			short civ = civIDs[c];
-			//standing graphic
-			short oldGraphicID = aocDat->Civs[civ].Units[unitID].StandingGraphic.first;
-			if(replacedGraphics[oldGraphicID] != 0)
-				aocDat->Civs[civ].Units[unitID].StandingGraphic.first = replacedGraphics[oldGraphicID];
-			else {
-				std::vector<int> duplicatedGraphics;
-				short newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, oldGraphicID,
-													  aocDat->Civs[burmese].Units[unitID].StandingGraphic.first,
-													  c, HDPath, moddedAssetsPath);
-				replacedGraphics[oldGraphicID] = newGraphicID;
-				aocDat->Civs[civ].Units[unitID].StandingGraphic.first = newGraphicID;
+		for(unsigned int u = 0; u < sizeof(unitIDs)/sizeof(short); u++) {
+			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].StandingGraphic.first, aocDat->Civs[burmese].Units[unitIDs[u]].StandingGraphic.first, c, replacedGraphics);
+			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].DeadFish.WalkingGraphic.first, aocDat->Civs[burmese].Units[unitIDs[u]].DeadFish.WalkingGraphic.first, c, replacedGraphics);
+			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Type50.AttackGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Type50.AttackGraphic, c, replacedGraphics);
+		}
+	}
+
+	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
+					{7,8,9,10,20,25,26,27},
+					{15,16,21}};
+	std::map<int,int> slps = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
+							 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
+	short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620};
+	short cgUnitIDs[] = {125,134,286};
+	for(int i = 0; i < 3; i++) {
+		short monkHealingGraphic;
+		if (i != 2) {
+			int newSLP = 60000+10000*i+135;
+			genie::Graphic newGraphic = aocDat->Graphics[1597];
+			monkHealingGraphic = aocDat->Graphics.size();
+			newGraphic.ID = monkHealingGraphic;
+			newGraphic.SLP = newSLP;
+			aocDat->Graphics.push_back(newGraphic);
+			aocDat->GraphicPointers.push_back(1);
+			fs::path src = HDPath/("resources/_common/drs/graphics/776.slp");
+			fs::path dst = moddedAssetsPath/(std::to_string(newSLP)+".slp");
+			boost::system::error_code ec;
+			fs::copy_file(src,dst,ec);
+		}
+		for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
+			std::map<short,short> replacedGraphics;
+			for(unsigned int b = 0; b < sizeof(cgBuildingIDs)/sizeof(short); b++) {
+				replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, i, replacedGraphics, slps);
+				for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].DamageGraphics.begin();
+					it != aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].DamageGraphics.end(); it++) {
+					replaceGraphic(aocDat, &(it->GraphicID), -1, i, replacedGraphics, slps);
+				}
 			}
-			//moving graphic
-			oldGraphicID = aocDat->Civs[civ].Units[unitID].DeadFish.WalkingGraphic.first;
-			if(replacedGraphics[oldGraphicID] != 0)
-				aocDat->Civs[civ].Units[unitID].DeadFish.WalkingGraphic.first = replacedGraphics[oldGraphicID];
-			else {
-				std::vector<int> duplicatedGraphics;
-				short newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, oldGraphicID,
-													  aocDat->Civs[burmese].Units[unitID].DeadFish.WalkingGraphic.first,
-													  c, HDPath, moddedAssetsPath);
-				replacedGraphics[oldGraphicID] = newGraphicID;
-				aocDat->Civs[civ].Units[unitID].DeadFish.WalkingGraphic.first = newGraphicID;
+
+			//units like ships
+			for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
+				replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].StandingGraphic.first, -1, i, replacedGraphics, slps);
+				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1)
+					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, -1, i, replacedGraphics, slps);
+				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic != -1)
+					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic, -1, i, replacedGraphics, slps);
 			}
-			//attacking Graphic
-			oldGraphicID = aocDat->Civs[civ].Units[unitID].Type50.AttackGraphic;
-			if(replacedGraphics[oldGraphicID] != 0)
-				aocDat->Civs[civ].Units[unitID].Type50.AttackGraphic = replacedGraphics[oldGraphicID];
-			else {
-				std::vector<int> duplicatedGraphics;
-				short newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, oldGraphicID,
-													  aocDat->Civs[burmese].Units[unitID].Type50.AttackGraphic,
-													  c, HDPath, moddedAssetsPath);
-				replacedGraphics[oldGraphicID] = newGraphicID;
-				aocDat->Civs[civ].Units[unitID].Type50.AttackGraphic = newGraphicID;
+			//special UP healing slp workaround
+			if (i != 2) {
+				for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
+					size_t code = 0x811E0000+monkHealingGraphic;
+					int ccode = (int) code;
+					aocDat->Civs[civGroups[i][cg]].Units[125].LanguageDLLHelp = ccode;
+				}
 			}
 		}
+	}
+
+
+}
+
+void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slps) {
+	if(replacedGraphics[*graphicID] != 0)
+		*graphicID = replacedGraphics[*graphicID];
+	else {
+		std::vector<int> duplicatedGraphics;
+		short newGraphicID;
+		if (compareID != -1)
+			newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID, compareID, c);
+		else
+			newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID, compareID, c, slps);
+		replacedGraphics[*graphicID] = newGraphicID;
+		*graphicID = newGraphicID;
 	}
 }
 
@@ -868,31 +871,36 @@ bool MainWindow::checkGraphics(genie::DatFile *aocDat, short graphicID, std::vec
 		return true;
 }
 
-short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, fs::path HDPath, boost::filesystem::path moddedAssetsPath) {
+short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, std::map<int,int> slps) {
 
 
-	if (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000) {
+	if (compareID != -1 && (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000)) {
 		std::vector<int> checkedGraphics;
 		if(!checkGraphics(aocDat, compareID, checkedGraphics))
 			return graphicID;
 	}
 	genie::Graphic newGraphic = aocDat->Graphics[graphicID];
-	short newBaseSLP = 24000;
+	int newBaseSLP = compareID==-1?60000:24000;
 
 	short newGraphicID = aocDat->Graphics.size();
-	int newSLP = aocDat->Graphics[compareID].SLP - 18000 + newBaseSLP + 1000*offset;
-	fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
-	fs::path dst = moddedAssetsPath/(std::to_string(newSLP)+".slp");
-	boost::system::error_code ec;
-	if(fs::exists(src)) {
-		fs::copy_file(src,dst, ec);
-		if(ec.value() != boost::system::errc::success)
-			std::cout << ec.message();
-	} else {
-		src = HDPath/("resources/_common/drs/graphics/"+std::to_string(newGraphic.SLP)+".slp");
-		fs::copy_file(src,dst, ec);
-		if(ec.value() != boost::system::errc::success)
-			std::cout << ec.message();
+	int newSLP;
+	if(compareID==-1) {
+		if (slps[aocDat->Graphics[graphicID].SLP] == 0 && aocDat->Graphics[graphicID].SLP != 2683)
+			newSLP = aocDat->Graphics[graphicID].SLP;
+		else
+			newSLP = newBaseSLP+10000*offset+slps[aocDat->Graphics[graphicID].SLP];
+	} else
+		newSLP = aocDat->Graphics[compareID].SLP - 18000 + newBaseSLP + 1000*offset;
+	if(newSLP != aocDat->Graphics[graphicID].SLP) {
+		fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
+		fs::path dst = moddedAssetsPath/(std::to_string(newSLP)+".slp");
+		boost::system::error_code ec;
+		if(fs::exists(src)) {
+			fs::copy_file(src,dst, ec);
+		} else {
+			src = HDPath/("resources/_common/drs/graphics/"+std::to_string(newGraphic.SLP)+".slp");
+			fs::copy_file(src,dst, ec);
+		}
 	}
 
 	duplicatedGraphics.push_back(newGraphic.ID);
@@ -901,14 +909,20 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 	aocDat->Graphics.push_back(newGraphic);
 	aocDat->GraphicPointers.push_back(1);
 
-	if(aocDat->Graphics[compareID].Deltas.size() == newGraphic.Deltas.size()) {
+	if (compareID == -1) {
+			for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
+				if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
+					it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, -1, offset, slps);
+			}
+			aocDat->Graphics.at(newGraphicID) = newGraphic;
+	} else if(aocDat->Graphics[compareID].Deltas.size() == newGraphic.Deltas.size()) {
 		/* don't copy graphics files if the amount of deltas is different to the comparison,
 		 * this is usually with damage graphics and different amount of Flames.
 		*/
 		std::vector<genie::GraphicDelta>::iterator compIt = aocDat->Graphics[compareID].Deltas.begin();
 		for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
 			if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-				it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset, HDPath, moddedAssetsPath);
+				it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
 			compIt++;
 		}
 		aocDat->Graphics.at(newGraphicID) = newGraphic;
@@ -1025,7 +1039,6 @@ int MainWindow::run()
 		fs::path aiInputPath("resources/Script.Ai");
 		std::string drsOutPath = vooblyDir.string() + "Data/gamedata_x1_p1.drs";
 		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
-		fs::path moddedAssetsPath("assets/");
 		fs::path outputDatPath = vooblyDir / "Data/empires2_x1_p1.dat";
 		fs::path upDir = outPath / "Games/WololoKingdoms/";
 		std::string const UPModdedExe = "WK";
@@ -1043,9 +1056,15 @@ int MainWindow::run()
 		fs::path gamedata_x1("resources/gamedata_x1.drs");
 
 		std::string line;
-		
-		fs::remove_all(moddedAssetsPath);
-		fs::remove_all(tempMapDir);
+
+		boost::system::error_code ec;
+		try {
+			fs::remove_all(moddedAssetsPath, ec);
+			fs::remove_all(tempMapDir, ec);
+		} catch (const fs::filesystem_error& e) {
+			if(e.code() != boost::system::errc::directory_not_empty)
+				throw e;
+		}
 		fs::create_directories(moddedAssetsPath);
 		fs::create_directories(tempMapDir);
 
@@ -1067,7 +1086,7 @@ int MainWindow::run()
 		}
 		if(this->ui->useWalls->isChecked())
 			recCopy(wallsInputDir, moddedAssetsPath);
-		if(fs::exists(modOverrideDir))
+		if(!fs::is_empty(modOverrideDir))
 			recCopy(modOverrideDir, moddedAssetsPath, false, true);
 	
 		fs::remove_all(vooblyDir/"Data");
@@ -1147,11 +1166,16 @@ int MainWindow::run()
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingDat"]).c_str());
 		this->ui->label->repaint();
 		transferHdDatElements(&hdDat, &aocDat);
-		patchArchitectures(&aocDat, HDPath, moddedAssetsPath);
+		patchArchitectures(&aocDat);
 		makeDrs(assetsPath.string(), moddedAssetsPath.string(), &drsOut);
 
-		fs::remove_all(moddedAssetsPath);
-		fs::remove_all(tempMapDir);
+		try {
+			fs::remove_all(moddedAssetsPath, ec);
+			fs::remove_all(tempMapDir, ec);
+		} catch (const fs::filesystem_error& e) {
+			if(e.code() != boost::system::errc::directory_not_empty)
+				throw e;
+		}
 
 		wololo::DatPatch patchTab[] = {
 
