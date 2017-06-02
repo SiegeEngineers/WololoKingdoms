@@ -213,6 +213,29 @@ void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bo
 	}
 }
 
+void MainWindow::shallowRecCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
+	// recursive copy, but directory structure is ignored and all files copied directly into dst
+	//fs::path currentPath(current->path());
+	if (fs::is_directory(src)) {
+		for (fs::directory_iterator current(src), end;current != end; ++current) {
+			fs::path currentPath(current->path());
+			if (fs::is_directory(currentPath))
+				shallowRecCopy(currentPath, dst, skip, force);
+			else
+				shallowRecCopy(currentPath, dst / currentPath.filename(), skip, force);
+		}
+	}
+	else {
+		if (skip) {
+			boost::system::error_code ec;
+			fs::copy_file(src, dst, ec);
+		} else if (force)
+			fs::copy_file(src,dst,fs::copy_option::overwrite_if_exists);
+		else
+			fs::copy_file(src, dst);
+	}
+}
+
 void MainWindow::listAssetFiles(fs::path path, std::vector<std::string> *listOfSlpFiles, std::vector<std::string> *listOfWavFiles) {
 	const std::set<std::string> exclude = {
 		// Exclude Forgotten Empires leftovers
@@ -544,6 +567,38 @@ void MainWindow::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
 	}
 }
 
+void MainWindow::copyWallFiles(fs::path inputDir, fs::path outputDir) {
+	/*
+	 * Base IDS 2098 Stone 2110 Fortified 4169 Damaged 4173 Damaged Fortified
+	 * Central European +0, Asian +1, Middle Eastern +2, West European +3
+	 * +8 per damage increase
+	 *
+	 * New Types:
+	 * 5000 American, 7000 Mediterranean, 15000 Eastern European, 16000 Indian, 17000 African, 18000 South East Asian
+	 * Base IDs 124 Stone 126 Fortified 145 Damaged 147 Damaged Fortified
+	 * +4 per damage increase
+	 */
+	recCopy(inputDir,outputDir);
+	int conversionTable[] = {3,-15,2,0,3,-18,-5,1,0,1,2,3,0,1,2};
+	int newBaseSLP = 24000;
+	for(size_t i = 0; i < sizeof(conversionTable)/sizeof(int); i++) {
+		int archID = conversionTable[i];
+		if (archID < 0) {
+			archID = -archID;
+			int digits = archID == 5 || archID == 7?124:324;
+			fs::copy_file(inputDir/(std::to_string(archID*1000+digits)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+digits+200)+".slp"));
+			fs::copy_file(inputDir/(std::to_string(archID*1000+digits+2)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+digits+202)+".slp"));
+			for (int j = 0; j <= 10; j+=2)
+				fs::copy_file(inputDir/(std::to_string(archID*1000+digits+21+j)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+digits+221+j)+".slp"));
+		} else {
+			fs::copy_file(inputDir/(std::to_string(2098+archID)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+324)+".slp"));
+			fs::copy_file(inputDir/(std::to_string(2110+archID)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+326)+".slp"));
+			for (int j = 0; j <= 20; j+=4)
+				fs::copy_file(inputDir/(std::to_string(4169+archID+j)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+345+j)+".slp"));
+		}
+	}
+}
+
 std::string MainWindow::tolower(std::string line) {
 	std::transform(line.begin(), line.end(), line.begin(), static_cast<int(*)(int)>(std::tolower));
 	return line;
@@ -786,7 +841,11 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Type50.AttackGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Type50.AttackGraphic, c, replacedGraphics);
 		}
 	}
+	//Let the Berber Mill have 40 frames instead of 8/10, which is close to the african mill with 38 frames
+	aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].FrameCount = 40;
+	aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].FrameCount = 40;
 
+	//Separate Monks and DA buildings into 4 major regions (Europe, Asian, Southern, American)
 	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
 					{7,8,9,10,20,25,26,27},
 					{15,16,21}};
@@ -833,6 +892,17 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 					size_t code = 0x811E0000+monkHealingGraphic;
 					int ccode = (int) code;
 					aocDat->Civs[civGroups[i][cg]].Units[125].LanguageDLLHelp = ccode;
+
+					if (i == 0) {
+						aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 218;
+						aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 218;
+						aocDat->Graphics[aocDat->Civs[civGroups[i][cg]].Units[125].StandingGraphic.first].FrameCount = 10;
+					} else {
+						aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 169;
+						aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 169;
+						aocDat->Graphics[aocDat->Civs[civGroups[i][cg]].Units[125].StandingGraphic.first].FrameCount = 10;
+					}
+
 				}
 			}
 		}
@@ -1085,9 +1155,9 @@ int MainWindow::run()
 				recCopy(noSnowInputDir, moddedAssetsPath);
 		}
 		if(this->ui->useWalls->isChecked())
-			recCopy(wallsInputDir, moddedAssetsPath);
+			copyWallFiles(wallsInputDir, moddedAssetsPath);
 		if(!fs::is_empty(modOverrideDir))
-			recCopy(modOverrideDir, moddedAssetsPath, false, true);
+			shallowRecCopy(modOverrideDir, moddedAssetsPath, false, true);
 	
 		fs::remove_all(vooblyDir/"Data");
 		fs::remove_all(vooblyDir/"Script.Ai/Brutal");
@@ -1355,6 +1425,7 @@ int MainWindow::run()
 						fs::copy_file(UPExe, UPExeOut);
 					}
 					system(("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
+					fs::copy_file(upDir/"Sound/music.m3u",vooblyDir/"Sound/music.m3u",fs::copy_option::overwrite_if_exists);
 					line = translation["dialogExe"];
 					boost::replace_all(line,"<exe>",UPModdedExe);
 					dialog = new Dialog(this,line.c_str());
