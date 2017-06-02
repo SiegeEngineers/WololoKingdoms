@@ -351,6 +351,7 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 			}
 			catch (std::string const & e) {
 				boost::replace_all(outputLine, "\xb7", "-"); // non-english dll files don't seem to like that character
+				boost::replace_all(outputLine, "\xae", "R");
 				dllOut->setString(nb, outputLine);
 			}
 		}
