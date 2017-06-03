@@ -32,6 +32,7 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     dialog.cpp \
     fixes/smallfixes.cpp \
+	fixes/siegetowerfix.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -70,6 +71,7 @@ HEADERS += \
     mainwindow.h \
     dialog.h \
     fixes/smallfixes.h \
+	fixes/siegetowerfix.h
 
 DISTFILES += \
     WololoKingdoms.ico
