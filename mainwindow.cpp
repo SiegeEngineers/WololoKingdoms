@@ -846,6 +846,9 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].FrameCount = 40;
 	aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].FrameCount = 40;
 
+	//Fix the missionary converting frames while we're at it
+	aocDat->Graphics[6616].FrameCount = 14;
+
 	//Separate Monks and DA buildings into 4 major regions (Europe, Asian, Southern, American)
 	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
 					{7,8,9,10,20,25,26,27},
@@ -897,11 +900,9 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 					if (i == 0) {
 						aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 218;
 						aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 218;
-						aocDat->Graphics[aocDat->Civs[civGroups[i][cg]].Units[125].StandingGraphic.first].FrameCount = 10;
 					} else {
 						aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 169;
 						aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 169;
-						aocDat->Graphics[aocDat->Civs[civGroups[i][cg]].Units[125].StandingGraphic.first].FrameCount = 10;
 					}
 
 				}
