@@ -146,6 +146,9 @@
          <property name="text">
           <string>Create an offline installation</string>
          </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item>
@@ -175,6 +178,9 @@
         <widget class="QCheckBox" name="replaceTooltips">
          <property name="text">
           <string>Improve tooltips and tech tree</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -213,6 +219,9 @@
          <property name="text">
           <string>Grid</string>
          </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item>
@@ -226,6 +235,9 @@
         <widget class="QCheckBox" name="usePw">
          <property name="text">
           <string>Small Trees</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -256,6 +268,9 @@
         <widget class="QCheckBox" name="copyMaps">
          <property name="text">
           <string>Copy Real World and Special Maps</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
