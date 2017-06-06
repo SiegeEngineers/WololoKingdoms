@@ -23,6 +23,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -53,6 +54,8 @@ public:
     QCheckBox *copyMaps;
     QPushButton *mapsTip;
     QPushButton *runButton;
+    QWidget *verticalLayoutWidget;
+    QVBoxLayout *verticalLayout;
     QLabel *label;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -101,6 +104,7 @@ public:
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
         createExe = new QCheckBox(gridLayoutWidget);
         createExe->setObjectName(QStringLiteral("createExe"));
+        createExe->setChecked(true);
 
         horizontalLayout_2->addWidget(createExe);
 
@@ -119,6 +123,7 @@ public:
         horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
         replaceTooltips = new QCheckBox(gridLayoutWidget);
         replaceTooltips->setObjectName(QStringLiteral("replaceTooltips"));
+        replaceTooltips->setChecked(true);
 
         horizontalLayout_3->addWidget(replaceTooltips);
 
@@ -142,6 +147,7 @@ public:
 
         useGrid = new QCheckBox(gridLayoutWidget);
         useGrid->setObjectName(QStringLiteral("useGrid"));
+        useGrid->setChecked(true);
 
         horizontalLayout->addWidget(useGrid);
 
@@ -152,6 +158,7 @@ public:
 
         usePw = new QCheckBox(gridLayoutWidget);
         usePw->setObjectName(QStringLiteral("usePw"));
+        usePw->setChecked(true);
 
         horizontalLayout->addWidget(usePw);
 
@@ -170,6 +177,7 @@ public:
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
         copyMaps = new QCheckBox(gridLayoutWidget);
         copyMaps->setObjectName(QStringLiteral("copyMaps"));
+        copyMaps->setChecked(true);
 
         horizontalLayout_5->addWidget(copyMaps);
 
@@ -185,11 +193,21 @@ public:
 
         runButton = new QPushButton(centralWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
-        runButton->setGeometry(QRect(160, 330, 75, 23));
-        label = new QLabel(centralWidget);
+        runButton->setGeometry(QRect(160, 340, 75, 23));
+        verticalLayoutWidget = new QWidget(centralWidget);
+        verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
+        verticalLayoutWidget->setGeometry(QRect(30, 250, 341, 80));
+        verticalLayout = new QVBoxLayout(verticalLayoutWidget);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        label = new QLabel(verticalLayoutWidget);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(0, 260, 401, 61));
         label->setAlignment(Qt::AlignCenter);
+
+        verticalLayout->addWidget(label);
+
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));

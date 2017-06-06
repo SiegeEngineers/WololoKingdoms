@@ -36,6 +36,7 @@
 #include "dialog.h"
 #include <QWhatsThis>
 #include <QPoint>
+#include <QProgressBar>
 
 #include "JlCompress.h"
 
@@ -48,6 +49,7 @@ std::string const version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
+QProgressBar* bar = NULL;
 
 fs::path nfzUpOutPath;
 fs::path nfzOutPath;
@@ -369,7 +371,9 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	std::vector<std::string> wavFilesNames;
 	std::vector<std::string> moddedFilesNames;
 	listAssetFiles(inputDir, &slpFilesNames, &wavFilesNames);
+	bar->setValue(bar->value()+1);bar->repaint(); //57
 	listAssetFiles(moddedInputDir, &moddedFilesNames, NULL);
+	bar->setValue(bar->value()+1);bar->repaint(); //58
 
 	int numberOfSlpFiles = 0;
 	std::vector<std::string>::iterator modIt = moddedFilesNames.begin();
@@ -384,6 +388,7 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 			it++;
 		numberOfSlpFiles++;
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //59
 	int numberOfWavFiles = wavFilesNames.size();
 	int offsetOfFirstFile = sizeof (wololo::DrsHeader) +
 			sizeof (wololo::DrsTableInfo) * numberOfTables +
@@ -420,6 +425,8 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 		offset += size;
 		slpFiles.push_back(slp);
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //60
+
 	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
 		wololo::DrsFileInfo wav;
 		size_t size = fs::file_size(inputDir + *it + ".wav");
@@ -429,6 +436,7 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 		offset += size;
 		wavFiles.push_back(wav);
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //61
 
 	// header infos
 
@@ -461,6 +469,7 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 		(int) (sizeof (wololo::DrsHeader) +  sizeof (wololo::DrsFileInfo) * numberOfTables + sizeof (wololo::DrsFileInfo) * slpFiles.size()), // file_info_offset
 		(int) wavFiles.size() // num_files
 	};
+	bar->setValue(bar->value()+1);bar->repaint(); //62
 
 
 	this->ui->label->setText((translation["working"]+"\n"+translation["workingDrs2"]).c_str());
@@ -485,19 +494,20 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (wololo::DrsTableInfo::file_info_offset));
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (wololo::DrsTableInfo::num_files));
 
+	bar->setValue(bar->value()+1);bar->repaint(); //63
 	// file infos
 	for (std::vector<wololo::DrsFileInfo>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
 		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
 		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
 		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
 	}
-
+	bar->setValue(bar->value()+1);bar->repaint(); //64
 	for (std::vector<wololo::DrsFileInfo>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
 		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
 		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
 		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
 	}
-
+	bar->setValue(bar->value()+1);bar->repaint(); //65
 
 	this->ui->label->setText((translation["working"]+"\n"+translation["workingDrs3"]).c_str());
 	this->ui->label->repaint();
@@ -521,11 +531,13 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 		}
 
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //66
 
 	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
 		std::ifstream srcStream(inputDir + *it + ".wav", std::ios::binary);
 		*out << srcStream.rdbuf();
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //67
 }
 
 void MainWindow::uglyHudHack(std::string const inputDir, std::string const moddedDir) {
@@ -668,6 +680,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		else
 			existingMapNames.push_back(it->path());
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //13+17
 	sort(existingMapNames.begin(), existingMapNames.end());
 	sort(mapNames.begin(), mapNames.end());
 	std::vector<fs::path>::iterator modIt = existingMapNames.begin();
@@ -683,6 +696,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			it++;
 		}
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //14+18
 	std::set<fs::path> terrainOverrides;
 	std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements = {
 		//<Name,Regex Pattern if needed,replace name,terrain ID, replace terrain ID,slp to replace,upgrade trees?,tree to replace,new tree>
@@ -781,6 +795,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		}
 		terrainOverrides.clear();
 	}
+	bar->setValue(bar->value()+1);bar->repaint(); //15+19
 }
 
 void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
@@ -841,6 +856,8 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].DeadFish.WalkingGraphic.first, aocDat->Civs[burmese].Units[unitIDs[u]].DeadFish.WalkingGraphic.first, c, replacedGraphics);
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Type50.AttackGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Type50.AttackGraphic, c, replacedGraphics);
 		}
+
+		bar->setValue(bar->value()+1);bar->repaint(); //37-52
 	}
 	//Let the Berber Mill have 40 frames instead of 8/10, which is close to the african mill with 38 frames
 	aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].FrameCount = 40;
@@ -908,6 +925,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 				}
 			}
 		}
+		bar->setValue(bar->value()+1);bar->repaint(); //52-55
 	}
 
 
@@ -1087,6 +1105,13 @@ int MainWindow::run()
 	this->setEnabled(false);
 	this->ui->label->setText(translation["working"].c_str());
 	this->ui->label->repaint();
+	if(bar == NULL) {
+		bar = new QProgressBar();
+		this->ui->verticalLayout->addWidget(bar);
+	} else {
+		bar->setValue(0);
+		bar->repaint();
+	}
 	qApp->processEvents();
 	QDialog* dialog;
 	int ret = 0;
@@ -1137,6 +1162,7 @@ int MainWindow::run()
 			if(e.code() != boost::system::errc::directory_not_empty)
 				throw e;
 		}
+		bar->setValue(1);bar->repaint(); //1
 		fs::create_directories(moddedAssetsPath);
 		fs::create_directories(tempMapDir);
 
@@ -1146,21 +1172,29 @@ int MainWindow::run()
 		}
 		if(this->ui->usePw->isChecked())
 			recCopy(pwInputDir, moddedAssetsPath);
+		bar->setValue(bar->value()+1);bar->repaint(); //2
 		if(this->ui->useGrid->isChecked()) {
 			recCopy(gridInputDir, moddedAssetsPath);
+			bar->setValue(bar->value()+1);bar->repaint(); //3
 			recCopy(newGridTerrainInputDir,tempMapDir);
+			bar->setValue(bar->value()+1);bar->repaint(); //4
 			if(this->ui->useNoSnow->isChecked())
 				recCopy(gridNoSnowInputDir, moddedAssetsPath, false, true);
+			bar->setValue(bar->value()+1);bar->repaint(); //5
 		} else {
 			recCopy(newTerrainInputDir,tempMapDir);
+			bar->setValue(bar->value()+1);bar->repaint();//3
 			if(this->ui->useNoSnow->isChecked())
 				recCopy(noSnowInputDir, moddedAssetsPath);
+			bar->setValue(bar->value()+2);bar->repaint(); //5
 		}
+		bar->setValue(bar->value()+1);bar->repaint(); //6
 		if(this->ui->useWalls->isChecked())
 			copyWallFiles(wallsInputDir, moddedAssetsPath);
+		bar->setValue(bar->value()+1);bar->repaint(); //7
 		if(!fs::is_empty(modOverrideDir))
 			shallowRecCopy(modOverrideDir, moddedAssetsPath, false, true);
-	
+		bar->setValue(bar->value()+1);bar->repaint(); //8
 		fs::remove_all(vooblyDir/"Data");
 		fs::remove_all(vooblyDir/"Script.Ai/Brutal");
 		fs::remove(vooblyDir/"Script.Ai/BruteForce.ai");
@@ -1185,20 +1219,28 @@ int MainWindow::run()
 
 		boolean aocFound = outPath != HDPath/"WololoKingdoms/out/";
 		copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
+		bar->setValue(bar->value()+1);bar->repaint(); //9
 		createMusicPlaylist(soundsInputPath.string() + "music/", soundsOutputPath.string() + "music.m3u");
+		bar->setValue(bar->value()+1);bar->repaint(); //10
 		recCopy(tauntInputPath, tauntOutputPath, true);
+		bar->setValue(bar->value()+1);bar->repaint(); //11
 		fs::copy_file(xmlPath, xmlOutPath);
 		if (aocFound) {
 			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
 		}
+		bar->setValue(bar->value()+1);bar->repaint(); //12
 		copyHDMaps(assetsPath, vooblyDir/"Script.Rm");
+		bar->setValue(bar->value()+1);bar->repaint(); //16
 		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyDir/"Script.Rm");
+		bar->setValue(bar->value()+1);bar->repaint(); //20
 		if(this->ui->copyMaps->isChecked())
 			copyHDMaps("resources/Script.Rm/", vooblyDir/"Script.Rm");
-
+		else
+			bar->setValue(bar->value()+3);
+		bar->setValue(bar->value()+1);bar->repaint(); //24
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		recCopy(aiInputPath, vooblyDir/"Script.Ai", true);
-
+		bar->setValue(bar->value()+1);bar->repaint(); //25
 		if(this->ui->createExe->isChecked()) {
 			fs::create_directories(upDir / "Data");
 			recCopy(vooblyDir / "Sound", upDir / "Sound", true);
@@ -1207,39 +1249,46 @@ int MainWindow::run()
 			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", true);
 			recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai", true);
 		}
+		bar->setValue(bar->value()+1);bar->repaint(); //26
 		if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
 			hotkeySetup();
+		bar->setValue(bar->value()+1);bar->repaint(); //24
 		recCopy(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", false);
-
-
-
+		bar->setValue(bar->value()+1);bar->repaint(); //28
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingAoc"]).c_str());
 		this->ui->label->repaint();
 
 		genie::DatFile aocDat;
-		aocDat.setVerboseMode(true);
+		//aocDat.setVerboseMode(true);
 		aocDat.setGameVersion(genie::GameVersion::GV_TC);
 		aocDat.load(aocDatPath.c_str());
+		bar->setValue(bar->value()+5);bar->repaint(); //33
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingHD"]).c_str());
 		this->ui->label->repaint();
 		genie::DatFile hdDat;
-		hdDat.setVerboseMode(true);
+		//hdDat.setVerboseMode(true);
 		hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
 		hdDat.load(hdDatPath.c_str());
+		bar->setValue(bar->value()+5);bar->repaint(); //38
 
 		std::ofstream drsOut(drsOutPath, std::ios::binary);
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingInterface"]).c_str());
 		this->ui->label->repaint();
 		uglyHudHack(assetsPath.string(),moddedAssetsPath.string());
+		bar->setValue(bar->value()+1);bar->repaint(); //43?
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingDat"]).c_str());
 		this->ui->label->repaint();
 		transferHdDatElements(&hdDat, &aocDat);
+		bar->setValue(bar->value()+1);bar->repaint(); //44?
+
 		patchArchitectures(&aocDat);
+		bar->setValue(bar->value()+1);bar->repaint(); //59
 		makeDrs(assetsPath.string(), moddedAssetsPath.string(), &drsOut);
+		bar->setValue(bar->value()+1);bar->repaint(); //71
 
 		try {
 			fs::remove_all(moddedAssetsPath, ec);
@@ -1248,7 +1297,7 @@ int MainWindow::run()
 			if(e.code() != boost::system::errc::directory_not_empty)
 				throw e;
 		}
-
+		bar->setValue(bar->value()+1);bar->repaint(); //72
 		wololo::DatPatch patchTab[] = {
 
 			wololo::berbersUTFix,
@@ -1289,6 +1338,7 @@ int MainWindow::run()
 
 		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {			
 			patchTab[i].patch(&aocDat, &langReplacement);
+			bar->setValue(bar->value()+1);bar->repaint(); //72-85
 		}
 
 
@@ -1316,6 +1366,7 @@ int MainWindow::run()
 				langReplacement[nb] = line;
 			}
 		}
+		bar->setValue(bar->value()+1);bar->repaint(); //86
 
 
 		std::ifstream langIn(keyValuesStringsPath.string());
@@ -1339,6 +1390,7 @@ int MainWindow::run()
 		} else {
 			patchLangDll = false;
 		}
+		bar->setValue(bar->value()+1);bar->repaint(); //87
 		bool dllPatched = true;
 		if (patchLangDll) {
 			try {
@@ -1371,7 +1423,9 @@ int MainWindow::run()
 				this->ui->label->repaint();
 			}
 		}
+		bar->setValue(bar->value()+1);bar->repaint(); //88
 		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
+		bar->setValue(bar->value()+1);bar->repaint(); //89
 		if (patchLangDll) {
 			try {
 				line = translation["working"]+"\n"+translation["workingDll"];
@@ -1403,17 +1457,20 @@ int MainWindow::run()
 			}
 		}
 
-		aocDat.saveAs(outputDatPath.string().c_str());
+		bar->setValue(bar->value()+1);bar->repaint(); //90
+
+		aocDat.saveAs(outputDatPath.string().c_str());		
+		bar->setValue(bar->value()+1);bar->repaint(); //92
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingUp"]).c_str());
 		this->ui->label->repaint();
-
-
 
 		if (aocFound) {
 
 			if(this->ui->createExe->isChecked()) {
 				recCopy(vooblyDir / "Data", upDir / "Data");
+
+				bar->setValue(bar->value()+1);bar->repaint(); //92
 				if (!dllPatched) {
 					dialog = new Dialog(this, translation["dialogNoDll"].c_str());
 					dialog->exec();
@@ -1426,8 +1483,12 @@ int MainWindow::run()
 					} else {
 						fs::copy_file(UPExe, UPExeOut);
 					}
+
+					bar->setValue(bar->value()+1);bar->repaint(); //93
 					system(("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
 					fs::copy_file(upDir/"Sound/music.m3u",vooblyDir/"Sound/music.m3u",fs::copy_option::overwrite_if_exists);
+
+					bar->setValue(bar->value()+1);bar->repaint(); //94
 					line = translation["dialogExe"];
 					boost::replace_all(line,"<exe>",UPModdedExe);
 					dialog = new Dialog(this,line.c_str());
@@ -1449,7 +1510,8 @@ int MainWindow::run()
 						fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
 						fs::rename(outPath/"/data/blendomatic_x1.dat",outPath/"/data/blendomatic.dat");
 					}
-				}
+				}				
+				bar->setValue(bar->value()+1);bar->repaint();
 
 			}
 		} else {
@@ -1457,6 +1519,8 @@ int MainWindow::run()
 			dialog = new Dialog(this,translation["dialogNoAoc"].c_str());
 			dialog->exec();
 		}
+		bar->setValue(100);
+		bar->repaint();
 	}
 	catch (std::exception const & e) {
 		dialog = new Dialog(this,translation["dialogException"]+std::string()+e.what());
