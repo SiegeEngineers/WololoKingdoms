@@ -51,3 +51,4 @@ lib/release_libgenieutils.dll.a
 lib/libgenieutils.dll
 resources/
 mod_override/
+include/sdk/
