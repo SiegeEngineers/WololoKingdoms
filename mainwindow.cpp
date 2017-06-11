@@ -1117,12 +1117,12 @@ int MainWindow::run()
 		fs::path UPExe("resources/SetupAoc.exe");
 		fs::path UPExeOut = outPath / "SetupAoc.exe";
 		fs::path pwInputDir("resources/pussywood");
-		fs::path gridInputDir("resources/Grid No Snow");
-		fs::path newTerrainInputDir("resources/terrains");
+		fs::path gridInputDir("resources/Grid");
+		fs::path newTerrainInputDir("resources/new terrains");
 		fs::path newGridTerrainInputDir("resources/new grid terrains");
 		fs::path tempMapDir("map_temp/");
 		fs::path modOverrideDir("mod_override/");
-		fs::path gridNoSnowInputDir("resources/Grid");
+		fs::path gridNoSnowInputDir("resources/Grid No Snow");
 		fs::path noSnowInputDir("resources/No Snow");
 		fs::path wallsInputDir("resources/short_walls");
 		fs::path gamedata_x1("resources/gamedata_x1.drs");
