@@ -44,8 +44,11 @@ namespace fs = boost::filesystem;
 
 fs::path HDPath;
 fs::path outPath;
-fs::path moddedAssetsPath("assets/");
-fs::path tempMapDir("map_temp/");
+std::map<int, fs::path> slpFiles;
+std::map<int, fs::path> wavFiles;
+std::map<std::string,fs::path> newTerrainFiles;
+std::vector<fs::path> existingMapNames;
+std::vector<std::pair<int,std::string>> rmsCodeStrings;
 std::string const version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
@@ -193,7 +196,7 @@ void MainWindow::changeLanguage(std::string language) {
 	qApp->processEvents();
 }
 
-void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
+void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip) {
 	// recursive copy
 	//fs::path currentPath(current->path());
 	if (fs::is_directory(src)) {
@@ -202,66 +205,90 @@ void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bo
 		}
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-			recCopy(currentPath, dst / currentPath.filename(), skip, force);
+			recCopy(currentPath, dst / currentPath.filename(), skip);
 		}
 	}
 	else {
 		if (skip) {
 			boost::system::error_code ec;
 			fs::copy_file(src, dst, ec);
-		} else if (force)
-			fs::copy_file(src,dst,fs::copy_option::overwrite_if_exists);
-		else
+		} else
 			fs::copy_file(src, dst);
 	}
 }
 
-void MainWindow::shallowRecCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
-	// recursive copy, but directory structure is ignored and all files copied directly into dst
-	//fs::path currentPath(current->path());
+void MainWindow::indexDrsFiles(fs::path const &src) {
+	// Index files to be written to the drs
 	if (fs::is_directory(src)) {
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-			if (fs::is_directory(currentPath))
-				shallowRecCopy(currentPath, dst, skip, force);
-			else
-				shallowRecCopy(currentPath, dst / currentPath.filename(), skip, force);
+			indexDrsFiles(currentPath);
 		}
 	}
 	else {
-		if (skip) {
-			boost::system::error_code ec;
-			fs::copy_file(src, dst, ec);
-		} else if (force)
-			fs::copy_file(src,dst,fs::copy_option::overwrite_if_exists);
-		else
-			fs::copy_file(src, dst);
+		std::string extension = src.extension().string();
+		if (extension == ".slp") {
+			int id = atoi(src.stem().string().c_str());
+			slpFiles[id] = src;
+		}
+		else if (extension == ".wav") {
+			int id = atoi(src.stem().string().c_str());
+			wavFiles[id] = src;
+		}
 	}
 }
 
-void MainWindow::listAssetFiles(fs::path path, std::vector<std::string> *listOfSlpFiles, std::vector<std::string> *listOfWavFiles) {
-	const std::set<std::string> exclude = {
-		// Exclude Forgotten Empires leftovers
-		"50163", // Forgotten Empires loading screen
-		"50189", // Forgotten Empires main menu
-		"53207", // Forgotten Empires in-game logo
-		"53208", // Forgotten Empires objective window
-		"53209" // ???
-	};
-
-	for (fs::directory_iterator end, it(path); it != end; it++) {
-		std::string fileName = it->path().stem().string();
-		if (exclude.find(fileName) == exclude.end()) {
-			std::string extension = it->path().extension().string();
-			if (extension == ".slp") {
-				listOfSlpFiles->push_back(fileName);
-			}
-			else if (extension == ".wav") {
-				listOfWavFiles->push_back(fileName);
-			}
+void MainWindow::indexTerrainFiles(fs::path const &src) {
+	// Index files to be written to the drs
+	if (fs::is_directory(src)) {
+		for (fs::directory_iterator current(src), end;current != end; ++current) {
+			fs::path currentPath(current->path());
+			indexTerrainFiles(currentPath);
 		}
 	}
+	else {
+		if (src.extension().string() == ".slp") {
+			newTerrainFiles[src.filename().string()] = src;
+		}
+	}
+}
 
+void MainWindow::listExistingMaps(fs::path vooblyMapDir) {
+	for (fs::directory_iterator end, it(vooblyMapDir); it != end; it++) {
+		std::string filename = it->path().filename().string();
+		if (filename.substr(0,3) == "ZR@")
+			existingMapNames.push_back(it->path().parent_path()/filename.substr(3,std::string::npos));
+		else
+			existingMapNames.push_back(it->path());
+	}
+	//Remove Standard Maps
+	const std::vector<fs::path> standardMaps = {
+		fs::path("Arabia.rms"),
+		fs::path("Archipelago.rms"),
+		fs::path("Arena.rms"),
+		fs::path("Baltic.rms"),
+		fs::path("Black_Forest.rms"),
+		fs::path("Blind_Random.rms"),
+		fs::path("Coastal.rms"),
+		fs::path("Continental.rms"),
+		fs::path("Crater_Lake.rms"),
+		fs::path("Fortress.rms"),
+		fs::path("Ghost_Lake.rms"),
+		fs::path("Gold_Rush.rms"),
+		fs::path("Highland.rms"),
+		fs::path("Islands.rms"),
+		fs::path("Mediterranean.rms"),
+		fs::path("Migration.rms"),
+		fs::path("Mongolia.rms"),
+		fs::path("nomad.rms"),
+		fs::path("Oasis.rms"),
+		fs::path("Rivers.rms"),
+		fs::path("Salt_Marsh.rms"),
+		fs::path("Scandinavia.rms"),
+		fs::path("Team_Islands.rms"),
+		fs::path("Yucatan.rms")
+	};
+	existingMapNames.insert(existingMapNames.end(),standardMaps.begin(),standardMaps.end());
 }
 
 void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
@@ -360,37 +387,28 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 		}
 
 	}
+	if (generateLangDll) {
+		for(std::vector<std::pair<int,std::string>>::iterator it = rmsCodeStrings.begin(); it != rmsCodeStrings.end(); it++) {
+			dllOut->setString(it->first, it->second);
+		}
+	}
 }
 
-void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInputDir, std::ofstream *out) {
+void MainWindow::makeDrs(std::ofstream *out) {
 
 	this->ui->label->setText((translation["working"]+"\n"+translation["workingDrs"]).c_str());
 	this->ui->label->repaint();
+
+	// Exclude Forgotten Empires leftovers
+	slpFiles.erase(50163); // Forgotten Empires loading screen
+	slpFiles.erase(50189); // Forgotten Empires main menu
+	slpFiles.erase(53207); // Forgotten Empires in-game logo
+	slpFiles.erase(53208); // Forgotten Empires objective window
+	slpFiles.erase(53209); // ???
+
 	const int numberOfTables = 2; // slp and wav
-
-	std::vector<std::string> slpFilesNames;
-	std::vector<std::string> wavFilesNames;
-	std::vector<std::string> moddedFilesNames;
-	listAssetFiles(inputDir, &slpFilesNames, &wavFilesNames);
-	bar->setValue(bar->value()+1);bar->repaint(); //57
-	listAssetFiles(moddedInputDir, &moddedFilesNames, NULL);
-	bar->setValue(bar->value()+1);bar->repaint(); //58
-
-	int numberOfSlpFiles = 0;
-	std::vector<std::string>::iterator modIt = moddedFilesNames.begin();
-	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end();) {
-		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
-		if(comp == 0) {
-			modIt++;
-			it++;
-		} else if (comp < 0) {
-			modIt++;
-		} else
-			it++;
-		numberOfSlpFiles++;
-	}
-	bar->setValue(bar->value()+1);bar->repaint(); //59
-	int numberOfWavFiles = wavFilesNames.size();
+	int numberOfSlpFiles = slpFiles.size();
+	int numberOfWavFiles = wavFiles.size();
 	int offsetOfFirstFile = sizeof (wololo::DrsHeader) +
 			sizeof (wololo::DrsTableInfo) * numberOfTables +
 			sizeof (wololo::DrsFileInfo) * (numberOfSlpFiles + numberOfWavFiles);
@@ -399,43 +417,30 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 
 	// file infos
 
-	std::vector<wololo::DrsFileInfo> slpFiles;
-	std::vector<wololo::DrsFileInfo> wavFiles;
+	std::vector<wololo::DrsFileInfo> slpFileInfos;
+	std::vector<wololo::DrsFileInfo> wavFileInfos;
 
-	modIt = moddedFilesNames.begin();
-	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end();) {
+	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
 		wololo::DrsFileInfo slp;
-		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
 		size_t size;
-		if(comp == 0) {
-			size = fs::file_size(moddedInputDir + *modIt + ".slp");
-			slp.file_id = stoi(*modIt);
-			modIt++;
-			it++;
-		} else if (comp < 0) {
-			size = fs::file_size(moddedInputDir + *modIt + ".slp");
-			slp.file_id = stoi(*modIt);
-			modIt++;
-		} else {
-			size = fs::file_size(inputDir + *it + ".slp");
-			slp.file_id = stoi(*it);
-			it++;
-		}
+		size = fs::file_size(it->second);
+		slp.file_id = it->first;
 		slp.file_data_offset = offset;
 		slp.file_size = size;
 		offset += size;
-		slpFiles.push_back(slp);
+		slpFileInfos.push_back(slp);
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //60
 
-	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
+	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
 		wololo::DrsFileInfo wav;
-		size_t size = fs::file_size(inputDir + *it + ".wav");
-		wav.file_id = stoi(*it);
+		size_t size;
+		size = fs::file_size(it->second);
+		wav.file_id = it->first;
 		wav.file_data_offset = offset;
 		wav.file_size = size;
 		offset += size;
-		wavFiles.push_back(wav);
+		wavFileInfos.push_back(wav);
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //61
 
@@ -462,13 +467,13 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 		0x20, // file_type, MAGIC
 		{ 'p', 'l', 's' }, // file_extension, "slp" in reverse
 		sizeof (wololo::DrsHeader) + sizeof (wololo::DrsFileInfo) * numberOfTables, // file_info_offset
-		(int) slpFiles.size() // num_files
+		(int) slpFileInfos.size() // num_files
 	};
 	wololo::DrsTableInfo const wavTableInfo = {
 		0x20, // file_type, MAGIC
 		{ 'v', 'a', 'w' }, // file_extension, "wav" in reverse
-		(int) (sizeof (wololo::DrsHeader) +  sizeof (wololo::DrsFileInfo) * numberOfTables + sizeof (wololo::DrsFileInfo) * slpFiles.size()), // file_info_offset
-		(int) wavFiles.size() // num_files
+		(int) (sizeof (wololo::DrsHeader) +  sizeof (wololo::DrsFileInfo) * numberOfTables + sizeof (wololo::DrsFileInfo) * slpFileInfos.size()), // file_info_offset
+		(int) wavFileInfos.size() // num_files
 	};
 	bar->setValue(bar->value()+1);bar->repaint(); //62
 
@@ -497,13 +502,13 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 
 	bar->setValue(bar->value()+1);bar->repaint(); //63
 	// file infos
-	for (std::vector<wololo::DrsFileInfo>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
+	for (std::vector<wololo::DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
 		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
 		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
 		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //64
-	for (std::vector<wololo::DrsFileInfo>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
+	for (std::vector<wololo::DrsFileInfo>::iterator it = wavFileInfos.begin(); it != wavFileInfos.end(); it++) {
 		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
 		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
 		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
@@ -513,63 +518,17 @@ void MainWindow::makeDrs(std::string const inputDir, std::string const moddedInp
 	this->ui->label->setText((translation["working"]+"\n"+translation["workingDrs3"]).c_str());
 	this->ui->label->repaint();
 	// now write the actual files
-	modIt = moddedFilesNames.begin();
-	for (std::vector<std::string>::iterator it = slpFilesNames.begin(); it != slpFilesNames.end();) {
-		int comp = (modIt != moddedFilesNames.end())?(*modIt).compare(*it):1;
-		if(comp == 0) {
-			std::ifstream srcStream = std::ifstream(moddedInputDir + *modIt + ".slp", std::ios::binary);
+	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
+			std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
 			*out << srcStream.rdbuf();
-			it++;
-			modIt++;
-		} else if (comp < 0) {
-			std::ifstream srcStream = std::ifstream(moddedInputDir + *modIt + ".slp", std::ios::binary);
-			*out << srcStream.rdbuf();
-			modIt++;
-		} else {
-			std::ifstream srcStream = std::ifstream(inputDir + *it + ".slp", std::ios::binary);
-			*out << srcStream.rdbuf();
-			it++;
-		}
-
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //66
 
-	for (std::vector<std::string>::iterator it = wavFilesNames.begin(); it != wavFilesNames.end(); it++) {
-		std::ifstream srcStream(inputDir + *it + ".wav", std::ios::binary);
+	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
+		std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
 		*out << srcStream.rdbuf();
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //67
-}
-
-void MainWindow::uglyHudHack(std::string const inputDir, std::string const moddedDir) {
-	/*
-	 * We have more than 30 civs, so we need to space the interface files further apart
-	 * This adds +10 for each gap between different file types
-	 */
-	this->ui->label->repaint();
-	int const HudFiles[] = {51100, 51130, 51160};
-	for (size_t baseIndex = 0; baseIndex < sizeof HudFiles / sizeof (int); baseIndex++) {
-		for (int i = 1; i < 24; i++) {
-			std::string dst = moddedDir + std::to_string(HudFiles[baseIndex]+i+baseIndex*10) + ".slp";
-			std::string src = inputDir + std::to_string(HudFiles[baseIndex]+i) + ".slp";
-			if(fs::exists(src))
-				fs::copy_file(src, dst);
-		}
-	}
-
-	/*
-	 * copies the Slav hud files for AK civs, the good way of doing this would be to extract
-	 * the actual AK civs hud files from
-	 * Age2HD\resources\_common\slp\game_b[24-27].slp correctly, but I haven't found a way yet
-	 */
-	int const slavHudFiles[] = {51123, 51163, 51203};
-	for (size_t baseIndex = 0; baseIndex < sizeof slavHudFiles / sizeof (int); baseIndex++) {
-		for (size_t i = 1; i <= 8; i++) {
-			std::string dst = moddedDir + std::to_string(slavHudFiles[baseIndex]+i) + ".slp";
-			std::string src = moddedDir + std::to_string(slavHudFiles[baseIndex]) + ".slp";
-			fs::copy_file(src, dst);
-		}
-	}
 }
 
 void MainWindow::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
@@ -581,7 +540,30 @@ void MainWindow::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
 	}
 }
 
-void MainWindow::copyWallFiles(fs::path inputDir, fs::path outputDir) {
+void MainWindow::uglyHudHack(fs::path assetsPath) {
+	/*
+	 * Shifts the offset between interface files by 10 so there's space for the new civs
+	 */
+	int const hudFiles[] = {51130, 51160};
+	for (size_t baseIndex = 0; baseIndex < sizeof hudFiles / sizeof (int); baseIndex++) {
+		for (size_t i = 1; i <= 22; i++) {
+			slpFiles[hudFiles[baseIndex]+i+(baseIndex+1)*10] = assetsPath / (std::to_string(hudFiles[baseIndex]+i) + ".slp");
+		}
+	}
+	/*
+	 * copies the Slav hud files for AK civs, the good way of doing this would be to extract
+	 * the actual AK civs hud files from
+	 * Age2HD\resources\_common\slp\game_b[24-27].slp correctly, but I haven't found a way yet
+	 */
+	int const slavHudFiles[] = {51123, 51153, 51183};
+	for (size_t baseIndex = 0; baseIndex < sizeof slavHudFiles / sizeof (int); baseIndex++) {
+		for (size_t i = 1; i <= 8; i++) {
+			slpFiles[slavHudFiles[baseIndex]+i+baseIndex*10] = assetsPath / (std::to_string(slavHudFiles[baseIndex]) + ".slp");
+		}
+	}
+}
+
+void MainWindow::copyWallFiles(fs::path inputDir) {
 	/*
 	 * Base IDS 2098 Stone 2110 Fortified 4169 Damaged 4173 Damaged Fortified
 	 * Central European +0, Asian +1, Middle Eastern +2, West European +3
@@ -592,7 +574,7 @@ void MainWindow::copyWallFiles(fs::path inputDir, fs::path outputDir) {
 	 * Base IDs 124 Stone 126 Fortified 145 Damaged 147 Damaged Fortified
 	 * +4 per damage increase
 	 */
-	recCopy(inputDir,outputDir);
+	indexDrsFiles(inputDir);
 	int conversionTable[] = {3,-15,2,0,3,-18,-5,1,0,1,2,3,0,1,2};
 	int newBaseSLP = 24000;
 	for(size_t i = 0; i < sizeof(conversionTable)/sizeof(int); i++) {
@@ -600,15 +582,15 @@ void MainWindow::copyWallFiles(fs::path inputDir, fs::path outputDir) {
 		if (archID < 0) {
 			archID = -archID;
 			int digits = archID == 5 || archID == 7?124:324;
-			fs::copy_file(inputDir/(std::to_string(archID*1000+digits)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+digits+200)+".slp"));
-			fs::copy_file(inputDir/(std::to_string(archID*1000+digits+2)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+digits+202)+".slp"));
+			slpFiles[newBaseSLP+i*1000+digits+200] = inputDir/(std::to_string(archID*1000+digits)+".slp");
+			slpFiles[newBaseSLP+i*1000+digits+202] = inputDir/(std::to_string(archID*1000+digits+2)+".slp");
 			for (int j = 0; j <= 10; j+=2)
-				fs::copy_file(inputDir/(std::to_string(archID*1000+digits+21+j)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+digits+221+j)+".slp"));
+				slpFiles[newBaseSLP+i*1000+digits+221+j] = inputDir/(std::to_string(archID*1000+digits+21+j)+".slp");
 		} else {
-			fs::copy_file(inputDir/(std::to_string(2098+archID)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+324)+".slp"));
-			fs::copy_file(inputDir/(std::to_string(2110+archID)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+326)+".slp"));
+			slpFiles[newBaseSLP+i*1000+324] = inputDir/(std::to_string(2098+archID)+".slp");
+			slpFiles[newBaseSLP+i*1000+326] = inputDir/(std::to_string(2110+archID)+".slp");
 			for (int j = 0; j <= 20; j+=4)
-				fs::copy_file(inputDir/(std::to_string(4169+archID+j)+".slp"),outputDir/(std::to_string(newBaseSLP+i*1000+345+j)+".slp"));
+				slpFiles[newBaseSLP+i*1000+345+j] = inputDir/(std::to_string(4169+archID+j)+".slp");
 		}
 	}
 }
@@ -628,51 +610,14 @@ void MainWindow::createMusicPlaylist(std::string inputDir, std::string const out
 
 void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 
-	const std::set<std::string> exclude = {
-		"Arabia",
-		"Archipelago",
-		"Arena",
-		"Baltic",
-		"Black_Forest",
-		"Blind_Random",
-		"Coastal",
-		"Continental",
-		"Crater_Lake",
-		"Fortress",
-		"Ghost_Lake",
-		"Gold_Rush",
-		"Highland",
-		"Islands",
-		"Mediterranean",
-		"Migration",
-		"Mongolia",
-		"nomad",
-		"Oasis",
-		"Rivers",
-		"Salt_Marsh",
-		"Scandinavia",
-		"Team_Islands",
-		"Yucatan"
-	};
-
 	std::vector<fs::path> mapNames;
 	std::vector<fs::path> mapNamesSorted;
-	std::vector<fs::path> existingMapNames;
 	for (fs::directory_iterator end, it(inputDir); it != end; it++) {
 		std::string stem = it->path().stem().string();
-		if (exclude.find(stem) == exclude.end()) {
-			std::string extension = it->path().extension().string();
-			if ((extension == ".rms" || extension == ".rms2") && stem.substr(0,10) != "real_world" && stem.substr(0,11) != "special_map" && stem.substr(0,3) != "CtR") {
-				mapNames.push_back(*it);
-			}
+		std::string extension = it->path().extension().string();
+		if ((extension == ".rms" || extension == ".rms2") && stem.substr(0,10) != "real_world" && stem.substr(0,11) != "special_map" && stem.substr(0,3) != "CtR") {
+			mapNames.push_back(it->path());
 		}
-	}
-	for (fs::directory_iterator end, it(outputDir); it != end; it++) {
-		std::string filename = it->path().filename().string();
-		if (filename.substr(0,3) == "ZR@")
-			existingMapNames.push_back(it->path().parent_path()/filename.substr(3,std::string::npos));
-		else
-			existingMapNames.push_back(it->path());
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //13+17
 	sort(existingMapNames.begin(), existingMapNames.end());
@@ -690,8 +635,9 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			it++;
 		}
 	}
+	existingMapNames.insert<std::vector<fs::path>::iterator>(existingMapNames.end(), mapNamesSorted.begin(),mapNamesSorted.end());
 	bar->setValue(bar->value()+1);bar->repaint(); //14+18
-	std::set<fs::path> terrainOverrides;
+	std::map<std::string,fs::path> terrainOverrides;
 	std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements = {
 		//<Name,Regex Pattern if needed,replace name,terrain ID, replace terrain ID,slp to replace,upgrade trees?,tree to replace,new tree>
 		std::make_tuple("DRAGONFOREST","DRAGONFORES(T?)","DRAGONFORES$1","48","21","15029.slp",true,"SNOWPINETREE","DRAGONTREE"),
@@ -721,6 +667,11 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		std::make_tuple("DLC_JUNGLEGRASS","","DLC_JUNGLEGRASS","61","12","15008.slp",false,"","")
 	};
 	for (std::vector<fs::path>::iterator it = mapNamesSorted.begin(); it != mapNamesSorted.end(); it++) {
+		std::string mapName = it->stem().string()+".rms";
+		if (mapName.substr(0,3) == "ZR@") {
+			fs::copy_file(*it,outputDir/mapName,fs::copy_option::overwrite_if_exists);
+			continue;
+		}
 		std::ifstream input(inputDir.string()+it->filename().string());
 		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
@@ -748,8 +699,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			if(std::regex_search(str,terrainName)) {
 				str = std::regex_replace(str,terrainConstDef, "#const "+std::get<2>(*repIt)+" "+std::get<4>(*repIt));
 				if(std::get<5>(*repIt) != "") {
-					fs::copy_file(tempMapDir/(std::get<0>(*repIt)+".slp"),tempMapDir/std::get<5>(*repIt),fs::copy_option::overwrite_if_exists);
-					terrainOverrides.insert(tempMapDir/std::get<5>(*repIt));
+					terrainOverrides[std::get<5>(*repIt)] = newTerrainFiles[std::get<0>(*repIt)+".slp"];
 					if(std::get<6>(*repIt)) {
 						if(str.find("<PLAYER_SETUP>")!=std::string::npos)
 							str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
@@ -762,32 +712,31 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 			}
 		}
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
-			terrainOverrides.insert(tempMapDir/"15004.slp");
-			terrainOverrides.insert(tempMapDir/"15005.slp");
-			terrainOverrides.insert(tempMapDir/"15021.slp");
-			terrainOverrides.insert(tempMapDir/"15022.slp");
-			terrainOverrides.insert(tempMapDir/"15023.slp");
+			terrainOverrides["15004.slp"] = newTerrainFiles["15004.slp"];
+			terrainOverrides["15005.slp"] = newTerrainFiles["15005.slp"];
+			terrainOverrides["15021.slp"] = newTerrainFiles["15021.slp"];
+			terrainOverrides["15022.slp"] = newTerrainFiles["15022.slp"];
+			terrainOverrides["15023.slp"] = newTerrainFiles["15023.slp"];
 		}
 		//str = regex_replace(str, std::regex("#const\\s+BAOBAB\\s+49"), "#const BAOBAB 16");
-
-		std::string mapName = it->stem().string()+".rms";
 		std::ofstream out(outputDir.string()+"/"+mapName);
 		out << str;
 		out.close();
 		if (mapName.substr(0,3) == "rw_" || mapName.substr(0,3) == "sm_") {
-			terrainOverrides.insert(fs::path(inputDir.string()+"/"+it->stem().string()+".scx"));
+			std::string scenarioFile = it->stem().string()+".scx";
+			terrainOverrides[scenarioFile] = fs::path(inputDir.string()+"/"+scenarioFile);
 		}
 		if (terrainOverrides.size() != 0) {
 			QuaZip zip(QString((outputDir.string()+"/ZR@"+mapName).c_str()));
 			zip.open(QuaZip::mdAdd, NULL);
-			terrainOverrides.insert(fs::path(outputDir.string()+"/"+mapName));
-			for(std::set<fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
+			terrainOverrides[mapName] = fs::path(outputDir.string()+"/"+mapName);
+			for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
 				QuaZipFile outFile(&zip);
-				QuaZipNewInfo fileInfo(QString((*files).filename().string().c_str()));
-				fileInfo.uncompressedSize = fs::file_size((*files));
+				QuaZipNewInfo fileInfo(QString(files->first.c_str()));;
+				fileInfo.uncompressedSize = fs::file_size(files->second);
 				outFile.open(QIODevice::WriteOnly,fileInfo,NULL,0,0,0,false);
 				QFile inFile;
-				inFile.setFileName((*files).string().c_str());
+				inFile.setFileName(files->second.string().c_str());
 				inFile.open(QIODevice::ReadOnly);
 				copyData(inFile, outFile);
 				outFile.close();
@@ -820,9 +769,11 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	terrainSwap(hdDat, aocDat, 15,55,15012); //mangrove forest
 	terrainSwap(hdDat, aocDat, 16,49,15025); //baobab forest
 	terrainSwap(hdDat, aocDat, 41,50,15013); //acacia forest
-	fs::copy_file(tempMapDir/"DLC_MANGROVEFOREST.slp",moddedAssetsPath/"15012.slp");
-	fs::copy_file(tempMapDir/"ACACIA_FOREST.slp",moddedAssetsPath/"15013.slp");
-	fs::copy_file(tempMapDir/"BAOBAB.slp",moddedAssetsPath/"15025.slp");
+
+	slpFiles[15012] = newTerrainFiles["DLC_MANGROVEFOREST.slp"];
+	slpFiles[15013] = newTerrainFiles["ACACIA_FOREST.slp"];
+	slpFiles[15025] = newTerrainFiles["BAOBAB.slp"];
+
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
@@ -891,10 +842,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 			newGraphic.SLP = newSLP;
 			aocDat->Graphics.push_back(newGraphic);
 			aocDat->GraphicPointers.push_back(1);
-			fs::path src = HDPath/("resources/_common/drs/graphics/776.slp");
-			fs::path dst = moddedAssetsPath/(std::to_string(newSLP)+".slp");
-			boost::system::error_code ec;
-			fs::copy_file(src,dst,ec);
+			slpFiles[newSLP] = HDPath/("resources/_common/drs/graphics/776.slp");
 		}
 		for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
 			std::map<short,short> replacedGraphics;
@@ -990,13 +938,12 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 		newSLP = aocDat->Graphics[compareID].SLP - 18000 + newBaseSLP + 1000*offset;
 	if(newSLP != aocDat->Graphics[graphicID].SLP) {
 		fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
-		fs::path dst = moddedAssetsPath/(std::to_string(newSLP)+".slp");
-		boost::system::error_code ec;
-		if(fs::exists(src)) {
-			fs::copy_file(src,dst, ec);
-		} else {
+		if(fs::exists(src))
+			slpFiles[newSLP] = src;
+		else {
 			src = HDPath/("resources/_common/drs/graphics/"+std::to_string(newGraphic.SLP)+".slp");
-			fs::copy_file(src,dst, ec);
+			if(fs::exists(src))
+				slpFiles[newSLP] = src;
 		}
 	}
 
@@ -1153,6 +1100,7 @@ int MainWindow::run()
 		fs::path newTerrainInputDir("resources/new terrains");
 		fs::path newGridTerrainInputDir("resources/new grid terrains");
 		fs::path modOverrideDir("mod_override/");
+		fs::path terrainOverrideDir("new_terrain_override/");
 		fs::path gridNoSnowInputDir("resources/Grid No Snow");
 		fs::path noSnowInputDir("resources/No Snow");
 		fs::path wallsInputDir("resources/short_walls");
@@ -1160,47 +1108,39 @@ int MainWindow::run()
 
 		std::string line;
 
-		boost::system::error_code ec;
-		try {
-			fs::remove_all(moddedAssetsPath, ec);
-			fs::remove_all(tempMapDir, ec);
-		} catch (const fs::filesystem_error& e) {
-			if(e.code() != boost::system::errc::directory_not_empty)
-				throw e;
-		}
 		bar->setValue(1);bar->repaint(); //1
-		fs::create_directories(moddedAssetsPath);
-		fs::create_directories(tempMapDir);
+
+		indexDrsFiles(assetsPath);
 
 		if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
 			this->ui->label->setText((translation["working"]+"\n"+translation["workingMods"]).c_str());
 			this->ui->label->repaint();
 		}
 		if(this->ui->usePw->isChecked())
-			recCopy(pwInputDir, moddedAssetsPath);
+			indexDrsFiles(pwInputDir);
 		bar->setValue(bar->value()+1);bar->repaint(); //2
 		if(this->ui->useGrid->isChecked()) {
-			recCopy(gridInputDir, moddedAssetsPath);
+			indexDrsFiles(gridInputDir);
 			bar->setValue(bar->value()+1);bar->repaint(); //3
-			recCopy(newGridTerrainInputDir,tempMapDir);
+			indexTerrainFiles(newGridTerrainInputDir);
 			bar->setValue(bar->value()+1);bar->repaint(); //4
 			if(this->ui->useNoSnow->isChecked())
-				recCopy(gridNoSnowInputDir, moddedAssetsPath, false, true);
+				indexDrsFiles(gridNoSnowInputDir);
 			bar->setValue(bar->value()+1);bar->repaint(); //5
 		} else {
-			recCopy(newTerrainInputDir,tempMapDir);
+			indexTerrainFiles(newTerrainInputDir);
 			bar->setValue(bar->value()+1);bar->repaint();//3
 			if(this->ui->useNoSnow->isChecked())
-				recCopy(noSnowInputDir, moddedAssetsPath);
+				indexDrsFiles(noSnowInputDir);
 			bar->setValue(bar->value()+2);bar->repaint(); //5
+		}
+		if(!fs::is_empty(terrainOverrideDir)) {
+			indexTerrainFiles(terrainOverrideDir);
 		}
 		bar->setValue(bar->value()+1);bar->repaint(); //6
 		if(this->ui->useWalls->isChecked())
-			copyWallFiles(wallsInputDir, moddedAssetsPath);
+			copyWallFiles(wallsInputDir);
 		bar->setValue(bar->value()+1);bar->repaint(); //7
-		if(!fs::is_empty(modOverrideDir))
-			shallowRecCopy(modOverrideDir, moddedAssetsPath, false, true);
-		bar->setValue(bar->value()+1);bar->repaint(); //8
 		fs::remove_all(vooblyDir/"Data");
 		fs::remove_all(vooblyDir/"Script.Ai/Brutal");
 		fs::remove(vooblyDir/"Script.Ai/BruteForce.ai");
@@ -1235,16 +1175,14 @@ int MainWindow::run()
 			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
 		}
 		bar->setValue(bar->value()+1);bar->repaint(); //12
-		if(!fs::is_empty("new_terrain_override")) {
-			recCopy(tempMapDir, fs::path("new_terrain_override/"), true);
-			tempMapDir = fs::path("new_terrain_override/");
-		}
-		copyHDMaps(assetsPath, vooblyDir/"Script.Rm");
+		fs::path vooblyMapDir = vooblyDir/"Script.Rm";
+		listExistingMaps(vooblyMapDir);
+		copyHDMaps(assetsPath, vooblyMapDir);
 		bar->setValue(bar->value()+1);bar->repaint(); //16
-		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyDir/"Script.Rm");
+		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyMapDir);
 		bar->setValue(bar->value()+1);bar->repaint(); //20
 		if(this->ui->copyMaps->isChecked())
-			copyHDMaps("resources/Script.Rm/", vooblyDir/"Script.Rm");
+			copyHDMaps("resources/Script.Rm/", vooblyMapDir);
 		else
 			bar->setValue(bar->value()+3);
 		bar->setValue(bar->value()+1);bar->repaint(); //24
@@ -1287,7 +1225,7 @@ int MainWindow::run()
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingInterface"]).c_str());
 		this->ui->label->repaint();
-		uglyHudHack(assetsPath.string(),moddedAssetsPath.string());
+		uglyHudHack(assetsPath);
 		bar->setValue(bar->value()+1);bar->repaint(); //43?
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingDat"]).c_str());
@@ -1297,16 +1235,11 @@ int MainWindow::run()
 
 		patchArchitectures(&aocDat);
 		bar->setValue(bar->value()+1);bar->repaint(); //59
-		makeDrs(assetsPath.string(), moddedAssetsPath.string(), &drsOut);
+		if(!fs::is_empty(modOverrideDir))
+			indexDrsFiles(modOverrideDir);
+		bar->setValue(bar->value()+1);bar->repaint(); //60
+		makeDrs(&drsOut);
 		bar->setValue(bar->value()+1);bar->repaint(); //71
-
-		try {
-			fs::remove_all(moddedAssetsPath, ec);
-			fs::remove_all(tempMapDir, ec);
-		} catch (const fs::filesystem_error& e) {
-			if(e.code() != boost::system::errc::directory_not_empty)
-				throw e;
-		}
 		bar->setValue(bar->value()+1);bar->repaint(); //72
 		wololo::DatPatch patchTab[] = {
 
@@ -1351,6 +1284,20 @@ int MainWindow::run()
 			bar->setValue(bar->value()+1);bar->repaint(); //72-85
 		}
 
+		std::ifstream missingStrings("resources/missing_strings.txt");
+		while (std::getline(missingStrings, line)) {
+			int spaceIdx = line.find('=');
+			std::string number = line.substr(0, spaceIdx);
+			int nb;
+			try {
+				nb = stoi(number);
+			}
+			catch (std::invalid_argument const & e){
+				continue;
+			}
+			line = line.substr(spaceIdx + 1, std::string::npos);
+			rmsCodeStrings.push_back(std::make_pair(nb,line));
+		}
 
 		if(this->ui->replaceTooltips->isChecked()) {
 			/*
@@ -1371,7 +1318,6 @@ int MainWindow::run()
 
 				std::wstring outputLine;
 				ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
-				boost::replace_all(line, "\n", "\\n");
 				line = wstrtostr(outputLine);
 				langReplacement[nb] = line;
 			}
@@ -1507,15 +1453,15 @@ int MainWindow::run()
 					fs::remove_all(outPath/"/compatslp2");
 				recCopy(outPath/"/compatslp",outPath/"/compatslp2");
 				fs::remove_all(outPath/"/compatslp");
+			}
+			if(outPath==HDPath && this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
 				this->ui->label->setText(translation["workingCP"].c_str());
-				if(this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
-					if(fs::file_size(outPath/"/data/blendomatic.dat") < 400000) {
-						fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
-						fs::rename(outPath/"/data/blendomatic_x1.dat",outPath/"/data/blendomatic.dat");
-					}
-				}				
+				this->ui->label->repaint();
+				if(fs::file_size(outPath/"/data/blendomatic.dat") < 400000) {
+					fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
+					fs::rename(outPath/"/data/blendomatic_x1.dat",outPath/"/data/blendomatic.dat");
+				}
 				bar->setValue(bar->value()+1);bar->repaint();
-
 			}
 		} else {
 			this->ui->label->setText(translation["workingNoAoc"].c_str());
@@ -1528,7 +1474,7 @@ int MainWindow::run()
 	catch (std::exception const & e) {
 		dialog = new Dialog(this,translation["dialogException"]+std::string()+e.what());
 		dialog->exec();
-		this->ui->label->setText(translation["error"].c_str());
+		this->ui->label->setText((translation["error"]).c_str());
 		ret = 1;
 	}
 	catch (std::string const & e) {		
