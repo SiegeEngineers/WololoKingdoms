@@ -1069,6 +1069,10 @@ int MainWindow::run()
 	qApp->processEvents();
 	QDialog* dialog;
 	int ret = 0;
+	slpFiles.clear();
+	wavFiles.clear();
+	newTerrainFiles.clear();
+	existingMapNames.clear();
 
 	try {
 		fs::path keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
