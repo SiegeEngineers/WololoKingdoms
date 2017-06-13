@@ -642,7 +642,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		//<Name,Regex Pattern if needed,replace name,terrain ID, replace terrain ID,slp to replace,upgrade trees?,tree to replace,new tree>
 		std::make_tuple("DRAGONFOREST","DRAGONFORES(T?)","DRAGONFORES$1","48","21","15029.slp",true,"SNOWPINETREE","DRAGONTREE"),
 		//std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","13","15010.slp",true,"PALMTREE","ACACIA_TREEE"),
-		std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","41","",true,"",""),
+		std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","41","",false,"",""),
 		std::make_tuple("DLC_RAINFOREST","","DLC_RAINFOREST","56","10","15011.slp",true,"FOREST_TREE","DLC_RAINTREE"),
 		std::make_tuple("BAOBAB","","BAOBAB","49","16","",false,"",""),
 		std::make_tuple("DLC_MANGROVESHALLOW","","DLC_MANGROVESHALLOW","54","4","15014.slp",false,"",""),
@@ -659,8 +659,8 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		std::make_tuple("DLC_BEACH3","","DLC_BEACH3","52","2","15017.slp",false,"",""),
 		std::make_tuple("DLC_BEACH4","","DLC_BEACH4","53","2","15017.slp",false,"",""),
 		std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","15019.slp",false,"",""),
-		std::make_tuple("DLC_WATER4","","DLC_WATER4","57","22","15015.slp",false,"",""),
-		std::make_tuple("DLC_WATER5","","DLC_WATER5","58","1","15002.slp",false,"",""),
+		std::make_tuple("DLC_WATER4","","DLC_WATER4","57","22","",false,"",""),
+		std::make_tuple("DLC_WATER5","","DLC_WATER5","58","1","",false,"",""),
 		std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","15019.slp",false,"",""),
 		std::make_tuple("DLC_JUNGLELEAVES","","DLC_JUNGLELEAVES","62","11","15006.slp",false,"",""),
 		std::make_tuple("DLC_JUNGLEROAD","","DLC_JUNGLEROAD","62","39","15031.slp",false,"",""),
@@ -683,10 +683,6 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 					"#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  terrain_state 0 0 0 1$1\n");
 		}
 		for (std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>>::iterator repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
-			if((std::get<0>(*repIt)=="DLC_WATER4"||std::get<0>(*repIt)=="DLC_WATER5") && (str.find("MED_WATER")!=std::string::npos || str.find("DEEP_WATER")!=std::string::npos)) {
-				boost::replace_all(str, "#const "+std::get<0>(*repIt)+" "+std::get<3>(*repIt), "#const "+std::get<0>(*repIt)+" "+std::get<4>(*repIt));
-				continue;
-			}
 			std::regex terrainConstDef;
 			std::regex terrainName;
 			if(std::get<1>(*repIt)=="") {
