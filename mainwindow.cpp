@@ -343,10 +343,10 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 			continue;
 		}
 
-		auto strReplace = langReplacement->find(nb);
-		if (strReplace != langReplacement->end()) {
+		std::string strReplace = (*langReplacement)[nb];
+		if (strReplace != "") {
 			// this string has been changed by one of our patches (modified attributes etc.)
-			line = strReplace->second;
+			line = strReplace;
 		}
 		else {
 			// load the string from the HD edition file
@@ -1260,21 +1260,22 @@ int MainWindow::run()
 		};
 
 
-		std::map<int, std::string> langReplacement;
+		std::map<int, std::string> langReplacement;		
+		langReplacement[10622] = translation["10622"];
+		langReplacement[10642] = translation["10642"];
+		langReplacement[10648] = translation["10648"];
 		//Fix errors in civ descriptions
-		if (language == "en") {
-			langReplacement[20162] = "Infantry civilization \\n\\n· Infantry move 15% faster \\n· Lumberjacks work 15% faster \\n· Siege weapons fire 20% faster \\n· Can convert sheep even if enemy units are next to them. \\n\\n<b>Unique Unit:<b> Woad Raider (infantry) \\n\\n<b>Unique Techs:<b> Stronghold (Castles and towers fire 20% faster); Furor Celtica (Siege Workshop units have +40% HP)\\n\\n<b>Team Bonus:<b> Siege Workshops work 20% faster";
-			langReplacement[20166] = "Cavalry civilization \\n\\n· Do not need houses, but start with -100 wood \\n· Cavalry Archers cost -10% Castle, -20% Imperial Age \\n· Trebuchets +35% accuracy against units \\n\\n<b>Unique Unit:<b> Tarkan (cavalry) \\n\\n<b>Unique Techs:<b> Marauders (Create Tarkans at stables); Atheism (+100 years Relic, Wonder victories; Spies/Treason costs -50%)\\n\\n<b>Team Bonus:<b> Stables work 20% faster";
-			langReplacement[20170] = "Infantry civilization \\n\\n· Start with a free llama \\n· Villagers affected by Blacksmith upgrades \\n· Houses support 10 population \\n· Buildings cost -15% stone\\n\\n<b>Unique Units:<b> Kamayuk (infantry), Slinger (archer)\\n\\n<b>Unique Techs:<b> Andean Sling (Skirmishers and Slingers no minimum range); Couriers (Kamayuks, Slingers, Eagles +1 armor/+2 pierce armor)\\n\\n<b>Team Bonus:<b> Farms built 2x faster";
-			langReplacement[20165] = "Archer civilization \\n\\n· Start with +1 villager, but -50 food \\n· Resources last 15% longer \\n· Archers cost -10% Feudal, -20% Castle, -30% Imperial Age \\n\\n<b>Unique Unit:<b> Plumed Archer (archer) \\n\\n<b>Unique Techs:<b> Obsidian Arrows (Archers, Crossbowmen and Arbalests +12 attack vs. Towers/Stone Walls, +6 attack vs. other buildings); El Dorado (Eagle Warriors have +40 hit points)\\n\\n<b>Team Bonus:<b> Walls cost -50%";
-			langReplacement[20158] = "Camel and naval civilization \\n· Market trade cost only 5% \\n· Market costs -75 wood \\n· Transport Ships 2x hit points, \\n 2x carry capacity \\n· Galleys attack 20% faster \\n· Cavalry archers +4 attack vs. buildings \\n\\n<b>Unique Unit:<b> Mameluke (camel) \\n\\n<b>Unique Techs:<b> Madrasah (Killed monks return 33% of their cost); Zealotry (Camels, Mamelukes +30 hit points)\\n\\n<b>Team Bonus:<b> Foot archers +2 attack vs. buildings";
-			langReplacement[20163] = "Gunpowder and Monk civilization \\n\\n· Builders work 30% faster \\n· Blacksmith upgrades don't cost gold \\n· Cannon Galleons fire faster and with Ballistics) \\n· Gunpowder units fire 15% faster\\n\\n<b>Unique Units:<b> Conquistador (mounted hand cannoneer), Missionary (mounted Monk) \\n\\n<b>Unique Techs:<b> Inquisition (Monks convert faster); Supremacy (villagers better in combat)\\n\\n<b>Team Bonus:<b> Trade units generate +25% gold";
-			//Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
-			langReplacement[26137] = "Create <b> Genitour<b> (<cost>) \\nBerber mercenary unit, available when teamed with a Berber player. Mounted skirmisher. Effective against Archers.<i> Upgrades: speed, hit points (Stable); attack, range, armor (Blacksmith); attack, accuracy (University); accuracy, armor, to Elite Genitour 500F, 450W (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
-			langReplacement[26139] = "Create <b> Elite Genitour<b> (<cost>) \\nBerber mercenary unit, available when teamed with a Berber player. Stronger than Genitour.<i> Upgrades: speed, hit points (Stable); attack, range, armor (Blacksmith); attack, accuracy (University); accuracy, armor (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
-			langReplacement[26190] = "Create <b> Imperial Skirmisher<b> (<cost>) \\nVietnamese mercenary unit, available when teamed with a Vietnamese player. Stronger than Elite Skirmisher. Attack bonus vs. archers. <i> Upgrades: attack, range, armor (Blacksmith); attack, accuracy (University); accuracy (Archery Range); creation speed (Castle); more resistant to Monks (Monastery).<i> \\n<hp> <attack> <armor> <piercearmor> <range>";
-			langReplacement[26419] = "Create <b> Imperial Camel<b> (<cost>) \nUnique Indian upgrade. Stronger than Heavy Camel. Attack bonus vs. cavalry. <i> Upgrades: attack, armor (Blacksmith); speed, hit points (Stable); creation speed (Castle); more resistant to Monks (Monastery).<i> \n<hp> <attack> <armor> <piercearmor> <range>";
-		}
+		langReplacement[20162] = translation["20162"];
+		langReplacement[20166] = translation["20166"];
+		langReplacement[20170] = translation["20170"];
+		langReplacement[20165] = translation["20165"];
+		langReplacement[20158] = translation["20158"];
+		langReplacement[20163] = translation["20163"];
+		//Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
+		langReplacement[26137] = translation["26137"];
+		langReplacement[26139] = translation["26139"];
+		langReplacement[26190] = translation["26190"];
+		langReplacement[26419] = translation["26419"];
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingPatches"]).c_str());
 		this->ui->label->repaint();
