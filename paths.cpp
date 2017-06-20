@@ -29,8 +29,7 @@ fs::path extractHDPath(std::string steamPath) {
 	return fs::path(HDPath);
 }
 
-fs::path getHDPath() {
-	fs::path HDPath("../");
+std::string getSteamPath() {
 	TCHAR temp[300];
 	unsigned long size = sizeof(temp);
 	HKEY hKey;
@@ -43,9 +42,13 @@ fs::path getHDPath() {
 		RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Valve\\Steam", 0, KEY_READ, &hKey);
 	RegQueryValueEx(hKey, L"InstallPath", NULL, NULL, reinterpret_cast<LPBYTE>(temp), &size);
 	RegCloseKey(hKey);
-
-	std::string line;
 	std::string steamPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
+	return steamPath;
+}
+
+fs::path getHDPath(std::string steamPath) {
+	fs::path HDPath("../");
+	std::string line;
 	if(boost::filesystem::exists(steamPath+"/steamapps/appmanifest_221380.acf")) {
 		HDPath = extractHDPath(steamPath);
 	} else if (boost::filesystem::exists(steamPath+"/steamapps/libraryfolders.vdf")) {
@@ -64,38 +67,6 @@ fs::path getHDPath() {
 			}
 		}
 	}
-	/*
-	std::string capPath = "";
-	std::vector<std::string> parts = split(HDPath, '/');
-	for(std::string & part : parts) {
-		if (boost::filesystem::exists(capPath+part)) {
-			capPath += part + "/";
-			continue;
-		}
-		if(islower(part[0])) {
-			part[0] = std::toupper(part[0], std::locale());
-			if (boost::filesystem::exists(capPath+part)) {
-				capPath += part + "/";
-				continue;
-			}
-			std::vector<std::string> subParts = split(part, ' ');
-			if(subParts.size() == 1)
-				break;
-			part = "";
-			for(std::string & subPart : subParts) {
-				if(islower(subPart[0]))
-					subPart[0] = std::toupper(subPart[0], std::locale());
-				part += subPart + " ";
-			}
-			part.erase(part.find_last_not_of(" ")+1);
-			if (boost::filesystem::exists(capPath+part)) {
-				capPath += part + "/";
-				continue;
-			}
-		}
-		break;
-	}
-	*/
 
 	if(!boost::filesystem::exists(HDPath/"/Launcher.exe")) {
 		if(boost::filesystem::exists("../../Launcher.exe")) {

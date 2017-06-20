@@ -3,7 +3,8 @@
 
 #include <boost/filesystem.hpp>
 
-boost::filesystem::path getHDPath();
+std::string getSteamPath();
+boost::filesystem::path getHDPath(std::string steamPath);
 boost::filesystem::path getOutPath(boost::filesystem::path HDPath);
 
 #endif // PATHS_H

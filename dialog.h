@@ -12,7 +12,7 @@ class Dialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit Dialog(QWidget *parent = 0, std::string message = "Error");
+	explicit Dialog(QWidget *parent = 0, std::string message = "Error", std::string title = "Note");
 	~Dialog();
 
 private:

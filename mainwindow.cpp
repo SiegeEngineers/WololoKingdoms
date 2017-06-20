@@ -37,6 +37,7 @@
 #include <QWhatsThis>
 #include <QPoint>
 #include <QProgressBar>
+#include "sdk/public/steam/steam_api.h"
 
 #include "JlCompress.h"
 
@@ -68,7 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	language = "en";
 	ui->setupUi(this);
-	HDPath = getHDPath();
+	std::string steamPath = getSteamPath();
+	HDPath = getHDPath(steamPath);
 	outPath = getOutPath(HDPath);
 	changeLanguage(language);
 
@@ -144,13 +146,13 @@ MainWindow::MainWindow(QWidget *parent) :
 			QWhatsThis::showText(this->ui->mapsTip->mapToGlobal(QPoint(0,0)),this->ui->mapsTip->whatsThis());
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
-
+	SteamAPI_Init();
 	this->ui->label->setText(("WololoKingdoms ver. " + version).c_str());
 	if(!fs::exists(HDPath/"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
 		this->ui->runButton->setDisabled(true);
 		return;
 	}
-
+	SteamAPI_Shutdown();
 }
 
 MainWindow::~MainWindow()
@@ -1466,20 +1468,20 @@ int MainWindow::run()
 			}
 		} else {
 			this->ui->label->setText(translation["workingNoAoc"].c_str());
-			dialog = new Dialog(this,translation["dialogNoAoc"].c_str());
+			dialog = new Dialog(this,translation["dialogNoAoc"].c_str(),translation["errorTitle"]);
 			dialog->exec();
 		}
 		bar->setValue(100);
 		bar->repaint();
 	}
 	catch (std::exception const & e) {
-		dialog = new Dialog(this,translation["dialogException"]+std::string()+e.what());
+		dialog = new Dialog(this,translation["dialogException"]+std::string()+e.what(),translation["errorTitle"]);
 		dialog->exec();
-		this->ui->label->setText((translation["error"]).c_str());
+		this->ui->label->setText(translation["error"].c_str());
 		ret = 1;
 	}
 	catch (std::string const & e) {		
-		dialog = new Dialog(this,translation["dialogException"]+e);
+		dialog = new Dialog(this,translation["dialogException"]+e,translation["errorTitle"]);
 		dialog->exec();
 		this->ui->label->setText(translation["error"].c_str());
 		ret = 1;
