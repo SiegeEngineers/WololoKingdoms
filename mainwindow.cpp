@@ -50,7 +50,7 @@ std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<fs::path> existingMapNames;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string const version = "2.1";
+std::string version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
@@ -147,10 +147,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
 	SteamAPI_Init();
-	this->ui->label->setText(("WololoKingdoms ver. " + version).c_str());
 	if(!fs::exists(HDPath/"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
 		this->ui->runButton->setDisabled(true);
 		return;
+		version = std::to_string(SteamApps()->GetAppBuildId());
+		this->ui->label->setText(("WololoKingdoms BuildID:" + version).c_str());
 	}
 	SteamAPI_Shutdown();
 }
