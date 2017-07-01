@@ -1125,16 +1125,21 @@ int MainWindow::run()
 		if(this->ui->useGrid->isChecked()) {
 			indexDrsFiles(gridInputDir);
 			bar->setValue(bar->value()+1);bar->repaint(); //3
+			indexTerrainFiles(newGridTerrainInputDir);
+			bar->setValue(bar->value()+1);bar->repaint(); //4
 			if(this->ui->useNoSnow->isChecked())
 				indexDrsFiles(gridNoSnowInputDir);
-			bar->setValue(bar->value()+1);bar->repaint(); //4
+			bar->setValue(bar->value()+1);bar->repaint(); //5
 		} else {
+			indexTerrainFiles(newTerrainInputDir);
+			bar->setValue(bar->value()+1);bar->repaint();//3
 			if(this->ui->useNoSnow->isChecked())
 				indexDrsFiles(noSnowInputDir);
-			bar->setValue(bar->value()+2);bar->repaint(); //4
+			bar->setValue(bar->value()+2);bar->repaint(); //5
 		}
-		indexTerrainFiles(newGridTerrainInputDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //5
+		if(!fs::is_empty(terrainOverrideDir)) {
+			indexTerrainFiles(terrainOverrideDir);
+		}
 		bar->setValue(bar->value()+1);bar->repaint(); //6
 		if(this->ui->useWalls->isChecked())
 			copyWallFiles(wallsInputDir);
