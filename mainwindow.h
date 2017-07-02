@@ -25,12 +25,11 @@ public slots:
 private:
 	Ui::MainWindow *ui;
 	void changeLanguage(std::string);
-	void copyHDMaps(boost::filesystem::path inputDir, boost::filesystem::path outputDir);
+	void copyHDMaps(boost::filesystem::path inputDir, boost::filesystem::path outputDir, bool replace = false);
 	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID);
-	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool skip = false);
+	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool skip = false, bool force = false);
 	void indexDrsFiles(boost::filesystem::path const &src);
 	void indexTerrainFiles(boost::filesystem::path const &src);
-	void listExistingMaps(boost::filesystem::path vooblyMapDir);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
 	void makeDrs(std::ofstream *out);
 	void uglyHudHack(boost::filesystem::path);

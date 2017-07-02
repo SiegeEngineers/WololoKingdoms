@@ -199,7 +199,7 @@ void MainWindow::changeLanguage(std::string language) {
 	qApp->processEvents();
 }
 
-void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip) {
+void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
 	// recursive copy
 	//fs::path currentPath(current->path());
 	if (fs::is_directory(src)) {
@@ -208,14 +208,16 @@ void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip) {
 		}
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-			recCopy(currentPath, dst / currentPath.filename(), skip);
+			recCopy(currentPath, dst / currentPath.filename(), skip, force);
 		}
 	}
 	else {
 		if (skip) {
 			boost::system::error_code ec;
 			fs::copy_file(src, dst, ec);
-		} else
+		} else if (force)
+			fs::copy_file(src,dst,fs::copy_option::overwrite_if_exists);
+		else
 			fs::copy_file(src, dst);
 	}
 }
@@ -254,44 +256,6 @@ void MainWindow::indexTerrainFiles(fs::path const &src) {
 			newTerrainFiles[src.filename().string()] = src;
 		}
 	}
-}
-
-void MainWindow::listExistingMaps(fs::path vooblyMapDir) {
-	for (fs::directory_iterator end, it(vooblyMapDir); it != end; it++) {
-		std::string filename = it->path().filename().string();
-		if (filename.substr(0,3) == "ZR@")
-			existingMapNames.push_back(it->path().parent_path()/filename.substr(3,std::string::npos));
-		else
-			existingMapNames.push_back(it->path());
-	}
-	//Remove Standard Maps
-	const std::vector<fs::path> standardMaps = {
-		fs::path("Arabia.rms"),
-		fs::path("Archipelago.rms"),
-		fs::path("Arena.rms"),
-		fs::path("Baltic.rms"),
-		fs::path("Black_Forest.rms"),
-		fs::path("Blind_Random.rms"),
-		fs::path("Coastal.rms"),
-		fs::path("Continental.rms"),
-		fs::path("Crater_Lake.rms"),
-		fs::path("Fortress.rms"),
-		fs::path("Ghost_Lake.rms"),
-		fs::path("Gold_Rush.rms"),
-		fs::path("Highland.rms"),
-		fs::path("Islands.rms"),
-		fs::path("Mediterranean.rms"),
-		fs::path("Migration.rms"),
-		fs::path("Mongolia.rms"),
-		fs::path("nomad.rms"),
-		fs::path("Oasis.rms"),
-		fs::path("Rivers.rms"),
-		fs::path("Salt_Marsh.rms"),
-		fs::path("Scandinavia.rms"),
-		fs::path("Team_Islands.rms"),
-		fs::path("Yucatan.rms")
-	};
-	existingMapNames.insert(existingMapNames.end(),standardMaps.begin(),standardMaps.end());
 }
 
 void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
@@ -611,34 +575,16 @@ void MainWindow::createMusicPlaylist(std::string inputDir, std::string const out
 	}
 }
 
-void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
+void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace) {
 
 	std::vector<fs::path> mapNames;
-	std::vector<fs::path> mapNamesSorted;
 	for (fs::directory_iterator end, it(inputDir); it != end; it++) {
-		std::string stem = it->path().stem().string();
 		std::string extension = it->path().extension().string();
-		if ((extension == ".rms" || extension == ".rms2") && stem.substr(0,10) != "real_world" && stem.substr(0,11) != "special_map" && stem.substr(0,3) != "CtR") {
+		if (extension == ".rms") {
 			mapNames.push_back(it->path());
 		}
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //13+17
-	sort(existingMapNames.begin(), existingMapNames.end());
-	sort(mapNames.begin(), mapNames.end());
-	std::vector<fs::path>::iterator modIt = existingMapNames.begin();
-	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end();) {
-		int comp = modIt != existingMapNames.end()?(modIt->stem().string()).compare(it->stem().string()):1;
-		if(comp == 0) {
-			it++;
-			modIt++;
-		} else if (comp < 0) {
-			modIt++;
-		} else {
-			mapNamesSorted.push_back(*it);
-			it++;
-		}
-	}
-	existingMapNames.insert<std::vector<fs::path>::iterator>(existingMapNames.end(), mapNamesSorted.begin(),mapNamesSorted.end());
 	bar->setValue(bar->value()+1);bar->repaint(); //14+18
 	std::map<std::string,fs::path> terrainOverrides;
 	std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements = {
@@ -669,11 +615,17 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir) {
 		std::make_tuple("DLC_JUNGLEROAD","","DLC_JUNGLEROAD","62","39","15031.slp",false,"",""),
 		std::make_tuple("DLC_JUNGLEGRASS","","DLC_JUNGLEGRASS","61","12","15008.slp",false,"","")
 	};
-	for (std::vector<fs::path>::iterator it = mapNamesSorted.begin(); it != mapNamesSorted.end(); it++) {
+	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end(); it++) {
 		std::string mapName = it->stem().string()+".rms";
 		if (mapName.substr(0,3) == "ZR@") {
 			fs::copy_file(*it,outputDir/mapName,fs::copy_option::overwrite_if_exists);
 			continue;
+		}
+		if(fs::exists(outputDir/it->filename())) {
+			if(replace)
+				fs::remove(outputDir/it->filename());
+			else
+				continue;
 		}
 		std::ifstream input(inputDir.string()+it->filename().string());
 		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
@@ -1071,7 +1023,6 @@ int MainWindow::run()
 	slpFiles.clear();
 	wavFiles.clear();
 	newTerrainFiles.clear();
-	existingMapNames.clear();
 
 	try {
 		fs::path keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
@@ -1179,13 +1130,10 @@ int MainWindow::run()
 		}
 		bar->setValue(bar->value()+1);bar->repaint(); //12
 		fs::path vooblyMapDir = vooblyDir/"Script.Rm";
-		listExistingMaps(vooblyMapDir);
-		copyHDMaps(assetsPath, vooblyMapDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //16
 		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyMapDir);
 		bar->setValue(bar->value()+1);bar->repaint(); //20
 		if(this->ui->copyMaps->isChecked())
-			copyHDMaps("resources/Script.Rm/", vooblyMapDir);
+			copyHDMaps("resources/Script.Rm/", vooblyMapDir, true);
 		else
 			bar->setValue(bar->value()+3);
 		bar->setValue(bar->value()+1);bar->repaint(); //24
@@ -1197,7 +1145,7 @@ int MainWindow::run()
 			recCopy(vooblyDir / "Sound", upDir / "Sound", true);
 			recCopy(vooblyDir / "Taunt", upDir / "Taunt", true);
 			fs::copy_file(xmlPath, xmlOutPathUP);
-			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", true);
+			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", false, true);
 			recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai", true);
 		}
 		bar->setValue(bar->value()+1);bar->repaint(); //26
