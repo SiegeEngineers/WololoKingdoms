@@ -146,14 +146,6 @@ MainWindow::MainWindow(QWidget *parent) :
 			QWhatsThis::showText(this->ui->mapsTip->mapToGlobal(QPoint(0,0)),this->ui->mapsTip->whatsThis());
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
-	SteamAPI_Init();
-	if(!fs::exists(HDPath/"EmptySteamDepot")) { //This checks whether at least either AK or FE is installed, no way to check for all DLCs unfortunately.
-		this->ui->runButton->setDisabled(true);
-		return;
-		version = std::to_string(SteamApps()->GetAppBuildId());
-		this->ui->label->setText(("WololoKingdoms BuildID:" + version).c_str());
-	}
-	SteamAPI_Shutdown();
 }
 
 MainWindow::~MainWindow()
