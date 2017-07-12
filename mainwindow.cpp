@@ -50,7 +50,7 @@ std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<fs::path> existingMapNames;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string version = "2.1";
+std::string const version = "2.1";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
@@ -97,12 +97,6 @@ MainWindow::MainWindow(QWidget *parent) :
 			default: language = "en";
 		}
 		changeLanguage(language);
-		if(this->ui->languageChoice->currentIndex() != 2) {
-			this->ui->replaceTooltips->setEnabled(false);
-			this->ui->replaceTooltips->setChecked(false);
-		} else {
-			this->ui->replaceTooltips->setEnabled(true);
-		}
 	} );
 	
 	//TODO do this in a loop
@@ -187,6 +181,12 @@ void MainWindow::changeLanguage(std::string language) {
 			else
 				this->ui->runButton->setDisabled(true);
 		} );
+	}	
+	if(!fs::exists("resources/"+language+".ini")) {
+		this->ui->replaceTooltips->setEnabled(false);
+		this->ui->replaceTooltips->setChecked(false);
+	} else {
+		this->ui->replaceTooltips->setEnabled(true);
 	}
 	qApp->processEvents();
 }
@@ -265,6 +265,10 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 				*/
 				continue;
 			}
+			if (nb <= 1000) {
+				// skip changes to fonts
+				continue;
+			}
 			if (nb >= 20150 && nb <= 20167) {
 				// skip the old civ descriptions
 				continue;
@@ -302,10 +306,10 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 			continue;
 		}
 
-		std::string strReplace = (*langReplacement)[nb];
-		if (strReplace != "") {
+		if (langReplacement->count(nb)) {
 			// this string has been changed by one of our patches (modified attributes etc.)
-			line = strReplace;
+			line = (*langReplacement)[nb];
+			langReplacement->erase(nb);
 		}
 		else {
 			// load the string from the HD edition file
@@ -346,6 +350,40 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 		}
 
 	}
+	/*
+	 * Stuff that's in lang replacement but not in the HD files (in this case extended language height box)
+	 */
+	for(std::map<int,std::string>::iterator it = langReplacement->begin(); it != langReplacement->end(); it++) {
+		//convert UTF-8 into ANSI
+
+		std::wstring wideLine = strtowstr(it->second);
+		std::string outputLine;
+		//if(language!="zh")
+			ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
+		//else
+		//	ConvertUnicode2CP(wideLine.c_str(), outputLine, 1386);
+
+
+		*iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
+
+		if (generateLangDll) {
+			boost::replace_all(outputLine, "·", "\xb7"); // Dll can't handle that character.
+			boost::replace_all(outputLine, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+			try {
+				dllOut->setString(it->first, outputLine);
+			}
+			catch (std::string const & e) {
+				boost::replace_all(outputLine, "\xb7", "-"); // non-english dll files don't seem to like that character
+				boost::replace_all(outputLine, "\xae", "R");
+				dllOut->setString(it->first, outputLine);
+			}
+		}
+
+	}
+	/*
+	 * Strings needed for code generation that are not in the regular hd text file
+	 * Only needed offline since regular aoc has this in the normal language dlls.
+	 */
 	if (generateLangDll) {
 		for(std::vector<std::pair<int,std::string>>::iterator it = rmsCodeStrings.begin(); it != rmsCodeStrings.end(); it++) {
 			dllOut->setString(it->first, it->second);
@@ -763,6 +801,8 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	//Let the Berber Mill have 40 frames instead of 8/10, which is close to the african mill with 38 frames
 	aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].FrameCount = 40;
 	aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].FrameCount = 40;
+	aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].Deltas[0].GraphicID].FrameCount = 40;
+	aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].Deltas[1].GraphicID].FrameCount = 40;
 
 	//Fix the missionary converting frames while we're at it
 	aocDat->Graphics[6616].FrameCount = 14;
@@ -1021,7 +1061,6 @@ int MainWindow::run()
 		fs::path vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
 		std::string aocDatPath = HDPath.string() + "resources/_common/dat/empires2_x1_p1.dat";
 		std::string hdDatPath = HDPath.string() + "resources/_common/dat/empires2_x2_p1.dat";
-		fs::path modLangPath("resources/language.ini");
 		fs::path languageIniPath = vooblyDir / "language.ini";
 		std::string versionIniPath = vooblyDir.string() + "version.ini";
 		fs::path soundsInputPath = HDPath / "resources/_common/sound/";
@@ -1247,7 +1286,7 @@ int MainWindow::run()
 			/*
 			 * Load modded strings instead of normal HD strings into lang replacement
 			 */
-			std::ifstream modLang(modLangPath.string());
+			std::ifstream modLang("resources/"+language+".ini");
 			while (std::getline(modLang, line)) {
 				int spaceIdx = line.find('=');
 				std::string number = line.substr(0, spaceIdx);
@@ -1397,6 +1436,9 @@ int MainWindow::run()
 					fs::remove_all(outPath/"/compatslp2");
 				recCopy(outPath/"/compatslp",outPath/"/compatslp2");
 				fs::remove_all(outPath/"/compatslp");
+			}
+			if(!fs::exists(outPath/"/data/Load")) {
+				fs::create_directory(outPath/"data/Load");
 			}
 			if(outPath==HDPath && this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
 				this->ui->label->setText(translation["workingCP"].c_str());
