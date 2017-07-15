@@ -657,6 +657,12 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 			else
 				continue;
 		}
+		if(fs::exists(outputDir/("ZR@"+it->filename().string()))) {
+			if(replace)
+				fs::remove(outputDir/("ZR@"+it->filename().string()));
+			else
+				continue;
+		}
 		std::ifstream input(inputDir.string()+it->filename().string());
 		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
