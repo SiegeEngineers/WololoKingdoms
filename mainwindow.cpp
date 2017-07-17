@@ -29,6 +29,7 @@
 #include "fixes/feitoriafix.h"
 #include "fixes/burmesefix.h"
 #include "fixes/incafix.h"
+#include "fixes/siegetowerfix.h"
 #include "fixes/smallfixes.h"
 
 #include "mainwindow.h"
@@ -543,7 +544,7 @@ void MainWindow::uglyHudHack(fs::path assetsPath) {
 	 */
 	int const hudFiles[] = {51130, 51160};
 	for (size_t baseIndex = 0; baseIndex < sizeof hudFiles / sizeof (int); baseIndex++) {
-		for (size_t i = 1; i <= 22; i++) {
+		for (size_t i = 1; i <= 23; i++) {
 			slpFiles[hudFiles[baseIndex]+i+(baseIndex+1)*10] = assetsPath / (std::to_string(hudFiles[baseIndex]+i) + ".slp");
 		}
 	}
@@ -1235,6 +1236,7 @@ int MainWindow::run()
 			wololo::feitoriaFix,
 			wololo::burmeseFix,
 			wololo::incaFix,
+			wololo::siegeTowerFix,
 			wololo::smallFixes,
 			wololo::ai900UnitIdFix
 		};
