@@ -1092,8 +1092,6 @@ int MainWindow::run()
 		fs::path newGridTerrainInputDir("resources/new grid terrains");
 		fs::path modOverrideDir("mod_override/");
 		fs::path terrainOverrideDir("new_terrain_override/");
-		fs::path gridNoSnowInputDir("resources/Grid No Snow");
-		fs::path noSnowInputDir("resources/No Snow");
 		fs::path wallsInputDir("resources/short_walls");
 		fs::path gamedata_x1("resources/gamedata_x1.drs");
 
@@ -1114,16 +1112,10 @@ int MainWindow::run()
 			indexDrsFiles(gridInputDir);
 			bar->setValue(bar->value()+1);bar->repaint(); //3
 			indexTerrainFiles(newGridTerrainInputDir);
-			bar->setValue(bar->value()+1);bar->repaint(); //4
-			if(this->ui->useNoSnow->isChecked())
-				indexDrsFiles(gridNoSnowInputDir);
-			bar->setValue(bar->value()+1);bar->repaint(); //5
+			bar->setValue(bar->value()+2);bar->repaint(); //5
 		} else {
 			indexTerrainFiles(newTerrainInputDir);
-			bar->setValue(bar->value()+1);bar->repaint();//3
-			if(this->ui->useNoSnow->isChecked())
-				indexDrsFiles(noSnowInputDir);
-			bar->setValue(bar->value()+2);bar->repaint(); //5
+			bar->setValue(bar->value()+3);bar->repaint(); //5
 		}
 		if(!fs::is_empty(terrainOverrideDir)) {
 			indexTerrainFiles(terrainOverrideDir);

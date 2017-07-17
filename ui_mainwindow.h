@@ -45,10 +45,9 @@ public:
     QCheckBox *replaceTooltips;
     QPushButton *tooltipTip;
     QHBoxLayout *horizontalLayout;
-    QCheckBox *useNoSnow;
     QCheckBox *useGrid;
-    QCheckBox *useWalls;
     QCheckBox *usePw;
+    QCheckBox *useWalls;
     QPushButton *modsTip;
     QHBoxLayout *horizontalLayout_5;
     QCheckBox *copyMaps;
@@ -140,27 +139,22 @@ public:
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        useNoSnow = new QCheckBox(gridLayoutWidget);
-        useNoSnow->setObjectName(QStringLiteral("useNoSnow"));
-
-        horizontalLayout->addWidget(useNoSnow);
-
         useGrid = new QCheckBox(gridLayoutWidget);
         useGrid->setObjectName(QStringLiteral("useGrid"));
         useGrid->setChecked(true);
 
         horizontalLayout->addWidget(useGrid);
 
-        useWalls = new QCheckBox(gridLayoutWidget);
-        useWalls->setObjectName(QStringLiteral("useWalls"));
-
-        horizontalLayout->addWidget(useWalls);
-
         usePw = new QCheckBox(gridLayoutWidget);
         usePw->setObjectName(QStringLiteral("usePw"));
         usePw->setChecked(true);
 
         horizontalLayout->addWidget(usePw);
+
+        useWalls = new QCheckBox(gridLayoutWidget);
+        useWalls->setObjectName(QStringLiteral("useWalls"));
+
+        horizontalLayout->addWidget(useWalls);
 
         modsTip = new QPushButton(gridLayoutWidget);
         modsTip->setObjectName(QStringLiteral("modsTip"));
@@ -262,10 +256,9 @@ public:
         tooltipTip->setAccessibleName(QApplication::translate("MainWindow", "tooltipTip", Q_NULLPTR));
 #endif // QT_NO_ACCESSIBILITY
         tooltipTip->setText(QString());
-        useNoSnow->setText(QApplication::translate("MainWindow", "No Snow", Q_NULLPTR));
         useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
-        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
         usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
+        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
 #ifndef QT_NO_ACCESSIBILITY
         modsTip->setAccessibleName(QApplication::translate("MainWindow", "modsTip", Q_NULLPTR));
 #endif // QT_NO_ACCESSIBILITY
