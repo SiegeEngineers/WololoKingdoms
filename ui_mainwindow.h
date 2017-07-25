@@ -103,7 +103,7 @@ public:
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
         createExe = new QCheckBox(gridLayoutWidget);
         createExe->setObjectName(QStringLiteral("createExe"));
-        createExe->setChecked(true);
+        createExe->setChecked(false);
 
         horizontalLayout_2->addWidget(createExe);
 
