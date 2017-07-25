@@ -22,9 +22,8 @@ a civilization the host does not have access to, it will instead turn into the "
 
 ## How to use (with Voobly)
 [Download the latest release](https://github.com/Jineapple/WololoKingdoms/releases), extract the Zip and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
-You can then use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms". You can then launch as normal).  
+You can then use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms". Make sure to select 1.5 as the patch. You can then launch as normal).  
 Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
-If the installer was not able to find your AoC/Voobly installation, then after running, copy the content of the "WololoKingdoms/out" folder to your AOE2 folder, (you should have Voobly Mods folder next to Taunt, Support, Sound etc. 
 
 ## How to use (without Voobly)
 [Download the latest release](https://github.com/Jineapple/WololoKingdoms/releases), extract it and launch as usual.
@@ -33,10 +32,18 @@ You can launch the game using the "WK.exe" in the "age2_x1/" folder.
 Rarely there can be issues with creating the language_x1_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
 If this error happens every time, your original language file may be corrupt.
 
+## New maps
+
+There is a number of new maps. Many of these have a ZR@ prefix, which replace the graphics of some terrains.
+ZR@sm_ maps are the special maps from the HD expansions
+ZR@rw_ maps are the real world maps from the HD expansions
+ZR@CtR maps are capture the relic maps. When playing these, make sure to select "Relics" as the victory condition
+SD_ maps are sudden death maps, with only one TC being allowed, and losing that will make you lose the game.
+
 ## Limitations
 Because of the features missing from the original AOC engine, not everything from the expansions can be replicated, this includes :
 - As of now, the aim of this program is multiplayer random maps, converting campaigns etc. isn't planned. (you can play them on HD anyway, unless they manage to break the engine even more)
-- The default bots can't play the new civilizations, however, [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) has been updated to support up to the African Kingdoms civilizations. Rise of the Rajas civs AI support is not available atm.
+- There is a version of the [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) included and set as the default computer AI. It's not fully updated so there might be issues with the new civs.
 - The hotkey menu is hardcoded, but this shouldn't be a big deal, as most of the new units are either unique units, or in the existing unit lines. Use the following hotkeys:
 	- Cannon Galleon hotkey to make Genitours
 	- Camel hotkey for Battle Elephants
@@ -46,6 +53,7 @@ Because of the features missing from the original AOC engine, not everything fro
 
 ## Known issues
 - If you use the [HD compatibility patch](http://aoccs.net/) Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored. The reason is that the converter renamed the `compatslp` folder to fix [interface issues](https://imgur.com/a/xouXF).
+- If you your aoc installation is in a different language than english, you might get an error message containing "EILSEQ". In this case, run the installer again and deselect "Create offline installation". You will only be able to play via Voobly because there's an issue generating the language files needed for offline use.
 
 ## Keep in mind
 The Forgotten team has made a fantastic work with their expansions and, while this is probably not the way they expected their expansions to be played, I hope they can understand that many people are disapointed with the current state of AOE2HD engine.
@@ -57,10 +65,10 @@ https://github.com/Tails8521/genieutils (I didn't change anything, just forked i
 I used Qt Creator for editing and building it, you will also need Boost installed.
 
 ## Special thanks
+- Tails8521 for the African Kingdoms version of this installer. Without him this would never have happened.
+- The UserPatch team for making the new bonuses possible to use and all other great improvements that Userpatch brings.
 - Apre for the genieutils library
 - Tapsa for Advanced Genie Editor
-- The UserPatch team for making the new bonuses possible to use and all other great improvements that Userpatch brings.
-- Jineapple for helping with the Rise of the Rajas conversion and convenience features
 - Alqualunte and TriRem for advices and testing
 - CheeseOnToast for making his [A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) compatible with this project
 - The Forgotten Empires team for three great expansions
