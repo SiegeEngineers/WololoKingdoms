@@ -40,6 +40,17 @@ ZR@rw_ maps are the real world maps from the HD expansions
 ZR@CtR maps are capture the relic maps. When playing these, make sure to select "Relics" as the victory condition
 SD_ maps are sudden death maps, with only one TC being allowed, and losing that will make you lose the game.
 
+## Regional Monks, Independant Architecture, Custom Mods
+
+The WololoKingdoms supports Independant Architecture like this HD Data Mod: http://steamcommunity.com/sharedfiles/filedetails/?id=893953860&searchtext=independant+architecture
+To replace a civ's architecture, download an IA mod for that civ from the steam workshop, find the folder you just downloaded in the steam workshop folder (usually C:\Program Files (x86)\Steam\steamapps\workshop\content\221380) and copy that folder.
+You can then paste it into the /mod_override folder you'll find next to the installer.
+As you might see in there, Monks have also been seperated into 4 Regions (American,European,Middle Eastern/African,Asian) instead of the two groups in AoC. If you want to have the regular monks, you can delete the "regional monks" folder in mod_override.
+Do not delete the "berber mill fix folder", unless you use a graphics mod replacing the Berber Architecture
+You can also paste any graphics/sound mod you want to use offline into this folder.
+
+There's also a "new_terrain_override" folder, should you wish to use different terrain slps for the expansion terrains. You can look at "/resources/new terrains" to see the naming convention.
+
 ## Limitations
 Because of the features missing from the original AOC engine, not everything from the expansions can be replicated, this includes :
 - As of now, the aim of this program is multiplayer random maps, converting campaigns etc. isn't planned. (you can play them on HD anyway, unless they manage to break the engine even more)
