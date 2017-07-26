@@ -1135,6 +1135,7 @@ int MainWindow::run()
 		fs::remove(upDir/"Script.Ai/BruteForce.per");
 		fs::remove(outPath/"Games/WK.xml");
 		fs::create_directories(vooblyDir/"Data");
+		fs::create_directories(vooblyDir/"SaveGame/Multi");
 		fs::create_directories(vooblyDir/"Sound/stream");
 		fs::create_directories(vooblyDir/"Taunt");
 		fs::create_directories(upDir);
@@ -1158,15 +1159,15 @@ int MainWindow::run()
 		bar->setValue(bar->value()+1);bar->repaint(); //12
 		fs::path vooblyMapDir = vooblyDir/"Script.Rm";
 		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyMapDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //20
+		bar->setValue(bar->value()+1);bar->repaint(); //15
 		if(this->ui->copyMaps->isChecked())
 			copyHDMaps("resources/Script.Rm/", vooblyMapDir, true);
 		else
 			bar->setValue(bar->value()+3);
-		bar->setValue(bar->value()+1);bar->repaint(); //24
+		bar->setValue(bar->value()+1);bar->repaint(); //19
 		//If wanted, the BruteForce AI could be included as a "standard" AI.
 		recCopy(aiInputPath, vooblyDir/"Script.Ai", true);
-		bar->setValue(bar->value()+1);bar->repaint(); //25
+		bar->setValue(bar->value()+1);bar->repaint(); //20
 		if(this->ui->createExe->isChecked()) {
 			fs::create_directories(upDir / "Data");
 			recCopy(vooblyDir / "Sound", upDir / "Sound", true);
@@ -1175,12 +1176,12 @@ int MainWindow::run()
 			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", false, true);
 			recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai", true);
 		}
-		bar->setValue(bar->value()+1);bar->repaint(); //26
+		bar->setValue(bar->value()+1);bar->repaint(); //21
 		if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
 			hotkeySetup();
-		bar->setValue(bar->value()+1);bar->repaint(); //24
+		bar->setValue(bar->value()+1);bar->repaint(); //22
 		recCopy(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", false);
-		bar->setValue(bar->value()+1);bar->repaint(); //28
+		bar->setValue(bar->value()+1);bar->repaint(); //23
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingAoc"]).c_str());
 		this->ui->label->repaint();
@@ -1189,7 +1190,7 @@ int MainWindow::run()
 		//aocDat.setVerboseMode(true);
 		aocDat.setGameVersion(genie::GameVersion::GV_TC);
 		aocDat.load(aocDatPath.c_str());
-		bar->setValue(bar->value()+5);bar->repaint(); //33
+		bar->setValue(bar->value()+5);bar->repaint(); //28
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingHD"]).c_str());
 		this->ui->label->repaint();
@@ -1197,28 +1198,28 @@ int MainWindow::run()
 		//hdDat.setVerboseMode(true);
 		hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
 		hdDat.load(hdDatPath.c_str());
-		bar->setValue(bar->value()+5);bar->repaint(); //38
+		bar->setValue(bar->value()+5);bar->repaint(); //33
 
 		std::ofstream drsOut(drsOutPath, std::ios::binary);
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingInterface"]).c_str());
 		this->ui->label->repaint();
 		uglyHudHack(assetsPath);
-		bar->setValue(bar->value()+1);bar->repaint(); //43?
+		bar->setValue(bar->value()+1);bar->repaint(); //38
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingDat"]).c_str());
 		this->ui->label->repaint();
 		transferHdDatElements(&hdDat, &aocDat);
-		bar->setValue(bar->value()+1);bar->repaint(); //44?
+		bar->setValue(bar->value()+1);bar->repaint(); //39
 
 		patchArchitectures(&aocDat);
-		bar->setValue(bar->value()+1);bar->repaint(); //59
+		bar->setValue(bar->value()+1);bar->repaint(); //54
 		if(!fs::is_empty(modOverrideDir))
 			indexDrsFiles(modOverrideDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //60
+		bar->setValue(bar->value()+1);bar->repaint(); //55
 		makeDrs(&drsOut);
-		bar->setValue(bar->value()+1);bar->repaint(); //71
-		bar->setValue(bar->value()+1);bar->repaint(); //72
+		bar->setValue(bar->value()+1);bar->repaint(); //66
+		bar->setValue(bar->value()+1);bar->repaint(); //67
 		wololo::DatPatch patchTab[] = {
 
 			wololo::berbersUTFix,
@@ -1261,7 +1262,7 @@ int MainWindow::run()
 
 		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {			
 			patchTab[i].patch(&aocDat, &langReplacement);
-			bar->setValue(bar->value()+1);bar->repaint(); //72-85
+			bar->setValue(bar->value()+1);bar->repaint(); //68-81
 		}
 
 		std::ifstream missingStrings("resources/missing_strings.txt");
@@ -1302,7 +1303,7 @@ int MainWindow::run()
 				langReplacement[nb] = line;
 			}
 		}
-		bar->setValue(bar->value()+1);bar->repaint(); //86
+		bar->setValue(bar->value()+1);bar->repaint(); //82
 
 
 		std::ifstream langIn(keyValuesStringsPath.string());
@@ -1326,7 +1327,7 @@ int MainWindow::run()
 		} else {
 			patchLangDll = false;
 		}
-		bar->setValue(bar->value()+1);bar->repaint(); //87
+		bar->setValue(bar->value()+1);bar->repaint(); //83
 		bool dllPatched = true;
 		if (patchLangDll) {
 			try {
@@ -1359,9 +1360,9 @@ int MainWindow::run()
 				this->ui->label->repaint();
 			}
 		}
-		bar->setValue(bar->value()+1);bar->repaint(); //88
+		bar->setValue(bar->value()+1);bar->repaint(); //84
 		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
-		bar->setValue(bar->value()+1);bar->repaint(); //89
+		bar->setValue(bar->value()+1);bar->repaint(); //85
 		if (patchLangDll) {
 			try {
 				line = translation["working"]+"\n"+translation["workingDll"];
@@ -1393,10 +1394,10 @@ int MainWindow::run()
 			}
 		}
 
-		bar->setValue(bar->value()+1);bar->repaint(); //90
+		bar->setValue(bar->value()+1);bar->repaint(); //86
 
 		aocDat.saveAs(outputDatPath.string().c_str());		
-		bar->setValue(bar->value()+1);bar->repaint(); //92
+		bar->setValue(bar->value()+1);bar->repaint(); //87
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingUp"]).c_str());
 		this->ui->label->repaint();
@@ -1406,18 +1407,18 @@ int MainWindow::run()
 			if(this->ui->createExe->isChecked()) {
 				recCopy(vooblyDir / "Data", upDir / "Data");
 
-				bar->setValue(bar->value()+1);bar->repaint(); //92
+				bar->setValue(bar->value()+1);bar->repaint(); //88
 				if (!dllPatched) {
 					dialog = new Dialog(this, translation["dialogNoDll"].c_str());
 					dialog->exec();
 				} else {
 					fs::copy_file(UPExe, UPExeOut, fs::copy_option::overwrite_if_exists);
 
-					bar->setValue(bar->value()+1);bar->repaint(); //93
+					bar->setValue(bar->value()+1);bar->repaint(); //89
 					system(("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
 					fs::copy_file(upDir/"Sound/music.m3u",vooblyDir/"Sound/music.m3u",fs::copy_option::overwrite_if_exists);
 
-					bar->setValue(bar->value()+1);bar->repaint(); //94
+					bar->setValue(bar->value()+1);bar->repaint(); //90
 					line = translation["dialogExe"];
 					boost::replace_all(line,"<exe>",UPModdedExe);
 					dialog = new Dialog(this,line.c_str());

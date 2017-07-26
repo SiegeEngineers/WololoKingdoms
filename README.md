@@ -21,16 +21,24 @@ Unfortunately, there's no way to automatically check for that with the game. How
 a civilization the host does not have access to, it will instead turn into the "Random" option, which will select a civ from the host's available civ pool.
 
 ## How to use (with Voobly)
-[Download the latest release](https://github.com/Jineapple/WololoKingdoms/releases), extract the Zip and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
+[Download the latest release](https://github.com/Jineapple/WololoKingdoms/releases), extract the Zip, **make sure Steam is running** and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
 You can then use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms". Make sure to select 1.5 as the patch. You can then launch as normal).  
 Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored.
 
 ## How to use (without Voobly)
-[Download the latest release](https://github.com/Jineapple/WololoKingdoms/releases), extract it and launch as usual.
+[Download the latest release](https://github.com/Jineapple/WololoKingdoms/releases), extract it, **make sure Steam is running** and launch as usual.
 Select the "Create an offline installation" checkbox and let the program run.
 You can launch the game using the "WK.exe" in the "age2_x1/" folder.
 Rarely there can be issues with creating the language_x1_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
 If this error happens every time, your original language file may be corrupt.
+
+## Troubleshooting/Known issues
+
+I've done my best to make the installer stable, but sometimes it can still have issues.
+Generally, if you encounter problems: Make sure you run the installer as administrator (right click the exe -> run as administrator). If you get a message about an exception, often just closing the installer and running it again helps
+- If you get this error "Error converting character: EILSEQ", this might be because your AoC installation is in a different language than english and it can't create the dll files needed for offline use. Make sure that "create offline installation" is unchecked, then it should work. You will only be able to play via Voobly then.
+- If you get an error about a "WK0.xml" file not existing, make sure Steam is open, with the account that owns the DLCs logged in. Run the installer again, hopefully it should work.
+- If you use the [HD compatibility patch](http://aoccs.net/) Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored. The reason is that the converter renamed the `compatslp` folder to fix [interface issues](https://imgur.com/a/xouXF).
 
 ## New maps
 
@@ -61,10 +69,6 @@ Because of the features missing from the original AOC engine, not everything fro
 	- Longboat hotkey for Caravels
 	- Wonder hotkey for Palisade Gates and Feitorias
 - There may be other things not working properly, I will add them to this list when they are reported
-
-## Known issues
-- If you use the [HD compatibility patch](http://aoccs.net/) Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored. The reason is that the converter renamed the `compatslp` folder to fix [interface issues](https://imgur.com/a/xouXF).
-- If you your aoc installation is in a different language than english, you might get an error message containing "EILSEQ". In this case, run the installer again and deselect "Create offline installation". You will only be able to play via Voobly because there's an issue generating the language files needed for offline use.
 
 ## Keep in mind
 The Forgotten team has made a fantastic work with their expansions and, while this is probably not the way they expected their expansions to be played, I hope they can understand that many people are disapointed with the current state of AOE2HD engine.
