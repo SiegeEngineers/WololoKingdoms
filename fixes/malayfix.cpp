@@ -10,10 +10,21 @@ void malayPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacem
 
 	size_t const malayTechTreeId = 648;
 	size_t const malayEffectTechId = 674;
+	size_t const fishtrapResourceId = 88;
 
 	for(int i = 0; i < aocDat->Techages[malayEffectTechId].Effects.size() ; i++) {
 		aocDat->Techages[malayTechTreeId].Effects.push_back(aocDat->Techages[malayEffectTechId].Effects[i]);
 	}
+	genie::TechageEffect effect;
+	effect.Type = 1; // ressource modifier
+	effect.A = fishtrapResourceId;
+	effect.B = 0; // Set
+	effect.D = aocDat->Civs[29].Resources[fishtrapResourceId];
+	aocDat->Techages[malayTechTreeId].Effects.push_back(effect);
+	aocDat->Civs[29].Resources[fishtrapResourceId] = 715;
+
+
+
 }
 
 DatPatch malayFix = {

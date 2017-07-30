@@ -5,20 +5,16 @@ namespace wololo {
 
 void disableNonWorkingUnitsPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
 	/*
-	 * Not a real fix, but will avoid to have players making non working units
+	 * Disabling units that are not supposed to show in the scenario editor
 	 */
 
-	size_t const siegeTowerUnitId = 1105;
-	size_t const feitoriaUnitId = 1021;
-
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
-		aocDat->Civs[civIndex].Units[siegeTowerUnitId].Creatable.TrainLocationID = 0;
-        //aocDat->Civs[civIndex].Units[feitoriaUnitId].Creatable.TrainLocationID = 0;
-		aocDat->Civs[civIndex].Units[1221].HideInEditor = 1;
-		for (size_t unitIndex = 1224; unitIndex <= 1374; unitIndex++) {
-			aocDat->Civs[civIndex].Units[unitIndex].HideInEditor = 1;
-		}
-		for (size_t unitIndex = 1378; unitIndex <= 1385; unitIndex++) {
+		aocDat->Civs[civIndex].Units[1119].HideInEditor = 1;
+		aocDat->Civs[civIndex].Units[1145].HideInEditor = 1;
+		aocDat->Civs[civIndex].Units[1147].HideInEditor = 1;
+		aocDat->Civs[civIndex].Units[1221].HideInEditor = 1;		
+		aocDat->Civs[civIndex].Units[1401].HideInEditor = 1;
+		for (size_t unitIndex = 1224; unitIndex <= 1390; unitIndex++) {
 			aocDat->Civs[civIndex].Units[unitIndex].HideInEditor = 1;
 		}
 	}
@@ -27,7 +23,7 @@ void disableNonWorkingUnitsPatch(genie::DatFile *aocDat, std::map<int, std::stri
 
 DatPatch disableNonWorkingUnits = {
 	&disableNonWorkingUnitsPatch,
-	"Disable Siege Tower and Feitoria"
+	"Hide units in the scenario editor"
 };
 
 }
