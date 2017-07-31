@@ -44,6 +44,7 @@ noRajas=You don't own the DLC "Rise of the Rajas". You will be restricted to civ
 noAK=You don't own the DLC "African Kingdoms". You will be restricted to civilizations from AoC and The Forgotten.\n!!IMPORTANT NOTE: When playing in Multiplayer, you need to make sure no one else chooses a civilization you don't have access to (from African Kingdoms or Rise of the Rajas), or the game will CRASH!
 noFE=You don't own the DLC "The Forgotten".\nYou need to own at least this DLC to be able to run the installer.
 noSteam=Steam needs to be running and you need to be logged in\nwith the Account that owns Age2HD with DLCS.
+noAoC=No installation of Age of Conquerors detected. You need to have either the CD version or the compatibility patch installed.\nMake sure you can run regular AoC on Voobly before running this installer.
 errorTitle=Error!
 10622=Dirt 1
 10642=Dirt 2

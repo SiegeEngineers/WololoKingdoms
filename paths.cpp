@@ -93,15 +93,11 @@ fs::path getOutPath(fs::path HDPath) {
 	RegQueryValueEx(hKey, L"CurrentDirectory", NULL, NULL, reinterpret_cast<LPBYTE>(temp), &size);
 	RegCloseKey(hKey);
 	fs::path outPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
-	bool aocFound = false;
-	if(boost::filesystem::exists(outPath))
-		aocFound = true;
-	if(!aocFound) {
+	if(!boost::filesystem::exists(outPath)) {
 		if(boost::filesystem::exists(HDPath / "age2_x1")) {
 			outPath = HDPath;
-			aocFound = true;
 		} else {
-			outPath = HDPath/"WololoKingdoms/out/";
+			outPath = fs::path();
 		}
 	}
 	return outPath;

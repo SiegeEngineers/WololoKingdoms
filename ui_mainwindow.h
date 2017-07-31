@@ -187,6 +187,7 @@ public:
 
         runButton = new QPushButton(centralWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
+        runButton->setEnabled(false);
         runButton->setGeometry(QRect(160, 340, 75, 23));
         verticalLayoutWidget = new QWidget(centralWidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));

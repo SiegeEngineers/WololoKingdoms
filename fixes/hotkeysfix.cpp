@@ -19,14 +19,14 @@ void hotkeysPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		aocDat->Civs[civIndex].Units[feitoriaUnitId].HotKey = aocDat->Civs[civIndex].Units[wonderUnitId].HotKey;
-		aocDat->Civs[civIndex].Units[siegeTowerUnitId].HotKey = aocDat->Civs[civIndex].Units[cannonGalleonUnitId].HotKey;
+		//aocDat->Civs[civIndex].Units[siegeTowerUnitId].HotKey = aocDat->Civs[civIndex].Units[cannonGalleonUnitId].HotKey;
 
 		for(int i = palisadeGateUnitIdStart; i<=palisadeGateUnitIdStop; i++) {
 			aocDat->Civs[civIndex].Units[i].HotKey = aocDat->Civs[civIndex].Units[wonderUnitId].HotKey;
 		}
 
 		aocDat->Civs[civIndex].Units[battleEleId].HotKey = aocDat->Civs[civIndex].Units[camelUnitId].HotKey;
-		aocDat->Civs[civIndex].Units[genitourPlaceholderUnitId].HotKey = aocDat->Civs[civIndex].Units[cannonGalleonUnitId].HotKey;
+		//aocDat->Civs[civIndex].Units[genitourPlaceholderUnitId].HotKey = aocDat->Civs[civIndex].Units[cannonGalleonUnitId].HotKey;
 		aocDat->Civs[civIndex].Units[caravelUnitId].HotKey = aocDat->Civs[civIndex].Units[longboatUnitId].HotKey;
 	}
 }

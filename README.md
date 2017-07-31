@@ -64,7 +64,7 @@ Because of the features missing from the original AOC engine, not everything fro
 - As of now, the aim of this program is multiplayer random maps, converting campaigns etc. isn't planned. (you can play them on HD anyway, unless they manage to break the engine even more)
 - There is a version of the [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) included and set as the default computer AI. It's not fully updated so there might be issues with the new civs.
 - The hotkey menu is hardcoded, but this shouldn't be a big deal, as most of the new units are either unique units, or in the existing unit lines. Use the following hotkeys:
-	- Cannon Galleon hotkey to make Genitours
+	- Genitours/Siege Towers do not have a hotkey, as there's no good way to avoid conflicts with other unit hotkeys
 	- Camel hotkey for Battle Elephants
 	- Longboat hotkey for Caravels
 	- Wonder hotkey for Palisade Gates and Feitorias

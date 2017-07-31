@@ -30,6 +30,7 @@
 #include "fixes/burmesefix.h"
 #include "fixes/incafix.h"
 #include "fixes/siegetowerfix.h"
+#include "fixes/khmerfix.h"
 #include "fixes/smallfixes.h"
 
 #include "mainwindow.h"
@@ -51,7 +52,7 @@ std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<fs::path> existingMapNames;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string const version = "2.1";
+std::string const version = "2.2";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
@@ -141,6 +142,12 @@ MainWindow::MainWindow(QWidget *parent) :
 			QWhatsThis::showText(this->ui->mapsTip->mapToGlobal(QPoint(0,0)),this->ui->mapsTip->whatsThis());
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
+	this->ui->label->setText(("WololoKingdoms version " + version).c_str());
+	if(outPath == fs::path) {
+		this->ui->label->setText(translation["noAoC"].c_str());
+		dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
+		dialog->exec();
+	}
 }
 
 MainWindow::~MainWindow()
@@ -403,6 +410,18 @@ void MainWindow::makeDrs(std::ofstream *out) {
 	slpFiles.erase(53207); // Forgotten Empires in-game logo
 	slpFiles.erase(53208); // Forgotten Empires objective window
 	slpFiles.erase(53209); // ???
+	/*
+	 * Some of the interface files are duplicates because of the shifting,
+	 * get rid of those
+	 */
+	std::map<int,fs::path>::iterator start;
+	std::map<int,fs::path>::iterator end;
+	start = slpFiles.find(51132);
+	end = std::next(start,8);
+	slpFiles.erase(start,end);
+	start = slpFiles.find(51172);
+	end = std::next(start,8);
+	slpFiles.erase(start,end);
 
 	const int numberOfTables = 2; // slp and wav
 	int numberOfSlpFiles = slpFiles.size();
@@ -813,7 +832,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 
 	//Separate Monks and DA buildings into 4 major regions (Europe, Asian, Southern, American)
 	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
-					{7,8,9,10,20,25,26,27},
+					{8,9,10,20,25,26,27},
 					{15,16,21}};
 	std::map<int,int> slps = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
 							 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
@@ -830,6 +849,8 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 			aocDat->Graphics.push_back(newGraphic);
 			aocDat->GraphicPointers.push_back(1);
 			slpFiles[newSLP] = HDPath/("resources/_common/drs/graphics/776.slp");
+		} else {
+			monkHealingGraphic = 7340; //meso healing graphic
 		}
 		for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
 			std::map<short,short> replacedGraphics;
@@ -848,24 +869,25 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, -1, i, replacedGraphics, slps);
 				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic != -1)
 					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic, -1, i, replacedGraphics, slps);
+				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DyingGraphic.first != -1)
+					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DyingGraphic.first, -1, i, replacedGraphics, slps);
 			}
 			//special UP healing slp workaround
-			if (i != 2) {
-				for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
-					size_t code = 0x811E0000+monkHealingGraphic;
-					int ccode = (int) code;
-					aocDat->Civs[civGroups[i][cg]].Units[125].LanguageDLLHelp = ccode;
+			for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
+				size_t code = 0x811E0000+monkHealingGraphic;
+				int ccode = (int) code;
+				aocDat->Civs[civGroups[i][cg]].Units[125].LanguageDLLHelp = ccode;
 
-					if (i == 0) {
-						aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 218;
-						aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 218;
-					} else {
-						aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 169;
-						aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 169;
-					}
-
+				if (i == 0) {
+					aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 218;
+					aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 218;
+				} else if (i == 1) {
+					aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 169;
+					aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 169;
 				}
+
 			}
+
 		}
 		bar->setValue(bar->value()+1);bar->repaint(); //52-55
 	}
@@ -1153,11 +1175,13 @@ int MainWindow::run()
 		recCopy(tauntInputPath, tauntOutputPath, true);
 		bar->setValue(bar->value()+1);bar->repaint(); //11
 		fs::copy_file(xmlPath, xmlOutPath);
-		if (aocFound) {
-			recCopy(outPath/"Random", vooblyDir/"Script.Rm", true);
+		fs::path vooblyMapDir = vooblyDir/"Script.Rm";
+		if (fs::exists(outPath/"Random")) {
+			recCopy(outPath/"Random", vooblyMapDir, true);
+		} else {
+			create_directories(vooblyMapDir);
 		}
 		bar->setValue(bar->value()+1);bar->repaint(); //12
-		fs::path vooblyMapDir = vooblyDir/"Script.Rm";
 		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyMapDir);
 		bar->setValue(bar->value()+1);bar->repaint(); //15
 		if(this->ui->copyMaps->isChecked())
@@ -1235,6 +1259,7 @@ int MainWindow::run()
 			wololo::burmeseFix,
 			wololo::incaFix,
 			wololo::siegeTowerFix,
+			wololo::khmerFix,
 			wololo::smallFixes,
 			wololo::ai900UnitIdFix
 		};
