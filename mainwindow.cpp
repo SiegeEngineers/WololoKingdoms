@@ -143,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
 	this->ui->label->setText(("WololoKingdoms version " + version).c_str());
-	if(outPath == fs::path) {
+	if(outPath == fs::path()) {
 		this->ui->label->setText(translation["noAoC"].c_str());
 		dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
 		dialog->exec();

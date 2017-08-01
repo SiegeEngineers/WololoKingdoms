@@ -37,7 +37,6 @@ If this error happens every time, your original language file may be corrupt.
 I've done my best to make the installer stable, but sometimes it can still have issues.
 Generally, if you encounter problems: Make sure you run the installer as administrator (right click the exe -> run as administrator). If you get a message about an exception, often just closing the installer and running it again helps
 - If you get this error "Error converting character: EILSEQ", this might be because your AoC installation is in a different language than english and it can't create the dll files needed for offline use. Make sure that "create offline installation" is unchecked, then it should work. You will only be able to play via Voobly then.
-- If you get an error about a "WK0.xml" file not existing, make sure Steam is open, with the account that owns the DLCs logged in. Run the installer again, hopefully it should work.
 - If you use the [HD compatibility patch](http://aoccs.net/) Voobly may throw [this error message](https://i.imgur.com/zCj3NcM.png) at you but it can safely be ignored. The reason is that the converter renamed the `compatslp` folder to fix [interface issues](https://imgur.com/a/xouXF).
 
 ## New maps
@@ -64,9 +63,9 @@ Because of the features missing from the original AOC engine, not everything fro
 - As of now, the aim of this program is multiplayer random maps, converting campaigns etc. isn't planned. (you can play them on HD anyway, unless they manage to break the engine even more)
 - There is a version of the [Bruteforce A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) included and set as the default computer AI. It's not fully updated so there might be issues with the new civs.
 - The hotkey menu is hardcoded, but this shouldn't be a big deal, as most of the new units are either unique units, or in the existing unit lines. Use the following hotkeys:
-	- Genitours/Siege Towers do not have a hotkey, as there's no good way to avoid conflicts with other unit hotkeys
+	- Turtle Ships use the same hotkey as Longboat/Caravels now (they used to have their own)
+	- Genitours and Siege Towers use the old Turtle Ship hotkey that has become free
 	- Camel hotkey for Battle Elephants
-	- Longboat hotkey for Caravels
 	- Wonder hotkey for Palisade Gates and Feitorias
 - There may be other things not working properly, I will add them to this list when they are reported
 
