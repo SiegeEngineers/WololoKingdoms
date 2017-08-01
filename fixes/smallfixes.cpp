@@ -24,7 +24,7 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 		aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3,3};
 	}
 	aocDat->Graphics[3387].SoundID = 428;
-	aocDat->Graphics[3387].SoundID = 428;
+	aocDat->Graphics[3388].SoundID = 428;
 }
 
 DatPatch smallFixes = {
