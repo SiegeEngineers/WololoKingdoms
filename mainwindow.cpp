@@ -645,7 +645,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 		std::make_tuple("DLC_RAINFOREST","","DLC_RAINFOREST","56","10","15011.slp",true,"FOREST_TREE","DLC_RAINTREE"),
 		std::make_tuple("BAOBAB","","BAOBAB","49","16","",false,"",""),
 		std::make_tuple("DLC_MANGROVESHALLOW","","DLC_MANGROVESHALLOW","54","4","15014.slp",false,"",""),
-		std::make_tuple("DLC_MANGROVEFOREST","","DLC_MANGROVEFOREST","55","16","",false,"",""),
+		std::make_tuple("DLC_MANGROVEFOREST","","DLC_MANGROVEFOREST","55","20","",false,"",""),
 		std::make_tuple("DLC_NEWSHALLOW","","DLC_NEWSHALLOW","59","26","15024.slp",false,"",""),
 		std::make_tuple("SAVANNAH","","SAVANNAH","41","14","15010.slp",false,"",""),
 		std::make_tuple("DIRT4","((DLC_)?)DIRT4","$1DIRT4","42","3","15007.slp",false,"",""),
@@ -770,7 +770,7 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	aocDat->TerrainBlock.TerrainsUsed2 = 42;
 	aocDat->TerrainsUsed1 = 42;
 	//terrainSwap(hdDat, aocDat, 41,54,15030); //mangrove terrain
-	terrainSwap(hdDat, aocDat, 15,55,15012); //mangrove forest
+	terrainSwap(hdDat, aocDat, 20,55,15012); //mangrove forest
 	terrainSwap(hdDat, aocDat, 16,49,15025); //baobab forest
 	terrainSwap(hdDat, aocDat, 41,50,15013); //acacia forest
 
@@ -1266,9 +1266,16 @@ int MainWindow::run()
 
 
 		std::map<int, std::string> langReplacement;		
+		//Change terrain descriptions in scenario editor
 		langReplacement[10622] = translation["10622"];
+		langReplacement[10626] = translation["10626"];
 		langReplacement[10642] = translation["10642"];
 		langReplacement[10648] = translation["10648"];
+		rmsCodeStrings.push_back(std::make_pair(10618,translation["10618"]));
+		rmsCodeStrings.push_back(std::make_pair(10619,translation["10619"]));
+		rmsCodeStrings.push_back(std::make_pair(10679,translation["10679"]));
+		rmsCodeStrings.push_back(std::make_pair(10707,translation["10707"]));
+		rmsCodeStrings.push_back(std::make_pair(30195,translation["30195"]));
 		//Fix errors in civ descriptions
 		langReplacement[20162] = translation["20162"];
 		langReplacement[20166] = translation["20166"];
