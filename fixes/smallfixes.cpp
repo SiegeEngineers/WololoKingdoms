@@ -9,9 +9,16 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	size_t const cannonGalleonID = 420;
 	size_t const eliteCannonGalleonID = 691;
 	size_t const teutonTeamBonusID = 404;
+	size_t const PTWC = 444;
 	size_t const relicID = 285;
 	size_t const mountains[] = {310,311,744,745,1041,1042,1043,1044,1045,1046,1047};
 
+	for (size_t civIndex = 1; civIndex < aocDat->Civs.size(); civIndex++) {
+		aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC];
+	}
+	aocDat->UnitHeaders[444].Commands.push_back(aocDat->UnitHeaders[331].Commands[0]);
+	aocDat->UnitHeaders[331].Commands[0].SelectionMode = 0;
+	aocDat->UnitHeaders[331].Commands[0].SelectionEnabler = 0;
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		aocDat->Civs[civIndex].Units[eliteCamelArcherID] = aocDat->Civs[0].Units[eliteCamelArcherID];
 		aocDat->Civs[civIndex].Units[cannonGalleonID].Creatable.HeroMode -= 128;
@@ -23,8 +30,15 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	for (size_t i = 0; i < sizeof(mountains)/sizeof(mountains[0]); i++) {
 		aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3,3};
 	}
-	aocDat->Graphics[3387].SoundID = 428;
-	aocDat->Graphics[3388].SoundID = 428;
+	for (size_t fileID = 5555; fileID < 5563; fileID++) {
+		genie::SoundItem* item = new genie::SoundItem();
+		item->ResourceID = fileID;
+		item->FileName = "wgal"+std::to_string(fileID-5554)+".wav";
+		item->Probability = fileID < 5557?5:15;
+		aocDat->Sounds[427].Items.push_back(*item);
+	}
+	aocDat->Graphics[3387].SoundID = 427;
+	aocDat->Graphics[3388].SoundID = 427;
 }
 
 DatPatch smallFixes = {

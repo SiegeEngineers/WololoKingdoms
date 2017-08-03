@@ -52,7 +52,7 @@ std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<fs::path> existingMapNames;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string const version = "2.3";
+std::string const version = "2.4";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
