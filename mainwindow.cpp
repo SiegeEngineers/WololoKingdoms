@@ -1145,16 +1145,16 @@ int MainWindow::run()
 			copyWallFiles(wallsInputDir);
 		bar->setValue(bar->value()+1);bar->repaint(); //7
 		fs::remove_all(vooblyDir/"Data");
-		fs::remove_all(vooblyDir/"Script.Ai/Brutal");
-		fs::remove(vooblyDir/"Script.Ai/BruteForce.ai");
-		fs::remove(vooblyDir/"Script.Ai/BruteForce.per");
+		fs::remove_all(vooblyDir/"Script.Ai/Brutal2");
+		fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
+		fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
 		fs::remove(vooblyDir/"age2_x1.xml");
 		fs::remove(vooblyDir/"language.ini");
 		fs::remove(vooblyDir/"version.ini");
 		fs::remove_all(upDir/"Data");
-		fs::remove_all(upDir/"Script.Ai/Brutal");
-		fs::remove(upDir/"Script.Ai/BruteForce.ai");
-		fs::remove(upDir/"Script.Ai/BruteForce.per");
+		fs::remove_all(upDir/"Script.Ai/Brutal2");
+		fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
+		fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
 		fs::remove(outPath/"Games/WK.xml");
 		fs::create_directories(vooblyDir/"Data");
 		fs::create_directories(vooblyDir/"SaveGame/Multi");
@@ -1255,7 +1255,7 @@ int MainWindow::run()
 			wololo::maliansFreeMiningUpgradeFix,
 			wololo::portugueseFix,
 			wololo::disableNonWorkingUnits,
-			wololo::feitoriaFix,
+			//wololo::feitoriaFix,
 			wololo::burmeseFix,
 			wololo::incaFix,
 			wololo::siegeTowerFix,
