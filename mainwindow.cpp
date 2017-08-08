@@ -1014,6 +1014,13 @@ void MainWindow::hotkeySetup() {
 
 	fs::remove(nfzOutPath);
 	fs::remove(nfzUpOutPath);
+	if(!fs::exists(hkiPath)) { //If player0.hki doesn't exist, look for player1.hki, otherwise use default HD hotkeys
+		if(fs::exists(HDPath/"Profiles/player1.hki"))
+				hkiPath = HDPath/"Profiles/player1.hki";
+		else
+				hkiPath = fs::path("resources/player1_age2hd.hki");
+	}
+
 	if(fs::exists(nfzPath)) //Copy the Aoc Profile
 		fs::copy_file(nfzPath, nfzOutPath);
 	else //otherwise copy the default profile included
@@ -1025,7 +1032,7 @@ void MainWindow::hotkeySetup() {
 			fs::copy_file(nfz1Path,nfzUpOutPath);
 	}
 	//Copy hotkey files
-	if(fs::exists(customHkiPath)) {
+	if(fs::exists(customHkiPath)) { //players put a custom .hki file into the WK converter folder that they want to use instead
 		fs::copy_file(customHkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
 		if(fs::exists(hki2OutPath))
 			fs::copy_file(customHkiPath, modHki2OutPath,fs::copy_option::overwrite_if_exists);
@@ -1037,7 +1044,7 @@ void MainWindow::hotkeySetup() {
 		return;
 	}
 	if (this->ui->hotkeyChoice->currentIndex() == 1 && !fs::exists(hkiOutPath))
-		fs::copy_file(aocHkiPath, hkiOutPath);
+		fs::copy_file(aocHkiPath, hkiOutPath);//use voobly hotkeys, copy standard aoc hotkeys if the file doesn't exist yet
 	if (this->ui->hotkeyChoice->currentIndex() == 2) {
 		fs::copy_file(hkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
 		if(fs::exists(hki2OutPath))
