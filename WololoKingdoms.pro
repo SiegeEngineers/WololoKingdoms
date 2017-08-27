@@ -71,7 +71,8 @@ HEADERS += \
     mainwindow.h \
     dialog.h \
     fixes/smallfixes.h \
-	fixes/siegetowerfix.h
+    fixes/siegetowerfix.h \
+    include/sdk/public/steam/steam_api.h
 
 DISTFILES += \
     WololoKingdoms.ico
