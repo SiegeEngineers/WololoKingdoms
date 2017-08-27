@@ -27,6 +27,39 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
+     <item row="8" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QCheckBox" name="replaceTooltips">
+         <property name="text">
+          <string>Improve tooltips and tech tree</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="tooltipTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>tooltipTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item row="5" column="0">
       <widget class="QComboBox" name="languageChoice">
        <property name="currentIndex">
@@ -89,6 +122,39 @@
        </item>
       </widget>
      </item>
+     <item row="9" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="createExe">
+         <property name="text">
+          <string>Create an offline installation</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="exeTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>exeTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item row="6" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <property name="bottomMargin">
@@ -139,73 +205,7 @@
        </item>
       </layout>
      </item>
-     <item row="8" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QCheckBox" name="createExe">
-         <property name="text">
-          <string>Create an offline installation</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="exeTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>exeTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="7" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QCheckBox" name="replaceTooltips">
-         <property name="text">
-          <string>Improve tooltips and tech tree</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="tooltipTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>tooltipTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="15" column="0">
+     <item row="16" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QCheckBox" name="useGrid">
@@ -255,7 +255,7 @@
        </item>
       </layout>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <widget class="QCheckBox" name="copyMaps">
@@ -280,6 +280,48 @@
          </property>
          <property name="accessibleName">
           <string>mapsTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="7" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QCheckBox" name="usePatch">
+         <property name="maximumSize">
+          <size>
+           <width>75</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Old Patch</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="patchSelection">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>Patch 5.4</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="patchSelectionTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
          </property>
          <property name="text">
           <string/>

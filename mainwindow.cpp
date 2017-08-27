@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <windows.h>
+#include <ShellAPI.h>
 #include <regex>
 
 #include <boost/filesystem.hpp>
@@ -39,6 +40,7 @@
 #include <QWhatsThis>
 #include <QPoint>
 #include <QProgressBar>
+#include <QCryptographicHash>
 #include "sdk/public/steam/steam_api.h"
 
 #include "JlCompress.h"
@@ -52,11 +54,15 @@ std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<fs::path> existingMapNames;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string const version = "2.4";
+std::string const version = "2.4.";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
 QProgressBar* bar = NULL;
+int dlcLevel = 0;
+int patch = -1;
+int mod = -1;
+std::string modName;
 
 fs::path nfzUpOutPath;
 fs::path nfzOutPath;
@@ -64,6 +70,10 @@ fs::path modHkiOutPath;
 fs::path modHki2OutPath;
 fs::path upHkiOutPath;
 fs::path upHki2OutPath;
+fs::path vooblyDir;
+fs::path upDir;
+std::string referenceDir = "WololoKingdoms FE";
+fs::path resourceDir("resources/");
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -74,14 +84,60 @@ MainWindow::MainWindow(QWidget *parent) :
 	std::string steamPath = getSteamPath();
 	HDPath = getHDPath(steamPath);
 	outPath = getOutPath(HDPath);
-	changeLanguage(language);
 
-	nfzUpOutPath = outPath / "Games/WololoKingdoms/Player.nfz";
-	nfzOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
-	modHkiOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player1.hki";
-	modHki2OutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/player2.hki";
-	upHkiOutPath = outPath / "Games/WololoKingdoms/player1.hki";
-	upHki2OutPath = outPath / "Games/WololoKingdoms/player2.hki";
+	vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms FE";
+	upDir = outPath / "Games/WololoKingdoms FE";
+
+	if(!fs::exists(vooblyDir)) {
+		this->ui->usePatch->setDisabled(true);
+	}
+
+	nfzUpOutPath = upDir / "Player.nfz";
+	nfzOutPath = vooblyDir / "Player.nfz";
+	modHkiOutPath = vooblyDir / "player1.hki";
+	modHki2OutPath = vooblyDir / "player2.hki";
+	upHkiOutPath = upDir / "player1.hki";
+	upHki2OutPath = upDir / "player2.hki";
+
+	SteamAPI_Init();
+	QDialog* dialog;
+	this->ui->label->setText(("WololoKingdoms version " + version).c_str());
+	if(outPath == fs::path()) {
+		this->ui->label->setText(translation["noAoC"].c_str());
+		dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
+		dialog->exec();
+	}
+	else if(HDPath == fs::path()) {
+		this->ui->label->setText(translation["noSteamInstallation"].c_str());
+		dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
+		dialog->exec();
+	}
+	else if(!SteamApps()) {
+		this->ui->label->setText(translation["noSteam"].c_str());
+		dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
+		dialog->exec();
+	} else if(SteamApps()->BIsDlcInstalled(239550)) {
+		if(SteamApps()->BIsDlcInstalled(355950)) {
+			if(SteamApps()->BIsDlcInstalled(488060))
+				dlcLevel = 3;
+			else {
+				dlcLevel = 2;
+				dialog = new Dialog(this,translation["noRajas"]);
+				dialog->exec();
+			}
+		} else {
+			dlcLevel = 1;
+			dialog = new Dialog(this,translation["noAK"]);
+			dialog->exec();
+		}
+	} else {
+		this->ui->label->setText(translation["noFE"].c_str());
+		dialog = new Dialog(this,translation["noFE"],translation["errorTitle"]);
+		dialog->exec();
+	}
+	SteamAPI_Shutdown();
+
+	changeLanguage(language);
 
 	QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
 		switch(this->ui->languageChoice->currentIndex()) {
@@ -100,9 +156,14 @@ MainWindow::MainWindow(QWidget *parent) :
 		}
 		changeLanguage(language);
 	} );
+
+	QObject::connect( this->ui->patchSelection, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
+		changeModPatch();
+	} );
 	
+	const char * questionIcon = "resources/question.png";
 	//TODO do this in a loop
-	this->ui->hotkeyTip->setIcon(QIcon("resources/question.png"));
+	this->ui->hotkeyTip->setIcon(QIcon(questionIcon));
 	this->ui->hotkeyTip->setIconSize(QSize(16,16));
 	this->ui->hotkeyTip->setWhatsThis(translation["hotkeyTip"].c_str());
 	QObject::connect( this->ui->hotkeyTip, &QPushButton::clicked, this, [this]() {
@@ -114,14 +175,32 @@ MainWindow::MainWindow(QWidget *parent) :
 		this->ui->hotkeyTip->setDisabled(true);
 	}
 
-	this->ui->tooltipTip->setIcon(QIcon("resources/question.png"));
+	this->ui->tooltipTip->setIcon(QIcon(questionIcon));
 	this->ui->tooltipTip->setIconSize(QSize(16,16));
 	this->ui->tooltipTip->setWhatsThis(translation["tooltipTip"].c_str());
 	QObject::connect( this->ui->tooltipTip, &QPushButton::clicked, this, [this]() {
 		QWhatsThis::showText(this->ui->tooltipTip->mapToGlobal(QPoint(0,0)),this->ui->tooltipTip->whatsThis());
 	} );
 
-	this->ui->exeTip->setIcon(QIcon("resources/question.png"));
+	this->ui->patchSelectionTip->setIcon(QIcon(questionIcon));
+	this->ui->patchSelectionTip->setIconSize(QSize(16,16));
+	this->ui->patchSelectionTip->setWhatsThis(translation["patchSelectionTip"].c_str());
+	QObject::connect( this->ui->patchSelectionTip, &QPushButton::clicked, this, [this]() {
+		QWhatsThis::showText(this->ui->patchSelectionTip->mapToGlobal(QPoint(0,0)),this->ui->patchSelectionTip->whatsThis());
+	} );
+
+	QObject::connect( this->ui->usePatch, &QCheckBox::clicked, this, [this]() {
+		if(this->ui->usePatch->isChecked()) {
+			this->ui->patchSelection->setDisabled(false);
+			this->ui->hotkeyChoice->setDisabled(true);
+		} else {
+			this->ui->patchSelection->setDisabled(true);
+			this->ui->hotkeyChoice->setDisabled(false);
+		}
+		changeModPatch();
+	} );
+
+	this->ui->exeTip->setIcon(QIcon(questionIcon));
 	this->ui->exeTip->setIconSize(QSize(16,16));
 	std::string line = translation["exeTip"];
 	boost::replace_all(line, "<folder>", outPath.string()+"\\age2_x1");
@@ -129,25 +208,22 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect( this->ui->exeTip, &QPushButton::clicked, this, [this]() {
 		QWhatsThis::showText(this->ui->exeTip->mapToGlobal(QPoint(0,0)),this->ui->exeTip->whatsThis());
 	} );
-	this->ui->modsTip->setIcon(QIcon("resources/question.png"));
+	this->ui->modsTip->setIcon(QIcon(questionIcon));
 	this->ui->modsTip->setIconSize(QSize(16,16));
 	this->ui->modsTip->setWhatsThis(translation["modsTip"].c_str());
 	QObject::connect( this->ui->modsTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->modsTip->mapToGlobal(QPoint(0,0)),this->ui->modsTip->whatsThis());
 	} );
-	this->ui->mapsTip->setIcon(QIcon("resources/question.png"));
+	this->ui->mapsTip->setIcon(QIcon(questionIcon));
 	this->ui->mapsTip->setIconSize(QSize(16,16));
 	this->ui->mapsTip->setWhatsThis(translation["mapsTip"].c_str());
 	QObject::connect( this->ui->mapsTip, &QPushButton::clicked, this, [this]() {
 			QWhatsThis::showText(this->ui->mapsTip->mapToGlobal(QPoint(0,0)),this->ui->mapsTip->whatsThis());
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
-	this->ui->label->setText(("WololoKingdoms version " + version).c_str());
-	if(outPath == fs::path()) {
-		this->ui->label->setText(translation["noAoC"].c_str());
-		dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
-		dialog->exec();
-	}
+
+	qApp->processEvents();
+
 }
 
 MainWindow::~MainWindow()
@@ -155,6 +231,30 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::changeModPatch() {
+	modName = "WK ";
+	patch = this->ui->usePatch->isChecked()?this->ui->patchSelection->currentIndex():-1;
+	switch (mod) {
+		default: break;
+	}
+	switch(patch) {
+		case 0: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
+	}
+	if(mod+patch == -2) {
+		vooblyDir = vooblyDir.parent_path() / "WololoKingdoms FE";
+		upDir = upDir.parent_path() / "WololoKingdoms FE";
+	} else {
+		vooblyDir = vooblyDir.parent_path() / modName;
+		upDir = upDir.parent_path() / modName;
+	}
+	nfzUpOutPath = upDir / "Player.nfz";
+	nfzOutPath = vooblyDir / "Player.nfz";
+	modHkiOutPath = vooblyDir / "player1.hki";
+	modHki2OutPath = vooblyDir / "player2.hki";
+	upHkiOutPath = upDir / "player1.hki";
+	upHki2OutPath = upDir / "player2.hki";
+	updateUI();
+}
 
 void MainWindow::changeLanguage(std::string language) {
 
@@ -174,22 +274,26 @@ void MainWindow::changeLanguage(std::string language) {
 	this->ui->hotkeyChoice->setItemText(1,translation["hotkeys1"].c_str());
 	this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"].c_str());
 	this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
+	this->ui->patchSelection->setItemText(0,translation["mod0"].c_str());
+	updateUI();
+}
 
-	fs::path vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
-	fs::path nfzOutPath = vooblyDir / "Player.nfz";
-
+void MainWindow::updateUI() {
 	if(fs::exists(nfzOutPath)) {
 		this->ui->hotkeyChoice->setItemText(0,translation["hotkeys0"].c_str());
+		if(dlcLevel != 0)
+			this->ui->runButton->setDisabled(false);
 	} else {
 		this->ui->hotkeyChoice->setItemText(0,translation["hotkeyChoice"].c_str());
-		this->ui->runButton->setDisabled(true);
+		if(!this->ui->usePatch->isChecked())
+			this->ui->runButton->setDisabled(true);
 		QObject::connect( this->ui->hotkeyChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]{
-			if (this->ui->hotkeyChoice->currentIndex() != 0)
+			if (this->ui->hotkeyChoice->currentIndex() != 0 && dlcLevel != 0)
 				this->ui->runButton->setDisabled(false);
 			else
 				this->ui->runButton->setDisabled(true);
 		} );
-	}	
+	}
 	if(!fs::exists("resources/"+language+".ini")) {
 		this->ui->replaceTooltips->setEnabled(false);
 		this->ui->replaceTooltips->setChecked(false);
@@ -391,6 +495,7 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 	/*
 	 * Strings needed for code generation that are not in the regular hd text file
 	 * Only needed offline since regular aoc has this in the normal language dlls.
+	 * Would possibly be fixed by a comp patch update.
 	 */
 	if (generateLangDll) {
 		for(std::vector<std::pair<int,std::string>>::iterator it = rmsCodeStrings.begin(); it != rmsCodeStrings.end(); it++) {
@@ -1003,14 +1108,13 @@ void MainWindow::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int 
 
 void MainWindow::hotkeySetup() {
 
-	fs::path nfz1Path("resources/Player1.nfz");
+	fs::path nfz1Path = resourceDir / "Player1.nfz";
 	fs::path nfzPath = outPath / "player.nfz";
-	fs::path aocHkiPath("resources/player1.hki");
+	fs::path aocHkiPath = resourceDir / "player1.hki";
 	fs::path customHkiPath("player1.hki");
 	fs::path hkiPath = HDPath / ("Profiles/player0.hki");
 	fs::path hkiOutPath = outPath / "player1.hki";
 	fs::path hki2OutPath = outPath / "player2.hki";
-	fs::path nfzOutPath = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/Player.nfz";
 
 	fs::remove(nfzOutPath);
 	fs::remove(nfzUpOutPath);
@@ -1018,7 +1122,7 @@ void MainWindow::hotkeySetup() {
 		if(fs::exists(HDPath/"Profiles/player1.hki"))
 				hkiPath = HDPath/"Profiles/player1.hki";
 		else
-				hkiPath = fs::path("resources/player1_age2hd.hki");
+				hkiPath = resourceDir / "player1_age2hd.hki";
 	}
 
 	if(fs::exists(nfzPath)) //Copy the Aoc Profile
@@ -1070,6 +1174,50 @@ void MainWindow::hotkeySetup() {
 	}
 }
 
+void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool voobly, bool datalink) {
+
+	std::string newDirString = newDir.string()+"/";
+	std::string oldDirString = voobly?(vooblyDir.parent_path() / referenceDir).string()+"/"
+									:(upDir.parent_path() / referenceDir).string()+"/";
+	std::string vooblyDirString = (vooblyDir.parent_path() / referenceDir).string()+"/";
+	boost::replace_all(newDirString,"/","\\");
+	boost::replace_all(oldDirString,"/","\\");
+	boost::replace_all(vooblyDirString,"/","\\");
+
+	fs::create_directory(newDir);
+	fs::copy_file(xmlIn, xmlOut, fs::copy_option::overwrite_if_exists);
+
+	if(datalink)
+		fs::remove_all(newDir/"Data");
+	else
+		fs::create_directory(newDir/"Data");
+	fs::remove_all(newDir/"Taunt");
+	fs::remove_all(newDir/"Sound");
+	fs::remove_all(newDir/"Script.Rm");
+	fs::remove_all(newDir/"Script.Ai");
+	fs::remove_all(newDir/"Screenshots");
+	fs::remove_all(newDir/"Scenario");
+	std::string datastring = datalink?"mklink /J \""+newDirString+"Data\" \""+ oldDirString+"Data\" & ":
+									  "mklink /H \""+newDirString+"Data\\gamedata_x1_p1.drs \""+ oldDirString+"Data\\gamedata_x1_p1.drs & ";
+	if(fs::exists(newDir/"language.ini"))
+		fs::remove(newDir/"language.ini");
+	std::string cmd = "/C mklink /J \""+newDirString+"Taunt\" \""+ vooblyDirString+"Taunt\" & "
+			+ datastring +
+			"mklink /J \""+newDirString+"Script.Rm\" \""+ vooblyDirString+"Script.Rm\" & "
+			"mklink /J \""+newDirString+"Script.Ai\" \""+ vooblyDirString+"Script.Ai\" & "
+			"mklink /J \""+newDirString+"Sound\" \""+ vooblyDirString+"Sound\" & "
+			"mklink /J \""+newDirString+"Screenshots\" \""+ vooblyDirString+"Screenshots\" & "
+			"mklink /J \""+newDirString+"Scenario\" \""+ vooblyDirString+"Scenario\" & "
+			"mklink /H \""+newDirString+"language.ini\" \""+ vooblyDirString+"language.ini\" & "
+			"mklink /H \""+newDirString+"Player.nfz\" \""+ vooblyDirString+"Player.nfz\"";
+	std::wstring wcmd(cmd.begin(), cmd.end());
+	ShellExecute(NULL,L"open",L"cmd.exe",wcmd.c_str(),NULL,SW_HIDE);
+	fs::create_directories(newDir/"Savegame/Multi");
+
+	if(voobly)
+		fs::copy_file(oldDirString+"version.ini", newDir/"version.ini", fs::copy_option::overwrite_if_exists);
+}
+
 int MainWindow::run()
 {
 	this->setEnabled(false);
@@ -1083,142 +1231,185 @@ int MainWindow::run()
 		bar->repaint();
 	}
 	qApp->processEvents();
+
 	QDialog* dialog;
+	if (dlcLevel == 0) { //This should never happen
+		this->ui->label->setText(translation["noSteam"].c_str());
+		dialog = new Dialog(this,"You shouldn't be here! "+translation["noSteam"],translation["errorTitle"]);
+		dialog->exec();
+		return -1;
+	}
+
+	if(outPath == HDPath/"WololoKingdoms/out/") {
+		this->ui->label->setText(translation["noAoC"].c_str());
+		dialog = new Dialog(this,translation["noAoC"].c_str(),translation["errorTitle"]);
+		dialog->exec();
+		return -1;
+	}
+
 	int ret = 0;
 	slpFiles.clear();
 	wavFiles.clear();
 	newTerrainFiles.clear();
 
+
 	try {
 		fs::path keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
-		fs::path vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms/";
-		std::string aocDatPath = HDPath.string() + "resources/_common/dat/empires2_x1_p1.dat";
-		std::string hdDatPath = HDPath.string() + "resources/_common/dat/empires2_x2_p1.dat";
+		std::string aocDatPath = HDPath.string() + "/resources/_common/dat/empires2_x1_p1.dat";
+		std::string hdDatPath = HDPath.string() + "/resources/_common/dat/empires2_x2_p1.dat";
 		fs::path languageIniPath = vooblyDir / "language.ini";
-		std::string versionIniPath = vooblyDir.string() + "version.ini";
+		std::string versionIniPath = vooblyDir.string() + "/version.ini";
 		fs::path soundsInputPath = HDPath / "resources/_common/sound/";
 		fs::path soundsOutputPath = vooblyDir / "Sound/";
 		fs::path tauntInputPath = HDPath / "resources/en/sound/taunt/";
 		fs::path tauntOutputPath = vooblyDir / "Taunt/";
-		fs::path xmlPath("resources/WK.xml");
+		fs::path xmlPath = resourceDir/"WK1.xml";
 		fs::path xmlOutPath = vooblyDir / "age2_x1.xml";
 		fs::path langDllFile("language_x1_p1.dll");
 		fs::path langDllPath = langDllFile;
-		fs::path xmlOutPathUP = outPath / "Games/WK.xml";
-		fs::path aiInputPath("resources/Script.Ai");
-		std::string drsOutPath = vooblyDir.string() + "Data/gamedata_x1_p1.drs";
+		fs::path xmlOutPathUP = outPath / "Games/WKFE.xml";
+		fs::path aiInputPath = resourceDir/"Script.Ai";
+		std::string drsOutPath = vooblyDir.string() + "/Data/gamedata_x1_p1.drs";
 		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
 		fs::path outputDatPath = vooblyDir / "Data/empires2_x1_p1.dat";
-		fs::path upDir = outPath / "Games/WololoKingdoms/";
-		std::string const UPModdedExe = "WK";
-		fs::path UPExe("resources/SetupAoc.exe");
+		std::string const UPModdedExe = "WKFE";
+		fs::path UPExe = resourceDir/"SetupAoc.exe";
 		fs::path UPExeOut = outPath / "SetupAoc.exe";
-		fs::path pwInputDir("resources/pussywood");
-		fs::path gridInputDir("resources/Grid");
-		fs::path newTerrainInputDir("resources/new terrains");
-		fs::path newGridTerrainInputDir("resources/new grid terrains");
+		fs::path pwInputDir = resourceDir/"pussywood";
+		fs::path gridInputDir = resourceDir/"Grid";
+		fs::path newTerrainInputDir = resourceDir/"new terrains";
+		fs::path newGridTerrainInputDir = resourceDir/"new grid terrains";
 		fs::path modOverrideDir("mod_override/");
 		fs::path terrainOverrideDir("new_terrain_override/");
-		fs::path wallsInputDir("resources/short_walls");
-		fs::path gamedata_x1("resources/gamedata_x1.drs");
+		fs::path wallsInputDir = resourceDir/"short_walls";
+		fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
+		std::string modLangIni = resourceDir.string()+language+".ini";
 
-		std::string line;
 
-		bar->setValue(1);bar->repaint(); //1
-
-		indexDrsFiles(assetsPath);
-
-		if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
-			this->ui->label->setText((translation["working"]+"\n"+translation["workingMods"]).c_str());
-			this->ui->label->repaint();
-		}
-		if(this->ui->usePw->isChecked())
-			indexDrsFiles(pwInputDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //2
-		if(this->ui->useGrid->isChecked()) {
-			indexDrsFiles(gridInputDir);
-			bar->setValue(bar->value()+1);bar->repaint(); //3
-			indexTerrainFiles(newGridTerrainInputDir);
-			bar->setValue(bar->value()+2);bar->repaint(); //5
-		} else {
-			indexTerrainFiles(newTerrainInputDir);
-			bar->setValue(bar->value()+3);bar->repaint(); //5
-		}
-		if(!fs::is_empty(terrainOverrideDir)) {
-			indexTerrainFiles(terrainOverrideDir);
-		}
-		bar->setValue(bar->value()+1);bar->repaint(); //6
-		if(this->ui->useWalls->isChecked())
-			copyWallFiles(wallsInputDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //7
 		fs::remove_all(vooblyDir/"Data");
 		fs::remove_all(vooblyDir/"Script.Ai/Brutal2");
 		fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
 		fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
 		fs::remove(vooblyDir/"age2_x1.xml");
-		fs::remove(vooblyDir/"language.ini");
-		fs::remove(vooblyDir/"version.ini");
-		fs::remove_all(upDir/"Data");
-		fs::remove_all(upDir/"Script.Ai/Brutal2");
-		fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
-		fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
-		fs::remove(outPath/"Games/WK.xml");
-		fs::create_directories(vooblyDir/"Data");
+		fs::remove(languageIniPath);
+		fs::remove(versionIniPath);
+
 		fs::create_directories(vooblyDir/"SaveGame/Multi");
 		fs::create_directories(vooblyDir/"Sound/stream");
-		fs::create_directories(vooblyDir/"Taunt");
-		fs::create_directories(upDir);
+		fs::create_directory(vooblyDir/"Data");
+		fs::create_directory(vooblyDir/"Taunt");
+		fs::create_directory(vooblyDir/"Screenshots");
+		fs::create_directory(vooblyDir/"Scenario");
 
-		this->ui->label->setText((translation["working"]+"\n"+translation["workingFiles"]).c_str());
-		this->ui->label->repaint();
-		std::ofstream versionOut(versionIniPath);
-		versionOut << version << std::endl;
-
-		boolean aocFound = outPath != HDPath/"WololoKingdoms/out/";
-		copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
-		bar->setValue(bar->value()+1);bar->repaint(); //9
-		createMusicPlaylist(soundsInputPath.string() + "music/", soundsOutputPath.string() + "music.m3u");
-		bar->setValue(bar->value()+1);bar->repaint(); //10
-		recCopy(tauntInputPath, tauntOutputPath, true);
-		bar->setValue(bar->value()+1);bar->repaint(); //11
-		fs::copy_file(xmlPath, xmlOutPath);
-		fs::path vooblyMapDir = vooblyDir/"Script.Rm";
-		if (fs::exists(outPath/"Random")) {
-			recCopy(outPath/"Random", vooblyMapDir, true);
-		} else {
-			create_directories(vooblyMapDir);
-		}
-		bar->setValue(bar->value()+1);bar->repaint(); //12
-		copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyMapDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //15
-		if(this->ui->copyMaps->isChecked())
-			copyHDMaps("resources/Script.Rm/", vooblyMapDir, true);
-		else
-			bar->setValue(bar->value()+3);
-		bar->setValue(bar->value()+1);bar->repaint(); //19
-		//If wanted, the BruteForce AI could be included as a "standard" AI.
-		recCopy(aiInputPath, vooblyDir/"Script.Ai", true);
-		bar->setValue(bar->value()+1);bar->repaint(); //20
 		if(this->ui->createExe->isChecked()) {
-			fs::create_directories(upDir / "Data");
-			recCopy(vooblyDir / "Sound", upDir / "Sound", true);
-			recCopy(vooblyDir / "Taunt", upDir / "Taunt", true);
-			fs::copy_file(xmlPath, xmlOutPathUP);
-			recCopy(vooblyDir / "Script.Rm", upDir / "Script.Rm", false, true);
-			recCopy(vooblyDir / "Script.Ai", upDir / "Script.Ai", true);
+			fs::remove_all(upDir/"Data");
+			fs::remove_all(upDir/"Script.Ai/Brutal2");
+			fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
+			fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
+			fs::create_directories(upDir/"Data");
 		}
-		bar->setValue(bar->value()+1);bar->repaint(); //21
-		if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
-			hotkeySetup();
+
+		if(patch >= 0) {
+			switch (patch) {
+				case 0: {
+					fs::path oldPatchFolder = resourceDir/"old versions/5.4/";
+					hdDatPath = oldPatchFolder.string()+"empires2_x2_p1.dat";
+					keyValuesStringsPath = oldPatchFolder / (language+".txt");
+					modLangIni = oldPatchFolder.string()+language+".ini";
+				} break;
+				default:
+					hdDatPath = HDPath.string() + "resources/_common/dat/empires2_x2_p1.dat";
+					keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
+					modLangIni = resourceDir.string()+language+".ini";
+			}
+		}
+		std::string line;
+
+		bar->setValue(1);bar->repaint(); //1
+
+		if (patch < 0) {
+			indexDrsFiles(assetsPath);
+
+			if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
+				this->ui->label->setText((translation["working"]+"\n"+translation["workingMods"]).c_str());
+				this->ui->label->repaint();
+			}
+			if(this->ui->usePw->isChecked())
+				indexDrsFiles(pwInputDir);
+			bar->setValue(bar->value()+1);bar->repaint(); //2
+			if(this->ui->useGrid->isChecked()) {
+				indexDrsFiles(gridInputDir);
+				bar->setValue(bar->value()+1);bar->repaint(); //3
+				indexTerrainFiles(newGridTerrainInputDir);
+				bar->setValue(bar->value()+2);bar->repaint(); //5
+			} else {
+				indexTerrainFiles(newTerrainInputDir);
+				bar->setValue(bar->value()+3);bar->repaint(); //5
+			}
+			if(!fs::is_empty(terrainOverrideDir)) {
+				indexTerrainFiles(terrainOverrideDir);
+			}
+			bar->setValue(bar->value()+1);bar->repaint(); //6
+			if(this->ui->useWalls->isChecked())
+				copyWallFiles(wallsInputDir);
+			bar->setValue(bar->value()+1);bar->repaint(); //7
+
+
+			this->ui->label->setText((translation["working"]+"\n"+translation["workingFiles"]).c_str());
+			this->ui->label->repaint();
+			QFile file(hdDatPath.c_str());
+
+			if (file.open(QIODevice::ReadOnly))
+			{
+				QByteArray fileData = file.readAll();
+
+				QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5); // or QCryptographicHash::Sha1
+				std::ofstream versionOut(versionIniPath);
+				(versionOut << version) << hashData.toBase64().toStdString().substr(0,6) << std::endl;  // 0e0c2180dfd784dd84423b00af86e2fc
+
+			}
+
+
+			copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
+			bar->setValue(bar->value()+1);bar->repaint(); //9
+			createMusicPlaylist(soundsInputPath.string() + "music/", soundsOutputPath.string() + "music.m3u");
+			bar->setValue(bar->value()+1);bar->repaint(); //10
+			recCopy(tauntInputPath, tauntOutputPath, true);
+			bar->setValue(bar->value()+1);bar->repaint(); //11
+			fs::copy_file(xmlPath, xmlOutPath);
+			fs::path vooblyMapDir = vooblyDir/"Script.Rm";
+			if (fs::exists(outPath/"Random")) {
+				recCopy(outPath/"Random", vooblyMapDir, true);
+			} else {
+				create_directory(vooblyMapDir);
+			}
+			bar->setValue(bar->value()+1);bar->repaint(); //12
+			copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyMapDir);
+			bar->setValue(bar->value()+1);bar->repaint(); //15
+			if(this->ui->copyMaps->isChecked())
+				copyHDMaps("resources/Script.Rm/", vooblyMapDir, true);
+			else
+				bar->setValue(bar->value()+3);
+			bar->setValue(bar->value()+1);bar->repaint(); //19
+			//If wanted, the BruteForce AI could be included as a "standard" AI.
+			recCopy(aiInputPath, vooblyDir/"Script.Ai", true);
+			bar->setValue(bar->value()+1);bar->repaint(); //20
+			bar->setValue(bar->value()+1);bar->repaint(); //21
+			if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
+				hotkeySetup();
+			if(this->ui->createExe->isChecked()) {
+				symlinkSetup(upDir, xmlPath, xmlOutPathUP, false, false);
+			}
+		}
+
 		bar->setValue(bar->value()+1);bar->repaint(); //22
-		recCopy(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", false);
+		fs::copy_file(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs");
 		bar->setValue(bar->value()+1);bar->repaint(); //23
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingAoc"]).c_str());
 		this->ui->label->repaint();
 
 		genie::DatFile aocDat;
-		//aocDat.setVerboseMode(true);
 		aocDat.setGameVersion(genie::GameVersion::GV_TC);
 		aocDat.load(aocDatPath.c_str());
 		bar->setValue(bar->value()+5);bar->repaint(); //28
@@ -1226,7 +1417,6 @@ int MainWindow::run()
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingHD"]).c_str());
 		this->ui->label->repaint();
 		genie::DatFile hdDat;
-		//hdDat.setVerboseMode(true);
 		hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
 		hdDat.load(hdDatPath.c_str());
 		bar->setValue(bar->value()+5);bar->repaint(); //33
@@ -1235,7 +1425,8 @@ int MainWindow::run()
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingInterface"]).c_str());
 		this->ui->label->repaint();
-		uglyHudHack(assetsPath);
+		if (patch < 0)
+			uglyHudHack(assetsPath);
 		bar->setValue(bar->value()+1);bar->repaint(); //38
 
 		this->ui->label->setText((translation["working"]+"\n"+translation["workingDat"]).c_str());
@@ -1245,10 +1436,12 @@ int MainWindow::run()
 
 		patchArchitectures(&aocDat);
 		bar->setValue(bar->value()+1);bar->repaint(); //54
-		if(!fs::is_empty(modOverrideDir))
-			indexDrsFiles(modOverrideDir);
-		bar->setValue(bar->value()+1);bar->repaint(); //55
-		makeDrs(&drsOut);
+		if (patch < 0) {
+			if(!fs::is_empty(modOverrideDir))
+				indexDrsFiles(modOverrideDir);
+			bar->setValue(bar->value()+1);bar->repaint(); //55
+			makeDrs(&drsOut);
+		}
 		bar->setValue(bar->value()+1);bar->repaint(); //66
 		bar->setValue(bar->value()+1);bar->repaint(); //67
 		wololo::DatPatch patchTab[] = {
@@ -1256,13 +1449,11 @@ int MainWindow::run()
 			wololo::berbersUTFix,
 			wololo::vietFix,
 			wololo::malayFix,
-			//			wololo::demoShipFix,
 			wololo::ethiopiansFreePikeUpgradeFix,
 			wololo::hotkeysFix,
 			wololo::maliansFreeMiningUpgradeFix,
 			wololo::portugueseFix,
 			wololo::disableNonWorkingUnits,
-			//wololo::feitoriaFix,
 			wololo::burmeseFix,
 			wololo::incaFix,
 			wololo::siegeTowerFix,
@@ -1273,16 +1464,32 @@ int MainWindow::run()
 
 
 		std::map<int, std::string> langReplacement;		
+
+
+		this->ui->label->setText((translation["working"]+"\n"+translation["workingPatches"]).c_str());
+		this->ui->label->repaint();
+
+		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {			
+			patchTab[i].patch(&aocDat, &langReplacement);
+			bar->setValue(bar->value()+1);bar->repaint(); //68-81
+		}
+
+		/*
+		 * Create the language files (.ini for Voobly, .dll for offline)
+		 */
+
 		//Change terrain descriptions in scenario editor
 		langReplacement[10622] = translation["10622"];
 		langReplacement[10626] = translation["10626"];
 		langReplacement[10642] = translation["10642"];
 		langReplacement[10648] = translation["10648"];
-		rmsCodeStrings.push_back(std::make_pair(10618,translation["10618"]));
-		rmsCodeStrings.push_back(std::make_pair(10619,translation["10619"]));
-		rmsCodeStrings.push_back(std::make_pair(10679,translation["10679"]));
-		rmsCodeStrings.push_back(std::make_pair(10707,translation["10707"]));
-		rmsCodeStrings.push_back(std::make_pair(30195,translation["30195"]));
+		langReplacement[10618] = translation["10618"];
+		langReplacement[10619] = translation["10619"];
+		langReplacement[10679] = translation["10679"];
+		langReplacement[10707] = translation["10707"];
+		//other stuff
+		langReplacement[10716] = translation["10716"];
+		langReplacement[30195] = translation["30195"];
 		//Fix errors in civ descriptions
 		langReplacement[20162] = translation["20162"];
 		langReplacement[20166] = translation["20166"];
@@ -1296,15 +1503,7 @@ int MainWindow::run()
 		langReplacement[26190] = translation["26190"];
 		langReplacement[26419] = translation["26419"];
 
-		this->ui->label->setText((translation["working"]+"\n"+translation["workingPatches"]).c_str());
-		this->ui->label->repaint();
-
-		for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {			
-			patchTab[i].patch(&aocDat, &langReplacement);
-			bar->setValue(bar->value()+1);bar->repaint(); //68-81
-		}
-
-		std::ifstream missingStrings("resources/missing_strings.txt");
+		std::ifstream missingStrings(resourceDir.string()+"missing_strings.txt");
 		while (std::getline(missingStrings, line)) {
 			int spaceIdx = line.find('=');
 			std::string number = line.substr(0, spaceIdx);
@@ -1323,7 +1522,7 @@ int MainWindow::run()
 			/*
 			 * Load modded strings instead of normal HD strings into lang replacement
 			 */
-			std::ifstream modLang("resources/"+language+".ini");
+			std::ifstream modLang(modLangIni);
 			while (std::getline(modLang, line)) {
 				int spaceIdx = line.find('=');
 				std::string number = line.substr(0, spaceIdx);
@@ -1351,17 +1550,13 @@ int MainWindow::run()
 
 		bool patchLangDll;
 		if(this->ui->createExe->isChecked()) {
-			if(!aocFound)
-				patchLangDll = fs::exists(langDllPath);
-			else {
-				langDllPath = outPath / langDllPath;
-				patchLangDll = fs::exists(langDllPath);
-				if(patchLangDll)
-				{
-					if(fs::exists(langDllFile))
-						fs::remove(langDllFile);
-					fs::copy_file(langDllPath,langDllFile);
-				}
+			langDllPath = outPath / langDllPath;
+			patchLangDll = fs::exists(langDllPath);
+			if(patchLangDll)
+			{
+				if(fs::exists(langDllFile))
+					fs::remove(langDllFile);
+				fs::copy_file(langDllPath,langDllFile);
 			}
 		} else {
 			patchLangDll = false;
@@ -1438,13 +1633,51 @@ int MainWindow::run()
 		aocDat.saveAs(outputDatPath.string().c_str());		
 		bar->setValue(bar->value()+1);bar->repaint(); //87
 
-		this->ui->label->setText((translation["working"]+"\n"+translation["workingUp"]).c_str());
-		this->ui->label->repaint();
+		/*
+		 * If a user has access to more than just FE, also generate those versions
+		 * For an old patch, we'll just use the highest one
+		 * For a data mod, not sure if we should generate all versions or the highest one
+		 */
 
-		if (aocFound) {
+		if (patch >= 0) {
+			fs::path xmlIn = resourceDir/"WKtemp.xml";
+			std::ifstream input(resourceDir.string()+("WK"+std::to_string(dlcLevel)+".xml"));
+			std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
+			boost::replace_all(str,dlcLevel==3?"WololoKingdoms":dlcLevel==2?"WololoKingdoms AK":"WololoKingdoms FE",modName);
+			std::ofstream out(xmlIn.string());
+			out << str;
+			out.close();
+			symlinkSetup(vooblyDir,xmlIn,vooblyDir/"age2_x1.xml",true,false);
+		} else {
+			if (dlcLevel > 1) {
+				fs::path xmlIn = resourceDir/"WK2.xml";
+				fs::path vooblyDir2 = vooblyDir.parent_path() / "WololoKingdoms AK";
+				fs::path upDir2 = upDir.parent_path() / "WololoKingdoms AK";
+				symlinkSetup(vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml", true, true);
+				if(this->ui->createExe->isChecked()) {
+					symlinkSetup(upDir2, xmlIn, upDir.parent_path()/"WKAK.xml", false, true);
+				}
+			}
+			if (dlcLevel > 2) {
+				fs::path xmlIn = resourceDir/"WK3.xml";
+				fs::path vooblyDir3 = vooblyDir.parent_path() / "WololoKingdoms";
+				fs::path upDir3 = upDir.parent_path() / "WololoKingdoms";
+				symlinkSetup(vooblyDir3, xmlIn, vooblyDir3/"age2_x1.xml", true, true);
+				if(this->ui->createExe->isChecked()) {
+					symlinkSetup(upDir3, xmlIn, upDir.parent_path()/"WK.xml",  false, true);
+				}
+			}
+
+			/*
+			 * Copy the data folder from the Voobly folder and
+			 * create the offline exe
+			 */
 
 			if(this->ui->createExe->isChecked()) {
-				recCopy(vooblyDir / "Data", upDir / "Data");
+				this->ui->label->setText((translation["working"]+"\n"+translation["workingUp"]).c_str());
+				this->ui->label->repaint();
+
+				recCopy(vooblyDir / "Data", upDir / "Data", true);
 
 				bar->setValue(bar->value()+1);bar->repaint(); //88
 				if (!dllPatched) {
@@ -1455,7 +1688,6 @@ int MainWindow::run()
 
 					bar->setValue(bar->value()+1);bar->repaint(); //89
 					system(("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
-					fs::copy_file(upDir/"Sound/music.m3u",vooblyDir/"Sound/music.m3u",fs::copy_option::overwrite_if_exists);
 
 					bar->setValue(bar->value()+1);bar->repaint(); //90
 					line = translation["dialogExe"];
@@ -1468,6 +1700,12 @@ int MainWindow::run()
 				dialog->exec();
 			}
 			this->ui->label->setText(translation["workingDone"].c_str());
+
+			/*
+			 * Several small fixes for the compatibility patch. This only needs to be run once
+			 * An update to the compatibility patch would make this unnecessary most likely.
+			 */
+
 			if(fs::exists(outPath/"/compatslp")) {
 				if(fs::exists(outPath/"/compatslp2"))
 					fs::remove_all(outPath/"/compatslp2");
@@ -1486,11 +1724,9 @@ int MainWindow::run()
 				}
 				bar->setValue(bar->value()+1);bar->repaint();
 			}
-		} else {
-			this->ui->label->setText(translation["workingNoAoc"].c_str());
-			dialog = new Dialog(this,translation["dialogNoAoc"].c_str(),translation["errorTitle"]);
-			dialog->exec();
 		}
+
+
 		bar->setValue(100);
 		bar->repaint();
 	}
