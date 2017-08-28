@@ -49,6 +49,11 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	}
 	aocDat->Graphics[3387].SoundID = 427;
 	aocDat->Graphics[3388].SoundID = 427;
+	aocDat->TechTree.UnitConnections[132].Unknown1 = 41;
+	aocDat->TechTree.UnitConnections[101].Unknown1 = 29;
+	aocDat->TechTree.UnitConnections[116].Unknown1 = 37;
+	aocDat->TechTree.UnitConnections[117].Unknown1 = 37;
+
 }
 
 DatPatch smallFixes = {

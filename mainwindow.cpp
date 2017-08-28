@@ -1043,12 +1043,14 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 
 	short newGraphicID = aocDat->Graphics.size();
 	int newSLP;
-	if(compareID==-1) {
+	if(compareID==-1) { //Monk or Dark Age Graphics for the 4 big civ groups
 		if (slps[aocDat->Graphics[graphicID].SLP] == 0 && aocDat->Graphics[graphicID].SLP != 2683)
 			newSLP = aocDat->Graphics[graphicID].SLP;
 		else
 			newSLP = newBaseSLP+10000*offset+slps[aocDat->Graphics[graphicID].SLP];
-	} else
+	} else if (aocDat->Graphics[compareID].SLP == 5156)
+		newSLP = 5156;
+	else
 		newSLP = aocDat->Graphics[compareID].SLP - 18000 + newBaseSLP + 1000*offset;
 	if(newSLP != aocDat->Graphics[graphicID].SLP) {
 		fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
