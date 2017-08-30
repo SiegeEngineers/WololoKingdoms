@@ -97,27 +97,7 @@
        </item>
        <item>
         <property name="text">
-         <string>日本語 (Japanese)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>한국어 (Korean)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Nederlands (Dutch)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>русский (Russian)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>简体中文 (Simplified Chinese)</string>
         </property>
        </item>
       </widget>
@@ -292,14 +272,11 @@
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
         <widget class="QCheckBox" name="usePatch">
-         <property name="maximumSize">
-          <size>
-           <width>75</width>
-           <height>16777215</height>
-          </size>
+         <property name="enabled">
+          <bool>true</bool>
          </property>
          <property name="text">
-          <string>Old Patch</string>
+          <string>Patch/Data Mod</string>
          </property>
         </widget>
        </item>

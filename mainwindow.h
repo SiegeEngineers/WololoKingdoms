@@ -45,7 +45,7 @@ private:
 	void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slps = std::map<int,int>());
 	short duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, std::map<int,int> slps = std::map<int,int>());
 	void hotkeySetup();
-	void symlinkSetup(boost::filesystem::path newDir, boost::filesystem::path xmlIn, boost::filesystem::path xmlOut, bool voobly, bool datalink);
+    void symlinkSetup(boost::filesystem::path newDir, boost::filesystem::path xmlIn, boost::filesystem::path xmlOut, bool voobly, bool datalink, bool copyLanguage = true);
 	bool copyData(QIODevice &inFile, QIODevice &outFile);
 };
 

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.9.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -194,7 +194,7 @@ public:
         horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
         usePatch = new QCheckBox(gridLayoutWidget);
         usePatch->setObjectName(QStringLiteral("usePatch"));
-        usePatch->setMaximumSize(QSize(75, 16777215));
+        usePatch->setEnabled(true);
 
         horizontalLayout_6->addWidget(usePatch);
 
@@ -263,11 +263,7 @@ public:
          << QApplication::translate("MainWindow", "Espa\303\261ol (Spanish)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Fran\303\247ais (French)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Italiano (Italian)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "\346\227\245\346\234\254\350\252\236 (Japanese)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "\355\225\234\352\265\255\354\226\264 (Korean)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Nederlands (Dutch)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "\347\256\200\344\275\223\344\270\255\346\226\207 (Simplified Chinese)", Q_NULLPTR)
         );
         createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", Q_NULLPTR));
 #ifndef QT_NO_ACCESSIBILITY
@@ -297,7 +293,7 @@ public:
         mapsTip->setAccessibleName(QApplication::translate("MainWindow", "mapsTip", Q_NULLPTR));
 #endif // QT_NO_ACCESSIBILITY
         mapsTip->setText(QString());
-        usePatch->setText(QApplication::translate("MainWindow", "Old Patch", Q_NULLPTR));
+        usePatch->setText(QApplication::translate("MainWindow", "Patch/Data Mod", Q_NULLPTR));
         patchSelection->clear();
         patchSelection->insertItems(0, QStringList()
          << QApplication::translate("MainWindow", "Patch 5.4", Q_NULLPTR)
