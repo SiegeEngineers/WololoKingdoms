@@ -14,11 +14,7 @@ To run it, you will need to own HD and its expansions. If you don't own all expa
 1. If you don't own the Forgotten Empires (FE) DLC, you can't use this mod
 2. If you don't own African Kingdoms (AK), you will only have access to AoC and FE civs (regardless if you own Rise of the Rajas or not)
 3. If you don't own Rise of the Rajas (RotR), you won't have access to RotR civs.
-In multiplayer, all players need to choose from the smallest common civ pool, so if one player only owns FE, all players will have to play AoC and FE civs and so on.
-
-**If you don't own all DLCs, it is your responsibility when playing to make sure no one chooses a civ you don't have access to. Otherwise, the game may crash! This includes the "Random" option!** 
-Unfortunately, there's no way to automatically check for that with the game. However, if the host is the player with the smallest civ pool, then the game will not crash - If the other players select
-a civilization the host does not have access to, it will instead turn into the "Random" option, which will select a civ from the host's available civ pool.
+In multiplayer, there will be three different Data Mods available, WololoKingdoms (with all civs), as well as WololoKingdoms FE and WololoKingdoms AK with limited civ pools. You will have to use one of the latter ones if you do not own all DLCs.
 
 ## How to use (with Voobly)
 [Download the latest release](https://github.com/Jineapple/WololoKingdoms/releases), extract the Zip, **make sure Steam is running** and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
@@ -57,6 +53,17 @@ Do not delete the "berber mill fix folder", unless you use a graphics mod replac
 You can also paste any graphics/sound mod you want to use offline into this folder.
 
 There's also a "new_terrain_override" folder, should you wish to use different terrain slps for the expansion terrains. You can look at "/resources/new terrains" to see the naming convention.
+
+## Data Mods or old patches
+
+There is currently one data mod (WK Balance Patch) able to be selected for installation (the regular WololoKingdoms mod needs to be installed first for it to work). It has only a few specific changes:
+- Onagers and Castle Age Ballista Elephants don't cut trees anymore
+- Cartography is researched instantly when building a market
+- Base Tax is increased to 50%, Coinage reduces this to 35%, Banking to 20%. Both technologies are moved up an age.
+- The slav farming bonus is fixed so that the advantage over other civs stays the same after wheelbarrow/handcart. In the data files, it's a 15% bonus, in effect it's about 10-11% better
+- X-Patch Trade Change: Trade Carts have 2x population, 115 HP, cost 165 Wood, 83 gold and are 65% more efficient. Thanks to better pathing with fewer units, the gold income per population stays the same. Less units on the map result in less late-game lag.
+
+It's also possible for other data mods based on WK to be added to the installer, as well as older patches for rec compatibility, if newer patches (like 5.5) change the balance.
 
 ## Limitations
 Because of the features missing from the original AOC engine, not everything from the expansions can be replicated, this includes :

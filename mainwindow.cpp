@@ -1311,36 +1311,36 @@ int MainWindow::run()
 		fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
 		std::string modLangIni = resourceDir.string()+language+".ini";
 
-
-		fs::remove_all(vooblyDir/"Data");
-		fs::remove_all(vooblyDir/"Script.Ai/Brutal2");
-		fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
-		fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
-		fs::remove(vooblyDir/"age2_x1.xml");
-		fs::remove(languageIniPath);
-		fs::remove(versionIniPath);
-
-		fs::create_directories(vooblyDir/"SaveGame/Multi");
-		fs::create_directories(vooblyDir/"Sound/stream");
-		fs::create_directory(vooblyDir/"Data");
-		fs::create_directory(vooblyDir/"Taunt");
-		fs::create_directory(vooblyDir/"Screenshots");
-		fs::create_directory(vooblyDir/"Scenario");
-
-		if(this->ui->createExe->isChecked()) {
-			fs::remove_all(upDir/"Data");
-			fs::remove_all(upDir/"Script.Ai/Brutal2");
-			fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
-			fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
-			fs::create_directories(upDir/"Data");
-		}
-
 		std::string line;
         std::map<int, std::string> langReplacement;
 
 		bar->setValue(1);bar->repaint(); //1
 
-		if (patch < 0) {
+		if (patch < 0) { 
+
+            fs::remove_all(vooblyDir/"Data");
+            fs::remove_all(vooblyDir/"Script.Ai/Brutal2");
+            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
+            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
+            fs::remove(vooblyDir/"age2_x1.xml");
+            fs::remove(languageIniPath);
+            fs::remove(versionIniPath);
+
+            fs::create_directories(vooblyDir/"SaveGame/Multi");
+            fs::create_directories(vooblyDir/"Sound/stream");
+            fs::create_directory(vooblyDir/"Data");
+            fs::create_directory(vooblyDir/"Taunt");
+            fs::create_directory(vooblyDir/"Screenshots");
+            fs::create_directory(vooblyDir/"Scenario");
+
+            if(this->ui->createExe->isChecked()) {
+                fs::remove_all(upDir/"Data");
+                fs::remove_all(upDir/"Script.Ai/Brutal2");
+                fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
+                fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
+                fs::create_directories(upDir/"Data");
+            }
+
 			indexDrsFiles(assetsPath);
 
 			if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
@@ -1495,7 +1495,7 @@ int MainWindow::run()
         }
 
 
-        fs::copy_file(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs");
+        fs::copy_file(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
         bar->setValue(bar->value()+1);bar->repaint(); //23
 
         /*
@@ -1643,7 +1643,7 @@ int MainWindow::run()
 				line = translation["working"]+"\n"+translation["workingDll"];
 				boost::replace_all(line,"<dll>",langDllFile.string());
 				langDll.save();
-                fs::copy_file(langDllFile,upDir/"data/"/langDllFile);
+                fs::copy_file(langDllFile,upDir/"data/"/langDllFile,fs::copy_option::overwrite_if_exists);
 				fs::remove(langDllFile);
 				this->ui->label->setText(line.c_str());
 				this->ui->label->repaint();
@@ -1652,7 +1652,7 @@ int MainWindow::run()
 				this->ui->label->repaint();
 				try {
 					langDll.save();
-                    fs::copy_file(langDllFile,upDir/"data/"/langDllFile);
+                    fs::copy_file(langDllFile,upDir/"data/"/langDllFile,fs::copy_option::overwrite_if_exists);
 					fs::remove(langDllFile);
 					this->ui->label->setText(line.c_str());
 					this->ui->label->repaint();
