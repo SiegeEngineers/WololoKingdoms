@@ -21,8 +21,8 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 		aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC];
 	}
 	aocDat->UnitHeaders[PTWC].Commands.push_back(aocDat->UnitHeaders[pTrebId].Commands[0]);
-	aocDat->UnitHeaders[pTrebId].Commands[0].SelectionMode = 0;
-	aocDat->UnitHeaders[pTrebId].Commands[0].SelectionEnabler = 0;
+    aocDat->UnitHeaders[PTWC].Commands[0].SelectionMode = 0;
+    aocDat->UnitHeaders[PTWC].Commands[0].SelectionEnabler = 0;
 	//Trade Workshop with gold trickle
 	aocDat->UnitHeaders[tradeWorkshopID].Commands.push_back(aocDat->UnitHeaders[feitoriaID].Commands[3]);
 	aocDat->UnitHeaders[tradeWorkshopID].Commands[0].Quantity = 1;

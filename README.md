@@ -14,6 +14,7 @@ To run it, you will need to own HD and its expansions. If you don't own all expa
 1. If you don't own the Forgotten Empires (FE) DLC, you can't use this mod
 2. If you don't own African Kingdoms (AK), you will only have access to AoC and FE civs (regardless if you own Rise of the Rajas or not)
 3. If you don't own Rise of the Rajas (RotR), you won't have access to RotR civs.
+
 In multiplayer, there will be three different Data Mods available, WololoKingdoms (with all civs), as well as WololoKingdoms FE and WololoKingdoms AK with limited civ pools. You will have to use one of the latter ones if you do not own all DLCs.
 
 ## How to use (with Voobly)
