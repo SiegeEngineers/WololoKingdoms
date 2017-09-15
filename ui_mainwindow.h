@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.9.1
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -263,7 +263,11 @@ public:
          << QApplication::translate("MainWindow", "Espa\303\261ol (Spanish)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Fran\303\247ais (French)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Italiano (Italian)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "\346\227\245\346\234\254\350\252\236 (Japanese)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "\355\225\234\352\265\255\354\226\264 (Korean)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Nederlands (Dutch)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Simplified Chinese (\347\256\200\344\275\223\344\270\255\346\226\207)", Q_NULLPTR)
         );
         createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", Q_NULLPTR));
 #ifndef QT_NO_ACCESSIBILITY
@@ -296,6 +300,7 @@ public:
         usePatch->setText(QApplication::translate("MainWindow", "Patch/Data Mod", Q_NULLPTR));
         patchSelection->clear();
         patchSelection->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "WK Balance Patch", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Patch 5.4", Q_NULLPTR)
         );
         patchSelectionTip->setText(QString());

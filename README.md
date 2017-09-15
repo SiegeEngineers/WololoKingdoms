@@ -44,9 +44,9 @@ ZR@rw_ maps are the real world maps from the HD expansions
 ZR@CtR maps are capture the relic maps. When playing these, make sure to select "Relics" as the victory condition
 SD_ maps are sudden death maps, with only one TC being allowed, and losing that will make you lose the game.
 
-## Regional Monks, Independant Architecture, Custom Mods
+## Regional Monks, Independent Architecture, Custom Mods
 
-The WololoKingdoms supports Independant Architecture like this HD Data Mod: http://steamcommunity.com/sharedfiles/filedetails/?id=893953860&searchtext=independant+architecture
+The WololoKingdoms supports Independent Architecture like this HD Data Mod: http://steamcommunity.com/sharedfiles/filedetails/?id=893953860
 To replace a civ's architecture, download an IA mod for that civ from the steam workshop, find the folder you just downloaded in the steam workshop folder (usually C:\Program Files (x86)\Steam\steamapps\workshop\content\221380) and copy that folder.
 You can then paste it into the /mod_override folder you'll find next to the installer.
 As you might see in there, Monks have also been seperated into 4 Regions (American,European,Middle Eastern/African,Asian) instead of the two groups in AoC. If you want to have the regular monks, you can delete the "regional monks" folder in mod_override.

@@ -9,6 +9,8 @@
 #include <ShellAPI.h>
 #include <regex>
 
+#include <chrono>
+#include <thread>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
@@ -54,7 +56,7 @@ std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<fs::path> existingMapNames;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string const version = "2.5.";
+std::string const version = "2.6.";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
@@ -101,20 +103,43 @@ MainWindow::MainWindow(QWidget *parent) :
 
     changeLanguage(language);
 
-	SteamAPI_Init();
-	QDialog* dialog;
-	this->ui->label->setText(("WololoKingdoms version " + version).c_str());
-	if(outPath == fs::path()) {
-		this->ui->label->setText(translation["noAoC"].c_str());
-		dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
-		dialog->exec();
-	}
-	else if(HDPath == fs::path()) {
-		this->ui->label->setText(translation["noSteamInstallation"].c_str());
-		dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
-		dialog->exec();
-	}
-	else if(!SteamApps()) {
+    QDialog* dialog;
+    this->ui->label->setText(("WololoKingdoms version " + version).c_str());
+    if(outPath == fs::path()) {
+        this->ui->label->setText(translation["noAoC"].c_str());
+        dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
+        dialog->exec();
+    }
+    else if(HDPath == fs::path()) {
+        this->ui->label->setText(translation["noSteamInstallation"].c_str());
+        dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
+        dialog->exec();
+    }
+
+
+    SteamAPI_Init();
+    if(!SteamApps()) {
+        // open steam
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+        ZeroMemory( &si, sizeof(si) );
+        si.cb = sizeof(si);
+        ZeroMemory( &pi, sizeof(pi) );
+        std::wstring wSteamPath = strtowstr(steamPath);
+        CreateProcess( (wSteamPath + L"\\Steam.exe").c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi );
+        CloseHandle( pi.hProcess );
+        CloseHandle( pi.hThread );
+        SteamAPI_Init();
+    }
+    int tries = 0;
+    while(!SteamApps()) {
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        SteamAPI_Init();
+        tries++;
+        if(tries>12)
+            break;
+    }
+    if(!SteamApps()) {
 		this->ui->label->setText(translation["noSteam"].c_str());
 		dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
 		dialog->exec();
@@ -148,7 +173,11 @@ MainWindow::MainWindow(QWidget *parent) :
 			case 3: language = "es"; break;
 			case 4: language = "fr"; break;
             case 5: language = "it"; break;
-            case 6: language = "nl"; break;
+            case 6: language = "jp"; break;
+            case 7: language = "ko"; break;
+            case 8: language = "nl"; break;
+            case 9: language = "ru"; break;
+            case 10: language = "zh"; break;
 			default: language = "en";
 		}
 		changeLanguage(language);
@@ -243,9 +272,9 @@ void MainWindow::changeModPatch() {
 	modName = "WK ";
 	patch = this->ui->usePatch->isChecked()?this->ui->patchSelection->currentIndex():-1;
 
-	switch(patch) {
-        //case 0: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
+    switch(patch) {
         case 0:     modName += "Balance Patch"; break;
+        case 1: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
 	}
     if(patch == -1) {
 		vooblyDir = vooblyDir.parent_path() / "WololoKingdoms FE";
@@ -284,6 +313,7 @@ void MainWindow::changeLanguage(std::string language) {
 	this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"].c_str());
 	this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
 	this->ui->patchSelection->setItemText(0,translation["mod0"].c_str());
+    this->ui->patchSelection->setItemText(1,translation["mod1"].c_str());
 	updateUI();
 }
 
@@ -929,7 +959,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 						562, 563, 564, 565, 566, 584, 585, 586, 587, 597, 611, 612, 613, 614, 615, 616, 617, 659, 660, 661,
 						662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673, 674, 806, 807, 808, 1102, 1189};
 	short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
-	short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9};
+    short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
 	short burmese = 30; //These are used for ID reference
 	for(unsigned int c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
 		std::map<short,short> replacedGraphics;
@@ -1249,7 +1279,7 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
 			"mklink /J \""+newDirString+"Scenario\" \""+ vooblyDirString+"Scenario\" & "
             + languageString +
 			"mklink /H \""+newDirString+"Player.nfz\" \""+ vooblyDirString+"Player.nfz\"";
-	std::wstring wcmd(cmd.begin(), cmd.end());
+    std::wstring wcmd = strtowstr(cmd);
 	ShellExecute(NULL,L"open",L"cmd.exe",wcmd.c_str(),NULL,SW_HIDE);
 	fs::create_directories(newDir/"Savegame/Multi");
     if(fs::exists(oldDirString+"player1.hki"))
@@ -1331,8 +1361,9 @@ int MainWindow::run()
             logFile << std::endl << std::endl << "Second Attempt";
             logFile << std::endl;
         } else {
-            fs::remove("log.txt");
             logFile = std::ofstream("log.txt");
+            logFile << std::endl << "New Run";
+            logFile << std::endl;
         }
 
 		std::string line;
@@ -1574,9 +1605,13 @@ int MainWindow::run()
 
             QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
             std::ofstream versionOut(versionIniPath);
-            (versionOut << version) << hashData.toBase64().toStdString().substr(0,6) << std::endl;
+            std::string hash = hashData.toBase64().toStdString().substr(0,6);
+            (versionOut << version) << hash << std::endl;
             versionOut.close();
-
+            if (hash != "FpbwCO") {
+                dialog = new Dialog(this,translation["dialogBeta"].c_str());
+                dialog->exec();
+            }
         }
 
 
@@ -1800,7 +1835,11 @@ int MainWindow::run()
 				if(this->ui->createExe->isChecked()) {
 					symlinkSetup(upDir3, xmlIn, upDir.parent_path()/"WK.xml",  false, true);
 				}
-			}
+            } else {
+                //Possible earlier 2.3 installation to be removed
+                fs::remove_all(vooblyDir.parent_path() / "WololoKingdoms");
+                fs::remove_all(upDir.parent_path() / "WololoKingdoms");
+            }
         }
 
         /*
@@ -1823,7 +1862,19 @@ int MainWindow::run()
                 fs::copy_file(UPExe, UPExeOut, fs::copy_option::overwrite_if_exists);
 
                 bar->setValue(bar->value()+1);bar->repaint(); //89
-                system(("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
+
+                STARTUPINFO si;
+                PROCESS_INFORMATION pi;
+                ZeroMemory( &si, sizeof(si) );
+                si.cb = sizeof(si);
+                ZeroMemory( &pi, sizeof(pi) );
+                std::string UPExeString = "\""+UPExeOut.string()+"\" -g:"+UPModdedExe;
+                std::wstring wExeString = strtowstr(UPExeString);
+                wchar_t cmdLineString[wExeString.length()+1];
+                wcscpy(cmdLineString, wExeString.c_str());
+                CreateProcess( NULL, cmdLineString, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi );
+                CloseHandle( pi.hProcess );
+                CloseHandle( pi.hThread );
 
                 bar->setValue(bar->value()+1);bar->repaint(); //90
                 line = translation["dialogExe"];
