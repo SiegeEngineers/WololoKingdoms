@@ -297,7 +297,13 @@ void MainWindow::changeLanguage() {
 	std::string line;
 	std::ifstream translationFile("resources/"+language+".txt");
 	while (std::getline(translationFile, line)) {
-		boost::replace_all(line, "\\n", "\n");
+        /*
+         *  \\\\n -> \\n, means we want a \n in the text files for aoc
+         *  If no such line is found, it might be a line for the installer itself, where we want actual linebreaks,
+         * so replace \\n -> \n with a linebreak
+         */
+        if(line.find("\\\\n") == std::string::npos)
+            boost::replace_all(line, "\\n", "\n");
 		int index = line.find('=');
 		translation[line.substr(0, index)] = line.substr(index+1, std::string::npos);
 	}
@@ -502,24 +508,33 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 
 		std::wstring wideLine = strtowstr(line);
 		std::string outputLine;
-		//if(language!="zh")
-			ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
-		//else
-		//	ConvertUnicode2CP(wideLine.c_str(), outputLine, 1386);
-
+        ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
 
 		*iniOut << number << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
-			boost::replace_all(outputLine, "·", "\xb7"); // Dll can't handle that character.
-			boost::replace_all(outputLine, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+            //boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
+            boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
-				dllOut->setString(nb, outputLine);
+                dllOut->setString(nb, line);
 			}
 			catch (std::string const & e) {
-				boost::replace_all(outputLine, "\xb7", "-"); // non-english dll files don't seem to like that character
-				boost::replace_all(outputLine, "\xae", "R");
-				dllOut->setString(nb, outputLine);
+                boost::replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
+                boost::replace_all(line, "\xc5\xab", "u");
+                boost::replace_all(line, "\xc4\x81", "a");
+                boost::replace_all(line, "\xe1\xbb\x87", "ê");
+                boost::replace_all(line, "\xe1\xbb\x8b", "i");
+                boost::replace_all(line, "\xe1\xbb\xa3", "o");
+                boost::replace_all(line, "\xe1\xbb\x85", "e");
+                boost::replace_all(line, "\xe1\xbb\x87", "e");
+                boost::replace_all(line, "\xe1\xba\xa2", "A");
+                boost::replace_all(line, "\xc4\x90\xe1", "D");
+                boost::replace_all(line, "\xba\xa1", "a");
+                boost::replace_all(line, "\xc4\x90", "D");
+                boost::replace_all(line, "\xc3\xaa", "e");
+                boost::replace_all(line, "\xc3\xb9", "u");
+                boost::replace_all(line, "\xc6\xb0", "u");
+                dllOut->setString(nb, line);
 			}
 		}
 
