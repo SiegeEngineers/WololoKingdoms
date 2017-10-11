@@ -34,6 +34,7 @@ dialogDone=Conversion complete! The WololoKingdoms mod is now part of your AoC i
 dialogNoHD=Could not find a HD installation, please put the WololoKingdoms.exe into your HD installation folder (Age2HD).
 dialogException=There was an exception! Make sure you don't have the game running, or have any game files opened, then try running the installer again.\nIf this still happens, please pass this error on to Jineapple: 
 dialogBeta=It looks like you are not on the current live patch on Steam. As this means the balance of the converted WK mod is different, you will not be able to play it rated, and you may find it difficult to find other players on the same balance. If the live patch has been updated since you last downloaded this installer, this message might not be accurate. Otherwise consider switching to the live patch on Steam and running the installer again.
+dialogUnknownPatch=The data mod/patch you selected doesn't work correctly. Please let Jineapple know about this.
 hotkeyChoice=Choose which hotkeys to use...
 replaceTooltips=Improve tooltip and tech tree descriptions
 createExe=Create an offline installation

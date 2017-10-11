@@ -14,7 +14,7 @@ typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE,PBOOL);
 
 fs::path extractHDPath(std::string steamPath) {
 	std::string line;
-	std::string HDPath;
+    std::string HDPath = "";
 	std::ifstream manifest((steamPath+"/steamapps/appmanifest_221380.acf").c_str());
 	while (std::getline(manifest,line)) {
 		u_int i;
@@ -24,8 +24,9 @@ fs::path extractHDPath(std::string steamPath) {
 			line = line.substr(i+1,j-i-1);
 			HDPath = steamPath+"/steamapps/common/"+line+"/";
 			break;
-		}
+        }
 	}
+    manifest.close();
 	return fs::path(HDPath);
 }
 
@@ -66,13 +67,16 @@ fs::path getHDPath(std::string steamPath) {
 				}
 			}
 		}
+        libraryFolders.close();
 	}
 
 	if(!boost::filesystem::exists(HDPath/"/Launcher.exe")) {
 		if(boost::filesystem::exists("../../Launcher.exe")) {
 			HDPath = fs::path("../../");
-		} else {
-			return "";
+        } else if (boost::filesystem::exists(steamPath+"/steamapps/common/Age2HD/")) {
+            HDPath = fs::path(steamPath+"/steamapps/common/Age2HD/");
+        } else { //Error Case
+            HDPath = fs::path();
 		}
 	}
 	return HDPath;

@@ -24,13 +24,13 @@ public slots:
 
 private:
 	Ui::MainWindow *ui;
-	void changeLanguage(std::string);
+    void changeLanguage();
 	void changeModPatch();
 	void updateUI();
 	void copyHDMaps(boost::filesystem::path inputDir, boost::filesystem::path outputDir, bool replace = false);
 	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID);
 	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool skip = false, bool force = false);
-	void indexDrsFiles(boost::filesystem::path const &src);
+    void indexDrsFiles(boost::filesystem::path const &src, bool expansionFiles = true);
 	void indexTerrainFiles(boost::filesystem::path const &src);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
 	void makeDrs(std::ofstream *out);
@@ -42,8 +42,8 @@ private:
 	void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat);
 	void patchArchitectures(genie::DatFile *aocDat);
 	bool checkGraphics(genie::DatFile *aocDat, short graphicID, std::vector<int> checkedGraphics);
-	void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slps = std::map<int,int>());
-	short duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, std::map<int,int> slps = std::map<int,int>());
+    void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slpIdConversion = std::map<int,int>());
+    short duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, bool manual = false, std::map<int,int> slpIdConversion = std::map<int,int>());
 	void hotkeySetup();
     void symlinkSetup(boost::filesystem::path newDir, boost::filesystem::path xmlIn, boost::filesystem::path xmlOut, bool voobly, bool datalink, bool copyLanguage = true);
 	bool copyData(QIODevice &inFile, QIODevice &outFile);

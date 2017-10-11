@@ -29,7 +29,6 @@
 #include "fixes/ai900unitidfix.h"
 #include "fixes/hotkeysfix.h"
 #include "fixes/disablenonworkingunits.h"
-#include "fixes/feitoriafix.h"
 #include "fixes/burmesefix.h"
 #include "fixes/incafix.h"
 #include "fixes/siegetowerfix.h"
@@ -49,14 +48,15 @@
 
 namespace fs = boost::filesystem;
 
+std::string steamPath;
 fs::path HDPath;
 fs::path outPath;
+std::set<int> aocSlpFiles;
 std::map<int, fs::path> slpFiles;
 std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
-std::vector<fs::path> existingMapNames;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string const version = "2.6.";
+std::string version = "2.6.";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	language = "en";
 	ui->setupUi(this);
-	std::string steamPath = getSteamPath();
+    steamPath = getSteamPath();
 	HDPath = getHDPath(steamPath);
 	outPath = getOutPath(HDPath);
 
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	upHkiOutPath = upDir / "player1.hki";
 	upHki2OutPath = upDir / "player2.hki";
 
-    changeLanguage(language);
+    changeLanguage();
 
     QDialog* dialog;
     this->ui->label->setText(("WololoKingdoms version " + version).c_str());
@@ -180,7 +180,7 @@ MainWindow::MainWindow(QWidget *parent) :
             case 10: language = "zh"; break;
 			default: language = "en";
 		}
-		changeLanguage(language);
+        changeLanguage();
 	} );
 
     //Patch selection dropdown.
@@ -292,7 +292,7 @@ void MainWindow::changeModPatch() {
 	updateUI();
 }
 
-void MainWindow::changeLanguage(std::string language) {
+void MainWindow::changeLanguage() {
 
 	std::string line;
 	std::ifstream translationFile("resources/"+language+".txt");
@@ -350,6 +350,7 @@ void MainWindow::updateUI() {
     fs::path patchFolder;
     switch (patch) {
         case 0: patchFolder = resourceDir/"patches/Balance Mod/";
+        case 1: patchFolder = resourceDir/"patches/5.4/";
         default: patchFolder = resourceDir;
     }
 
@@ -363,8 +364,7 @@ void MainWindow::updateUI() {
 }
 
 void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
-	// recursive copy
-	//fs::path currentPath(current->path());
+    // recursive copy
 	if (fs::is_directory(src)) {
 		if(!fs::exists(dst)) {
 			fs::create_directories(dst);
@@ -385,19 +385,22 @@ void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bo
 	}
 }
 
-void MainWindow::indexDrsFiles(fs::path const &src) {
+void MainWindow::indexDrsFiles(fs::path const &src, bool expansionFiles) {
 	// Index files to be written to the drs
 	if (fs::is_directory(src)) {
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-			indexDrsFiles(currentPath);
+            indexDrsFiles(currentPath, expansionFiles);
 		}
 	}
 	else {
 		std::string extension = src.extension().string();
-		if (extension == ".slp") {
+        if (extension == ".slp") {
 			int id = atoi(src.stem().string().c_str());
-			slpFiles[id] = src;
+            if (!expansionFiles)
+                aocSlpFiles.insert(id);
+            else
+                slpFiles[id] = src;
 		}
 		else if (extension == ".wav") {
 			int id = atoi(src.stem().string().c_str());
@@ -953,16 +956,27 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 }
 
 void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
+
 	short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
 						155, 179, 190, 209, 210, 234, 235, 236, 276, 463, 464, 465, 481, 482, 483, 484, 487, 488, 490, 491, 498,
 						562, 563, 564, 565, 566, 584, 585, 586, 587, 597, 611, 612, 613, 614, 615, 616, 617, 659, 660, 661,
-						662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673, 674, 806, 807, 808, 1102, 1189};
+                        662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673, 674, 1102, 1189};
 	short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
     short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
 	short burmese = 30; //These are used for ID reference
-	for(unsigned int c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
+    for(short c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
 		std::map<short,short> replacedGraphics;
+        if(civIDs[c] == 24) {
+            std::vector<int> duplicatedGraphics;
+            short newGraphicID;
+            short * graphicID = &aocDat->Civs[civIDs[c]].Units[81].StandingGraphic.first;
+            newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID,
+                    aocDat->Civs[burmese].Units[81].StandingGraphic.first, c, true);
+            replacedGraphics[*graphicID] = newGraphicID;
+            *graphicID = newGraphicID;
+            slpFiles[41179] = HDPath/("resources/_common/drs/gamedata_x2/6979.slp");
+        }
 		//buildings
 		for(unsigned int b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].StandingGraphic.first,
@@ -1001,7 +1015,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
 					{8,9,10,20,25,26,27},
 					{15,16,21}};
-	std::map<int,int> slps = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
+    std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
 							 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
 	short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620};
 	short cgUnitIDs[] = {125,134,286};
@@ -1022,22 +1036,22 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 		for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
 			std::map<short,short> replacedGraphics;
 			for(unsigned int b = 0; b < sizeof(cgBuildingIDs)/sizeof(short); b++) {
-				replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, i, replacedGraphics, slps);
+                replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
 				for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].DamageGraphics.begin();
 					it != aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].DamageGraphics.end(); it++) {
-					replaceGraphic(aocDat, &(it->GraphicID), -1, i, replacedGraphics, slps);
+                    replaceGraphic(aocDat, &(it->GraphicID), -1, i, replacedGraphics, slpIdConversion);
 				}
 			}
 
 			//units like ships
 			for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
-				replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].StandingGraphic.first, -1, i, replacedGraphics, slps);
+                replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].StandingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
 				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1)
-					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, -1, i, replacedGraphics, slps);
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
 				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic != -1)
-					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic, -1, i, replacedGraphics, slps);
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic, -1, i, replacedGraphics, slpIdConversion);
 				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DyingGraphic.first != -1)
-					replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DyingGraphic.first, -1, i, replacedGraphics, slps);
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DyingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
 			}
 			//special UP healing slp workaround
 			for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
@@ -1062,7 +1076,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 
 }
 
-void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slps) {
+void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slpIdConversion) {
 	if(replacedGraphics[*graphicID] != 0)
 		*graphicID = replacedGraphics[*graphicID];
 	else {
@@ -1071,7 +1085,7 @@ void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short 
 		if (compareID != -1)
 			newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID, compareID, c);
 		else
-			newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID, compareID, c, slps);
+            newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID, compareID, c, false, slpIdConversion);
 		replacedGraphics[*graphicID] = newGraphicID;
 		*graphicID = newGraphicID;
 	}
@@ -1092,29 +1106,44 @@ bool MainWindow::checkGraphics(genie::DatFile *aocDat, short graphicID, std::vec
 		return true;
 }
 
-short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, std::map<int,int> slps) {
+short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, bool manual, std::map<int,int> slpIdConversion) {
 
+    /*
+     * Parameters:
+     * aocDatFile: The Dat File of WK to be patched
+     * duplicatedGraphics: These Graphics have already been duplicated, and don't need to be duped again. Passed on to avoid circular loops with recursive calls for deltas
+     * graphicID: The ID of the graphic to be duplicated
+     * compareID: The ID of the same building of the burmese, to serve as a comparison. If -1, it's one of the monk/dark age graphics to be duped, see slpIdConversion parameter
+     * offset: The offset of the civ/civ group for the new SLPs (24000+offset*1000 and so on)
+     * slpIdConversion: To compare what id to give the newly duped slp files for monk/dark age graphics
+     * manual: Graphics where the original is different from the usual format. Needs manual adjustments & slp copying
+     */
+
+    /*
+     * A segfault is caused if this isn't checked. I don't exactly remember why 11 #shittyDocumentation
+     */
 
 	if (compareID != -1 && (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000)) {
 		std::vector<int> checkedGraphics;
 		if(!checkGraphics(aocDat, compareID, checkedGraphics))
 			return graphicID;
 	}
-	genie::Graphic newGraphic = aocDat->Graphics[graphicID];
+
+    genie::Graphic newGraphic = manual?aocDat->Graphics[compareID]:aocDat->Graphics[graphicID];
 	int newBaseSLP = compareID==-1?60000:24000;
 
 	short newGraphicID = aocDat->Graphics.size();
 	int newSLP;
 	if(compareID==-1) { //Monk or Dark Age Graphics for the 4 big civ groups
-		if (slps[aocDat->Graphics[graphicID].SLP] == 0 && aocDat->Graphics[graphicID].SLP != 2683)
+        if (slpIdConversion[aocDat->Graphics[graphicID].SLP] == 0 && aocDat->Graphics[graphicID].SLP != 2683)
 			newSLP = aocDat->Graphics[graphicID].SLP;
 		else
-			newSLP = newBaseSLP+10000*offset+slps[aocDat->Graphics[graphicID].SLP];
-	} else if (aocDat->Graphics[compareID].SLP == 5156)
-		newSLP = 5156;
-	else
+            newSLP = newBaseSLP+10000*offset+slpIdConversion[aocDat->Graphics[graphicID].SLP];
+    } else if (!(slpFiles.count(aocDat->Graphics[compareID].SLP)+aocSlpFiles.count(aocDat->Graphics[compareID].SLP))) //TODO this doesn't work for all cases
+        newSLP = aocDat->Graphics[compareID].SLP;
+    else
 		newSLP = aocDat->Graphics[compareID].SLP - 18000 + newBaseSLP + 1000*offset;
-	if(newSLP != aocDat->Graphics[graphicID].SLP) {
+    if(!manual && newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
 		fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
 		if(fs::exists(src))
 			slpFiles[newSLP] = src;
@@ -1134,10 +1163,10 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 	if (compareID == -1) {
 			for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
 				if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-					it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, -1, offset, slps);
+                    it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, -1, offset, false, slpIdConversion);
 			}
 			aocDat->Graphics.at(newGraphicID) = newGraphic;
-	} else if(aocDat->Graphics[compareID].Deltas.size() == newGraphic.Deltas.size()) {
+    } else if(aocDat->Graphics[compareID].Deltas.size() == newGraphic.Deltas.size()) {
 		/* don't copy graphics files if the amount of deltas is different to the comparison,
 		 * this is usually with damage graphics and different amount of Flames.
 		*/
@@ -1148,7 +1177,20 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 			compIt++;
 		}
 		aocDat->Graphics.at(newGraphicID) = newGraphic;
-	}
+    } else if(manual) {
+        std::vector<genie::GraphicDelta>::iterator compIt = aocDat->Graphics[compareID].Deltas.begin();
+        for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
+            if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
+                it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
+            compIt++;
+        }
+        for(; compIt != aocDat->Graphics[compareID].Deltas.end(); compIt++) {
+            genie::GraphicDelta newDelta = *compIt;
+            newDelta.GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, compIt->GraphicID, compIt->GraphicID, offset, true);
+            newGraphic.Deltas.push_back(newDelta);
+        }
+        aocDat->Graphics.at(newGraphicID) = newGraphic;
+    }
 	return newGraphicID;
 }
 
@@ -1343,6 +1385,7 @@ int MainWindow::run()
 		fs::path aiInputPath = resourceDir/"Script.Ai";
 		std::string drsOutPath = vooblyDir.string() + "/Data/gamedata_x1_p1.drs";
 		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
+        fs::path aocAssetsPath = HDPath / "resources/_common/drs/graphics/";
 		fs::path outputDatPath = vooblyDir / "Data/empires2_x1_p1.dat";
         std::string UPModdedExe = dlcLevel==3?"WK":dlcLevel==2?"WKAK":"WKFE";
 		fs::path UPExe = resourceDir/"SetupAoc.exe";
@@ -1365,6 +1408,10 @@ int MainWindow::run()
             logFile << std::endl << "New Run";
             logFile << std::endl;
         }
+        logFile << std::endl << "Steam Path: ";
+        logFile << steamPath << std::endl << "HD Path:";
+        logFile << HDPath.string() << std::endl << "AoC Path:";
+        logFile << vooblyDir.string() << std::endl;
 
 		std::string line;
         std::map<int, std::string> langReplacement;
@@ -1407,8 +1454,8 @@ int MainWindow::run()
 
 
             logFile << std::endl << "index DRS files";
-			indexDrsFiles(assetsPath);
-
+            indexDrsFiles(assetsPath); //Slp/wav files to be written into gamedata_x1_p1.drs
+            indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
 
             logFile << std::endl << "Visual Mod Stuff";
 			if(this->ui->usePw->isChecked() || this->ui->useGrid->isChecked() || this->ui->useWalls->isChecked()) {
@@ -1560,26 +1607,24 @@ int MainWindow::run()
             aocDat.saveAs(outputDatPath.string().c_str());
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat file
-            switch (patch) {
-            /*
-                case 0: {
-                    fs::path oldPatchFolder = resourceDir/"patches/5.4/";
-                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
-                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
-                    modLangIni = oldPatchFolder.string()+language+".ini";
-                } break;
-            */
+            switch (patch) {            
                 case 0: {
                     fs::path oldPatchFolder = resourceDir/"patches/Balance Patch/";
                     hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
                     keyValuesStringsPath = oldPatchFolder / (language+".txt");
                     modLangIni = oldPatchFolder.string()+language+".ini";
                     UPModdedExe = "WKBP";
+                } break;                
+                case 1: {
+                    fs::path oldPatchFolder = resourceDir/"patches/5.4/";
+                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
+                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
+                    modLangIni = oldPatchFolder.string()+language+".ini";
                 } break;
-                default:
-                    hdDatPath = HDPath.string() + "resources/_common/dat/empires2_x2_p1.dat";
-                    keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
-                    modLangIni = resourceDir.string()+language+".ini";
+                default: //A patch in the list with an unknown index was selected
+                    dialog = new Dialog(this,translation["dialogUnknownPatch"].c_str());
+                    dialog->exec();
+                    return -1;
             }
             logFile << std::endl << "Copy DAT file";
             fs::create_directories(outputDatPath.parent_path());
@@ -1595,23 +1640,33 @@ int MainWindow::run()
         /*
          * Generate version.ini based on the installer and the hash of the dat.
          */
+        if (patch < 0) {
+            logFile << std::endl << "Create Hash";
+            QFile file(outputDatPath.string().c_str());
 
-        logFile << std::endl << "Create Hash";
-        QFile file(outputDatPath.string().c_str());
+            if (file.open(QIODevice::ReadOnly))
+            {
+                QByteArray fileData = file.readAll();
 
-        if (file.open(QIODevice::ReadOnly))
-        {
-            QByteArray fileData = file.readAll();
-
-            QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
-            std::ofstream versionOut(versionIniPath);
-            std::string hash = hashData.toBase64().toStdString().substr(0,6);
-            (versionOut << version) << hash << std::endl;
-            versionOut.close();
-            if (hash != "FpbwCO") {
-                dialog = new Dialog(this,translation["dialogBeta"].c_str());
-                dialog->exec();
+                QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
+                std::ofstream versionOut(versionIniPath);
+                std::string hash = hashData.toBase64().toStdString().substr(0,6);
+                (versionOut << version) << hash << std::endl;
+                versionOut.close();
+                if (hash != "vQPW5e") {
+                    dialog = new Dialog(this,translation["dialogBeta"].c_str());
+                    dialog->exec();
+                }
             }
+        } else {
+            std::ofstream versionOut(versionIniPath);
+            switch (patch) {
+                case 0: version = "1.0"; break;
+                case 1: version = "5.4"; break;
+                default: version = "ERR_PATCH";
+            }
+            (versionOut << version) << std::endl;
+            versionOut.close();
         }
 
 
@@ -1620,30 +1675,34 @@ int MainWindow::run()
 		 * Create the language files (.ini for Voobly, .dll for offline)
 		 */
 
-		//Change terrain descriptions in scenario editor
-		langReplacement[10622] = translation["10622"];
-		langReplacement[10626] = translation["10626"];
-		langReplacement[10642] = translation["10642"];
-		langReplacement[10648] = translation["10648"];
-		langReplacement[10618] = translation["10618"];
+        //terrain descriptions for new terrains in scenario editor
+        langReplacement[10626] = translation["10626"];
 		langReplacement[10619] = translation["10619"];
-		langReplacement[10679] = translation["10679"];
-		langReplacement[10707] = translation["10707"];
-		//other stuff
-		langReplacement[10716] = translation["10716"];
+        langReplacement[10679] = translation["10679"];
+        //relics victory condition
 		langReplacement[30195] = translation["30195"];
-		//Fix errors in civ descriptions
-		langReplacement[20162] = translation["20162"];
-		langReplacement[20166] = translation["20166"];
-		langReplacement[20170] = translation["20170"];
-		langReplacement[20165] = translation["20165"];
-		langReplacement[20158] = translation["20158"];
-		langReplacement[20163] = translation["20163"];
-		//Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
-		langReplacement[26137] = translation["26137"];
-		langReplacement[26139] = translation["26139"];
-		langReplacement[26190] = translation["26190"];
-		langReplacement[26419] = translation["26419"];
+        if(fs::exists("resources/"+language+".txt")) {
+            //Fix mistakes in old terrain descriptions in scenario editor
+            langReplacement[10622] = translation["10622"];
+            langReplacement[10642] = translation["10642"];
+            langReplacement[10648] = translation["10648"];
+            langReplacement[10618] = translation["10618"];
+            langReplacement[10707] = translation["10707"];
+            //Typo
+            langReplacement[10716] = translation["10716"];
+            //Fix errors in civ descriptions
+            langReplacement[20162] = translation["20162"];
+            langReplacement[20166] = translation["20166"];
+            langReplacement[20170] = translation["20170"];
+            langReplacement[20165] = translation["20165"];
+            langReplacement[20158] = translation["20158"];
+            langReplacement[20163] = translation["20163"];
+            //Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
+            langReplacement[26137] = translation["26137"];
+            langReplacement[26139] = translation["26139"];
+            langReplacement[26190] = translation["26190"];
+            langReplacement[26419] = translation["26419"];
+        }
 
 
         logFile << std::endl << "Open Missing strings";

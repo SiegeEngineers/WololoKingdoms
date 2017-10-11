@@ -17,8 +17,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1104, 527}, // Demolition Raft, Demolition Ship NOTE: These two are special to make the tech tree work
 
 	{1001, 106}, // Organ Gun, INFIL_D
-	{1003, 114}, // Elite Organ Gun, LNGBT_D
-	{1004, 162}, // Caravel, FLAGX
+    {1003, 114}, // Elite Organ Gun, LNGBT_D
 	{1006, 183}, // Elite Caravel, TMISB
 	{1007, 203}, // Camel Archer, VDML
 	{1009, 208}, // Elite Camel Archer, TWAL
@@ -43,6 +42,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1126, 823}, // Arambai, BOARJ_D
 	{1125, 830}, // Elite Karambit, UWAGO_D
 	{1123, 836}, // Karambit, HORSW_D
+    {1004, 861}, // Caravel, mkyby_D
 	{1122, 891} // Elite Ballista Ele, SGTWR_D
 };
 
@@ -79,11 +79,18 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 	aocDat->UnitHeaders[id1] = aocDat->UnitHeaders[id2];
 	aocDat->UnitHeaders[id2] = tmpHeader;
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); ++civIndex) {
+        /* switch all 3 ids around first*/
 		aocDat->Civs[civIndex].Units[id1].ID1 = id2;
+        aocDat->Civs[civIndex].Units[id1].ID2 = id2;
+        aocDat->Civs[civIndex].Units[id1].ID3 = id2;
 		aocDat->Civs[civIndex].Units[id2].ID1 = id1;
+        aocDat->Civs[civIndex].Units[id2].ID2 = id1;
+        aocDat->Civs[civIndex].Units[id2].ID3 = id1;
+        /*switch the units*/
 		genie::Unit tmpUnit = aocDat->Civs[civIndex].Units[id1];
 		aocDat->Civs[civIndex].Units[id1] = aocDat->Civs[civIndex].Units[id2];
 		aocDat->Civs[civIndex].Units[id2] = tmpUnit;
+        /*switch the unit pointers*/
 		uint32_t tmpPointer = aocDat->Civs[civIndex].UnitPointers[id1];
 		aocDat->Civs[civIndex].UnitPointers[id1] = aocDat->Civs[civIndex].UnitPointers[id2];
 		aocDat->Civs[civIndex].UnitPointers[id2] = tmpPointer;

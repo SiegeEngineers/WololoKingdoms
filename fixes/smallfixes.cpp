@@ -6,20 +6,22 @@ namespace wololo {
 void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
 
 	size_t const eliteCamelArcherID = 1009;
+    size_t const monkeyBoyID = 860;
 	size_t const cannonGalleonID = 420;
 	size_t const eliteCannonGalleonID = 691;
+    size_t const longboatID = 250;
+    size_t const eliteLongboatID = 533;
 	size_t const teutonTeamBonusID = 404;
 	size_t const PTWC = 444;
 	size_t const pTrebId = 331;
 	size_t const relicID = 285;
 	size_t const feitoriaID = 1021;
-	size_t const tradeWorkshopID = 110;
+    size_t const tradeWorkshopID = 110;
 	size_t const mountains[] = {310,311,744,745,1041,1042,1043,1044,1045,1046,1047};
 
+    //Change monkey boy back to predator animal
+
 	//unpackable TC
-	for (size_t civIndex = 1; civIndex < aocDat->Civs.size(); civIndex++) {
-		aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC];
-	}
 	aocDat->UnitHeaders[PTWC].Commands.push_back(aocDat->UnitHeaders[pTrebId].Commands[0]);
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionMode = 0;
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionEnabler = 0;
@@ -30,14 +32,21 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 		//fixes faulty elite camel archer data for non-gaia civs
 		aocDat->Civs[civIndex].Units[eliteCamelArcherID] = aocDat->Civs[0].Units[eliteCamelArcherID];
 		aocDat->Civs[civIndex].Units[cannonGalleonID].Creatable.HeroMode -= 128; //restore patrol for cannon galleons
-		aocDat->Civs[civIndex].Units[eliteCannonGalleonID].Creatable.HeroMode -= 128;
+		aocDat->Civs[civIndex].Units[eliteCannonGalleonID].Creatable.HeroMode -= 128;        
+        aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC]; //unpackable TC
+        aocDat->Civs[civIndex].Units[monkeyBoyID].Class = 10; //This makes gaia monkey boys attack instead of being captured
 	}
+    //Fix longboats having an unload ability that could mess with attacks
+    aocDat->UnitHeaders[longboatID].Commands.pop_back();
+    aocDat->UnitHeaders[eliteLongboatID].Commands.pop_back();
 	//Fix teuton team bonus being overwritten in post-imp
 	aocDat->Techages[teutonTeamBonusID].Effects[1].B = 1;
 	aocDat->Techages[teutonTeamBonusID].Effects[2].B = 1;
-	aocDat->Civs[0].Units[relicID].CollisionSize = {0.5,0.5,2}; //fixes holy line, relics block entire tile
+    //fixes holy line, relics block entire tile
+    aocDat->Civs[0].Units[relicID].CollisionSize = {0.5,0.5,2};
+    //mountains were too small for their graphics
 	for (size_t i = 0; i < sizeof(mountains)/sizeof(mountains[0]); i++) {
-		aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3,3}; //mountains were too small for their graphics
+        aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3,3};
 	}
 	//fixes galleon sounds
 	for (size_t fileID = 5555; fileID < 5563; fileID++) {
@@ -49,6 +58,7 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	}
 	aocDat->Graphics[3387].SoundID = 427;
 	aocDat->Graphics[3388].SoundID = 427;
+    //Team Units tech tree fix
 	aocDat->TechTree.UnitConnections[132].Unknown1 = 41;
 	aocDat->TechTree.UnitConnections[101].Unknown1 = 29;
 	aocDat->TechTree.UnitConnections[116].Unknown1 = 37;
