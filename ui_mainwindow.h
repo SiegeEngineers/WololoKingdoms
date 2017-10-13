@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.9.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -44,11 +44,6 @@ public:
     QHBoxLayout *horizontalLayout_4;
     QComboBox *hotkeyChoice;
     QPushButton *hotkeyTip;
-    QHBoxLayout *horizontalLayout;
-    QCheckBox *useGrid;
-    QCheckBox *usePw;
-    QCheckBox *useWalls;
-    QPushButton *modsTip;
     QHBoxLayout *horizontalLayout_5;
     QCheckBox *copyMaps;
     QPushButton *mapsTip;
@@ -56,6 +51,15 @@ public:
     QCheckBox *usePatch;
     QComboBox *patchSelection;
     QPushButton *patchSelectionTip;
+    QHBoxLayout *horizontalLayout;
+    QVBoxLayout *verticalLayout_5;
+    QHBoxLayout *horizontalLayout_11;
+    QCheckBox *usePw;
+    QCheckBox *useGrid;
+    QHBoxLayout *horizontalLayout_13;
+    QCheckBox *useMonks;
+    QCheckBox *useWalls;
+    QPushButton *modsTip;
     QPushButton *runButton;
     QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout;
@@ -72,7 +76,7 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
         gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
-        gridLayoutWidget->setGeometry(QRect(30, 10, 341, 231));
+        gridLayoutWidget->setGeometry(QRect(30, 10, 352, 233));
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -140,36 +144,6 @@ public:
 
         gridLayout->addLayout(horizontalLayout_4, 6, 0, 1, 1);
 
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setSpacing(6);
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        useGrid = new QCheckBox(gridLayoutWidget);
-        useGrid->setObjectName(QStringLiteral("useGrid"));
-        useGrid->setChecked(true);
-
-        horizontalLayout->addWidget(useGrid);
-
-        usePw = new QCheckBox(gridLayoutWidget);
-        usePw->setObjectName(QStringLiteral("usePw"));
-        usePw->setChecked(true);
-
-        horizontalLayout->addWidget(usePw);
-
-        useWalls = new QCheckBox(gridLayoutWidget);
-        useWalls->setObjectName(QStringLiteral("useWalls"));
-
-        horizontalLayout->addWidget(useWalls);
-
-        modsTip = new QPushButton(gridLayoutWidget);
-        modsTip->setObjectName(QStringLiteral("modsTip"));
-        modsTip->setMaximumSize(QSize(25, 16777215));
-        modsTip->setToolTipDuration(0);
-
-        horizontalLayout->addWidget(modsTip);
-
-
-        gridLayout->addLayout(horizontalLayout, 16, 0, 1, 1);
-
         horizontalLayout_5 = new QHBoxLayout();
         horizontalLayout_5->setSpacing(6);
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
@@ -212,6 +186,60 @@ public:
 
 
         gridLayout->addLayout(horizontalLayout_6, 7, 0, 1, 1);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        verticalLayout_5 = new QVBoxLayout();
+        verticalLayout_5->setSpacing(6);
+        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
+        horizontalLayout_11 = new QHBoxLayout();
+        horizontalLayout_11->setSpacing(6);
+        horizontalLayout_11->setObjectName(QStringLiteral("horizontalLayout_11"));
+        usePw = new QCheckBox(gridLayoutWidget);
+        usePw->setObjectName(QStringLiteral("usePw"));
+        usePw->setChecked(true);
+
+        horizontalLayout_11->addWidget(usePw);
+
+        useGrid = new QCheckBox(gridLayoutWidget);
+        useGrid->setObjectName(QStringLiteral("useGrid"));
+        useGrid->setChecked(true);
+
+        horizontalLayout_11->addWidget(useGrid);
+
+
+        verticalLayout_5->addLayout(horizontalLayout_11);
+
+        horizontalLayout_13 = new QHBoxLayout();
+        horizontalLayout_13->setSpacing(6);
+        horizontalLayout_13->setObjectName(QStringLiteral("horizontalLayout_13"));
+        useMonks = new QCheckBox(gridLayoutWidget);
+        useMonks->setObjectName(QStringLiteral("useMonks"));
+        useMonks->setChecked(true);
+
+        horizontalLayout_13->addWidget(useMonks);
+
+        useWalls = new QCheckBox(gridLayoutWidget);
+        useWalls->setObjectName(QStringLiteral("useWalls"));
+
+        horizontalLayout_13->addWidget(useWalls);
+
+
+        verticalLayout_5->addLayout(horizontalLayout_13);
+
+
+        horizontalLayout->addLayout(verticalLayout_5);
+
+        modsTip = new QPushButton(gridLayoutWidget);
+        modsTip->setObjectName(QStringLiteral("modsTip"));
+        modsTip->setMaximumSize(QSize(25, 16777215));
+        modsTip->setToolTipDuration(0);
+
+        horizontalLayout->addWidget(modsTip);
+
+
+        gridLayout->addLayout(horizontalLayout, 16, 0, 1, 1);
 
         runButton = new QPushButton(centralWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
@@ -285,13 +313,6 @@ public:
         hotkeyTip->setAccessibleName(QApplication::translate("MainWindow", "hotkeyTip", Q_NULLPTR));
 #endif // QT_NO_ACCESSIBILITY
         hotkeyTip->setText(QString());
-        useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
-        usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
-        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
-#ifndef QT_NO_ACCESSIBILITY
-        modsTip->setAccessibleName(QApplication::translate("MainWindow", "modsTip", Q_NULLPTR));
-#endif // QT_NO_ACCESSIBILITY
-        modsTip->setText(QString());
         copyMaps->setText(QApplication::translate("MainWindow", "Copy Real World and Special Maps", Q_NULLPTR));
 #ifndef QT_NO_ACCESSIBILITY
         mapsTip->setAccessibleName(QApplication::translate("MainWindow", "mapsTip", Q_NULLPTR));
@@ -304,6 +325,14 @@ public:
          << QApplication::translate("MainWindow", "Patch 5.4", Q_NULLPTR)
         );
         patchSelectionTip->setText(QString());
+        usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
+        useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
+        useMonks->setText(QApplication::translate("MainWindow", "Regional Monks", Q_NULLPTR));
+        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
+#ifndef QT_NO_ACCESSIBILITY
+        modsTip->setAccessibleName(QApplication::translate("MainWindow", "modsTip", Q_NULLPTR));
+#endif // QT_NO_ACCESSIBILITY
+        modsTip->setText(QString());
         runButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
         label->setText(QApplication::translate("MainWindow", "TextLabel", Q_NULLPTR));
     } // retranslateUi

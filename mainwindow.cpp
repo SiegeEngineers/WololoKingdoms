@@ -513,7 +513,7 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 		*iniOut << number << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
-            //boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
+            boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
             boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
                 dllOut->setString(nb, line);
@@ -547,24 +547,21 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 
 		std::wstring wideLine = strtowstr(it->second);
 		std::string outputLine;
-		//if(language!="zh")
-			ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
-		//else
-		//	ConvertUnicode2CP(wideLine.c_str(), outputLine, 1386);
 
+        ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
 
 		*iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
-			boost::replace_all(outputLine, "·", "\xb7"); // Dll can't handle that character.
-			boost::replace_all(outputLine, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+            boost::replace_all(it->second, "·", "\xb7"); // Dll can't handle that character.
+            boost::replace_all(it->second, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
-				dllOut->setString(it->first, outputLine);
+                dllOut->setString(it->first, it->second);
 			}
 			catch (std::string const & e) {
-				boost::replace_all(outputLine, "\xb7", "-"); // non-english dll files don't seem to like that character
-				boost::replace_all(outputLine, "\xae", "R");
-				dllOut->setString(it->first, outputLine);
+                boost::replace_all(it->second, "\xb7", "-"); // non-english dll files don't seem to like that character
+                boost::replace_all(it->second, "\xae", "R");
+                dllOut->setString(it->first, it->second);
 			}
 		}
 
@@ -591,7 +588,7 @@ void MainWindow::makeDrs(std::ofstream *out) {
 	// Exclude Forgotten Empires leftovers
 	slpFiles.erase(50163); // Forgotten Empires loading screen
 	slpFiles.erase(50189); // Forgotten Empires main menu
-	slpFiles.erase(53207); // Forgotten Empires in-game logo
+    //slpFiles.erase(53207); // Forgotten Empires in-game logo
 	slpFiles.erase(53208); // Forgotten Empires objective window
 	slpFiles.erase(53209); // ???
 	/*
@@ -1026,6 +1023,12 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	//Fix the missionary converting frames while we're at it
 	aocDat->Graphics[6616].FrameCount = 14;
 
+    /*
+     * We'll temporarily give the monk 10 frames so this value is the one used for the new
+     * Asian and African/Middle Eastern civs.
+     */
+    aocDat->Graphics[998].FrameCount = 10;
+
 	//Separate Monks and DA buildings into 4 major regions (Europe, Asian, Southern, American)
 	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
 					{8,9,10,20,25,26,27},
@@ -1034,10 +1037,10 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 							 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
 	short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620};
 	short cgUnitIDs[] = {125,134,286};
-	for(int i = 0; i < 3; i++) {
+    for(int cg = 0; cg < 3; cg++) {
 		short monkHealingGraphic;
-		if (i != 2) {
-			int newSLP = 60000+10000*i+135;
+        if (cg != 2) {
+            int newSLP = 60000+10000*cg+135;
 			genie::Graphic newGraphic = aocDat->Graphics[1597];
 			monkHealingGraphic = aocDat->Graphics.size();
 			newGraphic.ID = monkHealingGraphic;
@@ -1048,46 +1051,46 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 		} else {
 			monkHealingGraphic = 7340; //meso healing graphic
 		}
-		for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
-			std::map<short,short> replacedGraphics;
+        std::map<short,short> replacedGraphics;
+        for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
 			for(unsigned int b = 0; b < sizeof(cgBuildingIDs)/sizeof(short); b++) {
-                replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
-				for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].DamageGraphics.begin();
-					it != aocDat->Civs[civGroups[i][cg]].Units[cgBuildingIDs[b]].DamageGraphics.end(); it++) {
-                    replaceGraphic(aocDat, &(it->GraphicID), -1, i, replacedGraphics, slpIdConversion);
+                replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
+                for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].DamageGraphics.begin();
+                    it != aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].DamageGraphics.end(); it++) {
+                    replaceGraphic(aocDat, &(it->GraphicID), -1, cg, replacedGraphics, slpIdConversion);
 				}
 			}
 
 			//units like ships
 			for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
-                replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].StandingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
-				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1)
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
-				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic != -1)
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].Type50.AttackGraphic, -1, i, replacedGraphics, slpIdConversion);
-				if (aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DyingGraphic.first != -1)
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[i][cg]].Units[cgUnitIDs[u]].DyingGraphic.first, -1, i, replacedGraphics, slpIdConversion);
+                replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
+                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1)
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
+                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Type50.AttackGraphic != -1)
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Type50.AttackGraphic, -1, cg, replacedGraphics, slpIdConversion);
+                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic.first != -1)
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
 			}
 			//special UP healing slp workaround
-			for(unsigned int cg = 0; cg < civGroups[i].size(); cg++) {
+            for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
 				size_t code = 0x811E0000+monkHealingGraphic;
 				int ccode = (int) code;
-				aocDat->Civs[civGroups[i][cg]].Units[125].LanguageDLLHelp = ccode;
+                aocDat->Civs[civGroups[cg][civ]].Units[125].LanguageDLLHelp = ccode;
 
-				if (i == 0) {
-					aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 218;
-					aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 218;
-				} else if (i == 1) {
-					aocDat->Civs[civGroups[i][cg]].Units[125].IconID = 169;
-					aocDat->Civs[civGroups[i][cg]].Units[286].IconID = 169;
+                if (cg == 0) {
+                    aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 218;
+                    aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 218;
+                } else if (cg == 1) {
+                    aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 169;
+                    aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 169;
 				}
 
 			}
 
-		}
+        }
 		bar->setValue(bar->value()+1);bar->repaint(); //52-55
 	}
-
+    aocDat->Graphics[998].FrameCount = 6; //Old Value again
 
 }
 
@@ -1193,6 +1196,12 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 		}
 		aocDat->Graphics.at(newGraphicID) = newGraphic;
     } else if(manual) {
+        /*
+         * Graphics where the original and the supposed comparison graphic don't work in the same way
+         * Currently this is basically only for portuguesse gates, which be default have just one graphic
+         * with no delta for shadows etc. We use the comparison graphic to figure out how the new graphic
+         * is supposed to be constructed.
+         */
         std::vector<genie::GraphicDelta>::iterator compIt = aocDat->Graphics[compareID].Deltas.begin();
         for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
             if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
@@ -1407,6 +1416,8 @@ int MainWindow::run()
 		fs::path UPExeOut = outPath / "SetupAoc.exe";
 		fs::path pwInputDir = resourceDir/"pussywood";
 		fs::path gridInputDir = resourceDir/"Grid";
+        fs::path monkInputDir = resourceDir/"regional monks";
+        fs::path oldMonkInputDir = resourceDir/"anti-regional monks";
 		fs::path newTerrainInputDir = resourceDir/"new terrains";
 		fs::path newGridTerrainInputDir = resourceDir/"new grid terrains";
 		fs::path modOverrideDir("mod_override/");
@@ -1580,6 +1591,12 @@ int MainWindow::run()
             logFile << std::endl << "Patch Architectures";
             patchArchitectures(&aocDat);
             bar->setValue(bar->value()+1);bar->repaint(); //54
+
+            if(this->ui->useMonks->isChecked())
+                indexDrsFiles(monkInputDir);
+            else
+                indexDrsFiles(oldMonkInputDir);
+            bar->setValue(bar->value()+1);bar->repaint(); //55?
 
             logFile << std::endl << "Mod Override Dir";
             if(!fs::is_empty(modOverrideDir))
