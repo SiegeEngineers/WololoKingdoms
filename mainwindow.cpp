@@ -60,6 +60,8 @@ std::string version = "2.6.";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
+
+std::set<char> civLetters;
 QProgressBar* bar = NULL;
 int dlcLevel = 0;
 int patch = -1;
@@ -258,6 +260,9 @@ MainWindow::MainWindow(QWidget *parent) :
 			QWhatsThis::showText(this->ui->mapsTip->mapToGlobal(QPoint(0,0)),this->ui->mapsTip->whatsThis());
 	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
+
+    char const * civLetterList = "XEWMFI";
+    civLetters.insert(civLetterList, civLetterList + strlen (civLetterList));
 
     updateUI();
 
@@ -969,6 +974,21 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 
 void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 
+    /*
+     * First, we have to fix the mess that mediterranean gates are...
+     */
+
+    //Gatepost units should have n1x standing graphic, not nnx
+    short gateIDs[] = {80,81,92,95,663,664,671,672};
+    for(size_t i = 0; i < sizeof(gateIDs)/sizeof(gateIDs[0]); i++) {
+        aocDat->Civs[19].Units[gateIDs[i]].StandingGraphic.first--;
+        aocDat->Civs[24].Units[gateIDs[i]].StandingGraphic.first--;
+    }
+
+    //Manual fix for the mediterranean gates lacking flags
+    slpFiles[6978] = HDPath/("resources/_common/drs/graphics/4522.slp");
+    slpFiles[6981] = HDPath/("resources/_common/drs/graphics/4523.slp");
+
 	short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
 						155, 179, 190, 209, 210, 234, 235, 236, 276, 463, 464, 465, 481, 482, 483, 484, 487, 488, 490, 491, 498,
@@ -979,16 +999,18 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	short burmese = 30; //These are used for ID reference
     for(short c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
 		std::map<short,short> replacedGraphics;
+        /*
         if(civIDs[c] == 24) {
-            std::vector<int> duplicatedGraphics;
             short newGraphicID;
+            std::vector <short> duplicatedGraphics;
             short * graphicID = &aocDat->Civs[civIDs[c]].Units[81].StandingGraphic.first;
-            newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID,
+            newGraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, *graphicID,
                     aocDat->Civs[burmese].Units[81].StandingGraphic.first, c, true);
             replacedGraphics[*graphicID] = newGraphicID;
             *graphicID = newGraphicID;
             slpFiles[41179] = HDPath/("resources/_common/drs/gamedata_x2/6979.slp");
         }
+        */
 		//buildings
 		for(unsigned int b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].StandingGraphic.first,
@@ -1017,8 +1039,8 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	//Let the Berber Mill have 40 frames instead of 8/10, which is close to the african mill with 38 frames
 	aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].FrameCount = 40;
 	aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].FrameCount = 40;
-	aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].Deltas[0].GraphicID].FrameCount = 40;
-	aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].Deltas[1].GraphicID].FrameCount = 40;
+    aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].Deltas[0].GraphicID].FrameCount = 40;
+    aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].Deltas[1].GraphicID].FrameCount = 40;
 
 	//Fix the missionary converting frames while we're at it
 	aocDat->Graphics[6616].FrameCount = 14;
@@ -1061,7 +1083,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 				}
 			}
 
-			//units like ships
+            //units, in this case monks
 			for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
                 replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
                 if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1)
@@ -1092,19 +1114,22 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	}
     aocDat->Graphics[998].FrameCount = 6; //Old Value again
 
+    //Manual fix for missing portugese flags
+    slpFiles[41178] = HDPath/("resources/_common/drs/graphics/4522.slp");
+    slpFiles[41181] = HDPath/("resources/_common/drs/graphics/4523.slp");
+
 }
 
 void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slpIdConversion) {
-	if(replacedGraphics[*graphicID] != 0)
+    if(replacedGraphics.count(*graphicID) != 0)
 		*graphicID = replacedGraphics[*graphicID];
-	else {
-		std::vector<int> duplicatedGraphics;
-		short newGraphicID;
+    else {
+        short newGraphicID;
+        std::vector<short> duplicatedGraphics;
 		if (compareID != -1)
-			newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID, compareID, c);
+            newGraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, *graphicID, compareID, c);
 		else
-            newGraphicID = duplicateGraphic(aocDat, duplicatedGraphics, *graphicID, compareID, c, false, slpIdConversion);
-		replacedGraphics[*graphicID] = newGraphicID;
+            newGraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, *graphicID, compareID, c, false, slpIdConversion);
 		*graphicID = newGraphicID;
 	}
 }
@@ -1124,18 +1149,23 @@ bool MainWindow::checkGraphics(genie::DatFile *aocDat, short graphicID, std::vec
 		return true;
 }
 
-short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> duplicatedGraphics, short graphicID, short compareID, short offset, bool manual, std::map<int,int> slpIdConversion) {
+short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>& replacedGraphics, std::vector<short> duplicatedGraphics, short graphicID, short compareID, short offset, bool manual, std::map<int,int> slpIdConversion) {
 
     /*
      * Parameters:
      * aocDatFile: The Dat File of WK to be patched
-     * duplicatedGraphics: These Graphics have already been duplicated, and don't need to be duped again. Passed on to avoid circular loops with recursive calls for deltas
+     * replacecdGraphics: These graphics have already been replaced, we can just return the id.
+     * duplicatedGraphics: These Graphics have already been duplicated with a previous duplicateGraphic call. Passed on to avoid circular loops with recursive calls for deltas
      * graphicID: The ID of the graphic to be duplicated
      * compareID: The ID of the same building of the burmese, to serve as a comparison. If -1, it's one of the monk/dark age graphics to be duped, see slpIdConversion parameter
      * offset: The offset of the civ/civ group for the new SLPs (24000+offset*1000 and so on)
      * slpIdConversion: To compare what id to give the newly duped slp files for monk/dark age graphics
      * manual: Graphics where the original is different from the usual format. Needs manual adjustments & slp copying
      */
+
+
+    if(replacedGraphics.count(graphicID)) //We've already replaced this, return the new graphics ID
+        return replacedGraphics[graphicID];
 
     /*
      * A segfault is caused if this isn't checked. I don't exactly remember why 11 #shittyDocumentation
@@ -1153,15 +1183,16 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 	short newGraphicID = aocDat->Graphics.size();
 	int newSLP;
 	if(compareID==-1) { //Monk or Dark Age Graphics for the 4 big civ groups
-        if (slpIdConversion[aocDat->Graphics[graphicID].SLP] == 0 && aocDat->Graphics[graphicID].SLP != 2683)
+        if (slpIdConversion.count(aocDat->Graphics[graphicID].SLP) == 0 && aocDat->Graphics[graphicID].SLP != 2683)
 			newSLP = aocDat->Graphics[graphicID].SLP;
 		else
             newSLP = newBaseSLP+10000*offset+slpIdConversion[aocDat->Graphics[graphicID].SLP];
-    } else if (!(slpFiles.count(aocDat->Graphics[compareID].SLP)+aocSlpFiles.count(aocDat->Graphics[compareID].SLP))) //TODO this doesn't work for all cases
+    } else if (/*manual || */slpFiles.count(aocDat->Graphics[compareID].SLP)+aocSlpFiles.count(aocDat->Graphics[compareID].SLP)
+                +slpFiles.count(aocDat->Graphics[graphicID].SLP)+aocSlpFiles.count(aocDat->Graphics[graphicID].SLP) == 0)
         newSLP = aocDat->Graphics[compareID].SLP;
     else
 		newSLP = aocDat->Graphics[compareID].SLP - 18000 + newBaseSLP + 1000*offset;
-    if(!manual && newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
+    if(/*!manual && */newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
 		fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
 		if(fs::exists(src))
 			slpFiles[newSLP] = src;
@@ -1172,16 +1203,55 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 		}
 	}
 
-	duplicatedGraphics.push_back(newGraphic.ID);
+    replacedGraphics[newGraphic.ID] = newGraphicID;
+    duplicatedGraphics.push_back(newGraphic.ID);
 	newGraphic.ID = newGraphicID;
 	newGraphic.SLP = newSLP;
+    std::string civCode;
+    if(compareID == -1) {
+        switch (offset) {
+            case 0: civCode = "AS"; break;
+            case 1: civCode = "AM"; break;
+            case 2: civCode = "MA"; break;
+        }
+    } else {
+        switch (offset) {
+            case 0: civCode = "CE"; break;
+            case 1: civCode = "SL"; break;
+            case 2: civCode = "BY"; break;
+            case 3: civCode = "HU"; break;
+            case 4: civCode = "SP"; break;
+            case 5: civCode = "VI"; break;
+            case 6: civCode = "IC"; break;
+            case 7: civCode = "CH"; break;
+            case 8: civCode = "VK"; break;
+            case 9: civCode = "MO"; break;
+            case 10: civCode = "BE"; break;
+            case 11: civCode = "BR"; break;
+            case 12: civCode = "TE"; break;
+            case 13: civCode = "KO"; break;
+            case 14: civCode = "SA"; break;
+            case 15: civCode = "PE"; break;
+            case 16: civCode = "MY"; break;
+            case 17: civCode = "PO"; break;
+        }
+    }
+
+    char civLetter = newGraphic.Name.at(newGraphic.Name.length()-1);
+    if(civLetters.count(civLetter)) {
+        if(newGraphic.Name2 == newGraphic.Name) {
+            newGraphic.Name2.replace(newGraphic.Name2.length()-1,1,civCode);
+            newGraphic.Name = newGraphic.Name2;
+        } else
+            newGraphic.Name.replace(newGraphic.Name.length()-1,1,civCode);
+    }
 	aocDat->Graphics.push_back(newGraphic);
 	aocDat->GraphicPointers.push_back(1);
 
 	if (compareID == -1) {
 			for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
-				if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-                    it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, -1, offset, false, slpIdConversion);
+                if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
+                    it->GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, it->GraphicID, -1, offset, false, slpIdConversion);
 			}
 			aocDat->Graphics.at(newGraphicID) = newGraphic;
     } else if(aocDat->Graphics[compareID].Deltas.size() == newGraphic.Deltas.size()) {
@@ -1190,31 +1260,32 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::vector<int> dupl
 		*/
 		std::vector<genie::GraphicDelta>::iterator compIt = aocDat->Graphics[compareID].Deltas.begin();
 		for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
-			if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-				it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
+            if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
+                it->GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
 			compIt++;
 		}
 		aocDat->Graphics.at(newGraphicID) = newGraphic;
-    } else if(manual) {
+    }// else if(manual) {
         /*
          * Graphics where the original and the supposed comparison graphic don't work in the same way
          * Currently this is basically only for portuguesse gates, which be default have just one graphic
          * with no delta for shadows etc. We use the comparison graphic to figure out how the new graphic
          * is supposed to be constructed.
          */
+    /*
         std::vector<genie::GraphicDelta>::iterator compIt = aocDat->Graphics[compareID].Deltas.begin();
         for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
             if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-                it->GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
+                it->GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
             compIt++;
         }
         for(; compIt != aocDat->Graphics[compareID].Deltas.end(); compIt++) {
             genie::GraphicDelta newDelta = *compIt;
-            newDelta.GraphicID = duplicateGraphic(aocDat, duplicatedGraphics, compIt->GraphicID, compIt->GraphicID, offset, true);
+            newDelta.GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, compIt->GraphicID, compIt->GraphicID, offset, true);
             newGraphic.Deltas.push_back(newDelta);
         }
         aocDat->Graphics.at(newGraphicID) = newGraphic;
-    }
+    }*/
 	return newGraphicID;
 }
 

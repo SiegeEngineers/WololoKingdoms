@@ -18,8 +18,8 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	size_t const feitoriaID = 1021;
     size_t const tradeWorkshopID = 110;
 	size_t const mountains[] = {310,311,744,745,1041,1042,1043,1044,1045,1046,1047};
-
-    //Change monkey boy back to predator animal
+    size_t const gates[] = {85,88,90,91,490,491,667,688,669,670,673,674};
+    //size_t const gateposts[] = {80,81,92,95,663,664,671,672};
 
 	//unpackable TC
 	aocDat->UnitHeaders[PTWC].Commands.push_back(aocDat->UnitHeaders[pTrebId].Commands[0]);
@@ -35,6 +35,10 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 		aocDat->Civs[civIndex].Units[eliteCannonGalleonID].Creatable.HeroMode -= 128;        
         aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC]; //unpackable TC
         aocDat->Civs[civIndex].Units[monkeyBoyID].Class = 10; //This makes gaia monkey boys attack instead of being captured
+        //fix gate rubbles
+        for (size_t i = 0; i < sizeof(gates)/sizeof(gates[0]); i++) {
+            aocDat->Civs[civIndex].Units[gates[i]].DeadUnitID = 144;
+        }
 	}
     //Fix longboats having an unload ability that could mess with attacks
     aocDat->UnitHeaders[longboatID].Commands.pop_back();
