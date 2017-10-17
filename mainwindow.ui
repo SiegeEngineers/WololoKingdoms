@@ -257,12 +257,17 @@
          </property>
          <item>
           <property name="text">
-           <string>WK Balance Patch</string>
+           <string>WK Tournament Patch</string>
           </property>
          </item>
          <item>
           <property name="text">
            <string>Patch 5.4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>WK Hippo Mod</string>
           </property>
          </item>
         </widget>

@@ -278,8 +278,9 @@ void MainWindow::changeModPatch() {
 	patch = this->ui->usePatch->isChecked()?this->ui->patchSelection->currentIndex():-1;
 
     switch(patch) {
-        case 0:     modName += "Balance Patch"; break;
+        case 0:     modName += "Tournament Patch"; break;
         case 1: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
+        case 2:     modName += "Hippo Mod"; break;
 	}
     if(patch == -1) {
 		vooblyDir = vooblyDir.parent_path() / "WololoKingdoms FE";
@@ -360,8 +361,9 @@ void MainWindow::updateUI() {
      */
     fs::path patchFolder;
     switch (patch) {
-        case 0: patchFolder = resourceDir/"patches/Balance Mod/";
+        case 0: patchFolder = resourceDir/"patches/Tournament Patch/";
         case 1: patchFolder = resourceDir/"patches/5.4/";
+        case 2: patchFolder = resourceDir;
         default: patchFolder = resourceDir;
     }
 
@@ -964,10 +966,16 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	slpFiles[15012] = newTerrainFiles["DLC_MANGROVEFOREST.slp"];
 	slpFiles[15013] = newTerrainFiles["ACACIA_FOREST.slp"];
 	slpFiles[15025] = newTerrainFiles["BAOBAB.slp"];
+    slpFiles[15003] = newTerrainFiles["15015.slp"];
 
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
+
+    aocDat->TerrainBlock.Terrains[15].SLP = 15003;
+    aocDat->TerrainBlock.Terrains[40].SLP = 15033;
+    aocDat->TerrainBlock.Terrains[40].TerrainToDraw = -1;
+    aocDat->TerrainBlock.Terrains[15].TerrainToDraw = -1;
 
 	//terrainSwap(hdDat, aocDat, 15,45,15000); //cracked sand
 }
@@ -1378,10 +1386,20 @@ void MainWindow::hotkeySetup() {
 	}
 }
 
-void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool voobly, bool datalink, bool copyLanguage) {
+void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool vooblySrc, bool vooblyDst, bool dataMod) {
 
+    /* Sets up symlinks between the different mod versions (offline/AK/FE), so as much as possible is shared
+     * and as little space is needed as possible
+     * Parameters:
+     * newDir: The directory the symlink should be created in
+     * xmlIn: The connected xml of the source folder
+     * xmlOut: The connected xml of the destination folder
+     * vooblySrc: If true, the source folder is the WK FE folder in Voobly mods, else the one in games
+     * vooblyDst: If true, the destination folder is under voobly mods, else under games
+     * dataMod: If true, the symlink is for wk-based datamod
+     */
 	std::string newDirString = newDir.string()+"/";
-	std::string oldDirString = voobly?(vooblyDir.parent_path() / referenceDir).string()+"/"
+    std::string oldDirString = vooblySrc?(vooblyDir.parent_path() / referenceDir).string()+"/"
 									:(upDir.parent_path() / referenceDir).string()+"/";
 	std::string vooblyDirString = (vooblyDir.parent_path() / referenceDir).string()+"/";
 	boost::replace_all(newDirString,"/","\\");
@@ -1390,11 +1408,16 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
 
 	fs::create_directory(newDir);
 	fs::copy_file(xmlIn, xmlOut, fs::copy_option::overwrite_if_exists);
+    bool datalink = vooblySrc == vooblyDst && !dataMod;
 
-	if(datalink)
-		fs::remove_all(newDir/"Data");
-	else
-		fs::create_directory(newDir/"Data");
+    if(datalink) {
+        fs::remove_all(newDir/"Data");
+    } else {
+        fs::create_directory(newDir/"Data");
+        fs::remove(newDir/"Data/gamedata_x1.drs");
+        fs::remove(newDir/"Data/gamedata_x1_p1.drs");
+    }
+
 	fs::remove_all(newDir/"Taunt");
 	fs::remove_all(newDir/"Sound");
 	fs::remove_all(newDir/"Script.Rm");
@@ -1403,10 +1426,20 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
 	fs::remove_all(newDir/"Scenario");
     fs::remove(newDir/"Player.nfz");
 	std::string datastring = datalink?"mklink /J \""+newDirString+"Data\" \""+ oldDirString+"Data\" & ":
-                                      "mklink /H \""+newDirString+"Data\\gamedata_x1_p1.drs\" \""+ oldDirString+"Data\\gamedata_x1_p1.drs\" & ";
-    std::string languageString = copyLanguage?"mklink /H \""+newDirString+"language.ini\" \""+ vooblyDirString+"language.ini\" & ":"";
-    if(copyLanguage)
-		fs::remove(newDir/"language.ini");
+                                      "mklink /H \""+newDirString+"Data\\gamedata_x1_p1.drs\" \""+ oldDirString+"Data\\gamedata_x1_p1.drs\" & "
+                                      "mklink /H \""+newDirString+"Data\\gamedata_x1.drs\" \""+ oldDirString+"Data\\gamedata_x1.drs\" & ";
+    std::string languageString = "";
+
+    if(!dataMod) {
+        if(vooblyDst) {
+            fs::remove(newDir/"language.ini");
+            languageString = "mklink /H \""+newDirString+"language.ini\" \""+ vooblyDirString+"language.ini\" & ";
+        } else if (!vooblySrc) {
+            fs::remove(newDir/"Data/language_x1_p1.dll");
+            languageString = "mklink /H \""+newDirString+"Data/language_x1_p1.dll\" \""+ vooblyDirString+"Data/language_x1_p1.dll\" & ";
+        }
+    }
+
 	std::string cmd = "/C mklink /J \""+newDirString+"Taunt\" \""+ vooblyDirString+"Taunt\" & "
 			+ datastring +
 			"mklink /J \""+newDirString+"Script.Rm\" \""+ vooblyDirString+"Script.Rm\" & "
@@ -1423,8 +1456,8 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
         fs::copy_file(oldDirString+"player1.hki",newDir/"player1.hki",fs::copy_option::overwrite_if_exists);
     if(fs::exists(oldDirString+"player2.hki"))
         fs::copy_file(oldDirString+"player2.hki",newDir/"player2.hki",fs::copy_option::overwrite_if_exists);
-	if(voobly)
-		fs::copy_file(oldDirString+"version.ini", newDir/"version.ini", fs::copy_option::overwrite_if_exists);
+    if(vooblyDst)
+        fs::copy_file(oldDirString+"version.ini", newDir/"version.ini", fs::copy_option::overwrite_if_exists);
 }
 
 int MainWindow::run()
@@ -1489,6 +1522,7 @@ int MainWindow::run()
 		fs::path gridInputDir = resourceDir/"Grid";
         fs::path monkInputDir = resourceDir/"regional monks";
         fs::path oldMonkInputDir = resourceDir/"anti-regional monks";
+        fs::path scenarioInputDir = resourceDir/"Scenario";
 		fs::path newTerrainInputDir = resourceDir/"new terrains";
 		fs::path newGridTerrainInputDir = resourceDir/"new grid terrains";
 		fs::path modOverrideDir("mod_override/");
@@ -1612,6 +1646,7 @@ int MainWindow::run()
 			else
 				bar->setValue(bar->value()+3);
 			bar->setValue(bar->value()+1);bar->repaint(); //19
+            recCopy(scenarioInputDir,vooblyDir/"Scenario",false,true);
 			//If wanted, the BruteForce AI could be included as a "standard" AI.
             logFile << std::endl << "Copying AI";
 			recCopy(aiInputPath, vooblyDir/"Script.Ai", true);
@@ -1620,10 +1655,6 @@ int MainWindow::run()
             logFile << std::endl << "Hotkey Setup";
 			if(this->ui->hotkeyChoice->currentIndex() != 0 || fs::exists("player1.hki"))
                 hotkeySetup();
-            logFile << std::endl << "Offline installation symlink";
-			if(this->ui->createExe->isChecked()) {
-				symlinkSetup(upDir, xmlPath, xmlOutPathUP, false, false);
-			}
 
             bar->setValue(bar->value()+1);bar->repaint(); //22
 
@@ -1642,9 +1673,6 @@ int MainWindow::run()
             hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
             hdDat.load(hdDatPath.c_str());
             bar->setValue(bar->value()+5);bar->repaint(); //33
-
-            logFile << std::endl << "Opening DRS";
-            std::ofstream drsOut(drsOutPath, std::ios::binary);
 
             this->ui->label->setText((translation["working"]+"\n"+translation["workingInterface"]).c_str());
             this->ui->label->repaint();
@@ -1673,9 +1701,17 @@ int MainWindow::run()
             if(!fs::is_empty(modOverrideDir))
                 indexDrsFiles(modOverrideDir);
             bar->setValue(bar->value()+1);bar->repaint(); //55
+            logFile << std::endl << "Opening DRS";
+            std::ofstream drsOut(drsOutPath, std::ios::binary);
             logFile << std::endl << "Make DRS";
             makeDrs(&drsOut);
             bar->setValue(bar->value()+1);bar->repaint(); //66
+
+
+            logFile << std::endl << "copy gamedata_x1.drs";
+            fs::copy_file(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
+            bar->setValue(bar->value()+1);bar->repaint(); //23
+
             bar->setValue(bar->value()+1);bar->repaint(); //67
 
             wololo::DatPatch patchTab[] = {
@@ -1708,42 +1744,9 @@ int MainWindow::run()
 
             logFile << std::endl << "Save DAT";
             aocDat.saveAs(outputDatPath.string().c_str());
-
-        } else { //If we use a balance mod or old patch, just copy the supplied dat file
-            switch (patch) {            
-                case 0: {
-                    fs::path oldPatchFolder = resourceDir/"patches/Balance Patch/";
-                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
-                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
-                    modLangIni = oldPatchFolder.string()+language+".ini";
-                    UPModdedExe = "WKBP";
-                } break;                
-                case 1: {
-                    fs::path oldPatchFolder = resourceDir/"patches/5.4/";
-                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
-                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
-                    modLangIni = oldPatchFolder.string()+language+".ini";
-                } break;
-                default: //A patch in the list with an unknown index was selected
-                    dialog = new Dialog(this,translation["dialogUnknownPatch"].c_str());
-                    dialog->exec();
-                    return -1;
-            }
-            logFile << std::endl << "Copy DAT file";
-            fs::create_directories(outputDatPath.parent_path());
-            fs::copy_file(hdDatPath,outputDatPath,fs::copy_option::overwrite_if_exists);
-            bar->setValue(81);
-        }
-
-
-        logFile << std::endl << "copy gamedata_x1.drs";
-        fs::copy_file(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
-        bar->setValue(bar->value()+1);bar->repaint(); //23
-
-        /*
-         * Generate version.ini based on the installer and the hash of the dat.
-         */
-        if (patch < 0) {
+            /*
+             * Generate version.ini based on the installer and the hash of the dat.
+             */
             logFile << std::endl << "Create Hash";
             QFile file(outputDatPath.string().c_str());
 
@@ -1754,25 +1757,61 @@ int MainWindow::run()
                 QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
                 std::ofstream versionOut(versionIniPath);
                 std::string hash = hashData.toBase64().toStdString().substr(0,6);
-                (versionOut << version) << hash << std::endl;
-                versionOut.close();
-                if (hash != "vQPW5e") {
+                if (hash != "jIWO5y") {
                     dialog = new Dialog(this,translation["dialogBeta"].c_str());
                     dialog->exec();
+                } else {
+                    hash = 1;
                 }
+                (versionOut << version) << hash << std::endl;
+                versionOut.close();
             }
-        } else {
+
+            if(this->ui->createExe->isChecked()) {
+                logFile << std::endl << "Offline installation symlink";
+                symlinkSetup(upDir, xmlPath, xmlOutPathUP, true, false);
+            }
+
+        } else { //If we use a balance mod or old patch, just copy the supplied dat file
+            switch (patch) {            
+                case 0: {
+                    fs::path oldPatchFolder = resourceDir/"patches/Tournament Patch/";
+                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
+                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
+                    modLangIni = oldPatchFolder.string()+language+".ini";
+                    UPModdedExe = "WKTP";
+                } break;                
+                case 1: {
+                    fs::path oldPatchFolder = resourceDir/"patches/5.4/";
+                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
+                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
+                    modLangIni = oldPatchFolder.string()+language+".ini";
+                    UPModdedExe = "WK54";
+                } break;
+                case 2: {
+                    fs::path oldPatchFolder = resourceDir/"patches/Hippo Mod/";
+                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
+                    UPModdedExe = "WKHM";
+                } break;
+                default: //A patch in the list with an unknown index was selected
+                    dialog = new Dialog(this,translation["dialogUnknownPatch"].c_str());
+                    dialog->exec();
+                    return -1;
+            }
+            logFile << std::endl << "Copy DAT file";
+            fs::create_directories(outputDatPath.parent_path());
+            fs::copy_file(hdDatPath,outputDatPath,fs::copy_option::overwrite_if_exists);
+            bar->setValue(81);
             std::ofstream versionOut(versionIniPath);
             switch (patch) {
-                case 0: version = "1.0"; break;
+                case 0: version = "1.1"; break;
                 case 1: version = "5.4"; break;
+                case 2: version = "1.0"; break;
                 default: version = "ERR_PATCH";
             }
             (versionOut << version) << std::endl;
             versionOut.close();
         }
-
-
 
 		/*
 		 * Create the language files (.ini for Voobly, .dll for offline)
@@ -1971,9 +2010,9 @@ int MainWindow::run()
 			out << str;
             input.close();
 			out.close();
-            symlinkSetup(vooblyDir,xmlIn,vooblyDir/"age2_x1.xml",true,false,false);
+            symlinkSetup(vooblyDir,xmlIn,vooblyDir/"age2_x1.xml",true,true,true);
             if(this->ui->createExe->isChecked()) {
-                symlinkSetup(upDir, xmlIn, upDir.parent_path()/(UPModdedExe+".xml"), false, false, false);
+                symlinkSetup(upDir, xmlIn, upDir.parent_path()/(UPModdedExe+".xml"), true, false, true);
             }
             fs::remove(resourceDir/"WKtemp.xml");
 		} else {
@@ -1985,7 +2024,7 @@ int MainWindow::run()
 				fs::path upDir2 = upDir.parent_path() / "WololoKingdoms AK";
 				symlinkSetup(vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml", true, true);
 				if(this->ui->createExe->isChecked()) {
-					symlinkSetup(upDir2, xmlIn, upDir.parent_path()/"WKAK.xml", false, true);
+                    symlinkSetup(upDir2, xmlIn, upDir.parent_path()/"WKAK.xml", false, false);
 				}
 			}
 			if (dlcLevel > 2) {
@@ -1995,7 +2034,7 @@ int MainWindow::run()
 				fs::path upDir3 = upDir.parent_path() / "WololoKingdoms";
 				symlinkSetup(vooblyDir3, xmlIn, vooblyDir3/"age2_x1.xml", true, true);
 				if(this->ui->createExe->isChecked()) {
-					symlinkSetup(upDir3, xmlIn, upDir.parent_path()/"WK.xml",  false, true);
+                    symlinkSetup(upDir3, xmlIn, upDir.parent_path()/"WK.xml",  false, false);
 				}
             } else {
                 //Possible earlier 2.3 installation to be removed
@@ -2014,7 +2053,8 @@ int MainWindow::run()
             this->ui->label->setText((translation["working"]+"\n"+translation["workingUp"]).c_str());
             this->ui->label->repaint();
 
-            recCopy(vooblyDir / "Data", upDir / "Data", true);
+            //recCopy(vooblyDir / "Data", upDir / "Data", true);
+            fs::copy_file(vooblyDir / "Data/empires2_x1_p1.dat", upDir / "Data/empires2_x1_p1.dat", fs::copy_option::overwrite_if_exists);
 
             bar->setValue(bar->value()+1);bar->repaint(); //88
             if (!dllPatched) {

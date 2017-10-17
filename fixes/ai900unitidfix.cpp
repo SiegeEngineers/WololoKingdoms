@@ -42,6 +42,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1126, 823}, // Arambai, BOARJ_D
 	{1125, 830}, // Elite Karambit, UWAGO_D
 	{1123, 836}, // Karambit, HORSW_D
+    {946, 848}, // Noncut Ballista Elephant, TDONK_D
     {1004, 861}, // Caravel, mkyby_D
 	{1122, 891} // Elite Ballista Ele, SGTWR_D
 };
