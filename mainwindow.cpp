@@ -56,7 +56,7 @@ std::map<int, fs::path> slpFiles;
 std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string version = "2.6.";
+std::string version = "2.7.";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
@@ -278,9 +278,9 @@ void MainWindow::changeModPatch() {
 	patch = this->ui->usePatch->isChecked()?this->ui->patchSelection->currentIndex():-1;
 
     switch(patch) {
-        case 0:     modName += "Tournament Patch"; break;
-        case 1: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
-        case 2:     modName += "Hippo Mod"; break;
+        case 0: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
+        case 1:     modName += "Hippo Mod"; break;
+        //case 2:     modName += "Tournament Patch"; break;
 	}
     if(patch == -1) {
 		vooblyDir = vooblyDir.parent_path() / "WololoKingdoms FE";
@@ -361,9 +361,9 @@ void MainWindow::updateUI() {
      */
     fs::path patchFolder;
     switch (patch) {
-        case 0: patchFolder = resourceDir/"patches/Tournament Patch/";
-        case 1: patchFolder = resourceDir/"patches/5.4/";
-        case 2: patchFolder = resourceDir;
+        case 0: patchFolder = resourceDir/"patches/5.4/";
+        case 1: patchFolder = resourceDir;
+        //case 2: patchFolder = resourceDir/"patches/Tournament Patch/";
         default: patchFolder = resourceDir;
     }
 
@@ -1757,11 +1757,11 @@ int MainWindow::run()
                 QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
                 std::ofstream versionOut(versionIniPath);
                 std::string hash = hashData.toBase64().toStdString().substr(0,6);
-                if (hash != "jIWO5y") {
+                if (hash != "gyvMEb") {
                     dialog = new Dialog(this,translation["dialogBeta"].c_str());
                     dialog->exec();
                 } else {
-                    hash = 1;
+                    hash = "0";
                 }
                 (versionOut << version) << hash << std::endl;
                 versionOut.close();
@@ -1773,29 +1773,35 @@ int MainWindow::run()
             }
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat file
-            switch (patch) {            
+            switch (patch) {
                 case 0: {
-                    fs::path oldPatchFolder = resourceDir/"patches/Tournament Patch/";
-                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
-                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
-                    modLangIni = oldPatchFolder.string()+language+".ini";
-                    UPModdedExe = "WKTP";
-                } break;                
-                case 1: {
                     fs::path oldPatchFolder = resourceDir/"patches/5.4/";
                     hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
                     keyValuesStringsPath = oldPatchFolder / (language+".txt");
                     modLangIni = oldPatchFolder.string()+language+".ini";
                     UPModdedExe = "WK54";
+                    version = "5.4"; break;
                 } break;
-                case 2: {
+                case 1: {
                     fs::path oldPatchFolder = resourceDir/"patches/Hippo Mod/";
                     hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
                     UPModdedExe = "WKHM";
+                    version = "1.0"; break;
                 } break;
+                /*
+                case 2: {
+                    fs::path oldPatchFolder = resourceDir/"patches/Tournament Patch/";
+                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
+                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
+                    modLangIni = oldPatchFolder.string()+language+".ini";
+                    UPModdedExe = "WKTP";
+                    version = "1.1"; break;
+                } break;
+                */
                 default: //A patch in the list with an unknown index was selected
                     dialog = new Dialog(this,translation["dialogUnknownPatch"].c_str());
                     dialog->exec();
+
                     return -1;
             }
             logFile << std::endl << "Copy DAT file";
@@ -1803,12 +1809,6 @@ int MainWindow::run()
             fs::copy_file(hdDatPath,outputDatPath,fs::copy_option::overwrite_if_exists);
             bar->setValue(81);
             std::ofstream versionOut(versionIniPath);
-            switch (patch) {
-                case 0: version = "1.1"; break;
-                case 1: version = "5.4"; break;
-                case 2: version = "1.0"; break;
-                default: version = "ERR_PATCH";
-            }
             (versionOut << version) << std::endl;
             versionOut.close();
         }

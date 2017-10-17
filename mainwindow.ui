@@ -257,11 +257,6 @@
          </property>
          <item>
           <property name="text">
-           <string>WK Tournament Patch</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>Patch 5.4</string>
           </property>
          </item>

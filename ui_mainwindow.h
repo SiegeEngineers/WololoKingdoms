@@ -321,7 +321,6 @@ public:
         usePatch->setText(QApplication::translate("MainWindow", "Patch/Data Mod", Q_NULLPTR));
         patchSelection->clear();
         patchSelection->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "WK Tournament Patch", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Patch 5.4", Q_NULLPTR)
          << QApplication::translate("MainWindow", "WK Hippo Mod", Q_NULLPTR)
         );
