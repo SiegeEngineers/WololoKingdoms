@@ -966,7 +966,7 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	slpFiles[15012] = newTerrainFiles["DLC_MANGROVEFOREST.slp"];
 	slpFiles[15013] = newTerrainFiles["ACACIA_FOREST.slp"];
 	slpFiles[15025] = newTerrainFiles["BAOBAB.slp"];
-    slpFiles[15003] = newTerrainFiles["15015.slp"];
+    slpFiles[15003] = newTerrainFiles["15003.slp"];
 
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
@@ -1143,7 +1143,17 @@ void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short 
 }
 
 bool MainWindow::checkGraphics(genie::DatFile *aocDat, short graphicID, std::vector<int> checkedGraphics) {
-	//Tests if any of the referenced graphic SLPs are in the right range, AKA civ-dependant
+    /*
+     * Tests if any SLP of a graphic, or a graphic Delta is in the right range (18000-19000),
+     * which means they are a civ-dependant graphic (in this case for SEA civs) instead of a shared graphic
+     * (Like flags, flames or stuff like that)
+     *
+     * Returns: true if at least one SLP is in this range, false otherwise
+     * Parameters:
+     * aocDat: The dat file to be checked
+     * graphicID: The ID of the graphic to be checked
+     * checkedGraphics: The graphics checked so far, to avoid an endless recursion in case of circular references
+     */
 	checkedGraphics.push_back(graphicID);
 	genie::Graphic newGraphic = aocDat->Graphics[graphicID];
 	if (aocDat->Graphics[graphicID].SLP < 18000 || aocDat->Graphics[graphicID].SLP >= 19000) {
@@ -1162,7 +1172,7 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
     /*
      * Parameters:
      * aocDatFile: The Dat File of WK to be patched
-     * replacecdGraphics: These graphics have already been replaced, we can just return the id.
+     * replacedGraphics: These graphics have already been replaced, we can just return the id.
      * duplicatedGraphics: These Graphics have already been duplicated with a previous duplicateGraphic call. Passed on to avoid circular loops with recursive calls for deltas
      * graphicID: The ID of the graphic to be duplicated
      * compareID: The ID of the same building of the burmese, to serve as a comparison. If -1, it's one of the monk/dark age graphics to be duped, see slpIdConversion parameter
@@ -1176,9 +1186,9 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
         return replacedGraphics[graphicID];
 
     /*
-     * A segfault is caused if this isn't checked. I don't exactly remember why 11 #shittyDocumentation
+     * Check if at least one SLP in this graphic or graphic deltas is in the right range,
+     * else we don't need to do any duplication in which case we can just return the current graphic ID as a result
      */
-
 	if (compareID != -1 && (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000)) {
 		std::vector<int> checkedGraphics;
 		if(!checkGraphics(aocDat, compareID, checkedGraphics))
@@ -1186,21 +1196,27 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
 	}
 
     genie::Graphic newGraphic = manual?aocDat->Graphics[compareID]:aocDat->Graphics[graphicID];
-	int newBaseSLP = compareID==-1?60000:24000;
+    int newSLP = compareID==-1?60000:24000;
 
 	short newGraphicID = aocDat->Graphics.size();
-	int newSLP;
 	if(compareID==-1) { //Monk or Dark Age Graphics for the 4 big civ groups
         if (slpIdConversion.count(aocDat->Graphics[graphicID].SLP) == 0 && aocDat->Graphics[graphicID].SLP != 2683)
 			newSLP = aocDat->Graphics[graphicID].SLP;
 		else
-            newSLP = newBaseSLP+10000*offset+slpIdConversion[aocDat->Graphics[graphicID].SLP];
+            newSLP += 10000*offset+slpIdConversion[aocDat->Graphics[graphicID].SLP];
     } else if (/*manual || */slpFiles.count(aocDat->Graphics[compareID].SLP)+aocSlpFiles.count(aocDat->Graphics[compareID].SLP)
                 +slpFiles.count(aocDat->Graphics[graphicID].SLP)+aocSlpFiles.count(aocDat->Graphics[graphicID].SLP) == 0)
         newSLP = aocDat->Graphics[compareID].SLP;
+    else if (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000)
+        newSLP = -1; //seems to happen only for 15516 and 15536 but not cause harm in these cases
     else
-		newSLP = aocDat->Graphics[compareID].SLP - 18000 + newBaseSLP + 1000*offset;
-    if(/*!manual && */newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
+        newSLP += aocDat->Graphics[compareID].SLP - 18000 + 1000*offset;
+
+    replacedGraphics[newGraphic.ID] = newGraphicID;
+    duplicatedGraphics.push_back(newGraphic.ID);
+    newGraphic.ID = newGraphicID;
+    if(/*!manual && */newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
+        // This is a graphic where we want a new SLP file (as opposed to one where the a new SLP mayb just be needed for some deltas
 		fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
 		if(fs::exists(src))
 			slpFiles[newSLP] = src;
@@ -1208,13 +1224,9 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
 			src = HDPath/("resources/_common/drs/graphics/"+std::to_string(newGraphic.SLP)+".slp");
 			if(fs::exists(src))
 				slpFiles[newSLP] = src;
-		}
+		}        
+        newGraphic.SLP = newSLP;
 	}
-
-    replacedGraphics[newGraphic.ID] = newGraphicID;
-    duplicatedGraphics.push_back(newGraphic.ID);
-	newGraphic.ID = newGraphicID;
-	newGraphic.SLP = newSLP;
     std::string civCode;
     if(compareID == -1) {
         switch (offset) {
@@ -1456,7 +1468,7 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
         fs::copy_file(oldDirString+"player1.hki",newDir/"player1.hki",fs::copy_option::overwrite_if_exists);
     if(fs::exists(oldDirString+"player2.hki"))
         fs::copy_file(oldDirString+"player2.hki",newDir/"player2.hki",fs::copy_option::overwrite_if_exists);
-    if(vooblyDst)
+    if(vooblyDst && !dataMod)
         fs::copy_file(oldDirString+"version.ini", newDir/"version.ini", fs::copy_option::overwrite_if_exists);
 }
 
@@ -1757,11 +1769,11 @@ int MainWindow::run()
                 QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
                 std::ofstream versionOut(versionIniPath);
                 std::string hash = hashData.toBase64().toStdString().substr(0,6);
-                if (hash != "gyvMEb") {
+                if (hash != "wPVW0X") {
                     dialog = new Dialog(this,translation["dialogBeta"].c_str());
                     dialog->exec();
                 } else {
-                    hash = "0";
+                    hash = "1";
                 }
                 (versionOut << version) << hash << std::endl;
                 versionOut.close();
