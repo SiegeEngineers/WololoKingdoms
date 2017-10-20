@@ -56,7 +56,7 @@ std::map<int, fs::path> slpFiles;
 std::map<int, fs::path> wavFiles;
 std::map<std::string,fs::path> newTerrainFiles;
 std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string version = "2.7.";
+std::string version = "2.7.1";
 std::string language;
 std::map<std::string, std::string> translation;
 bool secondAttempt = false;
@@ -227,9 +227,19 @@ MainWindow::MainWindow(QWidget *parent) :
 		if(this->ui->usePatch->isChecked()) {
 			this->ui->patchSelection->setDisabled(false);
 			this->ui->hotkeyChoice->setDisabled(true);
+            this->ui->useGrid->setDisabled(true);
+            this->ui->useMonks->setDisabled(true);
+            this->ui->usePw->setDisabled(true);
+            this->ui->useWalls->setDisabled(true);
+            this->ui->copyMaps->setDisabled(true);
 		} else {
 			this->ui->patchSelection->setDisabled(true);
 			this->ui->hotkeyChoice->setDisabled(false);
+            this->ui->useGrid->setDisabled(false);
+            this->ui->useMonks->setDisabled(false);
+            this->ui->usePw->setDisabled(false);
+            this->ui->useWalls->setDisabled(false);
+            this->ui->copyMaps->setDisabled(false);
 		}
 		changeModPatch();
 	} );
@@ -437,87 +447,93 @@ void MainWindow::indexTerrainFiles(fs::path const &src) {
 	}
 }
 
+std::pair<int,std::string> MainWindow::getTextLine(std::string line) {
+    int spaceIdx = line.find(' ');
+    std::string number = line.substr(0, spaceIdx);
+    int nb = stoi(number);
+    if (nb == 0xFFFF) {
+        /*
+         * this one seems to be used by AOC for dynamically-generated strings
+         * (like market tributes), maybe it's the maximum the game can read ?
+        */
+        throw std::invalid_argument("FFFF");
+    }
+    if (nb <= 1000) {
+        // skip changes to fonts
+        throw std::invalid_argument("fonts");
+    }
+    if (nb >= 20150 && nb <= 20167) {
+        // skip the old civ descriptions
+        throw std::invalid_argument("old civ descriptions");
+    }
+    /*
+     * Conquerors AI names start at 5800 (5800 = 4660+1140, so offset 1140 in the xml file)
+     * However, there's only space for 10 civ AI names. We'll shift AI names to 11500+ instead (offset 6840 or 1140+5700)
+     */
+
+    if (nb >= 5800 && nb < 6000) {
+        nb += 5700;
+        number = std::to_string(nb);
+    }
+    if (nb >= 106000 && nb < 106160) { //AK&AoR AI names have 10xxxx id, get rid of the 10, then shift
+        nb -= 100000;
+        nb += 5700;
+        number = std::to_string(nb);
+    }
+
+    if (nb >= 120150 && nb <= 120180) { // descriptions of the civs in the expansion
+        //These civ descriptions can be too long for the tech tree, we'll take out some newlines
+        if (nb == 120156 || nb == 120155) {
+            boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
+        }
+        if (nb == 120167) {
+            boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
+            boost::replace_all(line, "\\n\\n<b>Unique Tech", "\\n<b>Unique Tech");
+        }
+        // replace the old descriptions of the civs in the base game
+        nb -= 100000;
+        number = std::to_string(nb);
+    }
+
+    // load the string from the HD edition file
+    int firstQuoteIdx = spaceIdx;
+    do {
+        firstQuoteIdx++;
+    } while (line[firstQuoteIdx] != '"');
+    int secondQuoteIdx = firstQuoteIdx;
+    do {
+        secondQuoteIdx++;
+    } while (line[secondQuoteIdx] != '"');
+    line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
+
+    return std::make_pair(nb,line);
+}
+
 void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
 	std::string line;
+    int nb;
 	while (std::getline(*in, line)) {
-		int spaceIdx = line.find(' ');
-		std::string number = line.substr(0, spaceIdx);
-		int nb;
-		try {
-			nb = stoi(number);
-			if (nb == 0xFFFF) {
-				/*
-				 * this one seems to be used by AOC for dynamically-generated strings
-				 * (like market tributes), maybe it's the maximum the game can read ?
-				*/
-				continue;
-			}
-			if (nb <= 1000) {
-				// skip changes to fonts
-				continue;
-			}
-			if (nb >= 20150 && nb <= 20167) {
-				// skip the old civ descriptions
-				continue;
-			}
-			/*
-			 * Conquerors AI names start at 5800 (5800 = 4660+1140, so offset 1140 in the xml file)
-			 * However, there's only space for 10 civ AI names. We'll shift AI names to 11500+ instead (offset 6840 or 1140+5700)
-			 */
 
-			if (nb >= 5800 && nb < 6000) {
-				nb += 5700;
-				number = std::to_string(nb);
-			}
-			if (nb >= 106000 && nb < 106160) { //AK&AoR AI names have 10xxxx id, get rid of the 10, then shift
-				nb -= 100000;
-				nb += 5700;
-				number = std::to_string(nb);
-			}
-
-			if (nb >= 120150 && nb <= 120180) { // descriptions of the civs in the expansion
-				//These civ descriptions can be too long for the tech tree, we'll take out some newlines
-				if (nb == 120156 || nb == 120155) {
-					boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
-				}
-				if (nb == 120167) {
-					boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
-					boost::replace_all(line, "\\n\\n<b>Unique Tech", "\\n<b>Unique Tech");
-				}
-				// replace the old descriptions of the civs in the base game
-				nb -= 100000;
-				number = std::to_string(nb);
-			}
-		}
-		catch (std::invalid_argument const & e){
-			continue;
-		}
+        try {
+            std::pair<int,std::string> tmp = getTextLine(line);
+            nb = tmp.first;
+            line = tmp.second;
+        } catch (std::invalid_argument const & e) {
+            continue;
+        }
 
 		if (langReplacement->count(nb)) {
 			// this string has been changed by one of our patches (modified attributes etc.)
 			line = (*langReplacement)[nb];
 			langReplacement->erase(nb);
-		}
-		else {
-			// load the string from the HD edition file
-			int firstQuoteIdx = spaceIdx;
-			do {
-				firstQuoteIdx++;
-			} while (line[firstQuoteIdx] != '"');
-			int secondQuoteIdx = firstQuoteIdx;
-			do {
-				secondQuoteIdx++;
-			} while (line[secondQuoteIdx] != '"');
-			line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
-		}
+        }
 
 		//convert UTF-8 into ANSI
-
 		std::wstring wideLine = strtowstr(line);
 		std::string outputLine;
         ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
 
-		*iniOut << number << '=' << outputLine <<  std::endl;
+        *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
             boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
@@ -1541,6 +1557,7 @@ int MainWindow::run()
 		fs::path terrainOverrideDir("new_terrain_override/");
 		fs::path wallsInputDir = resourceDir/"short_walls";
 		fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
+        fs::path patchFolder;
 		std::string modLangIni = resourceDir.string()+language+".ini";
 
         if(secondAttempt) {
@@ -1556,15 +1573,263 @@ int MainWindow::run()
         logFile << HDPath.string() << std::endl << "AoC Path:";
         logFile << vooblyDir.string() << std::endl;
 
+        logFile << "Patch mode: ";
+        logFile << std::to_string(patch);
+        logFile << std::endl << "DLC level: ";
+        logFile << std::to_string(dlcLevel);
+
 		std::string line;
         std::map<int, std::string> langReplacement;
 
 		bar->setValue(1);bar->repaint(); //1
 
-        logFile << "Patch mode: ";
-        logFile << std::to_string(patch);
-        logFile << std::endl << "DLC level: ";
-        logFile << std::to_string(dlcLevel);
+        switch (patch) {
+            case -1: {
+                logFile << std::endl << "Removing language.ini";
+                fs::remove(languageIniPath);
+            }
+            break;
+            case 0: {
+                patchFolder = resourceDir/"patches/5.4/";
+                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+                UPModdedExe = "WK54";
+                version = "5.4"; break;
+            } break;
+            case 1: {
+                patchFolder = resourceDir/"patches/Hippo Mod/";
+                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+                UPModdedExe = "WKHM";
+                version = "1.0"; break;
+            } break;
+            /*
+            case 2: {
+                patchFolder = resourceDir/"patches/Tournament Patch/";
+                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+                UPModdedExe = "WKTP";
+                version = "1.1"; break;
+            } break;
+            */
+            default: //A patch in the list with an unknown index was selected
+                dialog = new Dialog(this,translation["dialogUnknownPatch"].c_str());
+                dialog->exec();
+
+                return -1;
+        }
+
+        /*
+         * Create the language files (.ini for Voobly, .dll for offline)
+         */
+
+        //terrain descriptions for new terrains in scenario editor
+        langReplacement[10626] = translation["10626"];
+        langReplacement[10619] = translation["10619"];
+        langReplacement[10679] = translation["10679"];
+        //relics victory condition
+        langReplacement[30195] = translation["30195"];
+        if(fs::exists("resources/"+language+".txt")) {
+            //Fix mistakes in old terrain descriptions in scenario editor
+            langReplacement[10622] = translation["10622"];
+            langReplacement[10642] = translation["10642"];
+            langReplacement[10648] = translation["10648"];
+            langReplacement[10618] = translation["10618"];
+            langReplacement[10707] = translation["10707"];
+            //Typo
+            langReplacement[10716] = translation["10716"];
+            //Fix errors in civ descriptions
+            langReplacement[20162] = translation["20162"];
+            langReplacement[20166] = translation["20166"];
+            langReplacement[20170] = translation["20170"];
+            langReplacement[20165] = translation["20165"];
+            langReplacement[20158] = translation["20158"];
+            langReplacement[20163] = translation["20163"];
+            //Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
+            langReplacement[26137] = translation["26137"];
+            langReplacement[26139] = translation["26139"];
+            langReplacement[26190] = translation["26190"];
+            langReplacement[26419] = translation["26419"];
+        }
+
+        logFile << std::endl << "Open Missing strings";
+        std::ifstream missingStrings(resourceDir.string()+"missing_strings.txt");
+        while (std::getline(missingStrings, line)) {
+            int spaceIdx = line.find('=');
+            std::string number = line.substr(0, spaceIdx);
+            int nb;
+            try {
+                nb = stoi(number);
+            }
+            catch (std::invalid_argument const & e){
+                continue;
+            }
+            line = line.substr(spaceIdx + 1, std::string::npos);
+            rmsCodeStrings.push_back(std::make_pair(nb,line));
+        }
+        missingStrings.close();
+
+
+        logFile << std::endl << "Replace tooltips";
+        if(this->ui->replaceTooltips->isChecked()) {
+            /*
+             * Load modded strings instead of normal HD strings into lang replacement
+             */
+            std::ifstream modLang(modLangIni);
+            while (std::getline(modLang, line)) {
+                int spaceIdx = line.find('=');
+                std::string number = line.substr(0, spaceIdx);
+                int nb;
+                try {
+                    nb = stoi(number);
+                }
+                catch (std::invalid_argument const & e){
+                    continue;
+                }
+                line = line.substr(spaceIdx + 1, std::string::npos);
+
+                std::wstring outputLine;
+                ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
+                line = wstrtostr(outputLine);
+                langReplacement[nb] = line;
+            }
+            modLang.close();
+        }
+        bar->setValue(bar->value()+1);bar->repaint(); //82
+
+        if(patch >= 0) {
+            /*
+             * A data mod might need slightly changed strings.
+             */
+            if(this->ui->replaceTooltips->isChecked()) {
+                std::ifstream modLang((patchFolder/(language+".ini")).string());
+                while (std::getline(modLang, line)) {
+                    int spaceIdx = line.find('=');
+                    std::string number = line.substr(0, spaceIdx);
+                    int nb;
+                    try {
+                        nb = stoi(number);
+                    }
+                    catch (std::invalid_argument const & e){
+                        continue;
+                    }
+                    line = line.substr(spaceIdx + 1, std::string::npos);
+
+                    std::wstring outputLine;
+                    ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
+                    line = wstrtostr(outputLine);
+                    langReplacement[nb] = line;
+                }
+                modLang.close();
+            } else {
+                std::ifstream modLang((patchFolder/(language+".txt")).string());
+                while (std::getline(modLang, line)) {
+                    try {
+                        std::pair<int,std::string> tmp = getTextLine(line);
+                        langReplacement[tmp.first] = tmp.second;
+                    } catch (std::invalid_argument const & e) {
+                        continue;
+                    }
+                }
+            }
+        }
+
+
+        std::ifstream langIn(keyValuesStringsPath.string());
+        std::ofstream langOut(languageIniPath.string());
+        genie::LangFile langDll;
+
+        bool patchLangDll;
+        if(this->ui->createExe->isChecked()) {
+            langDllPath = outPath / langDllPath;
+            patchLangDll = fs::exists(langDllPath);
+            if(patchLangDll)
+            {
+                fs::remove(langDllFile);
+                fs::copy_file(langDllPath,langDllFile);
+            }
+        } else {
+            patchLangDll = false;
+        }
+        bar->setValue(bar->value()+1);bar->repaint(); //83
+        bool dllPatched = true;
+
+        logFile << std::endl << "Open Lang Dll";
+        if (patchLangDll) {
+            try {
+                langDll.load((langDllFile.string()).c_str());
+                langDll.setGameVersion(genie::GameVersion::GV_TC);
+            } catch (const std::ifstream::failure& e) {
+                //Try deleting and re-copying
+                fs::remove(langDllFile);
+                fs::copy_file(langDllPath,langDllFile);
+                try {
+                    langDll.load((langDllFile.string()).c_str());
+                    langDll.setGameVersion(genie::GameVersion::GV_TC);
+                } catch (const std::ifstream::failure& e) {
+                    fs::remove(langDllFile);
+                    if(!secondAttempt) {
+                        secondAttempt = true;
+                        ret = run();
+                        return ret;
+                    }
+                    dllPatched = false;
+                    patchLangDll = false;
+                }
+            }
+        }
+        else {
+            if(this->ui->createExe->isChecked()) {
+                line = translation["working"]+"\n"+translation["workingNoDll"];
+                boost::replace_all(line,"<dll>",langDllPath.string());
+                this->ui->label->setText(line.c_str());
+                this->ui->label->repaint();
+            }
+        }
+        bar->setValue(bar->value()+1);bar->repaint(); //84
+
+        logFile << std::endl << "convert language file";
+        convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
+        bar->setValue(bar->value()+1);bar->repaint(); //85
+
+        logFile << std::endl << "save lang dll file";
+        if (patchLangDll) {
+            fs::create_directories(upDir/"data/");
+            fs::path langDllOutput = upDir/"data/"/langDllFile;
+            try {
+                line = translation["working"]+"\n"+translation["workingDll"];
+                boost::replace_all(line,"<dll>",langDllFile.string());
+                langDll.save();
+                fs::copy_file(langDllFile,langDllOutput,fs::copy_option::overwrite_if_exists);
+                fs::remove(langDllFile);
+                this->ui->label->setText(line.c_str());
+                this->ui->label->repaint();
+            } catch (const std::ofstream::failure& e) {
+                this->ui->label->setText(translation["workingError"].c_str());
+                this->ui->label->repaint();
+                fs::remove(langDllFile);
+                fs::remove(langDllOutput);
+                try {
+                    langDll.save();
+                    fs::copy_file(langDllFile,langDllOutput,fs::copy_option::overwrite_if_exists);
+                    fs::remove(langDllFile);
+                    this->ui->label->setText(line.c_str());
+                    this->ui->label->repaint();
+                } catch (const std::ofstream::failure& e) {
+                    fs::remove(langDllFile);
+                    fs::remove(langDllOutput);
+                    if(!secondAttempt) {
+                        secondAttempt = true;
+                        ret = run();
+                        return ret;
+                    }
+                    dllPatched = false;
+                    patchLangDll = false;
+
+                }
+            }
+        }
+
+        bar->setValue(bar->value()+1);bar->repaint(); //86
+
+
 		if (patch < 0) { 
 
             logFile << std::endl << "Removing base folders";
@@ -1573,8 +1838,6 @@ int MainWindow::run()
             fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
             fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
             fs::remove(vooblyDir/"age2_x1.xml");
-            logFile << std::endl << "Removing language.ini";
-            fs::remove(languageIniPath);
             fs::remove(versionIniPath);
 
 
@@ -1588,7 +1851,9 @@ int MainWindow::run()
 
             if(this->ui->createExe->isChecked()) {
                 logFile << std::endl << "Removing UP base folders";
-                fs::remove_all(upDir/"Data");
+                fs::remove(upDir/"Data"/"empires2_x1_p1.dat");
+                fs::remove(upDir/"Data"/"gamedata_x1.drs");
+                fs::remove(upDir/"Data"/"gamedata_x1_p1.drs");
                 fs::remove_all(upDir/"Script.Ai/Brutal2");
                 fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
                 fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
@@ -1770,12 +2035,13 @@ int MainWindow::run()
                 std::ofstream versionOut(versionIniPath);
                 std::string hash = hashData.toBase64().toStdString().substr(0,6);
                 if (hash != "wPVW0X") {
+                    version = "2.7.";
                     dialog = new Dialog(this,translation["dialogBeta"].c_str());
                     dialog->exec();
+                    (versionOut << version) << hash << std::endl;
                 } else {
-                    hash = "1";
-                }
-                (versionOut << version) << hash << std::endl;
+                    (versionOut << version) << std::endl;
+                }                
                 versionOut.close();
             }
 
@@ -1785,37 +2051,6 @@ int MainWindow::run()
             }
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat file
-            switch (patch) {
-                case 0: {
-                    fs::path oldPatchFolder = resourceDir/"patches/5.4/";
-                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
-                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
-                    modLangIni = oldPatchFolder.string()+language+".ini";
-                    UPModdedExe = "WK54";
-                    version = "5.4"; break;
-                } break;
-                case 1: {
-                    fs::path oldPatchFolder = resourceDir/"patches/Hippo Mod/";
-                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
-                    UPModdedExe = "WKHM";
-                    version = "1.0"; break;
-                } break;
-                /*
-                case 2: {
-                    fs::path oldPatchFolder = resourceDir/"patches/Tournament Patch/";
-                    hdDatPath = oldPatchFolder.string()+"empires2_x1_p1.dat";
-                    keyValuesStringsPath = oldPatchFolder / (language+".txt");
-                    modLangIni = oldPatchFolder.string()+language+".ini";
-                    UPModdedExe = "WKTP";
-                    version = "1.1"; break;
-                } break;
-                */
-                default: //A patch in the list with an unknown index was selected
-                    dialog = new Dialog(this,translation["dialogUnknownPatch"].c_str());
-                    dialog->exec();
-
-                    return -1;
-            }
             logFile << std::endl << "Copy DAT file";
             fs::create_directories(outputDatPath.parent_path());
             fs::copy_file(hdDatPath,outputDatPath,fs::copy_option::overwrite_if_exists);
@@ -1825,182 +2060,6 @@ int MainWindow::run()
             versionOut.close();
         }
 
-		/*
-		 * Create the language files (.ini for Voobly, .dll for offline)
-		 */
-
-        //terrain descriptions for new terrains in scenario editor
-        langReplacement[10626] = translation["10626"];
-		langReplacement[10619] = translation["10619"];
-        langReplacement[10679] = translation["10679"];
-        //relics victory condition
-		langReplacement[30195] = translation["30195"];
-        if(fs::exists("resources/"+language+".txt")) {
-            //Fix mistakes in old terrain descriptions in scenario editor
-            langReplacement[10622] = translation["10622"];
-            langReplacement[10642] = translation["10642"];
-            langReplacement[10648] = translation["10648"];
-            langReplacement[10618] = translation["10618"];
-            langReplacement[10707] = translation["10707"];
-            //Typo
-            langReplacement[10716] = translation["10716"];
-            //Fix errors in civ descriptions
-            langReplacement[20162] = translation["20162"];
-            langReplacement[20166] = translation["20166"];
-            langReplacement[20170] = translation["20170"];
-            langReplacement[20165] = translation["20165"];
-            langReplacement[20158] = translation["20158"];
-            langReplacement[20163] = translation["20163"];
-            //Add that the Genitour and Imperial Skirmishers are Mercenary Units, since there is no other visual difference in the tech tree
-            langReplacement[26137] = translation["26137"];
-            langReplacement[26139] = translation["26139"];
-            langReplacement[26190] = translation["26190"];
-            langReplacement[26419] = translation["26419"];
-        }
-
-
-        logFile << std::endl << "Open Missing strings";
-		std::ifstream missingStrings(resourceDir.string()+"missing_strings.txt");
-		while (std::getline(missingStrings, line)) {
-			int spaceIdx = line.find('=');
-			std::string number = line.substr(0, spaceIdx);
-			int nb;
-			try {
-				nb = stoi(number);
-			}
-			catch (std::invalid_argument const & e){
-				continue;
-			}
-			line = line.substr(spaceIdx + 1, std::string::npos);
-			rmsCodeStrings.push_back(std::make_pair(nb,line));
-		}
-        missingStrings.close();
-
-
-        logFile << std::endl << "Replace tooltips";
-		if(this->ui->replaceTooltips->isChecked()) {
-			/*
-			 * Load modded strings instead of normal HD strings into lang replacement
-			 */
-			std::ifstream modLang(modLangIni);
-			while (std::getline(modLang, line)) {
-				int spaceIdx = line.find('=');
-				std::string number = line.substr(0, spaceIdx);
-				int nb;
-				try {
-					nb = stoi(number);
-				}
-				catch (std::invalid_argument const & e){
-					continue;
-				}
-				line = line.substr(spaceIdx + 1, std::string::npos);
-
-				std::wstring outputLine;
-				ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
-				line = wstrtostr(outputLine);
-				langReplacement[nb] = line;
-			}
-            modLang.close();
-		}
-		bar->setValue(bar->value()+1);bar->repaint(); //82
-
-
-		std::ifstream langIn(keyValuesStringsPath.string());
-		std::ofstream langOut(languageIniPath.string());
-		genie::LangFile langDll;
-
-		bool patchLangDll;
-		if(this->ui->createExe->isChecked()) {
-			langDllPath = outPath / langDllPath;
-			patchLangDll = fs::exists(langDllPath);
-			if(patchLangDll)
-            {
-                fs::remove(langDllFile);
-				fs::copy_file(langDllPath,langDllFile);
-			}
-		} else {
-			patchLangDll = false;
-		}
-		bar->setValue(bar->value()+1);bar->repaint(); //83
-		bool dllPatched = true;
-
-        logFile << std::endl << "Open Lang Dll";
-		if (patchLangDll) {
-			try {
-				langDll.load((langDllFile.string()).c_str());
-				langDll.setGameVersion(genie::GameVersion::GV_TC);
-			} catch (const std::ifstream::failure& e) {
-				//Try deleting and re-copying
-				fs::remove(langDllFile);
-				fs::copy_file(langDllPath,langDllFile);
-				try {
-					langDll.load((langDllFile.string()).c_str());
-					langDll.setGameVersion(genie::GameVersion::GV_TC);
-				} catch (const std::ifstream::failure& e) {
-					fs::remove(langDllFile);
-					if(!secondAttempt) {
-                        secondAttempt = true;
-						ret = run();
-						return ret;
-					}
-					dllPatched = false;
-					patchLangDll = false;
-				}
-			}
-		}
-		else {
-			if(this->ui->createExe->isChecked()) {
-				line = translation["working"]+"\n"+translation["workingNoDll"];
-				boost::replace_all(line,"<dll>",langDllPath.string());
-				this->ui->label->setText(line.c_str());
-				this->ui->label->repaint();
-			}
-		}
-		bar->setValue(bar->value()+1);bar->repaint(); //84
-
-        logFile << std::endl << "convert language file";
-		convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
-		bar->setValue(bar->value()+1);bar->repaint(); //85
-
-        logFile << std::endl << "save lang dll file";
-		if (patchLangDll) {
-            fs::create_directories(upDir/"data/");
-            fs::path langDllOutput = upDir/"data/"/langDllFile;
-			try {
-				line = translation["working"]+"\n"+translation["workingDll"];
-				boost::replace_all(line,"<dll>",langDllFile.string());
-				langDll.save();
-                fs::copy_file(langDllFile,langDllOutput,fs::copy_option::overwrite_if_exists);
-				fs::remove(langDllFile);
-				this->ui->label->setText(line.c_str());
-				this->ui->label->repaint();
-			} catch (const std::ofstream::failure& e) {
-				this->ui->label->setText(translation["workingError"].c_str());
-				this->ui->label->repaint();
-                fs::remove(langDllFile);
-                fs::remove(langDllOutput);
-				try {
-					langDll.save();
-                    fs::copy_file(langDllFile,langDllOutput,fs::copy_option::overwrite_if_exists);
-					fs::remove(langDllFile);
-					this->ui->label->setText(line.c_str());
-					this->ui->label->repaint();
-				} catch (const std::ofstream::failure& e) {
-                    fs::remove(langDllFile);
-                    fs::remove(langDllOutput);
-					if(!secondAttempt) {
-                        secondAttempt = true;
-						ret = run();
-						return ret;
-					}
-					dllPatched = false;
-					patchLangDll = false;
-
-				}
-			}
-		}
-
-		bar->setValue(bar->value()+1);bar->repaint(); //86
 
 
 		bar->setValue(bar->value()+1);bar->repaint(); //87
@@ -2102,7 +2161,7 @@ int MainWindow::run()
         }
         this->ui->label->setText(translation["workingDone"].c_str());
 
-        if (patch < 0) {
+        if (patch < 0 && outPath==HDPath) {
 
             logFile << std::endl << "Fix Compat Patch";
 			/*
@@ -2113,15 +2172,15 @@ int MainWindow::run()
             fs::remove_all(outPath/"/compatslp");
 
             fs::create_directory(outPath/"data/Load");
-			if(outPath==HDPath && this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
-				this->ui->label->setText(translation["workingCP"].c_str());
-				this->ui->label->repaint();
-				if(fs::file_size(outPath/"/data/blendomatic.dat") < 400000) {
-					fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
-					fs::rename(outPath/"/data/blendomatic_x1.dat",outPath/"/data/blendomatic.dat");
-				}
-				bar->setValue(bar->value()+1);bar->repaint();
-			}
+            if(this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
+                this->ui->label->setText(translation["workingCP"].c_str());
+                this->ui->label->repaint();
+                if(fs::file_size(outPath/"/data/blendomatic.dat") < 400000) {
+                    fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
+                    fs::rename(outPath/"/data/blendomatic_x1.dat",outPath/"/data/blendomatic.dat");
+                }
+                bar->setValue(bar->value()+1);bar->repaint();
+            }
 		}
 
 

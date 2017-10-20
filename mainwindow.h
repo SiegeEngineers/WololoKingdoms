@@ -32,6 +32,7 @@ private:
 	void recCopy(boost::filesystem::path const &src, boost::filesystem::path const &dst, bool skip = false, bool force = false);
     void indexDrsFiles(boost::filesystem::path const &src, bool expansionFiles = true);
 	void indexTerrainFiles(boost::filesystem::path const &src);
+    std::pair<int,std::string> getTextLine(std::string line);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
 	void makeDrs(std::ofstream *out);
 	void uglyHudHack(boost::filesystem::path);
