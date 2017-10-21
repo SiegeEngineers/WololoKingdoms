@@ -46,45 +46,13 @@
 
 #include "JlCompress.h"
 
-namespace fs = boost::filesystem;
-
-std::string steamPath;
-fs::path HDPath;
-fs::path outPath;
-std::set<int> aocSlpFiles;
-std::map<int, fs::path> slpFiles;
-std::map<int, fs::path> wavFiles;
-std::map<std::string,fs::path> newTerrainFiles;
-std::vector<std::pair<int,std::string>> rmsCodeStrings;
-std::string version = "2.7.1";
-std::string language;
-std::map<std::string, std::string> translation;
-bool secondAttempt = false;
-
-std::set<char> civLetters;
-QProgressBar* bar = NULL;
-int dlcLevel = 0;
-int patch = -1;
-std::string modName;
-std::ofstream logFile;
-
-fs::path nfzUpOutPath;
-fs::path nfzOutPath;
-fs::path modHkiOutPath;
-fs::path modHki2OutPath;
-fs::path upHkiOutPath;
-fs::path upHki2OutPath;
-fs::path vooblyDir;
-fs::path upDir;
-std::string referenceDir = "WololoKingdoms FE";
-fs::path resourceDir("resources/");
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-	language = "en";
+    resourceDir = fs::path("resources/");
 	ui->setupUi(this);
+    this->ui->label->setWordWrap(true);
     steamPath = getSteamPath();
 	HDPath = getHDPath(steamPath);
 	outPath = getOutPath(HDPath);
@@ -111,11 +79,13 @@ MainWindow::MainWindow(QWidget *parent) :
         this->ui->label->setText(translation["noAoC"].c_str());
         dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
         dialog->exec();
+        allowRun = false;
     }
     else if(HDPath == fs::path()) {
         this->ui->label->setText(translation["noSteamInstallation"].c_str());
         dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
         dialog->exec();
+        allowRun = false;
     }
 
 
@@ -145,6 +115,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		this->ui->label->setText(translation["noSteam"].c_str());
 		dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
 		dialog->exec();
+        allowRun = false;
 	} else if(SteamApps()->BIsDlcInstalled(239550)) {
 		if(SteamApps()->BIsDlcInstalled(355950)) {
 			if(SteamApps()->BIsDlcInstalled(488060))
@@ -163,6 +134,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		this->ui->label->setText(translation["noFE"].c_str());
 		dialog = new Dialog(this,translation["noFE"],translation["errorTitle"]);
 		dialog->exec();
+        allowRun = false;
 	}
 	SteamAPI_Shutdown();
 
@@ -284,6 +256,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::changeModPatch() {
+    /*
+     * Triggered when the data mod dropdown is changed. Switches the folders for files to be
+     * created in between the regular "WololoKingdoms (FE/AK)" folders and a seperate folder for data mods.
+     */
 	modName = "WK ";
 	patch = this->ui->usePatch->isChecked()?this->ui->patchSelection->currentIndex():-1;
 
@@ -297,7 +273,7 @@ void MainWindow::changeModPatch() {
 		upDir = upDir.parent_path() / "WololoKingdoms FE";
 	} else {
 		vooblyDir = vooblyDir.parent_path() / modName;
-		upDir = upDir.parent_path() / modName;
+        upDir = upDir.parent_path() / modName;
 	}
 	nfzUpOutPath = upDir / "Player.nfz";
 	nfzOutPath = vooblyDir / "Player.nfz";
@@ -309,7 +285,10 @@ void MainWindow::changeModPatch() {
 }
 
 void MainWindow::changeLanguage() {
-
+    /*
+     * Loads the contents of <language>.txt into memory (If it exists). This is used to change the language of the installer ui,
+     * as well as some special in-game lines (Terrain names in the scenario editor, some fixes for faulty lines in the original language files)
+     */
 	std::string line;
 	std::ifstream translationFile("resources/"+language+".txt");
 	while (std::getline(translationFile, line)) {
@@ -347,8 +326,10 @@ void MainWindow::updateUI() {
      */
 	if(fs::exists(nfzOutPath)) {
 		this->ui->hotkeyChoice->setItemText(0,translation["hotkeys0"].c_str());
-        if((patch >= 0 && dlcLevel == 3) || (patch < 0 && dlcLevel != 0))
+        if(allowRun)
 			this->ui->runButton->setDisabled(false);
+        else
+            this->ui->runButton->setDisabled(true);
 	} else {
 		this->ui->hotkeyChoice->setItemText(0,translation["hotkeyChoice"].c_str());
         if(!this->ui->usePatch->isChecked()) {
@@ -356,7 +337,7 @@ void MainWindow::updateUI() {
             this->ui->hotkeyChoice->setStyleSheet("border-style: solid; border-width: 2px; border-color: red;");
         }
 		QObject::connect( this->ui->hotkeyChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]{
-            if (this->ui->hotkeyChoice->currentIndex() != 0 && ((patch >= 0 && dlcLevel == 3) || (patch < 0 && dlcLevel != 0))) {
+            if (this->ui->hotkeyChoice->currentIndex() != 0 && allowRun) {
 				this->ui->runButton->setDisabled(false);
                 this->ui->hotkeyChoice->setStyleSheet("");
             } else {
@@ -387,7 +368,15 @@ void MainWindow::updateUI() {
 }
 
 void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
-    // recursive copy
+    /*
+     * Recursive copy of a folder (or file, but then this isn't necessary)
+     * Parameters:
+     * src: The folder to be copied from
+     * dst: The folder to be copied into
+     * skip: If true, if a file already exists, copying will be skipped
+     * force: If true, if a file already exists, it will be replaced
+     * If both skip and force are false, an exception is thrown if a file already exists
+     */
 	if (fs::is_directory(src)) {
 		if(!fs::exists(dst)) {
 			fs::create_directories(dst);
@@ -408,42 +397,42 @@ void MainWindow::recCopy(fs::path const &src, fs::path const &dst, bool skip, bo
 	}
 }
 
-void MainWindow::indexDrsFiles(fs::path const &src, bool expansionFiles) {
-	// Index files to be written to the drs
+void MainWindow::indexDrsFiles(fs::path const &src, bool expansionFiles, bool terrainFiles) {
+    /*
+     * Index files to be written into the drs into a map, with the ID the file will have later
+     * being the key, and the path it should be copied from being the value
+     * Parameters:
+     * src: The directory to iterate through. All .slp and .wav files in this directory will be indexed
+     * expansionFiles: If false, files are written to a seperate map. They are not written to the drs later,
+     *                  but we need them for comparison purposes in the independent architecture patching.
+     * terrainFiles: If true, these are terrain files, written to a seperate map, as we need them for
+     *                  expansion map creation.
+     */
 	if (fs::is_directory(src)) {
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-            indexDrsFiles(currentPath, expansionFiles);
+            indexDrsFiles(currentPath, expansionFiles, terrainFiles);
 		}
 	}
 	else {
 		std::string extension = src.extension().string();
-        if (extension == ".slp") {
-			int id = atoi(src.stem().string().c_str());
-            if (!expansionFiles)
-                aocSlpFiles.insert(id);
-            else
-                slpFiles[id] = src;
-		}
-		else if (extension == ".wav") {
-			int id = atoi(src.stem().string().c_str());
-			wavFiles[id] = src;
-		}
-	}
-}
-
-void MainWindow::indexTerrainFiles(fs::path const &src) {
-	// Index files to be written to the drs
-	if (fs::is_directory(src)) {
-		for (fs::directory_iterator current(src), end;current != end; ++current) {
-			fs::path currentPath(current->path());
-			indexTerrainFiles(currentPath);
-		}
-	}
-	else {
-		if (src.extension().string() == ".slp") {
-			newTerrainFiles[src.filename().string()] = src;
-		}
+        if(terrainFiles) {
+            if (extension == ".slp") {
+                newTerrainFiles[src.filename().string()] = src;
+            }
+        } else {
+            if (extension == ".slp") {
+                int id = atoi(src.stem().string().c_str());
+                if (!expansionFiles)
+                    aocSlpFiles.insert(id);
+                else
+                    slpFiles[id] = src;
+            }
+            else if (extension == ".wav") {
+                int id = atoi(src.stem().string().c_str());
+                wavFiles[id] = src;
+            }
+        }
 	}
 }
 
@@ -859,7 +848,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 		std::make_tuple("DIRT4","((DLC_)?)DIRT4","$1DIRT4","42","3","15007.slp",false,"",""),
 		std::make_tuple("MOORLAND","","MOORLAND","44","9","15009.slp",false,"",""),
 		std::make_tuple("CRACKEDIT","","CRACKEDIT","45","6","15000.slp",false,"",""),
-		std::make_tuple("QUICKSAND","","QUICKSAND","46","40","15018.slp",false,"",""),
+        std::make_tuple("QUICKSAND","","QUICKSAND","46","40","15033.slp",false,"",""),
 		std::make_tuple("BLACK","","BLACK","47","40","15018.slp",false,"",""),
 		std::make_tuple("DLC_ROCK","","DLC_ROCK","40","40","15018.slp",false,"",""),
 		std::make_tuple("DLC_BEACH2","","DLC_BEACH2","51","2","15017.slp",false,"",""),
@@ -1583,6 +1572,39 @@ int MainWindow::run()
 
 		bar->setValue(1);bar->repaint(); //1
 
+        if (patch < 0) {
+
+            logFile << std::endl << "Removing base folders";
+            fs::remove_all(vooblyDir/"Data");
+            fs::remove_all(vooblyDir/"Script.Ai/Brutal2");
+            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
+            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
+            fs::remove(vooblyDir/"age2_x1.xml");
+            fs::remove(versionIniPath);
+
+
+            logFile << std::endl << "Creating base folders";
+            fs::create_directories(vooblyDir/"SaveGame/Multi");
+            fs::create_directories(vooblyDir/"Sound/stream");
+            fs::create_directory(vooblyDir/"Data");
+            fs::create_directory(vooblyDir/"Taunt");
+            fs::create_directory(vooblyDir/"Screenshots");
+            fs::create_directory(vooblyDir/"Scenario");
+
+            if(this->ui->createExe->isChecked()) {
+                logFile << std::endl << "Removing UP base folders";
+                fs::remove(upDir/"Data"/"empires2_x1_p1.dat");
+                fs::remove(upDir/"Data"/"gamedata_x1.drs");
+                fs::remove(upDir/"Data"/"gamedata_x1_p1.drs");
+                fs::remove_all(upDir/"Script.Ai/Brutal2");
+                fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
+                fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
+                fs::create_directories(upDir/"Data");
+            }
+        } else {
+            fs::create_directories(outputDatPath.parent_path());
+        }
+
         switch (patch) {
             case -1: {
                 logFile << std::endl << "Removing language.ini";
@@ -1830,36 +1852,7 @@ int MainWindow::run()
         bar->setValue(bar->value()+1);bar->repaint(); //86
 
 
-		if (patch < 0) { 
-
-            logFile << std::endl << "Removing base folders";
-            fs::remove_all(vooblyDir/"Data");
-            fs::remove_all(vooblyDir/"Script.Ai/Brutal2");
-            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
-            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
-            fs::remove(vooblyDir/"age2_x1.xml");
-            fs::remove(versionIniPath);
-
-
-            logFile << std::endl << "Creating base folders";
-            fs::create_directories(vooblyDir/"SaveGame/Multi");
-            fs::create_directories(vooblyDir/"Sound/stream");
-            fs::create_directory(vooblyDir/"Data");
-            fs::create_directory(vooblyDir/"Taunt");
-            fs::create_directory(vooblyDir/"Screenshots");
-            fs::create_directory(vooblyDir/"Scenario");
-
-            if(this->ui->createExe->isChecked()) {
-                logFile << std::endl << "Removing UP base folders";
-                fs::remove(upDir/"Data"/"empires2_x1_p1.dat");
-                fs::remove(upDir/"Data"/"gamedata_x1.drs");
-                fs::remove(upDir/"Data"/"gamedata_x1_p1.drs");
-                fs::remove_all(upDir/"Script.Ai/Brutal2");
-                fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
-                fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
-                fs::create_directories(upDir/"Data");
-            }
-
+		if (patch < 0) {             
 
             logFile << std::endl << "index DRS files";
             indexDrsFiles(assetsPath); //Slp/wav files to be written into gamedata_x1_p1.drs
@@ -1876,14 +1869,14 @@ int MainWindow::run()
 			if(this->ui->useGrid->isChecked()) {
 				indexDrsFiles(gridInputDir);
 				bar->setValue(bar->value()+1);bar->repaint(); //3
-				indexTerrainFiles(newGridTerrainInputDir);
+                indexDrsFiles(newGridTerrainInputDir, true, true);
 				bar->setValue(bar->value()+2);bar->repaint(); //5
 			} else {
-				indexTerrainFiles(newTerrainInputDir);
+                indexDrsFiles(newTerrainInputDir, true, true);
 				bar->setValue(bar->value()+3);bar->repaint(); //5
 			}
 			if(!fs::is_empty(terrainOverrideDir)) {
-				indexTerrainFiles(terrainOverrideDir);
+                indexDrsFiles(terrainOverrideDir, true, true);
 			}
 			bar->setValue(bar->value()+1);bar->repaint(); //6
 			if(this->ui->useWalls->isChecked())
@@ -2040,6 +2033,7 @@ int MainWindow::run()
                     dialog->exec();
                     (versionOut << version) << hash << std::endl;
                 } else {
+                    version = "2.7.1";
                     (versionOut << version) << std::endl;
                 }                
                 versionOut.close();
@@ -2052,7 +2046,6 @@ int MainWindow::run()
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat file
             logFile << std::endl << "Copy DAT file";
-            fs::create_directories(outputDatPath.parent_path());
             fs::copy_file(hdDatPath,outputDatPath,fs::copy_option::overwrite_if_exists);
             bar->setValue(81);
             std::ofstream versionOut(versionIniPath);

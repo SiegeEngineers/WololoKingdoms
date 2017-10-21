@@ -97,7 +97,7 @@ fs::path getOutPath(fs::path HDPath) {
 	RegQueryValueEx(hKey, L"CurrentDirectory", NULL, NULL, reinterpret_cast<LPBYTE>(temp), &size);
 	RegCloseKey(hKey);
 	fs::path outPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
-	if(!boost::filesystem::exists(outPath)) {
+    if(!boost::filesystem::exists(outPath/"age2_x1")) {
 		if(boost::filesystem::exists(HDPath / "age2_x1")) {
 			outPath = HDPath;
 		} else {
