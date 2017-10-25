@@ -323,6 +323,7 @@ public:
         patchSelection->insertItems(0, QStringList()
          << QApplication::translate("MainWindow", "Patch 5.4", Q_NULLPTR)
          << QApplication::translate("MainWindow", "WK Hippo Mod", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Installer 2.5", Q_NULLPTR)
         );
         patchSelectionTip->setText(QString());
         usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));

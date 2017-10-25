@@ -17,6 +17,8 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	size_t const relicID = 285;
 	size_t const feitoriaID = 1021;
     size_t const tradeWorkshopID = 110;
+    size_t const sharkatzorID = 1222;
+    size_t const kingID = 434;
 	size_t const mountains[] = {310,311,744,745,1041,1042,1043,1044,1045,1046,1047};
     size_t const gates[] = {85,88,90,91,490,491,667,688,669,670,673,674};
     //size_t const gateposts[] = {80,81,92,95,663,664,671,672};
@@ -35,6 +37,9 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 		aocDat->Civs[civIndex].Units[eliteCannonGalleonID].Creatable.HeroMode -= 128;        
         aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC]; //unpackable TC
         aocDat->Civs[civIndex].Units[monkeyBoyID].Class = 10; //This makes gaia monkey boys attack instead of being captured
+        aocDat->Civs[civIndex].Units[sharkatzorID].HideInEditor = 0; //unhide sharkatzor in editor
+        //Kings can't attack, to make sure there are no graphics issues we set the attack graphic to the standing graphic
+        aocDat->Civs[civIndex].Units[kingID].Type50.AttackGraphic = aocDat->Civs[civIndex].Units[kingID].StandingGraphic.first;
         //fix gate rubbles
         for (size_t i = 0; i < sizeof(gates)/sizeof(gates[0]); i++) {
             aocDat->Civs[civIndex].Units[gates[i]].DeadUnitID = 144;

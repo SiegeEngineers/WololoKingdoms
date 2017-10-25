@@ -33,6 +33,7 @@
 #include "fixes/incafix.h"
 #include "fixes/siegetowerfix.h"
 #include "fixes/khmerfix.h"
+#include "fixes/cuttingfix.h"
 #include "fixes/smallfixes.h"
 
 #include "mainwindow.h"
@@ -266,6 +267,7 @@ void MainWindow::changeModPatch() {
     switch(patch) {
         case 0: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
         case 1:     modName += "Hippo Mod"; break;
+        case 2:     modName += dlcLevel == 3?"Installer 2.5":dlcLevel==2?"Installer 2.5 AK":"Installer 2.5 FE"; break;
         //case 2:     modName += "Tournament Patch"; break;
 	}
     if(patch == -1) {
@@ -315,6 +317,7 @@ void MainWindow::changeLanguage() {
 	this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
 	this->ui->patchSelection->setItemText(0,translation["mod0"].c_str());
     this->ui->patchSelection->setItemText(1,translation["mod1"].c_str());
+    this->ui->patchSelection->setItemText(2,translation["mod2"].c_str());
 	updateUI();
 }
 
@@ -354,6 +357,7 @@ void MainWindow::updateUI() {
     switch (patch) {
         case 0: patchFolder = resourceDir/"patches/5.4/";
         case 1: patchFolder = resourceDir;
+        case 2: patchFolder = resourceDir;
         //case 2: patchFolder = resourceDir/"patches/Tournament Patch/";
         default: patchFolder = resourceDir;
     }
@@ -436,6 +440,27 @@ void MainWindow::indexDrsFiles(fs::path const &src, bool expansionFiles, bool te
 	}
 }
 
+void MainWindow::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
+    std::string const civs[] = {"italians-utf8.txt", "indians-utf8.txt", "incas-utf8.txt", "magyars-utf8.txt", "slavs-utf8.txt",
+                                "portuguese-utf8.txt", "ethiopians-utf8.txt", "malians-utf8.txt", "berbers-utf8.txt",
+                                "burmese-utf8.txt", "malay-utf8.txt", "vietnamese-utf8.txt", "khmer-utf8.txt"};
+    for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
+        std::ifstream langIn(inputDir.string()+"/"+civs[i]);
+        std::ofstream langOut(outputDir.string()+"/"+civs[i].substr(0,civs[i].length()-9)+".txt");
+        std::string contents;
+        langIn.seekg(0, std::ios::end);
+        contents.resize(langIn.tellg());
+        langIn.seekg(0, std::ios::beg);
+        langIn.read(&contents[0], contents.size());
+        langIn.close();
+        std::wstring wideContent = strtowstr(contents);
+        std::string outputContent;
+        ConvertUnicode2CP(wideContent.c_str(), outputContent, CP_ACP);
+        langOut << outputContent;
+        langOut.close();
+    }
+}
+
 std::pair<int,std::string> MainWindow::getTextLine(std::string line) {
     int spaceIdx = line.find(' ');
     std::string number = line.substr(0, spaceIdx);
@@ -454,6 +479,40 @@ std::pair<int,std::string> MainWindow::getTextLine(std::string line) {
     if (nb >= 20150 && nb <= 20167) {
         // skip the old civ descriptions
         throw std::invalid_argument("old civ descriptions");
+    }
+    if (nb >= 20312 && nb <= 20341) {
+        switch (nb) {
+            case 20312: nb = 20334; break;
+            case 20313: nb = 20312; break;
+            case 20314: nb = 20338; break;
+            case 20315: nb = 20313; break;
+            case 20316: nb = 20314; break;
+            case 20317: nb = 20315; break;
+            case 20318: nb = 20335; break;
+            case 20319: nb = 20316; break;
+            case 20320: nb = 20317; break;
+            case 20321: nb = 20318; break;
+            case 20322: nb = 20329; break;
+            case 20323: nb = 20330; break;
+            case 20324: nb = 20331; break;
+            case 20325: nb = 20319; break;
+            case 20326: nb = 20339; break;
+            case 20327: nb = 20320; break;
+            case 20328: nb = 20332; break;
+            case 20329: nb = 20340; break;
+            case 20330: nb = 20336; break;
+            case 20331: nb = 20321; break;
+            case 20332: nb = 20322; break;
+            case 20333: nb = 20323; break;
+            case 20334: nb = 20337; break;
+            case 20335: nb = 20324; break;
+            case 20336: nb = 20333; break;
+            case 20337: nb = 20325; break;
+            case 20338: nb = 20326; break;
+            case 20339: nb = 20327; break;
+            case 20340: nb = 20341; break;
+            case 20341: nb = 20328; break;
+        }
     }
     /*
      * Conquerors AI names start at 5800 (5800 = 4660+1140, so offset 1140 in the xml file)
@@ -599,7 +658,7 @@ void MainWindow::makeDrs(std::ofstream *out) {
 
 	// Exclude Forgotten Empires leftovers
 	slpFiles.erase(50163); // Forgotten Empires loading screen
-	slpFiles.erase(50189); // Forgotten Empires main menu
+    slpFiles.erase(50189); // Forgotten Empires main menu
     //slpFiles.erase(53207); // Forgotten Empires in-game logo
 	slpFiles.erase(53208); // Forgotten Empires objective window
 	slpFiles.erase(53209); // ???
@@ -837,7 +896,6 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 	std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements = {
 		//<Name,Regex Pattern if needed,replace name,terrain ID, replace terrain ID,slp to replace,upgrade trees?,tree to replace,new tree>
 		std::make_tuple("DRAGONFOREST","DRAGONFORES(T?)","DRAGONFORES$1","48","21","15029.slp",true,"SNOWPINETREE","DRAGONTREE"),
-		//std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","13","15010.slp",true,"PALMTREE","ACACIA_TREEE"),
 		std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","41","",false,"",""),
 		std::make_tuple("DLC_RAINFOREST","","DLC_RAINFOREST","56","10","15011.slp",true,"FOREST_TREE","DLC_RAINTREE"),
 		std::make_tuple("BAOBAB","","BAOBAB","49","16","",false,"",""),
@@ -849,8 +907,8 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 		std::make_tuple("MOORLAND","","MOORLAND","44","9","15009.slp",false,"",""),
 		std::make_tuple("CRACKEDIT","","CRACKEDIT","45","6","15000.slp",false,"",""),
         std::make_tuple("QUICKSAND","","QUICKSAND","46","40","15033.slp",false,"",""),
-		std::make_tuple("BLACK","","BLACK","47","40","15018.slp",false,"",""),
-		std::make_tuple("DLC_ROCK","","DLC_ROCK","40","40","15018.slp",false,"",""),
+        std::make_tuple("BLACK","BLACK(?!_)","BLACK","47","40","15033.slp",false,"",""),
+        //std::make_tuple("DLC_ROCK","","DLC_ROCK","40","40","15018.slp",false,"",""),
 		std::make_tuple("DLC_BEACH2","","DLC_BEACH2","51","2","15017.slp",false,"",""),
 		std::make_tuple("DLC_BEACH3","","DLC_BEACH3","52","2","15017.slp",false,"",""),
 		std::make_tuple("DLC_BEACH4","","DLC_BEACH4","53","2","15017.slp",false,"",""),
@@ -1001,6 +1059,8 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
     //Manual fix for the mediterranean gates lacking flags
     slpFiles[6978] = HDPath/("resources/_common/drs/graphics/4522.slp");
     slpFiles[6981] = HDPath/("resources/_common/drs/graphics/4523.slp");
+
+    aocDat->Graphics[9196].Deltas.erase(aocDat->Graphics[9196].Deltas.begin());
 
 	short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
@@ -1437,6 +1497,7 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
 
 	fs::remove_all(newDir/"Taunt");
 	fs::remove_all(newDir/"Sound");
+    fs::remove_all(newDir/"History");
 	fs::remove_all(newDir/"Script.Rm");
 	fs::remove_all(newDir/"Script.Ai");
 	fs::remove_all(newDir/"Screenshots");
@@ -1462,6 +1523,7 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
 			"mklink /J \""+newDirString+"Script.Rm\" \""+ vooblyDirString+"Script.Rm\" & "
 			"mklink /J \""+newDirString+"Script.Ai\" \""+ vooblyDirString+"Script.Ai\" & "
 			"mklink /J \""+newDirString+"Sound\" \""+ vooblyDirString+"Sound\" & "
+            "mklink /J \""+newDirString+"History\" \""+ vooblyDirString+"History\" & "
 			"mklink /J \""+newDirString+"Screenshots\" \""+ vooblyDirString+"Screenshots\" & "
 			"mklink /J \""+newDirString+"Scenario\" \""+ vooblyDirString+"Scenario\" & "
             + languageString +
@@ -1520,6 +1582,8 @@ int MainWindow::run()
 		std::string versionIniPath = vooblyDir.string() + "/version.ini";
 		fs::path soundsInputPath = HDPath / "resources/_common/sound/";
 		fs::path soundsOutputPath = vooblyDir / "Sound/";
+        fs::path historyInputPath = HDPath / ("resources/"+language+"/strings/history/");
+        fs::path historyOutputPath = vooblyDir / "History/";
 		fs::path tauntInputPath = HDPath / "resources/en/sound/taunt/";
 		fs::path tauntOutputPath = vooblyDir / "Taunt/";
 		fs::path xmlPath = resourceDir/"WK1.xml";
@@ -1588,6 +1652,7 @@ int MainWindow::run()
             fs::create_directories(vooblyDir/"Sound/stream");
             fs::create_directory(vooblyDir/"Data");
             fs::create_directory(vooblyDir/"Taunt");
+            fs::create_directory(vooblyDir/"History");
             fs::create_directory(vooblyDir/"Screenshots");
             fs::create_directory(vooblyDir/"Scenario");
 
@@ -1623,6 +1688,12 @@ int MainWindow::run()
                 UPModdedExe = "WKHM";
                 version = "1.0"; break;
             } break;
+            case 2: {
+                patchFolder = resourceDir/"patches/2.5/";
+                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+                UPModdedExe = "WKI25";
+                version = "2.5"; break;
+            } break;
             /*
             case 2: {
                 patchFolder = resourceDir/"patches/Tournament Patch/";
@@ -1642,13 +1713,18 @@ int MainWindow::run()
          * Create the language files (.ini for Voobly, .dll for offline)
          */
 
+        //Optional Onager cutting tech
+        langReplacement[7440] = translation["7440"];
+        langReplacement[8440] = translation["8440"];
+        langReplacement[17440] = translation["17440"];
+        langReplacement[28440] = translation["28440"];
         //terrain descriptions for new terrains in scenario editor
         langReplacement[10626] = translation["10626"];
         langReplacement[10619] = translation["10619"];
         langReplacement[10679] = translation["10679"];
         //relics victory condition
         langReplacement[30195] = translation["30195"];
-        if(fs::exists("resources/"+language+".txt")) {
+        if(fs::exists(resourceDir/(language+".txt"))) {
             //Fix mistakes in old terrain descriptions in scenario editor
             langReplacement[10622] = translation["10622"];
             langReplacement[10642] = translation["10642"];
@@ -1887,7 +1963,8 @@ int MainWindow::run()
 			this->ui->label->setText((translation["working"]+"\n"+translation["workingFiles"]).c_str());
 			this->ui->label->repaint();
 
-
+            logFile << std::endl << "History Files";
+            copyHistoryFiles(historyInputPath, historyOutputPath);
             logFile << std::endl << "Civ Intro Sounds";
 			copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
 			bar->setValue(bar->value()+1);bar->repaint(); //9
@@ -1999,6 +2076,7 @@ int MainWindow::run()
                 wololo::siegeTowerFix,
                 wololo::khmerFix,
                 wololo::smallFixes,
+                wololo::cuttingFix,
                 wololo::ai900UnitIdFix
             };
 
@@ -2027,13 +2105,13 @@ int MainWindow::run()
                 QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
                 std::ofstream versionOut(versionIniPath);
                 std::string hash = hashData.toBase64().toStdString().substr(0,6);
-                if (hash != "wPVW0X") {
+                if (hash != "oJ0SeT") {
                     version = "2.7.";
                     dialog = new Dialog(this,translation["dialogBeta"].c_str());
                     dialog->exec();
                     (versionOut << version) << hash << std::endl;
                 } else {
-                    version = "2.7.1";
+                    version = "2.7.2";
                     (versionOut << version) << std::endl;
                 }                
                 versionOut.close();

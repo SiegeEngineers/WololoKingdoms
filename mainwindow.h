@@ -38,7 +38,7 @@ private:
     std::map<int, fs::path> wavFiles;
     std::map<std::string,fs::path> newTerrainFiles;
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
-    std::string version = "2.7.1 (c)";
+    std::string version = "2.7.2";
     std::string language = "en";
     std::map<std::string, std::string> translation;
     bool secondAttempt = false;
@@ -70,6 +70,7 @@ private:
 	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID);
     void recCopy(fs::path const &src, fs::path const &dst, bool skip = false, bool force = false);
     void indexDrsFiles(fs::path const &src, bool expansionFiles = true, bool terrainFiles = false);
+    void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
     std::pair<int,std::string> getTextLine(std::string line);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
 	void makeDrs(std::ofstream *out);

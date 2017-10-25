@@ -265,6 +265,11 @@
            <string>WK Hippo Mod</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Installer 2.5</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
