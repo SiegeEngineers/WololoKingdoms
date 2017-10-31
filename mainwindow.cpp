@@ -113,8 +113,14 @@ MainWindow::MainWindow(QWidget *parent) :
             break;
     }
     if(!SteamApps()) {
-		this->ui->label->setText(translation["noSteam"].c_str());
-		dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
+        if(!SteamAPI_Init()) {
+            this->ui->label->setText("Steam API couldn't be initialized");
+            dialog = new Dialog(this,"Steam API couldn't be initialized",translation["errorTitle"]);
+            dialog->exec();
+        } else {
+            this->ui->label->setText(translation["noSteam"].c_str());
+            dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
+        }
 		dialog->exec();
         allowRun = false;
 	} else if(SteamApps()->BIsDlcInstalled(239550)) {
@@ -605,7 +611,13 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
                 boost::replace_all(line, "\xc3\xaa", "e");
                 boost::replace_all(line, "\xc3\xb9", "u");
                 boost::replace_all(line, "\xc6\xb0", "u");
-                dllOut->setString(nb, line);
+                boost::replace_all(line, "\xbb\x99", "o");
+                try {
+                    dllOut->setString(nb, line);
+                }
+                catch (std::string const & e) {
+                    dllOut->setString(nb, line);
+                }
 			}
 		}
 
@@ -1433,10 +1445,13 @@ void MainWindow::hotkeySetup() {
 		}
 		return;
 	}
-    if (this->ui->hotkeyChoice->currentIndex() == 1 && !fs::exists(hkiOutPath)) {
+    if (this->ui->hotkeyChoice->currentIndex() == 1) {
         fs::remove(modHkiOutPath);
         fs::remove(upHkiOutPath);
-		fs::copy_file(aocHkiPath, hkiOutPath);//use voobly hotkeys, copy standard aoc hotkeys if the file doesn't exist yet
+        fs::remove(modHki2OutPath);
+        fs::remove(upHki2OutPath);
+        if(!fs::exists(hkiOutPath))
+            fs::copy_file(aocHkiPath, hkiOutPath);//use voobly hotkeys, copy standard aoc hotkeys if the file doesn't exist yet
     }
 	if (this->ui->hotkeyChoice->currentIndex() == 2) {
 		fs::copy_file(hkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
@@ -1449,6 +1464,10 @@ void MainWindow::hotkeySetup() {
 		}
 	}
 	if(this->ui->hotkeyChoice->currentIndex() == 3) {
+        fs::remove(modHkiOutPath);
+        fs::remove(upHkiOutPath);
+        fs::remove(modHki2OutPath);
+        fs::remove(upHki2OutPath);
 		fs::path backup = hkiOutPath;
 		backup+=".bak";
 		if(fs::exists(hkiOutPath))

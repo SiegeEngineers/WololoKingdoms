@@ -38,7 +38,7 @@ private:
     std::map<int, fs::path> wavFiles;
     std::map<std::string,fs::path> newTerrainFiles;
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
-    std::string version = "2.7.2";
+    std::string version = "2.7.2 (b)";
     std::string language = "en";
     std::map<std::string, std::string> translation;
     bool secondAttempt = false;

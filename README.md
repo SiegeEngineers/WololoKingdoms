@@ -30,12 +30,22 @@ You can launch the game using the "WK.exe" in the "age2_x1/" folder.
 Rarely there can be issues with creating the language_x1_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
 If this error happens every time, your original language file may be corrupt.
 
-## Troubleshooting/Known issues
+## Troubleshooting/Known issues/FAQ
 
 I've done my best to make the installer stable, but sometimes it can still have issues.
 Generally, if you encounter problems: Make sure you run the installer as administrator (right click the exe -> run as administrator). If you get a message about an exception, often just closing the installer and running it again helps
-- Creating a language_x1_p1.dll language file for offline use without Voobly can be unstable unfortunately. You may need to rerun it a few times, but it should eventually work. 
+- **Q**: The installer can't read/write the language_x1_p1.dll when creating an offline installation! What's going on?
+**A**: Creating a language_x1_p1.dll language file for offline use without Voobly can be unstable unfortunately. You may need to rerun it a few times, but it should eventually work. 
 If you don't need to use an offline installation though, make sure that checkbox is unchecked, to avoid potential issues.
+- **Q**: Why is my interface is messed up? It looks like this: https://imgur.com/a/xouXF
+**A**: This happens if you reinstalled an older version of the compatibility patch after installing WololoKingdoms. To fix it, you can go into the Age2HD folder and delete the "compatslp" subfolder.
+- **Q**: Help! Why do my monks turn invisible?
+**A**: Make sure you unpack the installer into an empty directory instead of a folder that still has files from an older version of the installer. Leftover files can cause that effect.
+Rerun the installer after unpacking into an empty directory and this should be fixed.
+- **Q**: This doesn't work with Linux/Wine
+**A**: I made a shell script that should create missing symlinks that don't get created under wine: https://1drv.ms/u/s!Ark-SUz3-qr5qUcUahqd95ULA_sa
+Put this into your aoc folder (so next to the Voobly Mods directory) and run it. 
+Note that it's possible there's a seperate, unfixed crashing issue with the offline installation, I have only managed to get the Voobly version running. It's not clear if that's an issue with WololoKingdoms or my Wine/Linux installation.
 
 ## New maps
 
@@ -44,6 +54,7 @@ ZR@sm_ maps are the special maps from the HD expansions
 ZR@rw_ maps are the real world maps from the HD expansions
 ZR@CtR maps are capture the relic maps. When playing these, make sure to select "Relics" as the victory condition
 SD_ maps are sudden death maps, with only one TC being allowed, and losing that will make you lose the game.
+NoCut_Black_Forest is a concept map, showing off the possibility to disable regular Onager cutting and enabling mangonel/onager cutting with a seperate imperial age technology.
 
 ## Regional Monks, Independent Architecture, Custom Mods
 
@@ -62,9 +73,10 @@ There are also additional monk skins for Middle Eastern/African and Asian Monks.
 
 There are currently two data mod able to be selected for installation (the regular WololoKingdoms mod needs to be installed first for it to work):
 - The WK Hippo mod moves Stone Walls&Gates to the Castle Age (with full HP) and makes players start with -370 stone (30 with medium resources. At request of Tsu_Nilpferd for the Clash of the Hippo tournament.
-- The Patch 5.4 mod is for watching older WK games played when 5.4 was the live patch on Steam. Note that you also need to select the correct version of the UP 1.5 beta patch to watch recorded games with (You can check the Voobly Match page to see which one you need).
+- The WK Patch 5.4 mod is for watching older WK games played when 5.4 was the live patch on Steam. Note that you also need to select the correct version of the UP 1.5 beta patch to watch recorded games with (You can check the Voobly Match page to see which one you need).
+- The WK Installer 2.5 mod is for watching WK games played on patch 5.5 and version 2.5 of the installer. Note that you also need to select the correct version of the UP 1.5 beta patch to watch recorded games with (You can check the Voobly Match page to see which one you need, in most cases it's probably the Beta R5).
 
-It's also possible for other data mods based on WK to be added to the installer.
+It's also possible for other data mods based on WK to be added to the installer. With the exception of older patches for rec viewing, you need to own all DLCs to be able to install a data mod.
 
 ## Limitations
 Because of the features missing from the original AOC engine, not everything from the expansions can be replicated, this includes :
@@ -75,7 +87,7 @@ Because of the features missing from the original AOC engine, not everything fro
 	- Genitours and Siege Towers use the old Turtle Ship hotkey that has become free
 	- Camel hotkey for Battle Elephants
 	- Wonder hotkey for Palisade Gates and Feitorias
-- There may be other things not working properly, I will add them to this list when they are reported
+- Everything else should be working identically to the HD version, but it's possible I've overlooked something.
 
 ## Keep in mind
 The Forgotten team has made a fantastic work with their expansions and, while this is probably not the way they expected their expansions to be played, I hope they can understand that many people are disapointed with the current state of AOE2HD engine.
