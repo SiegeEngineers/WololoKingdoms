@@ -16,17 +16,13 @@ void hotkeysPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	int const longboatUnitId = 250; // we will use that hotkey for the turtle ship
 	int const turtleUnitId = 831; //we will use this for siege towers and genitours now that it's free
 
-	(*langReplacement)[19053] = "Longboat, Caravel, Turtle Ship";
-	(*langReplacement)[19072] = "Genitour, Siege Tower";
-	(*langReplacement)[19032] = "Genitour: Change in Dock Menu";
-	(*langReplacement)[19048] = "Siege Tower: Change in Dock Menu";
-
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		for(int i = palisadeGateUnitIdStart; i<=palisadeGateUnitIdStop; i++) {
 			aocDat->Civs[civIndex].Units[i].HotKey = aocDat->Civs[civIndex].Units[wonderUnitId].HotKey;
 		}
 
 		aocDat->Civs[civIndex].Units[feitoriaUnitId].HotKey = aocDat->Civs[civIndex].Units[wonderUnitId].HotKey;
+        aocDat->Civs[civIndex].Units[wonderUnitId].HotKey = -1; //Wonder hotkey isn't necessary and this avoids conflicts in imp
 		aocDat->Civs[civIndex].Units[battleEleId].HotKey = aocDat->Civs[civIndex].Units[camelUnitId].HotKey;
 		aocDat->Civs[civIndex].Units[siegeTowerUnitId].HotKey = aocDat->Civs[civIndex].Units[turtleUnitId].HotKey;
 		aocDat->Civs[civIndex].Units[genitourPlaceholderUnitId].HotKey = aocDat->Civs[civIndex].Units[turtleUnitId].HotKey;

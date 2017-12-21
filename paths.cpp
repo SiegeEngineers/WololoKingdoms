@@ -96,7 +96,10 @@ fs::path getOutPath(fs::path HDPath) {
 		RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\DirectPlay\\Applications\\Age of Empires II - The Conquerors Expansion", 0, KEY_READ, &hKey);
 	RegQueryValueEx(hKey, L"CurrentDirectory", NULL, NULL, reinterpret_cast<LPBYTE>(temp), &size);
 	RegCloseKey(hKey);
-	fs::path outPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
+    std::string outPathString = wstrtostr(std::wstring(std::basic_string<TCHAR>(temp)));
+    if(outPathString.at(outPathString.length()-1) != '\\')
+        outPathString += "\\";
+    fs::path outPath(outPathString);
     if(!boost::filesystem::exists(outPath/"age2_x1")) {
 		if(boost::filesystem::exists(HDPath / "age2_x1")) {
 			outPath = HDPath;

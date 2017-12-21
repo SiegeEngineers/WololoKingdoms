@@ -38,7 +38,7 @@ private:
     std::map<int, fs::path> wavFiles;
     std::map<std::string,fs::path> newTerrainFiles;
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
-    std::string version = "2.7.2 (b)";
+    std::string version = "2.7.2 (d)";
     std::string language = "en";
     std::map<std::string, std::string> translation;
     bool secondAttempt = false;
@@ -53,10 +53,11 @@ private:
 
     fs::path nfzUpOutPath;
     fs::path nfzOutPath;
+    /*
     fs::path modHkiOutPath;
     fs::path modHki2OutPath;
     fs::path upHkiOutPath;
-    fs::path upHki2OutPath;
+    fs::path upHki2OutPath; */
     fs::path vooblyDir;
     fs::path upDir;
     std::string referenceDir = "WololoKingdoms FE";
@@ -80,10 +81,14 @@ private:
 	std::string tolower(std::string line);
 	void createMusicPlaylist(std::string inputDir, std::string const outputDir);
 	void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat);
+    void adjustArchitectureFlags(genie::DatFile *aocDat, std::string flagFilename);
 	void patchArchitectures(genie::DatFile *aocDat);
 	bool checkGraphics(genie::DatFile *aocDat, short graphicID, std::vector<int> checkedGraphics);
     void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slpIdConversion = std::map<int,int>());
     short duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>& replacedGraphics, std::vector<short> duplicatedGraphics, short graphicID, short compareID, short offset, bool manual = false, std::map<int,int> slpIdConversion = std::map<int,int>());
+    bool identifyHotkeyFile(fs::path directory, fs::path& maxHki, fs::path& lastEditedHki);
+    void copyHotkeyFile(fs::path maxHki, fs::path lastEditedHki, fs::path dst);
+    void removeWkHotkeys();
 	void hotkeySetup();
     void symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool vooblySrc, bool vooblyDst, bool dataMod = false);
 	bool copyData(QIODevice &inFile, QIODevice &outFile);

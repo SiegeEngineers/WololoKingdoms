@@ -51,15 +51,18 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    resourceDir = fs::path("resources/");
+    resourceDir = fs::path("resources\\");
 	ui->setupUi(this);
     this->ui->label->setWordWrap(true);
     steamPath = getSteamPath();
+    boost::replace_all(steamPath,"/","\\");
 	HDPath = getHDPath(steamPath);
-	outPath = getOutPath(HDPath);
+    HDPath.make_preferred();
+    outPath = getOutPath(HDPath);
+    outPath.make_preferred();
 
-	vooblyDir = outPath / "Voobly Mods/AOC/Data Mods/WololoKingdoms FE";
-	upDir = outPath / "Games/WololoKingdoms FE";
+    vooblyDir = outPath / "Voobly Mods\\AOC\\Data Mods\\WololoKingdoms FE";
+    upDir = outPath / "Games\\WololoKingdoms FE";
 
 	if(!fs::exists(vooblyDir)) {
 		this->ui->usePatch->setDisabled(true);
@@ -67,11 +70,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	nfzUpOutPath = upDir / "Player.nfz";
 	nfzOutPath = vooblyDir / "Player.nfz";
+    /*
 	modHkiOutPath = vooblyDir / "player1.hki";
 	modHki2OutPath = vooblyDir / "player2.hki";
 	upHkiOutPath = upDir / "player1.hki";
 	upHki2OutPath = upDir / "player2.hki";
-
+*/
     changeLanguage();
 
     QDialog* dialog;
@@ -114,8 +118,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     if(!SteamApps()) {
         if(!SteamAPI_Init()) {
-            this->ui->label->setText("Steam API couldn't be initialized");
-            dialog = new Dialog(this,"Steam API couldn't be initialized",translation["errorTitle"]);
+            this->ui->label->setText(translation["noSteamApi"].c_str());
+            dialog = new Dialog(this,translation["noSteamApi"].c_str(),translation["errorTitle"]);
             dialog->exec();
         } else {
             this->ui->label->setText(translation["noSteam"].c_str());
@@ -169,7 +173,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		changeModPatch();
 	} );
 	
-	const char * questionIcon = "resources/question.png";
+    const char * questionIcon = "resources\\question.png";
 	//TODO do this in a loop
 
     //What's this for the hotkey selection dropdown
@@ -200,6 +204,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect( this->ui->patchSelectionTip, &QPushButton::clicked, this, [this]() {
 		QWhatsThis::showText(this->ui->patchSelectionTip->mapToGlobal(QPoint(0,0)),this->ui->patchSelectionTip->whatsThis());
 	} );
+
+    //WhatsThis for the garrison flag fix option
+    this->ui->flagsTip->setIcon(QIcon(questionIcon));
+    this->ui->flagsTip->setIconSize(QSize(16,16));
+    this->ui->flagsTip->setWhatsThis(translation["flagsTip"].c_str());
+    QObject::connect( this->ui->flagsTip, &QPushButton::clicked, this, [this]() {
+        QWhatsThis::showText(this->ui->flagsTip->mapToGlobal(QPoint(0,0)),this->ui->flagsTip->whatsThis());
+    } );
 
     //Checkbox en-/disabling the patch selection dropdown
 	QObject::connect( this->ui->usePatch, &QCheckBox::clicked, this, [this]() {
@@ -274,7 +286,8 @@ void MainWindow::changeModPatch() {
         case 0: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
         case 1:     modName += "Hippo Mod"; break;
         case 2:     modName += dlcLevel == 3?"Installer 2.5":dlcLevel==2?"Installer 2.5 AK":"Installer 2.5 FE"; break;
-        //case 2:     modName += "Tournament Patch"; break;
+        case 3:     modName += "No Wall Mod"; break;
+        //case 4:     modName += "Tournament Patch"; break;
 	}
     if(patch == -1) {
 		vooblyDir = vooblyDir.parent_path() / "WololoKingdoms FE";
@@ -284,11 +297,7 @@ void MainWindow::changeModPatch() {
         upDir = upDir.parent_path() / modName;
 	}
 	nfzUpOutPath = upDir / "Player.nfz";
-	nfzOutPath = vooblyDir / "Player.nfz";
-	modHkiOutPath = vooblyDir / "player1.hki";
-	modHki2OutPath = vooblyDir / "player2.hki";
-	upHkiOutPath = upDir / "player1.hki";
-	upHki2OutPath = upDir / "player2.hki";
+    nfzOutPath = vooblyDir / "Player.nfz";
 	updateUI();
 }
 
@@ -298,7 +307,7 @@ void MainWindow::changeLanguage() {
      * as well as some special in-game lines (Terrain names in the scenario editor, some fixes for faulty lines in the original language files)
      */
 	std::string line;
-	std::ifstream translationFile("resources/"+language+".txt");
+    std::ifstream translationFile("resources\\"+language+".txt");
 	while (std::getline(translationFile, line)) {
         /*
          *  \\\\n -> \\n, means we want a \n in the text files for aoc
@@ -320,10 +329,7 @@ void MainWindow::changeLanguage() {
     this->ui->usePatch->setText(translation["usePatch"].c_str());
 	this->ui->hotkeyChoice->setItemText(1,translation["hotkeys1"].c_str());
 	this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"].c_str());
-	this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
-	this->ui->patchSelection->setItemText(0,translation["mod0"].c_str());
-    this->ui->patchSelection->setItemText(1,translation["mod1"].c_str());
-    this->ui->patchSelection->setItemText(2,translation["mod2"].c_str());
+    this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
 	updateUI();
 }
 
@@ -361,10 +367,11 @@ void MainWindow::updateUI() {
      */
     fs::path patchFolder;
     switch (patch) {
-        case 0: patchFolder = resourceDir/"patches/5.4/";
+        case 0: patchFolder = resourceDir/"patches\\5.4\\";
         case 1: patchFolder = resourceDir;
         case 2: patchFolder = resourceDir;
-        //case 2: patchFolder = resourceDir/"patches/Tournament Patch/";
+        case 3: patchFolder = resourceDir;
+        //case 2: patchFolder = resourceDir/"patches\\Tournament Patch\\";
         default: patchFolder = resourceDir;
     }
 
@@ -451,8 +458,8 @@ void MainWindow::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
                                 "portuguese-utf8.txt", "ethiopians-utf8.txt", "malians-utf8.txt", "berbers-utf8.txt",
                                 "burmese-utf8.txt", "malay-utf8.txt", "vietnamese-utf8.txt", "khmer-utf8.txt"};
     for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
-        std::ifstream langIn(inputDir.string()+"/"+civs[i]);
-        std::ofstream langOut(outputDir.string()+"/"+civs[i].substr(0,civs[i].length()-9)+".txt");
+        std::ifstream langIn(inputDir.string()+"\\"+civs[i]);
+        std::ofstream langOut(outputDir.string()+"\\"+civs[i].substr(0,civs[i].length()-9)+".txt");
         std::string contents;
         langIn.seekg(0, std::ios::end);
         contents.resize(langIn.tellg());
@@ -885,7 +892,6 @@ std::string MainWindow::tolower(std::string line) {
 }
 
 void MainWindow::createMusicPlaylist(std::string inputDir, std::string const outputDir) {
-	boost::replace_all(inputDir, "/", "\\");
 	std::ofstream outputFile(outputDir);
 	for (int i = 1; i <= 23; i++ ) {
 		outputFile << inputDir << "xmusic" << std::to_string(i) << ".mp3" <<  std::endl;
@@ -987,17 +993,17 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 			terrainOverrides["15023.slp"] = newTerrainFiles["15023.slp"];
 		}
 		//str = regex_replace(str, std::regex("#const\\s+BAOBAB\\s+49"), "#const BAOBAB 16");
-		std::ofstream out(outputDir.string()+"/"+mapName);
+        std::ofstream out(outputDir.string()+"\\"+mapName);
 		out << str;
 		out.close();
 		if (mapName.substr(0,3) == "rw_" || mapName.substr(0,3) == "sm_") {
 			std::string scenarioFile = it->stem().string()+".scx";
-			terrainOverrides[scenarioFile] = fs::path(inputDir.string()+"/"+scenarioFile);
+            terrainOverrides[scenarioFile] = fs::path(inputDir.string()+"\\"+scenarioFile);
 		}
 		if (terrainOverrides.size() != 0) {
-			QuaZip zip(QString((outputDir.string()+"/ZR@"+mapName).c_str()));
+            QuaZip zip(QString((outputDir.string()+"\\ZR@"+mapName).c_str()));
 			zip.open(QuaZip::mdAdd, NULL);
-			terrainOverrides[mapName] = fs::path(outputDir.string()+"/"+mapName);
+            terrainOverrides[mapName] = fs::path(outputDir.string()+"\\"+mapName);
 			for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
 				QuaZipFile outFile(&zip);
 				QuaZipNewInfo fileInfo(QString(files->first.c_str()));;
@@ -1011,7 +1017,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 				inFile.close();
 			}
 			zip.close();
-			fs::remove(fs::path(outputDir.string()+"/"+mapName));
+            fs::remove(fs::path(outputDir.string()+"\\"+mapName));
 		}
 		terrainOverrides.clear();
 	}
@@ -1055,10 +1061,37 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	//terrainSwap(hdDat, aocDat, 15,45,15000); //cracked sand
 }
 
+void MainWindow::adjustArchitectureFlags(genie::DatFile *aocDat, std::string flagFilename) {
+    std::string line;
+    std::ifstream flagFile(flagFilename);
+    while (std::getline(flagFile, line)) {
+        int index = line.find(',');
+        int civID = std::atoi(line.substr(0,index).c_str());
+        line = line.substr(index+1, std::string::npos);
+        index = line.find(',');
+        int unitID = std::atoi(line.substr(0,index).c_str());
+        line = line.substr(index+1, std::string::npos);
+        index = line.find(',');
+        int delta = std::atoi(line.substr(0,index).c_str());
+        line = line.substr(index+1, std::string::npos);
+        index = line.find(',');
+        int x = std::atoi(line.substr(0,index).c_str());
+        int y = std::atoi(line.substr(index+1,std::string::npos).c_str());
+        if (unitID == 18 || unitID == 103) {
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].StandingGraphic.first].Deltas[delta].DirectionX = x;
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].StandingGraphic.first].Deltas[delta].DirectionY = y;
+        } else {
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].Creatable.GarrisonGraphic].Deltas[delta].DirectionX = x;
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].Creatable.GarrisonGraphic].Deltas[delta].DirectionY = y;
+        }
+    }
+    flagFile.close();
+}
+
 void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 
     /*
-     * First, we have to fix the mess that mediterranean gates are...
+     * Manual Fixes before the IA seperation
      */
 
     //Gatepost units should have n1x standing graphic, not nnx
@@ -1069,10 +1102,14 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
     }
 
     //Manual fix for the mediterranean gates lacking flags
-    slpFiles[6978] = HDPath/("resources/_common/drs/graphics/4522.slp");
-    slpFiles[6981] = HDPath/("resources/_common/drs/graphics/4523.slp");
+    slpFiles[6978] = HDPath/("resources\\_common\\drs\\graphics\\4522.slp");
+    slpFiles[6981] = HDPath/("resources\\_common\\drs\\graphics\\4523.slp");
 
     aocDat->Graphics[9196].Deltas.erase(aocDat->Graphics[9196].Deltas.begin());
+
+    /*
+     * IA seperation
+     */
 
 	short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
@@ -1084,18 +1121,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	short burmese = 30; //These are used for ID reference
     for(short c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
 		std::map<short,short> replacedGraphics;
-        /*
-        if(civIDs[c] == 24) {
-            short newGraphicID;
-            std::vector <short> duplicatedGraphics;
-            short * graphicID = &aocDat->Civs[civIDs[c]].Units[81].StandingGraphic.first;
-            newGraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, *graphicID,
-                    aocDat->Civs[burmese].Units[81].StandingGraphic.first, c, true);
-            replacedGraphics[*graphicID] = newGraphicID;
-            *graphicID = newGraphicID;
-            slpFiles[41179] = HDPath/("resources/_common/drs/gamedata_x2/6979.slp");
-        }
-        */
+        std::map<short,short> replacedFlags;
 		//buildings
 		for(unsigned int b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].StandingGraphic.first,
@@ -1111,6 +1137,19 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 				replaceGraphic(aocDat, &(it->GraphicID), compIt->GraphicID, c, replacedGraphics);
 				compIt++;
 			}
+            oldGraphicID = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Creatable.GarrisonGraphic;
+            if(oldGraphicID != -1) {
+                if(replacedFlags[oldGraphicID] > 0)
+                    aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Creatable.GarrisonGraphic = replacedFlags[oldGraphicID];
+                else {
+                    genie::Graphic newFlag = aocDat->Graphics[oldGraphicID];
+                    newFlag.ID = aocDat->Graphics.size();
+                    aocDat->Graphics.push_back(newFlag);
+                    aocDat->GraphicPointers.push_back(1);
+                    replacedFlags[oldGraphicID] = newFlag.ID;
+                    aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Creatable.GarrisonGraphic = newFlag.ID;
+                }
+            }
 		}
 		//units like ships
 		for(unsigned int u = 0; u < sizeof(unitIDs)/sizeof(short); u++) {
@@ -1121,14 +1160,6 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 
 		bar->setValue(bar->value()+1);bar->repaint(); //37-52
 	}
-	//Let the Berber Mill have 40 frames instead of 8/10, which is close to the african mill with 38 frames
-	aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].FrameCount = 40;
-	aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].FrameCount = 40;
-    aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].Deltas[0].GraphicID].FrameCount = 40;
-    aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].Deltas[1].GraphicID].FrameCount = 40;
-
-	//Fix the missionary converting frames while we're at it
-	aocDat->Graphics[6616].FrameCount = 14;
 
     /*
      * We'll temporarily give the monk 10 frames so this value is the one used for the new
@@ -1154,7 +1185,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 			newGraphic.SLP = newSLP;
 			aocDat->Graphics.push_back(newGraphic);
 			aocDat->GraphicPointers.push_back(1);
-			slpFiles[newSLP] = HDPath/("resources/_common/drs/graphics/776.slp");
+            slpFiles[newSLP] = HDPath/("resources\\_common\\drs\\graphics\\776.slp");
 		} else {
 			monkHealingGraphic = 7340; //meso healing graphic
 		}
@@ -1199,9 +1230,27 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	}
     aocDat->Graphics[998].FrameCount = 6; //Old Value again
 
+    /*
+     * Manual fixes after IA seperation
+     */
+
+    //Let the Mongol Mill have 40 frames instead of 8/10, which is close to the dark age mill with 43 frames
+    aocDat->Graphics[aocDat->Civs[12].Units[129].StandingGraphic.first].FrameCount = 40;
+    aocDat->Graphics[aocDat->Civs[12].Units[130].StandingGraphic.first].FrameCount = 40;
+    //aocDat->Graphics[aocDat->Graphics[aocDat->Civs[12].Units[129].StandingGraphic.first].Deltas[0].GraphicID].FrameCount = 40;
+    //aocDat->Graphics[aocDat->Graphics[aocDat->Civs[12].Units[130].StandingGraphic.first].Deltas[1].GraphicID].FrameCount = 40;
+
+    //Let the Berber Mill have 40 frames instead of 8/10, which is close to the african mill with 38 frames
+    aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].FrameCount = 40;
+    aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].FrameCount = 40;
+    aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[129].StandingGraphic.first].Deltas[0].GraphicID].FrameCount = 40;
+    aocDat->Graphics[aocDat->Graphics[aocDat->Civs[27].Units[130].StandingGraphic.first].Deltas[1].GraphicID].FrameCount = 40;
+
+    //Fix the missionary converting frames while we're at it
+    aocDat->Graphics[6616].FrameCount = 14;
     //Manual fix for missing portugese flags
-    slpFiles[41178] = HDPath/("resources/_common/drs/graphics/4522.slp");
-    slpFiles[41181] = HDPath/("resources/_common/drs/graphics/4523.slp");
+    slpFiles[41178] = HDPath/("resources\\_common\\drs\\graphics\\4522.slp");
+    slpFiles[41181] = HDPath/("resources\\_common\\drs\\graphics\\4523.slp");
 
 }
 
@@ -1294,11 +1343,11 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
     newGraphic.ID = newGraphicID;
     if(/*!manual && */newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
         // This is a graphic where we want a new SLP file (as opposed to one where the a new SLP mayb just be needed for some deltas
-		fs::path src = HDPath/("resources/_common/drs/gamedata_x2/"+std::to_string(newGraphic.SLP)+".slp");
+        fs::path src = HDPath/("resources\\_common\\drs\\gamedata_x2\\"+std::to_string(newGraphic.SLP)+".slp");
 		if(fs::exists(src))
 			slpFiles[newSLP] = src;
 		else {
-			src = HDPath/("resources/_common/drs/graphics/"+std::to_string(newGraphic.SLP)+".slp");
+            src = HDPath/("resources\\_common\\drs\\graphics\\"+std::to_string(newGraphic.SLP)+".slp");
 			if(fs::exists(src))
 				slpFiles[newSLP] = src;
 		}        
@@ -1404,81 +1453,179 @@ void MainWindow::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int 
 	}
 }
 
+bool MainWindow::identifyHotkeyFile(fs::path directory, fs::path& maxHki, fs::path& lastEditedHki) {
+    /*
+     * Checks all .hki file in directory. The hotkey file with the highest number is saved in maxHki,
+     * the hotkey file that was last edited in lastEditedHki. These are the two most likely candidates for the hotkey file
+     * that's actually in use.
+     *
+     * Returns true if a hotkey file was found
+     */
+    int maxHkiNumber = -1;
+    std::time_t lastHkiEdit = std::time_t(0);
+    for (fs::directory_iterator current(directory), end;current != end; ++current) {
+        fs::path currentPath(current->path());
+        std::string extension = currentPath.extension().string();
+        if (extension == ".hki") {
+            std::string numberString = currentPath.stem().string().substr(6);
+            if(numberString.find_first_not_of( "0123456789" ) != std::string::npos)
+                continue;
+            int hkiNumber = std::atoi(numberString.c_str());
+            if (hkiNumber > maxHkiNumber) {
+                maxHkiNumber = hkiNumber;
+                maxHki = currentPath;
+            }
+            std::time_t lastModified = fs::last_write_time(currentPath);
+            if (lastModified > lastHkiEdit) {
+                lastHkiEdit = lastModified;
+                lastEditedHki = currentPath;
+            }
+
+        }
+    }
+    if (maxHkiNumber != -1)
+        return true;
+    else
+        return false;
+}
+
+void MainWindow::copyHotkeyFile(fs::path maxHki, fs::path lastEditedHki, fs::path dst) {
+    /*
+     * See identifyHotkeyFile for extra info on maxHki, lastEditedHki
+     * copies the .hki file maxHki into the directory dst. If maxHki already exists, the last 2 versions are kept as backup
+     * If maxHki is not the same as lastEditedHki, it also copies lastEditedHki into dst, with the suffix "_alt".
+     * Players can remove the suffix and thus replace the .hki file in case maxHki did not contain the correct set
+     */
+    fs::path bak1 = dst.parent_path() / (dst.stem().string() + "_bak1.hki");
+    fs::path bak2 = dst.parent_path() / (dst.stem().string() + "_bak2.hki");
+    if(fs::exists(bak1))
+        fs::copy_file(bak1,bak2,fs::copy_option::overwrite_if_exists);
+    if(fs::exists(dst))
+        fs::copy_file(dst,bak1,fs::copy_option::overwrite_if_exists);
+    fs::copy_file(maxHki,dst,fs::copy_option::overwrite_if_exists);
+    if(!fs::equivalent(lastEditedHki,maxHki)) {
+        fs::copy_file(lastEditedHki,dst.parent_path() / (dst.stem().string() + "_alt.hki"),fs::copy_option::overwrite_if_exists);
+    }
+}
+
+void MainWindow::removeWkHotkeys() {
+    /*
+     * This function removes hotkeys in the WK-specific folders, if a user wants to use the same
+     * set of hotkeys for WK and AoC. With the copyHotkeyFile function, 2 backups are kept
+     */
+
+    fs::path maxDstHki;
+    fs::path lastDstHki;
+    fs::path aocHkiPath = resourceDir / "player1.hki";
+
+    if(identifyHotkeyFile(vooblyDir,maxDstHki,lastDstHki)) {
+        copyHotkeyFile(aocHkiPath,aocHkiPath,maxDstHki);
+        fs::remove(maxDstHki);
+        if(!fs::exists(lastDstHki)) {
+            copyHotkeyFile(aocHkiPath,aocHkiPath,lastDstHki);
+            fs::remove(lastDstHki);
+        }
+    }
+
+    if(this->ui->createExe->isChecked()) {
+        if(identifyHotkeyFile(upDir,maxDstHki,lastDstHki)) {
+            copyHotkeyFile(aocHkiPath,aocHkiPath,maxDstHki);
+            fs::remove(maxDstHki);
+            if(!fs::equivalent(maxDstHki,lastDstHki)) {
+                copyHotkeyFile(aocHkiPath,aocHkiPath,lastDstHki);
+                fs::remove(lastDstHki);
+            }
+        }
+    }
+}
+
 void MainWindow::hotkeySetup() {
+
+    /*
+     * A method to hopefully copy the correct hotkey files so there's no extra setup needed. The User has 3 options:
+     * 1) Choose "Voobly/Aoc hotkeys". If a voobly .hki file is in the correct place, it will just copy the .nfz profile file
+     * so the same hki file is used for WK as well. If there's no .hki file in place, it will copy a set of default aoc hotkeys
+     * 2) Choose "Hd hotkeys for this mod only". Copies the HD hotkeys but puts them in the WK folder so it will only be used for that.
+     * If it can't find a HD hotkey file, uses default HD hotkeys instead
+     * 3) Same as 2) except it replaces the hki file for regular aoc instead (so that it's used for both aoc and wk)
+     *
+     */
+
+    fs::path maxDstHki;
+    fs::path lastDstHki;
+    fs::path maxSrcHki;
+    fs::path lastSrcHki;
 
 	fs::path nfz1Path = resourceDir / "Player1.nfz";
 	fs::path nfzPath = outPath / "player.nfz";
-	fs::path aocHkiPath = resourceDir / "player1.hki";
-	fs::path customHkiPath("player1.hki");
-	fs::path hkiPath = HDPath / ("Profiles/player0.hki");
-	fs::path hkiOutPath = outPath / "player1.hki";
-	fs::path hki2OutPath = outPath / "player2.hki";
+    fs::path aocHkiPath = resourceDir / "player1.hki";
 
-	fs::remove(nfzOutPath);
-	fs::remove(nfzUpOutPath);
+    /*
 	if(!fs::exists(hkiPath)) { //If player0.hki doesn't exist, look for player1.hki, otherwise use default HD hotkeys
-		if(fs::exists(HDPath/"Profiles/player1.hki"))
-				hkiPath = HDPath/"Profiles/player1.hki";
+        if(fs::exists(HDPath/"Profiles\\player1.hki"))
+                hkiPath = HDPath/"Profiles\\player1.hki";
 		else
 				hkiPath = resourceDir / "player1_age2hd.hki";
 	}
+    */
+    boost::system::error_code ec;
 
 	if(fs::exists(nfzPath)) //Copy the Aoc Profile
-		fs::copy_file(nfzPath, nfzOutPath);
+        fs::copy_file(nfzPath, nfzOutPath, ec);
 	else //otherwise copy the default profile included
-		fs::copy_file(nfz1Path, nfzOutPath);
+        fs::copy_file(nfz1Path, nfzOutPath, ec);
 	if(this->ui->createExe->isChecked()) { //Profiles for UP
 		if(fs::exists(nfzPath)) //Copy the Aoc Profile
-			fs::copy_file(nfzPath,nfzUpOutPath);
+            fs::copy_file(nfzPath,nfzUpOutPath, ec);
 		else //otherwise copy the default profile included
-			fs::copy_file(nfz1Path,nfzUpOutPath);
+            fs::copy_file(nfz1Path,nfzUpOutPath, ec);
 	}
 	//Copy hotkey files
-	if(fs::exists(customHkiPath)) { //players put a custom .hki file into the WK converter folder that they want to use instead
-		fs::copy_file(customHkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
-		if(fs::exists(hki2OutPath))
-			fs::copy_file(customHkiPath, modHki2OutPath,fs::copy_option::overwrite_if_exists);
-		if(this->ui->createExe->isChecked()) {
-			fs::copy_file(customHkiPath, upHkiOutPath,fs::copy_option::overwrite_if_exists);
-			if(fs::exists(hki2OutPath))
-				fs::copy_file(customHkiPath, upHki2OutPath,fs::copy_option::overwrite_if_exists);
-		}
-		return;
-	}
-    if (this->ui->hotkeyChoice->currentIndex() == 1) {
-        fs::remove(modHkiOutPath);
-        fs::remove(upHkiOutPath);
-        fs::remove(modHki2OutPath);
-        fs::remove(upHki2OutPath);
-        if(!fs::exists(hkiOutPath))
-            fs::copy_file(aocHkiPath, hkiOutPath);//use voobly hotkeys, copy standard aoc hotkeys if the file doesn't exist yet
+    if (this->ui->hotkeyChoice->currentIndex() == 1) { //Use AoC/Voobly Hotkeys
+        removeWkHotkeys();
+        if(!identifyHotkeyFile(outPath, maxDstHki, lastDstHki))//In case there are no voobly hotkeys, copy standard aoc hotkeys
+            fs::copy_file(aocHkiPath, outPath/"player1.hki");
+    } else {
+        if(!identifyHotkeyFile(HDPath/"Profiles", maxSrcHki, lastSrcHki)) {
+            maxSrcHki = resourceDir / "player1_age2hd.hki";
+            lastSrcHki = maxSrcHki;
+        }
     }
-	if (this->ui->hotkeyChoice->currentIndex() == 2) {
-		fs::copy_file(hkiPath, modHkiOutPath,fs::copy_option::overwrite_if_exists);
-		if(fs::exists(hki2OutPath))
-			fs::copy_file(hkiPath, modHki2OutPath,fs::copy_option::overwrite_if_exists);
-		if(this->ui->createExe->isChecked()) {
-			fs::copy_file(hkiPath, upHkiOutPath,fs::copy_option::overwrite_if_exists);
-			if(fs::exists(hki2OutPath))
-				fs::copy_file(hkiPath, upHki2OutPath,fs::copy_option::overwrite_if_exists);
-		}
+    if (this->ui->hotkeyChoice->currentIndex() == 2) { //Use HD hotkeys only for WK
+        if(!identifyHotkeyFile(vooblyDir, maxDstHki, lastDstHki)) {
+            if(!identifyHotkeyFile(outPath, maxDstHki, lastDstHki)) {
+                maxDstHki = vooblyDir / "player1.hki";
+                lastDstHki = maxDstHki;
+            } else {
+                maxDstHki = vooblyDir / maxDstHki.filename();
+                lastDstHki = vooblyDir / lastDstHki.filename();
+            }
+        }
+        copyHotkeyFile(maxSrcHki,lastSrcHki,maxDstHki);
+        if(!fs::equivalent(maxDstHki,lastDstHki))
+            copyHotkeyFile(maxSrcHki,lastSrcHki,lastDstHki);
+        if(this->ui->createExe->isChecked()) {            
+            fs::path maxUpDstHki;
+            fs::path lastUpDstHki;
+            if(!identifyHotkeyFile(upDir, maxUpDstHki, lastUpDstHki)) {
+                maxUpDstHki = upDir / maxDstHki.filename();
+                lastUpDstHki = upDir / lastDstHki.filename();
+            }
+            copyHotkeyFile(maxSrcHki,lastSrcHki,maxUpDstHki);
+            if(!fs::equivalent(maxUpDstHki,lastUpDstHki))
+                copyHotkeyFile(maxSrcHki,lastSrcHki,lastUpDstHki);
+        }
 	}
 	if(this->ui->hotkeyChoice->currentIndex() == 3) {
-        fs::remove(modHkiOutPath);
-        fs::remove(upHkiOutPath);
-        fs::remove(modHki2OutPath);
-        fs::remove(upHki2OutPath);
-		fs::path backup = hkiOutPath;
-		backup+=".bak";
-		if(fs::exists(hkiOutPath))
-			fs::copy_file(hkiOutPath, backup,fs::copy_option::overwrite_if_exists);
-		fs::copy_file(hkiPath, hkiOutPath,fs::copy_option::overwrite_if_exists);
-		if(fs::exists(hki2OutPath)) {
-			backup = hki2OutPath;
-			backup+=".bak";
-			fs::copy_file(hki2OutPath, backup,fs::copy_option::overwrite_if_exists);
-			fs::copy_file(hkiPath, hki2OutPath,fs::copy_option::overwrite_if_exists);
-		}
+        removeWkHotkeys();
+
+        if(!identifyHotkeyFile(outPath, maxDstHki, lastDstHki)) {
+            maxDstHki = outPath / "player1.hki";
+            lastDstHki = maxDstHki;
+        }
+        copyHotkeyFile(maxSrcHki,lastSrcHki,maxDstHki);
+        if(!fs::equivalent(maxDstHki,lastDstHki))
+            copyHotkeyFile(maxSrcHki,lastSrcHki,lastDstHki);
 	}
 }
 
@@ -1494,13 +1641,10 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
      * vooblyDst: If true, the destination folder is under voobly mods, else under games
      * dataMod: If true, the symlink is for wk-based datamod
      */
-	std::string newDirString = newDir.string()+"/";
-    std::string oldDirString = vooblySrc?(vooblyDir.parent_path() / referenceDir).string()+"/"
-									:(upDir.parent_path() / referenceDir).string()+"/";
-	std::string vooblyDirString = (vooblyDir.parent_path() / referenceDir).string()+"/";
-	boost::replace_all(newDirString,"/","\\");
-	boost::replace_all(oldDirString,"/","\\");
-	boost::replace_all(vooblyDirString,"/","\\");
+    std::string newDirString = newDir.string()+"\\";
+    std::string oldDirString = vooblySrc?(vooblyDir.parent_path() / referenceDir).string()+"\\"
+                                    :(upDir.parent_path() / referenceDir).string()+"\\";
+    std::string vooblyDirString = (vooblyDir.parent_path() / referenceDir).string()+"\\";
 
 	fs::create_directory(newDir);
 	fs::copy_file(xmlIn, xmlOut, fs::copy_option::overwrite_if_exists);
@@ -1510,8 +1654,8 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
         fs::remove_all(newDir/"Data");
     } else {
         fs::create_directory(newDir/"Data");
-        fs::remove(newDir/"Data/gamedata_x1.drs");
-        fs::remove(newDir/"Data/gamedata_x1_p1.drs");
+        fs::remove(newDir/"Data\\gamedata_x1.drs");
+        fs::remove(newDir/"Data\\gamedata_x1_p1.drs");
     }
 
 	fs::remove_all(newDir/"Taunt");
@@ -1522,6 +1666,20 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
 	fs::remove_all(newDir/"Screenshots");
 	fs::remove_all(newDir/"Scenario");
     fs::remove(newDir/"Player.nfz");
+    for (fs::directory_iterator current(newDir), end;current != end; ++current) {
+        std::string extension = current->path().extension().string();
+        if (extension == ".hki") {
+           fs::remove(current->path());
+        }
+    }
+    std::string hotkeyString = "";
+    for (fs::directory_iterator current(oldDirString), end;current != end; ++current) {
+        fs::path currentPath = current->path();
+        std::string extension = currentPath.extension().string();
+        if (extension == ".hki") {
+           hotkeyString += "mklink /H \""+newDirString+currentPath.filename().string()+"\" \""+ currentPath.string()+"\" & ";
+        }
+    }
 	std::string datastring = datalink?"mklink /J \""+newDirString+"Data\" \""+ oldDirString+"Data\" & ":
                                       "mklink /H \""+newDirString+"Data\\gamedata_x1_p1.drs\" \""+ oldDirString+"Data\\gamedata_x1_p1.drs\" & "
                                       "mklink /H \""+newDirString+"Data\\gamedata_x1.drs\" \""+ oldDirString+"Data\\gamedata_x1.drs\" & ";
@@ -1532,13 +1690,14 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
             fs::remove(newDir/"language.ini");
             languageString = "mklink /H \""+newDirString+"language.ini\" \""+ vooblyDirString+"language.ini\" & ";
         } else if (!vooblySrc) {
-            fs::remove(newDir/"Data/language_x1_p1.dll");
-            languageString = "mklink /H \""+newDirString+"Data/language_x1_p1.dll\" \""+ vooblyDirString+"Data/language_x1_p1.dll\" & ";
+            fs::remove(newDir/"Data\\language_x1_p1.dll");
+            languageString = "mklink /H \""+newDirString+"Data\\language_x1_p1.dll\" \""+ vooblyDirString+"Data\\language_x1_p1.dll\" & ";
         }
     }
 
 	std::string cmd = "/C mklink /J \""+newDirString+"Taunt\" \""+ vooblyDirString+"Taunt\" & "
 			+ datastring +
+            hotkeyString +
 			"mklink /J \""+newDirString+"Script.Rm\" \""+ vooblyDirString+"Script.Rm\" & "
 			"mklink /J \""+newDirString+"Script.Ai\" \""+ vooblyDirString+"Script.Ai\" & "
 			"mklink /J \""+newDirString+"Sound\" \""+ vooblyDirString+"Sound\" & "
@@ -1549,11 +1708,10 @@ void MainWindow::symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, 
 			"mklink /H \""+newDirString+"Player.nfz\" \""+ vooblyDirString+"Player.nfz\"";
     std::wstring wcmd = strtowstr(cmd);
 	ShellExecute(NULL,L"open",L"cmd.exe",wcmd.c_str(),NULL,SW_HIDE);
-	fs::create_directories(newDir/"Savegame/Multi");
-    if(fs::exists(oldDirString+"player1.hki"))
-        fs::copy_file(oldDirString+"player1.hki",newDir/"player1.hki",fs::copy_option::overwrite_if_exists);
-    if(fs::exists(oldDirString+"player2.hki"))
-        fs::copy_file(oldDirString+"player2.hki",newDir/"player2.hki",fs::copy_option::overwrite_if_exists);
+    if(!fs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
+        recCopy(oldDirString,newDir,true);
+    }
+    fs::create_directories(newDir/"Savegame\\Multi");
     if(vooblyDst && !dataMod)
         fs::copy_file(oldDirString+"version.ini", newDir/"version.ini", fs::copy_option::overwrite_if_exists);
 }
@@ -1580,7 +1738,7 @@ int MainWindow::run()
 		return -1;
 	}
 
-	if(outPath == HDPath/"WololoKingdoms/out/") {
+    if(fs::equivalent(outPath,HDPath/"WololoKingdoms\\out\\")) {
 		this->ui->label->setText(translation["noAoC"].c_str());
 		dialog = new Dialog(this,translation["noAoC"].c_str(),translation["errorTitle"]);
 		dialog->exec();
@@ -1594,27 +1752,27 @@ int MainWindow::run()
 
 
 	try {
-		fs::path keyValuesStringsPath = HDPath / "resources/" / language / "/strings/key-value/key-value-strings-utf8.txt";
-		std::string aocDatPath = HDPath.string() + "/resources/_common/dat/empires2_x1_p1.dat";
-		std::string hdDatPath = HDPath.string() + "/resources/_common/dat/empires2_x2_p1.dat";
+        fs::path keyValuesStringsPath = HDPath / "resources" / language / "strings\\key-value\\key-value-strings-utf8.txt";
+        std::string aocDatString = HDPath.string() + "\\resources\\_common\\dat\\empires2_x1_p1.dat";
+        std::string hdDatString = HDPath.string() + "\\resources\\_common\\dat\\empires2_x2_p1.dat";
 		fs::path languageIniPath = vooblyDir / "language.ini";
-		std::string versionIniPath = vooblyDir.string() + "/version.ini";
-		fs::path soundsInputPath = HDPath / "resources/_common/sound/";
-		fs::path soundsOutputPath = vooblyDir / "Sound/";
-        fs::path historyInputPath = HDPath / ("resources/"+language+"/strings/history/");
-        fs::path historyOutputPath = vooblyDir / "History/";
-		fs::path tauntInputPath = HDPath / "resources/en/sound/taunt/";
-		fs::path tauntOutputPath = vooblyDir / "Taunt/";
+        std::string versionIniPath = vooblyDir.string() + "\\version.ini";
+        fs::path soundsInputPath = HDPath / "resources\\_common\\sound\\";
+        fs::path soundsOutputPath = vooblyDir / "Sound\\";
+        fs::path historyInputPath = HDPath / ("resources\\"+language+"\\strings\\history\\");
+        fs::path historyOutputPath = vooblyDir / "History\\";
+        fs::path tauntInputPath = HDPath / "resources\\en\\sound\\taunt\\";
+        fs::path tauntOutputPath = vooblyDir / "Taunt\\";
 		fs::path xmlPath = resourceDir/"WK1.xml";
 		fs::path xmlOutPath = vooblyDir / "age2_x1.xml";
 		fs::path langDllFile("language_x1_p1.dll");
 		fs::path langDllPath = langDllFile;
-		fs::path xmlOutPathUP = outPath / "Games/WKFE.xml";
+        fs::path xmlOutPathUP = outPath / "Games\\WKFE.xml";
 		fs::path aiInputPath = resourceDir/"Script.Ai";
-		std::string drsOutPath = vooblyDir.string() + "/Data/gamedata_x1_p1.drs";
-		fs::path assetsPath = HDPath / "resources/_common/drs/gamedata_x2/";
-        fs::path aocAssetsPath = HDPath / "resources/_common/drs/graphics/";
-		fs::path outputDatPath = vooblyDir / "Data/empires2_x1_p1.dat";
+        std::string drsOutPath = vooblyDir.string() + "\\Data\\gamedata_x1_p1.drs";
+        fs::path assetsPath = HDPath / "resources\\_common\\drs\\gamedata_x2\\";
+        fs::path aocAssetsPath = HDPath / "resources\\_common\\drs\\graphics\\";
+        fs::path outputDatPath = vooblyDir / "Data\\empires2_x1_p1.dat";
         std::string UPModdedExe = dlcLevel==3?"WK":dlcLevel==2?"WKAK":"WKFE";
 		fs::path UPExe = resourceDir/"SetupAoc.exe";
 		fs::path UPExeOut = outPath / "SetupAoc.exe";
@@ -1625,8 +1783,9 @@ int MainWindow::run()
         fs::path scenarioInputDir = resourceDir/"Scenario";
 		fs::path newTerrainInputDir = resourceDir/"new terrains";
 		fs::path newGridTerrainInputDir = resourceDir/"new grid terrains";
-		fs::path modOverrideDir("mod_override/");
-		fs::path terrainOverrideDir("new_terrain_override/");
+        fs::path architectureFixDir = resourceDir/"architecture fixes";
+        fs::path modOverrideDir("mod_override\\");
+        fs::path terrainOverrideDir("new_terrain_override\\");
 		fs::path wallsInputDir = resourceDir/"short_walls";
 		fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
         fs::path patchFolder;
@@ -1659,16 +1818,16 @@ int MainWindow::run()
 
             logFile << std::endl << "Removing base folders";
             fs::remove_all(vooblyDir/"Data");
-            fs::remove_all(vooblyDir/"Script.Ai/Brutal2");
-            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.ai");
-            fs::remove(vooblyDir/"Script.Ai/BruteForce3.1.per");
+            fs::remove_all(vooblyDir/"Script.Ai\\Brutal2");
+            fs::remove(vooblyDir/"Script.Ai\\BruteForce3.1.ai");
+            fs::remove(vooblyDir/"Script.Ai\\BruteForce3.1.per");
             fs::remove(vooblyDir/"age2_x1.xml");
             fs::remove(versionIniPath);
 
 
             logFile << std::endl << "Creating base folders";
-            fs::create_directories(vooblyDir/"SaveGame/Multi");
-            fs::create_directories(vooblyDir/"Sound/stream");
+            fs::create_directories(vooblyDir/"SaveGame\\Multi");
+            fs::create_directories(vooblyDir/"Sound\\stream");
             fs::create_directory(vooblyDir/"Data");
             fs::create_directory(vooblyDir/"Taunt");
             fs::create_directory(vooblyDir/"History");
@@ -1677,12 +1836,12 @@ int MainWindow::run()
 
             if(this->ui->createExe->isChecked()) {
                 logFile << std::endl << "Removing UP base folders";
-                fs::remove(upDir/"Data"/"empires2_x1_p1.dat");
-                fs::remove(upDir/"Data"/"gamedata_x1.drs");
-                fs::remove(upDir/"Data"/"gamedata_x1_p1.drs");
-                fs::remove_all(upDir/"Script.Ai/Brutal2");
-                fs::remove(upDir/"Script.Ai/BruteForce3.1.ai");
-                fs::remove(upDir/"Script.Ai/BruteForce3.1.per");
+                fs::remove(upDir/"Data\\empires2_x1_p1.dat");
+                fs::remove(upDir/"Data\\gamedata_x1.drs");
+                fs::remove(upDir/"Data\\gamedata_x1_p1.drs");
+                fs::remove_all(upDir/"Script.Ai\\Brutal2");
+                fs::remove(upDir/"Script.Ai\\BruteForce3.1.ai");
+                fs::remove(upDir/"Script.Ai\\BruteForce3.1.per");
                 fs::create_directories(upDir/"Data");
             }
         } else {
@@ -1696,27 +1855,33 @@ int MainWindow::run()
             }
             break;
             case 0: {
-                patchFolder = resourceDir/"patches/5.4/";
-                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+                patchFolder = resourceDir/"patches\\5.4\\";
+                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
                 UPModdedExe = "WK54";
                 version = "5.4"; break;
             } break;
             case 1: {
-                patchFolder = resourceDir/"patches/Hippo Mod/";
-                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+                patchFolder = resourceDir/"patches\\Hippo Mod\\";
+                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
                 UPModdedExe = "WKHM";
                 version = "1.0"; break;
             } break;
             case 2: {
-                patchFolder = resourceDir/"patches/2.5/";
-                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+                patchFolder = resourceDir/"patches\\2.5\\";
+                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
                 UPModdedExe = "WKI25";
                 version = "2.5"; break;
             } break;
+            case 3: {
+                patchFolder = resourceDir/"patches\\No Wall Mod\\";
+                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
+                UPModdedExe = "WKNWM";
+                version = "1.0"; break;
+            } break;
             /*
-            case 2: {
-                patchFolder = resourceDir/"patches/Tournament Patch/";
-                hdDatPath = patchFolder.string()+"empires2_x1_p1.dat";
+            case 4: {
+                patchFolder = resourceDir/"patches\\Tournament Patch\\";
+                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
                 UPModdedExe = "WKTP";
                 version = "1.1"; break;
             } break;
@@ -1743,6 +1908,16 @@ int MainWindow::run()
         langReplacement[10679] = translation["10679"];
         //relics victory condition
         langReplacement[30195] = translation["30195"];
+        //Hotkey Descriptions
+        langReplacement[19031] = translation["19031"];
+        langReplacement[19032] = translation["19032"];
+        langReplacement[19033] = translation["19033"];
+        langReplacement[19048] = translation["19048"];
+        langReplacement[19053] = translation["19053"];
+        langReplacement[19072] = translation["19072"];
+        langReplacement[19075] = translation["19075"];
+        langReplacement[19209] = translation["19209"];
+        langReplacement[19212] = translation["19212"];
         if(fs::exists(resourceDir/(language+".txt"))) {
             //Fix mistakes in old terrain descriptions in scenario editor
             langReplacement[10622] = translation["10622"];
@@ -1752,6 +1927,7 @@ int MainWindow::run()
             langReplacement[10707] = translation["10707"];
             //Typo
             langReplacement[10716] = translation["10716"];
+            /*
             //Fix errors in civ descriptions
             langReplacement[20162] = translation["20162"];
             langReplacement[20166] = translation["20166"];
@@ -1764,6 +1940,7 @@ int MainWindow::run()
             langReplacement[26139] = translation["26139"];
             langReplacement[26190] = translation["26190"];
             langReplacement[26419] = translation["26419"];
+            */
         }
 
         logFile << std::endl << "Open Missing strings";
@@ -1908,8 +2085,8 @@ int MainWindow::run()
 
         logFile << std::endl << "save lang dll file";
         if (patchLangDll) {
-            fs::create_directories(upDir/"data/");
-            fs::path langDllOutput = upDir/"data/"/langDllFile;
+            fs::create_directories(upDir/"data\\");
+            fs::path langDllOutput = upDir/"data"/langDllFile;
             try {
                 line = translation["working"]+"\n"+translation["workingDll"];
                 boost::replace_all(line,"<dll>",langDllFile.string());
@@ -1985,10 +2162,10 @@ int MainWindow::run()
             logFile << std::endl << "History Files";
             copyHistoryFiles(historyInputPath, historyOutputPath);
             logFile << std::endl << "Civ Intro Sounds";
-			copyCivIntroSounds(soundsInputPath / "civ/", soundsOutputPath / "stream/");
+            copyCivIntroSounds(soundsInputPath / "civ\\", soundsOutputPath / "stream\\");
 			bar->setValue(bar->value()+1);bar->repaint(); //9
             logFile << std::endl << "Create Music Playlist";
-			createMusicPlaylist(soundsInputPath.string() + "music/", soundsOutputPath.string() + "music.m3u");
+            createMusicPlaylist(soundsInputPath.string() + "music\\", soundsOutputPath.string() + "music.m3u");
 			bar->setValue(bar->value()+1);bar->repaint(); //10
             logFile << std::endl << "Copy Taunts";
 			recCopy(tauntInputPath, tauntOutputPath, true);
@@ -2004,11 +2181,11 @@ int MainWindow::run()
 			}
 			bar->setValue(bar->value()+1);bar->repaint(); //12
             logFile << std::endl << "Copy HD Maps";
-			copyHDMaps(HDPath/"resources/_common/random-map-scripts/", vooblyMapDir);
+            copyHDMaps(HDPath/"resources\\_common\\random-map-scripts\\", vooblyMapDir);
             bar->setValue(bar->value()+1);bar->repaint(); //15
             logFile << std::endl << "Copy Special Maps";
 			if(this->ui->copyMaps->isChecked())
-				copyHDMaps("resources/Script.Rm/", vooblyMapDir, true);
+                copyHDMaps("resources\\Script.Rm\\", vooblyMapDir, true);
 			else
 				bar->setValue(bar->value()+3);
 			bar->setValue(bar->value()+1);bar->repaint(); //19
@@ -2030,14 +2207,14 @@ int MainWindow::run()
 
             genie::DatFile aocDat;
             aocDat.setGameVersion(genie::GameVersion::GV_TC);
-            aocDat.load(aocDatPath.c_str());
+            aocDat.load(aocDatString.c_str());
             bar->setValue(bar->value()+5);bar->repaint(); //28
 
             this->ui->label->setText((translation["working"]+"\n"+translation["workingHD"]).c_str());
             this->ui->label->repaint();
             genie::DatFile hdDat;
             hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
-            hdDat.load(hdDatPath.c_str());
+            hdDat.load(hdDatString.c_str());
             bar->setValue(bar->value()+5);bar->repaint(); //33
 
             this->ui->label->setText((translation["working"]+"\n"+translation["workingInterface"]).c_str());
@@ -2054,7 +2231,25 @@ int MainWindow::run()
             bar->setValue(bar->value()+1);bar->repaint(); //39
 
             logFile << std::endl << "Patch Architectures";
+            /*
+             * As usual, we have to fix some mediterranean stuff first where builidings that shouldn't
+             * share the same garrison flag graphics.
+             */
+            short buildingIDs[] = { 47, 51, 116, 137, 234, 235, 236};
+            for(short i = 0; i < sizeof(buildingIDs)/sizeof(short); i++) {
+                short oldGraphicID = aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic;
+                genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
+                newFlag.ID = aocDat.Graphics.size();
+                aocDat.Graphics.push_back(newFlag);
+                aocDat.GraphicPointers.push_back(1);
+                aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
+                aocDat.Civs[24].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
+            }
+
+            adjustArchitectureFlags(&aocDat,"resources\\Flags.txt");
             patchArchitectures(&aocDat);
+            if(this->ui->fixFlags->isChecked())
+                adjustArchitectureFlags(&aocDat,"resources\\WKFlags.txt");
             bar->setValue(bar->value()+1);bar->repaint(); //54
 
             if(this->ui->useMonks->isChecked())
@@ -2063,6 +2258,7 @@ int MainWindow::run()
                 indexDrsFiles(oldMonkInputDir);
             bar->setValue(bar->value()+1);bar->repaint(); //55?
 
+            indexDrsFiles(architectureFixDir);
             logFile << std::endl << "Mod Override Dir";
             if(!fs::is_empty(modOverrideDir))
                 indexDrsFiles(modOverrideDir);
@@ -2075,7 +2271,7 @@ int MainWindow::run()
 
 
             logFile << std::endl << "copy gamedata_x1.drs";
-            fs::copy_file(gamedata_x1, vooblyDir/"Data/gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
+            fs::copy_file(gamedata_x1, vooblyDir/"Data\\gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
             bar->setValue(bar->value()+1);bar->repaint(); //23
 
             bar->setValue(bar->value()+1);bar->repaint(); //67
@@ -2124,14 +2320,14 @@ int MainWindow::run()
                 QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
                 std::ofstream versionOut(versionIniPath);
                 std::string hash = hashData.toBase64().toStdString().substr(0,6);
-                if (hash != "oJ0SeT") {
+                if (hash != "SamMbN" && hash != "n2RCJn") {
                     version = "2.7.";
                     dialog = new Dialog(this,translation["dialogBeta"].c_str());
                     dialog->exec();
-                    (versionOut << version) << hash << std::endl;
+                    (versionOut << version) << hash;
                 } else {
                     version = "2.7.2";
-                    (versionOut << version) << std::endl;
+                    versionOut << version;
                 }                
                 versionOut.close();
             }
@@ -2143,7 +2339,17 @@ int MainWindow::run()
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat file
             logFile << std::endl << "Copy DAT file";
-            fs::copy_file(hdDatPath,outputDatPath,fs::copy_option::overwrite_if_exists);
+            if(patch > 2) {
+                fs::remove(outputDatPath);
+                genie::DatFile dat;
+                dat.setGameVersion(genie::GameVersion::GV_TC);
+                dat.load(hdDatString.c_str());
+                if(this->ui->fixFlags->isChecked())
+                    adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
+                dat.saveAs(outputDatPath.string().c_str());
+            } else {
+                fs::copy_file(hdDatString,outputDatPath,fs::copy_option::overwrite_if_exists);
+            }
             bar->setValue(81);
             std::ofstream versionOut(versionIniPath);
             (versionOut << version) << std::endl;
@@ -2215,7 +2421,7 @@ int MainWindow::run()
             this->ui->label->repaint();
 
             //recCopy(vooblyDir / "Data", upDir / "Data", true);
-            fs::copy_file(vooblyDir / "Data/empires2_x1_p1.dat", upDir / "Data/empires2_x1_p1.dat", fs::copy_option::overwrite_if_exists);
+            fs::copy_file(vooblyDir / "Data\\empires2_x1_p1.dat", upDir / "Data\\empires2_x1_p1.dat", fs::copy_option::overwrite_if_exists);
 
             bar->setValue(bar->value()+1);bar->repaint(); //88
             if (!dllPatched) {
@@ -2251,7 +2457,7 @@ int MainWindow::run()
         }
         this->ui->label->setText(translation["workingDone"].c_str());
 
-        if (patch < 0 && outPath==HDPath) {
+        if (patch < 0 && fs::equivalent(outPath,HDPath)) {
 
             logFile << std::endl << "Fix Compat Patch";
 			/*
@@ -2259,15 +2465,15 @@ int MainWindow::run()
 			 * An update to the compatibility patch would make this unnecessary most likely.
 			 */
 
-            fs::remove_all(outPath/"/compatslp");
+            fs::remove_all(outPath/"compatslp");
 
-            fs::create_directory(outPath/"data/Load");
+            fs::create_directory(outPath/"data\\Load");
             if(this->ui->createExe->isChecked()) { //this causes a crash with UP 1.5 otherwise
-                this->ui->label->setText(translation["workingCP"].c_str());
+                this->ui->label->setText(translation["workingDone"].c_str());
                 this->ui->label->repaint();
-                if(fs::file_size(outPath/"/data/blendomatic.dat") < 400000) {
-                    fs::rename(outPath/"/data/blendomatic.dat",outPath/"/data/blendomatic.dat.bak");
-                    fs::rename(outPath/"/data/blendomatic_x1.dat",outPath/"/data/blendomatic.dat");
+                if(fs::file_size(outPath/"data\\blendomatic.dat") < 400000) {
+                    fs::rename(outPath/"data\\blendomatic.dat",outPath/"data\\blendomatic.dat.bak");
+                    fs::rename(outPath/"data\\blendomatic_x1.dat",outPath/"data\\blendomatic.dat");
                 }
                 bar->setValue(bar->value()+1);bar->repaint();
             }

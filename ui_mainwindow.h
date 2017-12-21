@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.9.1
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -51,6 +51,9 @@ public:
     QCheckBox *usePatch;
     QComboBox *patchSelection;
     QPushButton *patchSelectionTip;
+    QHBoxLayout *horizontalLayout_7;
+    QCheckBox *fixFlags;
+    QPushButton *flagsTip;
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout_11;
@@ -71,12 +74,12 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(426, 422);
+        MainWindow->resize(426, 429);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
         gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
-        gridLayoutWidget->setGeometry(QRect(30, 10, 352, 233));
+        gridLayoutWidget->setGeometry(QRect(30, 10, 352, 262));
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -187,6 +190,25 @@ public:
 
         gridLayout->addLayout(horizontalLayout_6, 7, 0, 1, 1);
 
+        horizontalLayout_7 = new QHBoxLayout();
+        horizontalLayout_7->setSpacing(6);
+        horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
+        fixFlags = new QCheckBox(gridLayoutWidget);
+        fixFlags->setObjectName(QStringLiteral("fixFlags"));
+        fixFlags->setChecked(false);
+
+        horizontalLayout_7->addWidget(fixFlags);
+
+        flagsTip = new QPushButton(gridLayoutWidget);
+        flagsTip->setObjectName(QStringLiteral("flagsTip"));
+        flagsTip->setMaximumSize(QSize(25, 16777215));
+        flagsTip->setToolTipDuration(0);
+
+        horizontalLayout_7->addWidget(flagsTip);
+
+
+        gridLayout->addLayout(horizontalLayout_7, 11, 0, 1, 1);
+
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
@@ -244,10 +266,10 @@ public:
         runButton = new QPushButton(centralWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
         runButton->setEnabled(false);
-        runButton->setGeometry(QRect(160, 340, 75, 23));
+        runButton->setGeometry(QRect(160, 370, 75, 23));
         verticalLayoutWidget = new QWidget(centralWidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(30, 250, 341, 80));
+        verticalLayoutWidget->setGeometry(QRect(30, 280, 341, 80));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
@@ -324,8 +346,14 @@ public:
          << QApplication::translate("MainWindow", "Patch 5.4", Q_NULLPTR)
          << QApplication::translate("MainWindow", "WK Hippo Mod", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Installer 2.5", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "WK No Wall Mod", Q_NULLPTR)
         );
         patchSelectionTip->setText(QString());
+        fixFlags->setText(QApplication::translate("MainWindow", "Adjust garrison flags for new architectures", Q_NULLPTR));
+#ifndef QT_NO_ACCESSIBILITY
+        flagsTip->setAccessibleName(QApplication::translate("MainWindow", "exeTip", Q_NULLPTR));
+#endif // QT_NO_ACCESSIBILITY
+        flagsTip->setText(QString());
         usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
         useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
         useMonks->setText(QApplication::translate("MainWindow", "Regional Monks", Q_NULLPTR));

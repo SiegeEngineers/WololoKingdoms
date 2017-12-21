@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>426</width>
-    <height>422</height>
+    <height>429</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>30</x>
       <y>10</y>
       <width>352</width>
-      <height>233</height>
+      <height>262</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -270,6 +270,11 @@
            <string>Installer 2.5</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>WK No Wall Mod</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -279,6 +284,39 @@
            <width>25</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="11" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="QCheckBox" name="fixFlags">
+         <property name="text">
+          <string>Adjust garrison flags for new architectures</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="flagsTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>exeTip</string>
          </property>
          <property name="text">
           <string/>
@@ -368,7 +406,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>340</y>
+      <y>370</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -381,7 +419,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>250</y>
+      <y>280</y>
       <width>341</width>
       <height>80</height>
      </rect>
