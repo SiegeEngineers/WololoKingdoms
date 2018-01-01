@@ -318,6 +318,8 @@ public:
          << QApplication::translate("MainWindow", "Nederlands (Dutch)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Simplified Chinese (\347\256\200\344\275\223\344\270\255\346\226\207)", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Test 1 Traditional Chinese", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Test 2 Traditional Chinese", Q_NULLPTR)
         );
         createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", Q_NULLPTR));
 #ifndef QT_NO_ACCESSIBILITY
@@ -341,13 +343,6 @@ public:
 #endif // QT_NO_ACCESSIBILITY
         mapsTip->setText(QString());
         usePatch->setText(QApplication::translate("MainWindow", "Patch/Data Mod", Q_NULLPTR));
-        patchSelection->clear();
-        patchSelection->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "Patch 5.4", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "WK Hippo Mod", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Installer 2.5", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "WK No Wall Mod", Q_NULLPTR)
-        );
         patchSelectionTip->setText(QString());
         fixFlags->setText(QApplication::translate("MainWindow", "Adjust garrison flags for new architectures", Q_NULLPTR));
 #ifndef QT_NO_ACCESSIBILITY

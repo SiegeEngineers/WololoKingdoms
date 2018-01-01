@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QProgressBar>
+#include <QPushButton>
 
 #include <set>
 
@@ -38,7 +39,11 @@ private:
     std::map<int, fs::path> wavFiles;
     std::map<std::string,fs::path> newTerrainFiles;
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
-    std::string version = "2.7.2 (d)";
+    std::string version = "2.8";
+    std::string hash1;
+    std::string hash2;
+    std::string patchNumber;
+    std::map<int, std::tuple<std::string,std::string,int>> dataModList;
     std::string language = "en";
     std::map<std::string, std::string> translation;
     bool secondAttempt = false;
@@ -65,6 +70,7 @@ private:
 
 	Ui::MainWindow *ui;
     void changeLanguage();
+    void setButtonWhatsThis(QPushButton* button, std::string title);
 	void changeModPatch();
 	void updateUI();
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);

@@ -61,6 +61,21 @@ MainWindow::MainWindow(QWidget *parent) :
     outPath = getOutPath(HDPath);
     outPath.make_preferred();
 
+    if(QCoreApplication::arguments().back() != "-s") {
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+        ZeroMemory( &si, sizeof(si) );
+        si.cb = sizeof(si);
+        ZeroMemory( &pi, sizeof(pi) );
+        std::wstring wExeString = strtowstr(std::string("WKUpdater.exe"));
+        wchar_t cmdLineString[wExeString.length()+1];
+        wcscpy(cmdLineString, wExeString.c_str());
+        CreateProcess( NULL, cmdLineString, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi );
+        CloseHandle( pi.hProcess );
+        CloseHandle( pi.hThread );
+        exit(EXIT_FAILURE);
+    }
+
     vooblyDir = outPath / "Voobly Mods\\AOC\\Data Mods\\WololoKingdoms FE";
     upDir = outPath / "Games\\WololoKingdoms FE";
 
@@ -149,6 +164,35 @@ MainWindow::MainWindow(QWidget *parent) :
 	}
 	SteamAPI_Shutdown();
 
+    /*
+     * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
+     */
+    std::ifstream versionFile("resources\\version.txt");
+    std::getline(versionFile, patchNumber);
+    std::getline(versionFile, hash1);
+    std::getline(versionFile, hash2);
+    versionFile.close();
+
+    /*
+     * Read the info which Data Mods are included from a file
+     */
+    std::ifstream dataModFile("resources\\patches\\dataModList.txt");
+    int id = 0;
+    std::string line;
+    while(std::getline(dataModFile, line)) {
+        std::tuple<std::string,std::string,int> info;
+        int index = line.find(',');
+        std::get<0>(info) = line.substr(0,index);
+        line = line.substr(index+1, std::string::npos);
+        index = line.find(',');
+        std::get<1>(info) = line.substr(0,index);
+        std::get<2>(info) = std::atoi(line.substr(index+1,std::string::npos).c_str());
+        dataModList[id] = info;
+        this->ui->patchSelection->addItem(std::get<0>(info).c_str());
+        id++;
+    }
+    dataModFile.close();
+
     //Language selection dropdown
 	QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
 		switch(this->ui->languageChoice->currentIndex()) {
@@ -163,6 +207,8 @@ MainWindow::MainWindow(QWidget *parent) :
             case 8: language = "nl"; break;
             case 9: language = "ru"; break;
             case 10: language = "zh"; break;
+            case 11: language = "zht1"; break;
+            case 12: language = "zht2"; break;
 			default: language = "en";
 		}
         changeLanguage();
@@ -172,94 +218,43 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect( this->ui->patchSelection, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
 		changeModPatch();
 	} );
-	
-    const char * questionIcon = "resources\\question.png";
-	//TODO do this in a loop
 
-    //What's this for the hotkey selection dropdown
-	this->ui->hotkeyTip->setIcon(QIcon(questionIcon));
-	this->ui->hotkeyTip->setIconSize(QSize(16,16));
-	this->ui->hotkeyTip->setWhatsThis(translation["hotkeyTip"].c_str());
-	QObject::connect( this->ui->hotkeyTip, &QPushButton::clicked, this, [this]() {
-			QWhatsThis::showText(this->ui->hotkeyTip->mapToGlobal(QPoint(0,0)),this->ui->hotkeyTip->whatsThis());
-	} );
-	if(fs::exists("player1.hki")) {
-		this->ui->hotkeyChoice->setDisabled(true);
-		this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"].c_str());
-		this->ui->hotkeyTip->setDisabled(true);
-	}
+    setButtonWhatsThis(this->ui->hotkeyTip,"hotkeyTip");
+    setButtonWhatsThis(this->ui->tooltipTip,"tooltipTip");
+    setButtonWhatsThis(this->ui->patchSelectionTip,"patchSelectionTip");
+    setButtonWhatsThis(this->ui->flagsTip,"flagsTip");
+    setButtonWhatsThis(this->ui->exeTip,"exeTip");
+    setButtonWhatsThis(this->ui->modsTip,"modsTip");
+    setButtonWhatsThis(this->ui->mapsTip,"mapsTip");
 
-    //WhatsThis for the tooltip mod option
-	this->ui->tooltipTip->setIcon(QIcon(questionIcon));
-	this->ui->tooltipTip->setIconSize(QSize(16,16));
-	this->ui->tooltipTip->setWhatsThis(translation["tooltipTip"].c_str());
-	QObject::connect( this->ui->tooltipTip, &QPushButton::clicked, this, [this]() {
-		QWhatsThis::showText(this->ui->tooltipTip->mapToGlobal(QPoint(0,0)),this->ui->tooltipTip->whatsThis());
-	} );
-
-    //WhatsThis for the patch selection option
-	this->ui->patchSelectionTip->setIcon(QIcon(questionIcon));
-	this->ui->patchSelectionTip->setIconSize(QSize(16,16));
-	this->ui->patchSelectionTip->setWhatsThis(translation["patchSelectionTip"].c_str());
-	QObject::connect( this->ui->patchSelectionTip, &QPushButton::clicked, this, [this]() {
-		QWhatsThis::showText(this->ui->patchSelectionTip->mapToGlobal(QPoint(0,0)),this->ui->patchSelectionTip->whatsThis());
-	} );
-
-    //WhatsThis for the garrison flag fix option
-    this->ui->flagsTip->setIcon(QIcon(questionIcon));
-    this->ui->flagsTip->setIconSize(QSize(16,16));
-    this->ui->flagsTip->setWhatsThis(translation["flagsTip"].c_str());
-    QObject::connect( this->ui->flagsTip, &QPushButton::clicked, this, [this]() {
-        QWhatsThis::showText(this->ui->flagsTip->mapToGlobal(QPoint(0,0)),this->ui->flagsTip->whatsThis());
-    } );
+    if(fs::exists("player1.hki")) {
+        this->ui->hotkeyChoice->setDisabled(true);
+        this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"].c_str());
+        this->ui->hotkeyTip->setDisabled(true);
+    }
 
     //Checkbox en-/disabling the patch selection dropdown
-	QObject::connect( this->ui->usePatch, &QCheckBox::clicked, this, [this]() {
-		if(this->ui->usePatch->isChecked()) {
-			this->ui->patchSelection->setDisabled(false);
-			this->ui->hotkeyChoice->setDisabled(true);
+    QObject::connect( this->ui->usePatch, &QCheckBox::clicked, this, [this]() {
+        if(this->ui->usePatch->isChecked()) {
+            this->ui->patchSelection->setDisabled(false);
+            this->ui->hotkeyChoice->setDisabled(true);
             this->ui->useGrid->setDisabled(true);
             this->ui->useMonks->setDisabled(true);
             this->ui->usePw->setDisabled(true);
             this->ui->useWalls->setDisabled(true);
             this->ui->copyMaps->setDisabled(true);
-		} else {
-			this->ui->patchSelection->setDisabled(true);
-			this->ui->hotkeyChoice->setDisabled(false);
+        } else {
+            this->ui->patchSelection->setDisabled(true);
+            this->ui->hotkeyChoice->setDisabled(false);
             this->ui->useGrid->setDisabled(false);
             this->ui->useMonks->setDisabled(false);
             this->ui->usePw->setDisabled(false);
             this->ui->useWalls->setDisabled(false);
             this->ui->copyMaps->setDisabled(false);
-		}
-		changeModPatch();
-	} );
+        }
+        changeModPatch();
+    } );
 
-    //What's this for the offline installation option
-	this->ui->exeTip->setIcon(QIcon(questionIcon));
-	this->ui->exeTip->setIconSize(QSize(16,16));
-	std::string line = translation["exeTip"];
-	boost::replace_all(line, "<folder>", outPath.string()+"\\age2_x1");
-	this->ui->exeTip->setWhatsThis(line.c_str());
-	QObject::connect( this->ui->exeTip, &QPushButton::clicked, this, [this]() {
-		QWhatsThis::showText(this->ui->exeTip->mapToGlobal(QPoint(0,0)),this->ui->exeTip->whatsThis());
-	} );
-
-    //WhatsThis for the mods options (pussywood, small walls, grid)
-	this->ui->modsTip->setIcon(QIcon(questionIcon));
-	this->ui->modsTip->setIconSize(QSize(16,16));
-	this->ui->modsTip->setWhatsThis(translation["modsTip"].c_str());
-	QObject::connect( this->ui->modsTip, &QPushButton::clicked, this, [this]() {
-			QWhatsThis::showText(this->ui->modsTip->mapToGlobal(QPoint(0,0)),this->ui->modsTip->whatsThis());
-	} );
-
-    //WhatsThis for the special maps option
-	this->ui->mapsTip->setIcon(QIcon(questionIcon));
-	this->ui->mapsTip->setIconSize(QSize(16,16));
-	this->ui->mapsTip->setWhatsThis(translation["mapsTip"].c_str());
-	QObject::connect( this->ui->mapsTip, &QPushButton::clicked, this, [this]() {
-			QWhatsThis::showText(this->ui->mapsTip->mapToGlobal(QPoint(0,0)),this->ui->mapsTip->whatsThis());
-	} );
 	QObject::connect( this->ui->runButton, &QPushButton::clicked, this, &MainWindow::run);
 
     char const * civLetterList = "XEWMFI";
@@ -274,6 +269,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setButtonWhatsThis(QPushButton* button, std::string title) {
+    const char * questionIcon = "resources\\question.png";
+    //WhatsThis for the special maps option
+    button->setIcon(QIcon(questionIcon));
+    button->setIconSize(QSize(16,16));
+    button->setWhatsThis(translation[title].c_str());
+    QObject::connect( button, &QPushButton::clicked, this, [this, button]() {
+            QWhatsThis::showText(button->mapToGlobal(QPoint(0,0)),button->whatsThis());
+    } );
+
+}
+
 void MainWindow::changeModPatch() {
     /*
      * Triggered when the data mod dropdown is changed. Switches the folders for files to be
@@ -282,13 +289,11 @@ void MainWindow::changeModPatch() {
 	modName = "WK ";
 	patch = this->ui->usePatch->isChecked()?this->ui->patchSelection->currentIndex():-1;
 
-    switch(patch) {
-        case 0: 	modName += dlcLevel == 3?"Patch 5.4":dlcLevel==2?"Patch 5.4 AK":"Patch 5.4 FE"; break;
-        case 1:     modName += "Hippo Mod"; break;
-        case 2:     modName += dlcLevel == 3?"Installer 2.5":dlcLevel==2?"Installer 2.5 AK":"Installer 2.5 FE"; break;
-        case 3:     modName += "No Wall Mod"; break;
-        //case 4:     modName += "Tournament Patch"; break;
-	}
+    modName += std::get<0>(dataModList[patch]);
+    if(std::get<2>(dataModList[patch]) % 2 == 1) {
+        modName += dlcLevel == 3?"":dlcLevel==2?" AK":" FE";
+    }
+
     if(patch == -1) {
 		vooblyDir = vooblyDir.parent_path() / "WololoKingdoms FE";
 		upDir = upDir.parent_path() / "WololoKingdoms FE";
@@ -366,14 +371,10 @@ void MainWindow::updateUI() {
      * modded tooltips to be enabled
      */
     fs::path patchFolder;
-    switch (patch) {
-        case 0: patchFolder = resourceDir/"patches\\5.4\\";
-        case 1: patchFolder = resourceDir;
-        case 2: patchFolder = resourceDir;
-        case 3: patchFolder = resourceDir;
-        //case 2: patchFolder = resourceDir/"patches\\Tournament Patch\\";
-        default: patchFolder = resourceDir;
-    }
+    if((std::get<2>(dataModList[patch]) / 2) % 2 == 1)
+        patchFolder = resourceDir/("patches\\"+std::get<0>(dataModList[patch])+"\\");
+    else
+        patchFolder = resourceDir;
 
     if(!fs::exists(patchFolder/(language+".ini"))) {
 		this->ui->replaceTooltips->setEnabled(false);
@@ -468,7 +469,7 @@ void MainWindow::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
         langIn.close();
         std::wstring wideContent = strtowstr(contents);
         std::string outputContent;
-        ConvertUnicode2CP(wideContent.c_str(), outputContent, CP_ACP);
+        ConvertUnicode2CP(wideContent.c_str(), outputContent, language == "zht2"?950:CP_ACP);
         langOut << outputContent;
         langOut.close();
     }
@@ -592,7 +593,7 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 		//convert UTF-8 into ANSI
 		std::wstring wideLine = strtowstr(line);
 		std::string outputLine;
-        ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
+        ConvertUnicode2CP(wideLine.c_str(), outputLine, language == "zht2"?950:CP_ACP);
 
         *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
 
@@ -638,7 +639,7 @@ void MainWindow::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, g
 		std::wstring wideLine = strtowstr(it->second);
 		std::string outputLine;
 
-        ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
+        ConvertUnicode2CP(wideLine.c_str(), outputLine, language == "zht2"?950:CP_ACP);
 
 		*iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
 
@@ -841,17 +842,8 @@ void MainWindow::uglyHudHack(fs::path assetsPath) {
 			slpFiles[hudFiles[baseIndex]+i+(baseIndex+1)*10] = assetsPath / (std::to_string(hudFiles[baseIndex]+i) + ".slp");
 		}
 	}
-	/*
-	 * copies the Slav hud files for AK civs, the good way of doing this would be to extract
-	 * the actual AK civs hud files from
-	 * Age2HD\resources\_common\slp\game_b[24-27].slp correctly, but I haven't found a way yet
-	 */
-	int const slavHudFiles[] = {51123, 51153, 51183};
-	for (size_t baseIndex = 0; baseIndex < sizeof slavHudFiles / sizeof (int); baseIndex++) {
-		for (size_t i = 1; i <= 8; i++) {
-			slpFiles[slavHudFiles[baseIndex]+i+baseIndex*10] = assetsPath / (std::to_string(slavHudFiles[baseIndex]) + ".slp");
-		}
-	}
+
+    indexDrsFiles(resourceDir/"expansion interfaces fix");
 }
 
 void MainWindow::copyWallFiles(fs::path inputDir) {
@@ -1094,16 +1086,8 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
      * Manual Fixes before the IA seperation
      */
 
-    //Gatepost units should have n1x standing graphic, not nnx
-    short gateIDs[] = {80,81,92,95,663,664,671,672};
-    for(size_t i = 0; i < sizeof(gateIDs)/sizeof(gateIDs[0]); i++) {
-        aocDat->Civs[19].Units[gateIDs[i]].StandingGraphic.first--;
-        aocDat->Civs[24].Units[gateIDs[i]].StandingGraphic.first--;
-    }
-
-    //Manual fix for the mediterranean gates lacking flags
-    slpFiles[6978] = HDPath/("resources\\_common\\drs\\graphics\\4522.slp");
-    slpFiles[6981] = HDPath/("resources\\_common\\drs\\graphics\\4523.slp");
+    aocDat->Graphics[3229].Deltas[0].GraphicID = 427;
+    aocDat->Graphics[3229].Deltas[1].GraphicID = 428;
 
     aocDat->Graphics[9196].Deltas.erase(aocDat->Graphics[9196].Deltas.begin());
 
@@ -1330,18 +1314,19 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
 			newSLP = aocDat->Graphics[graphicID].SLP;
 		else
             newSLP += 10000*offset+slpIdConversion[aocDat->Graphics[graphicID].SLP];
-    } else if (/*manual || */slpFiles.count(aocDat->Graphics[compareID].SLP)+aocSlpFiles.count(aocDat->Graphics[compareID].SLP)
-                +slpFiles.count(aocDat->Graphics[graphicID].SLP)+aocSlpFiles.count(aocDat->Graphics[graphicID].SLP) == 0)
-        newSLP = aocDat->Graphics[compareID].SLP;
-    else if (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000)
-        newSLP = -1; //seems to happen only for 15516 and 15536 but not cause harm in these cases
+    } else if (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000) {
+            if(slpFiles.count(aocDat->Graphics[graphicID].SLP)+aocSlpFiles.count(aocDat->Graphics[graphicID].SLP) != 0) {
+                newSLP = aocDat->Graphics[graphicID].SLP;
+            } else
+                newSLP = -1; //seems to happen only for 15516 and 15536 but not cause harm in these cases
+    }
     else
         newSLP += aocDat->Graphics[compareID].SLP - 18000 + 1000*offset;
 
     replacedGraphics[newGraphic.ID] = newGraphicID;
     duplicatedGraphics.push_back(newGraphic.ID);
     newGraphic.ID = newGraphicID;
-    if(/*!manual && */newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
+    if(newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
         // This is a graphic where we want a new SLP file (as opposed to one where the a new SLP mayb just be needed for some deltas
         fs::path src = HDPath/("resources\\_common\\drs\\gamedata_x2\\"+std::to_string(newGraphic.SLP)+".slp");
 		if(fs::exists(src))
@@ -1411,27 +1396,7 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
 			compIt++;
 		}
 		aocDat->Graphics.at(newGraphicID) = newGraphic;
-    }// else if(manual) {
-        /*
-         * Graphics where the original and the supposed comparison graphic don't work in the same way
-         * Currently this is basically only for portuguesse gates, which be default have just one graphic
-         * with no delta for shadows etc. We use the comparison graphic to figure out how the new graphic
-         * is supposed to be constructed.
-         */
-    /*
-        std::vector<genie::GraphicDelta>::iterator compIt = aocDat->Graphics[compareID].Deltas.begin();
-        for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
-            if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-                it->GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
-            compIt++;
-        }
-        for(; compIt != aocDat->Graphics[compareID].Deltas.end(); compIt++) {
-            genie::GraphicDelta newDelta = *compIt;
-            newDelta.GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, compIt->GraphicID, compIt->GraphicID, offset, true);
-            newGraphic.Deltas.push_back(newDelta);
-        }
-        aocDat->Graphics.at(newGraphicID) = newGraphic;
-    }*/
+    }
 	return newGraphicID;
 }
 
@@ -1572,8 +1537,10 @@ void MainWindow::hotkeySetup() {
 
 	if(fs::exists(nfzPath)) //Copy the Aoc Profile
         fs::copy_file(nfzPath, nfzOutPath, ec);
-	else //otherwise copy the default profile included
+    else{ //otherwise copy the default profile included
         fs::copy_file(nfz1Path, nfzOutPath, ec);
+        fs::copy_file(nfz1Path, nfzPath, ec);
+    }
 	if(this->ui->createExe->isChecked()) { //Profiles for UP
 		if(fs::exists(nfzPath)) //Copy the Aoc Profile
             fs::copy_file(nfzPath,nfzUpOutPath, ec);
@@ -1752,14 +1719,16 @@ int MainWindow::run()
 
 
 	try {
-        fs::path keyValuesStringsPath = HDPath / "resources" / language / "strings\\key-value\\key-value-strings-utf8.txt";
+        fs::path keyValuesStringsPath = language == "zht1" || language == "zht2"?resourceDir/"zht\\key-value-strings-utf8.txt":
+                                                          HDPath / "resources" / language / "strings\\key-value\\key-value-strings-utf8.txt";
         std::string aocDatString = HDPath.string() + "\\resources\\_common\\dat\\empires2_x1_p1.dat";
         std::string hdDatString = HDPath.string() + "\\resources\\_common\\dat\\empires2_x2_p1.dat";
 		fs::path languageIniPath = vooblyDir / "language.ini";
         std::string versionIniPath = vooblyDir.string() + "\\version.ini";
         fs::path soundsInputPath = HDPath / "resources\\_common\\sound\\";
         fs::path soundsOutputPath = vooblyDir / "Sound\\";
-        fs::path historyInputPath = HDPath / ("resources\\"+language+"\\strings\\history\\");
+        fs::path historyInputPath = language == "zht1" || language == "zht2"?resourceDir/"zht\\history\\":
+                                                      HDPath / ("resources\\"+language+"\\strings\\history\\");
         fs::path historyOutputPath = vooblyDir / "History\\";
         fs::path tauntInputPath = HDPath / "resources\\en\\sound\\taunt\\";
         fs::path tauntOutputPath = vooblyDir / "Taunt\\";
@@ -1844,54 +1813,17 @@ int MainWindow::run()
                 fs::remove(upDir/"Script.Ai\\BruteForce3.1.per");
                 fs::create_directories(upDir/"Data");
             }
+
+            logFile << std::endl << "Removing language.ini";
+            fs::remove(languageIniPath);
         } else {
             fs::create_directories(outputDatPath.parent_path());
+            patchFolder = resourceDir/("patches\\"+std::get<0>(dataModList[patch])+"\\");
+            hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
+            UPModdedExe = std::get<1>(dataModList[patch]);
+
         }
 
-        switch (patch) {
-            case -1: {
-                logFile << std::endl << "Removing language.ini";
-                fs::remove(languageIniPath);
-            }
-            break;
-            case 0: {
-                patchFolder = resourceDir/"patches\\5.4\\";
-                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
-                UPModdedExe = "WK54";
-                version = "5.4"; break;
-            } break;
-            case 1: {
-                patchFolder = resourceDir/"patches\\Hippo Mod\\";
-                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
-                UPModdedExe = "WKHM";
-                version = "1.0"; break;
-            } break;
-            case 2: {
-                patchFolder = resourceDir/"patches\\2.5\\";
-                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
-                UPModdedExe = "WKI25";
-                version = "2.5"; break;
-            } break;
-            case 3: {
-                patchFolder = resourceDir/"patches\\No Wall Mod\\";
-                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
-                UPModdedExe = "WKNWM";
-                version = "1.0"; break;
-            } break;
-            /*
-            case 4: {
-                patchFolder = resourceDir/"patches\\Tournament Patch\\";
-                hdDatString = patchFolder.string()+"empires2_x1_p1.dat";
-                UPModdedExe = "WKTP";
-                version = "1.1"; break;
-            } break;
-            */
-            default: //A patch in the list with an unknown index was selected
-                dialog = new Dialog(this,translation["dialogUnknownPatch"].c_str());
-                dialog->exec();
-
-                return -1;
-        }
 
         /*
          * Create the language files (.ini for Voobly, .dll for offline)
@@ -1980,7 +1912,7 @@ int MainWindow::run()
                 line = line.substr(spaceIdx + 1, std::string::npos);
 
                 std::wstring outputLine;
-                ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
+                ConvertCP2Unicode(line.c_str(), outputLine, language == "zht2"?950:CP_ACP);
                 line = wstrtostr(outputLine);
                 langReplacement[nb] = line;
             }
@@ -1988,10 +1920,20 @@ int MainWindow::run()
         }
         bar->setValue(bar->value()+1);bar->repaint(); //82
 
-        if(patch >= 0) {
+        if(patch >= 0 && (std::get<2>(dataModList[patch]) / 2) % 2 == 1) {
             /*
              * A data mod might need slightly changed strings.
              */
+            std::ifstream modLang((patchFolder/(language+".txt")).string());
+            while (std::getline(modLang, line)) {
+                try {
+                    std::pair<int,std::string> tmp = getTextLine(line);
+                    langReplacement[tmp.first] = tmp.second;
+                } catch (std::invalid_argument const & e) {
+                    continue;
+                }
+            }
+            modLang.close();
             if(this->ui->replaceTooltips->isChecked()) {
                 std::ifstream modLang((patchFolder/(language+".ini")).string());
                 while (std::getline(modLang, line)) {
@@ -2007,21 +1949,11 @@ int MainWindow::run()
                     line = line.substr(spaceIdx + 1, std::string::npos);
 
                     std::wstring outputLine;
-                    ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
+                    ConvertCP2Unicode(line.c_str(), outputLine, language == "zht2"?950:CP_ACP);
                     line = wstrtostr(outputLine);
                     langReplacement[nb] = line;
                 }
                 modLang.close();
-            } else {
-                std::ifstream modLang((patchFolder/(language+".txt")).string());
-                while (std::getline(modLang, line)) {
-                    try {
-                        std::pair<int,std::string> tmp = getTextLine(line);
-                        langReplacement[tmp.first] = tmp.second;
-                    } catch (std::invalid_argument const & e) {
-                        continue;
-                    }
-                }
             }
         }
 
@@ -2320,14 +2252,12 @@ int MainWindow::run()
                 QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
                 std::ofstream versionOut(versionIniPath);
                 std::string hash = hashData.toBase64().toStdString().substr(0,6);
-                if (hash != "SamMbN" && hash != "n2RCJn") {
-                    version = "2.7.";
+                if (hash != hash1 && hash != hash2) {
                     dialog = new Dialog(this,translation["dialogBeta"].c_str());
                     dialog->exec();
-                    (versionOut << version) << hash;
+                    versionOut << (version + ".") << hash;
                 } else {
-                    version = "2.7.2";
-                    versionOut << version;
+                    versionOut << patchNumber;
                 }                
                 versionOut.close();
             }
@@ -2339,17 +2269,17 @@ int MainWindow::run()
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat file
             logFile << std::endl << "Copy DAT file";
-            if(patch > 2) {
-                fs::remove(outputDatPath);
-                genie::DatFile dat;
-                dat.setGameVersion(genie::GameVersion::GV_TC);
-                dat.load(hdDatString.c_str());
-                if(this->ui->fixFlags->isChecked())
-                    adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
-                dat.saveAs(outputDatPath.string().c_str());
-            } else {
+            //if(patch > 2) {
+            fs::remove(outputDatPath);
+            genie::DatFile dat;
+            dat.setGameVersion(genie::GameVersion::GV_TC);
+            dat.load(hdDatString.c_str());
+            if(this->ui->fixFlags->isChecked())
+                adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
+            dat.saveAs(outputDatPath.string().c_str());
+            /*} else {
                 fs::copy_file(hdDatString,outputDatPath,fs::copy_option::overwrite_if_exists);
-            }
+            }*/
             bar->setValue(81);
             std::ofstream versionOut(versionIniPath);
             (versionOut << version) << std::endl;

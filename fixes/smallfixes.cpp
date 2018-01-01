@@ -19,6 +19,7 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     size_t const tradeWorkshopID = 110;
     size_t const sharkatzorID = 1222;
     size_t const kingID = 434;
+    size_t const cartographyID = 19;
 	size_t const mountains[] = {310,311,744,745,1041,1042,1043,1044,1045,1046,1047};
     size_t const gates[] = {85,88,90,91,490,491,667,688,669,670,673,674};
     //size_t const gateposts[] = {80,81,92,95,663,664,671,672};
@@ -51,6 +52,11 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	//Fix teuton team bonus being overwritten in post-imp
 	aocDat->Techages[teutonTeamBonusID].Effects[1].B = 1;
 	aocDat->Techages[teutonTeamBonusID].Effects[2].B = 1;
+    //Fixes Autoresearch for cartography
+    aocDat->Researchs[cartographyID].ResearchTime = 0;
+    aocDat->Researchs[cartographyID].RequiredTechs[1] = 128;
+    aocDat->Researchs[cartographyID].RequiredTechCount = 2;
+    aocDat->TechTree.ResearchConnections.erase(aocDat->TechTree.ResearchConnections.begin()+6);
     //fixes holy line, relics block entire tile
     aocDat->Civs[0].Units[relicID].CollisionSize = {0.5,0.5,2};
     //mountains were too small for their graphics
