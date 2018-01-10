@@ -102,10 +102,11 @@ I used Qt Creator for editing and building it, you will also need Boost installe
 
 ## Special thanks
 - Tails8521 for the African Kingdoms version of this installer. Without him this would never have happened.
+- Jineapple for reviving this program when Rise of Rajas came out, for all the countless hours he spent programming and fixing bugs for the WK experience to be as good (if not better) as HD.
 - The UserPatch team for making the new bonuses possible to use and all other great improvements that Userpatch brings.
 - Apre for the genieutils library
 - Tapsa for Advanced Genie Editor
-- Alqualunte and TriRem for advices and testing
+- Alqualunte for advices and testing
 - CheeseOnToast for making his [A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) compatible with this project
 - Phoenix1vs for converting the interfaces for AK and RotR civilizations.
 - Saint_Michaels for creating the Independent Architecture mod on Steam which served as a template for this function on WololoKingdoms.
