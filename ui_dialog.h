@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'dialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.10.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -45,8 +45,8 @@ public:
 
     void retranslateUi(QDialog *Dialog)
     {
-        Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", Q_NULLPTR));
-        button->setText(QApplication::translate("Dialog", "OK", Q_NULLPTR));
+        Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", nullptr));
+        button->setText(QApplication::translate("Dialog", "OK", nullptr));
     } // retranslateUi
 
 };

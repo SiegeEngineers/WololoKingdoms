@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.10.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -105,6 +105,19 @@ public:
         gridLayout->addLayout(horizontalLayout_3, 8, 0, 1, 1);
 
         languageChoice = new QComboBox(gridLayoutWidget);
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
+        languageChoice->addItem(QString());
         languageChoice->setObjectName(QStringLiteral("languageChoice"));
 
         gridLayout->addWidget(languageChoice, 5, 0, 1, 1);
@@ -133,6 +146,10 @@ public:
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
         horizontalLayout_4->setContentsMargins(-1, -1, -1, 0);
         hotkeyChoice = new QComboBox(gridLayoutWidget);
+        hotkeyChoice->addItem(QString());
+        hotkeyChoice->addItem(QString());
+        hotkeyChoice->addItem(QString());
+        hotkeyChoice->addItem(QString());
         hotkeyChoice->setObjectName(QStringLiteral("hotkeyChoice"));
 
         horizontalLayout_4->addWidget(hotkeyChoice);
@@ -299,66 +316,62 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "WololoKingdoms", Q_NULLPTR));
-        replaceTooltips->setText(QApplication::translate("MainWindow", "Improve tooltips and tech tree", Q_NULLPTR));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "WololoKingdoms", nullptr));
+        replaceTooltips->setText(QApplication::translate("MainWindow", "Improve tooltips and tech tree", nullptr));
 #ifndef QT_NO_ACCESSIBILITY
-        tooltipTip->setAccessibleName(QApplication::translate("MainWindow", "tooltipTip", Q_NULLPTR));
+        tooltipTip->setAccessibleName(QApplication::translate("MainWindow", "tooltipTip", nullptr));
 #endif // QT_NO_ACCESSIBILITY
         tooltipTip->setText(QString());
-        languageChoice->clear();
-        languageChoice->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "Portugu\303\252s-Brasil (Portuguese-Brasil)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Deutsch (German)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "English", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Espa\303\261ol (Spanish)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Fran\303\247ais (French)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Italiano (Italian)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "\346\227\245\346\234\254\350\252\236 (Japanese)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "\355\225\234\352\265\255\354\226\264 (Korean)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Nederlands (Dutch)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Simplified Chinese (\347\256\200\344\275\223\344\270\255\346\226\207)", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Test 1 Traditional Chinese", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Test 2 Traditional Chinese", Q_NULLPTR)
-        );
-        createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", Q_NULLPTR));
+        languageChoice->setItemText(0, QApplication::translate("MainWindow", "Portugu\303\252s-Brasil (Portuguese-Brasil)", nullptr));
+        languageChoice->setItemText(1, QApplication::translate("MainWindow", "Deutsch (German)", nullptr));
+        languageChoice->setItemText(2, QApplication::translate("MainWindow", "English", nullptr));
+        languageChoice->setItemText(3, QApplication::translate("MainWindow", "Espa\303\261ol (Spanish)", nullptr));
+        languageChoice->setItemText(4, QApplication::translate("MainWindow", "Fran\303\247ais (French)", nullptr));
+        languageChoice->setItemText(5, QApplication::translate("MainWindow", "Italiano (Italian)", nullptr));
+        languageChoice->setItemText(6, QApplication::translate("MainWindow", "\346\227\245\346\234\254\350\252\236 (Japanese)", nullptr));
+        languageChoice->setItemText(7, QApplication::translate("MainWindow", "\355\225\234\352\265\255\354\226\264 (Korean)", nullptr));
+        languageChoice->setItemText(8, QApplication::translate("MainWindow", "Nederlands (Dutch)", nullptr));
+        languageChoice->setItemText(9, QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", nullptr));
+        languageChoice->setItemText(10, QApplication::translate("MainWindow", "Simplified Chinese (\347\256\200\344\275\223\344\270\255\346\226\207)", nullptr));
+        languageChoice->setItemText(11, QApplication::translate("MainWindow", "Test 1 Traditional Chinese", nullptr));
+        languageChoice->setItemText(12, QApplication::translate("MainWindow", "Test 2 Traditional Chinese", nullptr));
+
+        createExe->setText(QApplication::translate("MainWindow", "Create an offline installation", nullptr));
 #ifndef QT_NO_ACCESSIBILITY
-        exeTip->setAccessibleName(QApplication::translate("MainWindow", "exeTip", Q_NULLPTR));
+        exeTip->setAccessibleName(QApplication::translate("MainWindow", "exeTip", nullptr));
 #endif // QT_NO_ACCESSIBILITY
         exeTip->setText(QString());
-        hotkeyChoice->clear();
-        hotkeyChoice->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "Choose which hotkeys to use...", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Use current AoC/Voobly hotkeys", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Use HD hotkeys for this mod only", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Use HD hotkeys for this mod and AoC", Q_NULLPTR)
-        );
+        hotkeyChoice->setItemText(0, QApplication::translate("MainWindow", "Choose which hotkeys to use...", nullptr));
+        hotkeyChoice->setItemText(1, QApplication::translate("MainWindow", "Use current AoC/Voobly hotkeys", nullptr));
+        hotkeyChoice->setItemText(2, QApplication::translate("MainWindow", "Use HD hotkeys for this mod only", nullptr));
+        hotkeyChoice->setItemText(3, QApplication::translate("MainWindow", "Use HD hotkeys for this mod and AoC", nullptr));
+
 #ifndef QT_NO_ACCESSIBILITY
-        hotkeyTip->setAccessibleName(QApplication::translate("MainWindow", "hotkeyTip", Q_NULLPTR));
+        hotkeyTip->setAccessibleName(QApplication::translate("MainWindow", "hotkeyTip", nullptr));
 #endif // QT_NO_ACCESSIBILITY
         hotkeyTip->setText(QString());
-        copyMaps->setText(QApplication::translate("MainWindow", "Copy Real World and Special Maps", Q_NULLPTR));
+        copyMaps->setText(QApplication::translate("MainWindow", "Copy Real World and Special Maps", nullptr));
 #ifndef QT_NO_ACCESSIBILITY
-        mapsTip->setAccessibleName(QApplication::translate("MainWindow", "mapsTip", Q_NULLPTR));
+        mapsTip->setAccessibleName(QApplication::translate("MainWindow", "mapsTip", nullptr));
 #endif // QT_NO_ACCESSIBILITY
         mapsTip->setText(QString());
-        usePatch->setText(QApplication::translate("MainWindow", "Patch/Data Mod", Q_NULLPTR));
+        usePatch->setText(QApplication::translate("MainWindow", "Patch/Data Mod", nullptr));
         patchSelectionTip->setText(QString());
-        fixFlags->setText(QApplication::translate("MainWindow", "Adjust garrison flags for new architectures", Q_NULLPTR));
+        fixFlags->setText(QApplication::translate("MainWindow", "Adjust garrison flags for new architectures", nullptr));
 #ifndef QT_NO_ACCESSIBILITY
-        flagsTip->setAccessibleName(QApplication::translate("MainWindow", "exeTip", Q_NULLPTR));
+        flagsTip->setAccessibleName(QApplication::translate("MainWindow", "exeTip", nullptr));
 #endif // QT_NO_ACCESSIBILITY
         flagsTip->setText(QString());
-        usePw->setText(QApplication::translate("MainWindow", "Small Trees", Q_NULLPTR));
-        useGrid->setText(QApplication::translate("MainWindow", "Grid", Q_NULLPTR));
-        useMonks->setText(QApplication::translate("MainWindow", "Regional Monks", Q_NULLPTR));
-        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", Q_NULLPTR));
+        usePw->setText(QApplication::translate("MainWindow", "Small Trees", nullptr));
+        useGrid->setText(QApplication::translate("MainWindow", "Grid", nullptr));
+        useMonks->setText(QApplication::translate("MainWindow", "Regional Monks", nullptr));
+        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", nullptr));
 #ifndef QT_NO_ACCESSIBILITY
-        modsTip->setAccessibleName(QApplication::translate("MainWindow", "modsTip", Q_NULLPTR));
+        modsTip->setAccessibleName(QApplication::translate("MainWindow", "modsTip", nullptr));
 #endif // QT_NO_ACCESSIBILITY
         modsTip->setText(QString());
-        runButton->setText(QApplication::translate("MainWindow", "Run", Q_NULLPTR));
-        label->setText(QApplication::translate("MainWindow", "TextLabel", Q_NULLPTR));
+        runButton->setText(QApplication::translate("MainWindow", "Run", nullptr));
+        label->setText(QApplication::translate("MainWindow", "TextLabel", nullptr));
     } // retranslateUi
 
 };

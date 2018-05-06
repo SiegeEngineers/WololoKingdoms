@@ -21,7 +21,7 @@ void malayPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacem
 	effect.B = 0; // Set
 	effect.D = aocDat->Civs[29].Resources[fishtrapResourceId];
 	aocDat->Techages[malayTechTreeId].Effects.push_back(effect);
-	aocDat->Civs[29].Resources[fishtrapResourceId] = 715;
+    aocDat->Civs[29].Resources[fishtrapResourceId] = 700;
 
 
 

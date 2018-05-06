@@ -180,13 +180,24 @@ MainWindow::MainWindow(QWidget *parent) :
     int id = 0;
     std::string line;
     while(std::getline(dataModFile, line)) {
-        std::tuple<std::string,std::string,int> info;
+        std::tuple<std::string,std::string,std::string,int,std::string> info;
         int index = line.find(',');
         std::get<0>(info) = line.substr(0,index);
         line = line.substr(index+1, std::string::npos);
         index = line.find(',');
         std::get<1>(info) = line.substr(0,index);
-        std::get<2>(info) = std::atoi(line.substr(index+1,std::string::npos).c_str());
+        line = line.substr(index+1, std::string::npos);
+        index = line.find(',');
+        std::get<2>(info) = line.substr(0,index);
+        line = line.substr(index+1, std::string::npos);
+        index = line.find(',');
+        if(index != std::string::npos) {
+            std::get<3>(info) = std::atoi(line.substr(0,index).c_str());
+            std::get<4>(info) = line.substr(index+1,std::string::npos);
+        } else {
+            std::get<3>(info) = std::atoi(line.substr(index+1,std::string::npos).c_str());
+            std::get<4>(info) = "";
+        }
         dataModList[id] = info;
         this->ui->patchSelection->addItem(std::get<0>(info).c_str());
         id++;
@@ -290,7 +301,7 @@ void MainWindow::changeModPatch() {
 	patch = this->ui->usePatch->isChecked()?this->ui->patchSelection->currentIndex():-1;
 
     modName += std::get<0>(dataModList[patch]);
-    if(std::get<2>(dataModList[patch]) % 2 == 1) {
+    if(std::get<3>(dataModList[patch]) % 2 == 1) {
         modName += dlcLevel == 3?"":dlcLevel==2?" AK":" FE";
     }
 
@@ -371,7 +382,7 @@ void MainWindow::updateUI() {
      * modded tooltips to be enabled
      */
     fs::path patchFolder;
-    if((std::get<2>(dataModList[patch]) / 2) % 2 == 1)
+    if((std::get<3>(dataModList[patch]) / 2) % 2 == 1)
         patchFolder = resourceDir/("patches\\"+std::get<0>(dataModList[patch])+"\\");
     else
         patchFolder = resourceDir;
@@ -900,50 +911,92 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 			mapNames.push_back(it->path());
 		}
 	}
-	bar->setValue(bar->value()+1);bar->repaint(); //13+17
-	bar->setValue(bar->value()+1);bar->repaint(); //14+18
+    bar->setValue(bar->value()+2);bar->repaint(); //14+18
 	std::map<std::string,fs::path> terrainOverrides;
-	std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>> replacements = {
-		//<Name,Regex Pattern if needed,replace name,terrain ID, replace terrain ID,slp to replace,upgrade trees?,tree to replace,new tree>
-		std::make_tuple("DRAGONFOREST","DRAGONFORES(T?)","DRAGONFORES$1","48","21","15029.slp",true,"SNOWPINETREE","DRAGONTREE"),
-		std::make_tuple("ACACIA_FOREST","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3","50","41","",false,"",""),
-		std::make_tuple("DLC_RAINFOREST","","DLC_RAINFOREST","56","10","15011.slp",true,"FOREST_TREE","DLC_RAINTREE"),
-		std::make_tuple("BAOBAB","","BAOBAB","49","16","",false,"",""),
-		std::make_tuple("DLC_MANGROVESHALLOW","","DLC_MANGROVESHALLOW","54","4","15014.slp",false,"",""),
-		std::make_tuple("DLC_MANGROVEFOREST","","DLC_MANGROVEFOREST","55","20","",false,"",""),
-		std::make_tuple("DLC_NEWSHALLOW","","DLC_NEWSHALLOW","59","26","15024.slp",false,"",""),
-		std::make_tuple("SAVANNAH","","SAVANNAH","41","14","15010.slp",false,"",""),
-		std::make_tuple("DIRT4","((DLC_)?)DIRT4","$1DIRT4","42","3","15007.slp",false,"",""),
-		std::make_tuple("MOORLAND","","MOORLAND","44","9","15009.slp",false,"",""),
-		std::make_tuple("CRACKEDIT","","CRACKEDIT","45","6","15000.slp",false,"",""),
-        std::make_tuple("QUICKSAND","","QUICKSAND","46","40","15033.slp",false,"",""),
-        std::make_tuple("BLACK","BLACK(?!_)","BLACK","47","40","15033.slp",false,"",""),
-        //std::make_tuple("DLC_ROCK","","DLC_ROCK","40","40","15018.slp",false,"",""),
-		std::make_tuple("DLC_BEACH2","","DLC_BEACH2","51","2","15017.slp",false,"",""),
-		std::make_tuple("DLC_BEACH3","","DLC_BEACH3","52","2","15017.slp",false,"",""),
-		std::make_tuple("DLC_BEACH4","","DLC_BEACH4","53","2","15017.slp",false,"",""),
-		std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","15019.slp",false,"",""),
-		std::make_tuple("DLC_WATER4","","DLC_WATER4","57","22","",false,"",""),
-		std::make_tuple("DLC_WATER5","","DLC_WATER5","58","1","",false,"",""),
-		std::make_tuple("DLC_DRYROAD","","DLC_DRYROAD","43","25","15019.slp",false,"",""),
-		std::make_tuple("DLC_JUNGLELEAVES","","DLC_JUNGLELEAVES","62","11","15006.slp",false,"",""),
-		std::make_tuple("DLC_JUNGLEROAD","","DLC_JUNGLEROAD","62","39","15031.slp",false,"",""),
-		std::make_tuple("DLC_JUNGLEGRASS","","DLC_JUNGLEGRASS","61","12","15008.slp",false,"","")
+    std::array<std::map<int,std::string>,5> terrainsPerType = { {
+        {},
+        { {0,"GRASS"},
+            {3,"DIRT3"},
+            {6,"DIRT1"},
+            {9,"GRASS3"},
+            {12,"GRASS2"},
+            {14,"DESERT"},
+            {24,"ROAD"},
+            {25,"ROAD2"},
+            {39,"ROAD3"} },
+        { {10,"FOREST"},
+            {13,"PALM_DESERT"},
+            {21,"SNOW_FOREST"} },
+        { {23,"MED_WATER"},
+            {22,"DEEP_WATER"} },
+        { {40,"DLC_ROCK"},
+            {35,"ICE"} }
+    } };
+    std::vector<std::tuple<std::string,std::string,std::string,int,int,int>> replacements = {
+        //<SLP Name,Regex Pattern,replace name,terrain ID, replace terrain ID,slp to replace,terrainType>
+        std::make_tuple("DRAGONFOREST.slp","DRAGONFORES(T?)","DRAGONFORES$1",48,21,TerrainType::ForestTerrain),
+        std::make_tuple("ACACIA_FOREST.slp","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3",50,41,TerrainType::None),
+        std::make_tuple("DLC_RAINFOREST.slp","DLC_RAINFOREST","DLC_RAINFOREST",56,10,TerrainType::ForestTerrain),
+        std::make_tuple("BAOBA.slpB","BAOBAB(S|_FOREST)?","BAOBAB$1",49,16,TerrainType::None),
+        std::make_tuple("DLC_MANGROVESHALLOW.slp","DLC_MANGROVESHALLOW","DLC_MANGROVESHALLOW",54,11,TerrainType::None),
+        std::make_tuple("DLC_MANGROVEFOREST.slp","DLC_MANGROVEFOREST","DLC_MANGROVEFOREST",55,20,TerrainType::None),
+        std::make_tuple("DLC_NEWSHALLOW.slp","DLC_NEWSHALLOW","DLC_NEWSHALLOW",59,4,TerrainType::FixedTerrain),
+        std::make_tuple("SAVANNAH.slp","(DLC_)?SAVANNAH","$1SAVANNAH",41,14,TerrainType::LandTerrain),
+        std::make_tuple("DIRT4.slp","(DLC_)?DIRT4","$1DIRT4",42,3,TerrainType::LandTerrain),
+        std::make_tuple("MOORLAND.slp","(DLC_)?MOORLAND","$1MOORLAND",44,9,TerrainType::LandTerrain),
+        std::make_tuple("CRACKEDIT.slp","CRACKEDIT","CRACKEDIT",45,38,TerrainType::None),
+        std::make_tuple("QUICKSAND.slp","(DLC_)?QUICKSAND","$1QUICKSAND",46,40,TerrainType::UnbuildableTerrain),
+        std::make_tuple("BLACK.slp","(DLC_)?BLACK(?!_)","$1BLACK",47,40,TerrainType::UnbuildableTerrain),
+        std::make_tuple("DLC_BEACH2.slp","DLC_BEACH2","DLC_BEACH2",51,2,TerrainType::FixedTerrain),
+        std::make_tuple("DLC_BEACH3.slp","DLC_BEACH3","DLC_BEACH3",52,2,TerrainType::FixedTerrain),
+        std::make_tuple("DLC_BEACH4.slp","DLC_BEACH4","DLC_BEACH4",53,2,TerrainType::FixedTerrain),
+        std::make_tuple("DLC_DRYROAD.slp","DLC_DRYROAD","DLC_DRYROAD",43,25,TerrainType::LandTerrain),
+        std::make_tuple("DLC_WATER4.slp","DLC_WATER4","DLC_WATER4",57,22,TerrainType::DeepWaterTerrain),
+        std::make_tuple("DLC_WATER5.slp","DLC_WATER5","DLC_WATER5",58,1,TerrainType::FixedTerrain),
+        std::make_tuple("DLC_JUNGLELEAVES.slp","DLC_JUNGLELEAVES","DLC_JUNGLELEAVES",62,5,TerrainType::LandTerrain),
+        std::make_tuple("DLC_JUNGLEROAD.slp","DLC_JUNGLEROAD","DLC_JUNGLEROAD",61,39,TerrainType::LandTerrain),
+        std::make_tuple("DLC_JUNGLEGRASS.slp","DLC_JUNGLEGRASS","DLC_JUNGLEGRASS",60,12,TerrainType::LandTerrain)
 	};
+    std::map<int,std::string> slpNumbers = {
+        {0,"15001.slp"},
+        {1,"15002.slp"},
+        {2,"15017.slp"},
+        {3,"15007.slp"},
+        {4,"15014.slp"},
+        {5,"15011.slp"},
+        {6,"15014.slp"},
+        {9,"15009.slp"},
+        {10,"15011.slp"},
+        {12,"15008.slp"},
+        {13,"15010.slp"},
+        {14,"15010.slp"},
+        {21,"15029.slp"},
+        {22,"15015.slp"},
+        {23,"15016.slp"},
+        {24,"15018.slp"},
+        {25,"15019.slp"},
+        {35,"15024.slp"},
+        {39,"15031.slp"},
+        {40,"15033.slp"}
+    };
+    std::vector<std::tuple<std::string,std::string,std::string,int,int,int>>::iterator repIt;
 	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end(); it++) {
 		std::string mapName = it->stem().string()+".rms";
-		if (mapName.substr(0,3) == "ZR@") {
+        if (mapName.substr(0,3) == "ZR@") {
 			fs::copy_file(*it,outputDir/mapName,fs::copy_option::overwrite_if_exists);
 			continue;
-		}
-        if(replace)
-            fs::remove(outputDir/it->filename());
-        else
-            continue;
+		}        
+        if(fs::exists(outputDir/it->filename())) {
+            if(replace)
+                fs::remove(outputDir/it->filename());
+            else
+                continue;
+        }
         fs::remove(outputDir/("ZR@"+it->filename().string()));
 		std::ifstream input(inputDir.string()+it->filename().string());
 		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
         input.close();
+        /*
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
 			if(str.find("<PLAYER_SETUP>")!=std::string::npos)
 				str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
@@ -952,39 +1005,102 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 				str = std::regex_replace(str, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
 					"#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  terrain_state 0 0 0 1$1\n");
 		}
-		for (std::vector<std::tuple<std::string,std::string,std::string,std::string,std::string,std::string,bool,std::string,std::string>>::iterator repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
-			std::regex terrainConstDef;
-			std::regex terrainName;
-			if(std::get<1>(*repIt)=="") {
-				terrainConstDef = std::regex("#const\\s+" +std::get<0>(*repIt)+ "\\s+" +std::get<3>(*repIt));
-				terrainName = std::regex(std::get<0>(*repIt));
-			} else {
-				terrainConstDef = std::regex("#const\\s+" +std::get<1>(*repIt)+ "\\s+" +std::get<3>(*repIt));
-				terrainName = std::regex(std::get<1>(*repIt));
-			}
-			if(std::regex_search(str,terrainName)) {
-				str = std::regex_replace(str,terrainConstDef, "#const "+std::get<2>(*repIt)+" "+std::get<4>(*repIt));
-				if(std::get<5>(*repIt) != "") {
-					terrainOverrides[std::get<5>(*repIt)] = newTerrainFiles[std::get<0>(*repIt)+".slp"];
-					if(std::get<6>(*repIt)) {
-						if(str.find("<PLAYER_SETUP>")!=std::string::npos)
-							str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
-								"<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
-						else
-							str = std::regex_replace(str, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
-								"#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+std::get<7>(*repIt)+" "+std::get<8>(*repIt)+" 0$1\n");
-					}
-				}
-			}
+        */
+        std::map<int,bool> isTerrainUsed = {
+            {0,false}, {1,false}, {2,false}, {3,false}, {4,false},
+            {5,false}, {6,false}, {9,false}, {10,false}, {11,false},
+            {12,false}, {13,false}, {14,false}, {16,false}, {20,false},
+            {21,false}, {22,false}, {23,false}, {24,false}, {25,false},
+            {35,false}, {38,false}, {39,false}, {40,false},
+
+            {41,false}, {42,false}, {43,false}, {44,false}, {45,false},
+            {46,false}, {47,false}, {48,false}, {49,false}, {50,false},
+            {51,false}, {52,false}, {53,false}, {54,false}, {55,false},
+            {56,false}, {57,false}, {58,false}, {59,false}, {60,false},
+            {61,false}, {62,false}
+        };
+
+        for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {         
+            std::regex terrainName = std::regex(rt_getPattern());
+            if(std::regex_search(str,terrainName)) {
+                if(rt_getNewId() < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
+                    isTerrainUsed.at(rt_getNewId()) = true;
+                isTerrainUsed.at(rt_getOldId()) = true;
+            }
+        }
+
+        for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
+            if(!isTerrainUsed.at(rt_getOldId()))
+                continue;
+            /* Check if replacment candidate is already used */
+            std::regex terrainConstDef = std::regex("#const\\s+" +rt_getPattern()+ "\\s+" +std::to_string(rt_getOldId()));
+            int usedTerrain = rt_getNewId();
+            if(rt_getTerrainType() != TerrainType::None && rt_getTerrainType() != TerrainType::FixedTerrain
+                    && str.find(terrainsPerType[rt_getTerrainType()].at(usedTerrain))!=std::string::npos) {
+                for(std::map<int,std::string>::iterator tIt = terrainsPerType[rt_getTerrainType()].begin();
+                    tIt != terrainsPerType[rt_getTerrainType()].end(); tIt++) {
+                    if(isTerrainUsed.at(tIt->first))
+                        continue;
+                    else if(str.find(terrainsPerType[rt_getTerrainType()].at(tIt->first))!=std::string::npos) {
+                        isTerrainUsed.at(tIt->first) = true;
+                        continue;
+                    }
+                    usedTerrain = tIt->first;
+                    isTerrainUsed.at(tIt->first) = true;
+                    break;
+                }
+            }
+
+            if(usedTerrain != rt_getNewId()) {
+                std::regex terrainName = std::regex(rt_getPattern());
+                str = std::regex_replace(str,terrainName, "MY"+rt_getReplaceName());
+                terrainConstDef = std::regex("#const\\sMY+" +rt_getPattern()+ "\\s+" +std::to_string(rt_getOldId()));
+                std::string temp = std::regex_replace(str,terrainConstDef, "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain));
+                if (temp != str)
+                    str = temp;
+                else  {
+                    str = "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain)+"\n"+str;
+                }
+            } else {
+                str = std::regex_replace(str,terrainConstDef, "#const "+rt_getReplaceName()+" "+std::to_string(usedTerrain));
+            }
+
+
+            if(rt_getTerrainType() == TerrainType::None)
+                continue;
+
+            terrainOverrides[slpNumbers.at(usedTerrain)] = newTerrainFiles.at(rt_getSLPName());
+
+            if(rt_getTerrainType() == TerrainType::ForestTerrain) {
+                std::string newTree;
+                std::string oldTree;
+                switch(usedTerrain) {
+                    case 10: oldTree = "FOREST_TREE"; break;
+                    case 13: oldTree = "PALMTREE"; break;
+                    case 21: oldTree = "SNOWPINETREE"; break;
+                }
+                if(rt_getOldId() == 48) {
+                    newTree = "DRAGONTREE";
+                } else {
+                    newTree = "DLC_RAINTREE";
+                }
+                if(str.find("<PLAYER_SETUP>")!=std::string::npos)
+                    str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
+                        "<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
+                else
+                    str = std::regex_replace(str, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
+                        "#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
+            }
+
+
 		}
-		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
-			terrainOverrides["15004.slp"] = newTerrainFiles["15004.slp"];
-			terrainOverrides["15005.slp"] = newTerrainFiles["15005.slp"];
-			terrainOverrides["15021.slp"] = newTerrainFiles["15021.slp"];
-			terrainOverrides["15022.slp"] = newTerrainFiles["15022.slp"];
-			terrainOverrides["15023.slp"] = newTerrainFiles["15023.slp"];
-		}
-		//str = regex_replace(str, std::regex("#const\\s+BAOBAB\\s+49"), "#const BAOBAB 16");
+        if(isTerrainUsed.at(11)) {
+            terrainOverrides["15004.slp"] = newTerrainFiles.at("15004.slp");
+            terrainOverrides["15005.slp"] = newTerrainFiles.at("15005.slp");
+            terrainOverrides["15021.slp"] = newTerrainFiles.at("15021.slp");
+            terrainOverrides["15022.slp"] = newTerrainFiles.at("15022.slp");
+            terrainOverrides["15023.slp"] = newTerrainFiles.at("15023.slp");
+        }
         std::ofstream out(outputDir.string()+"\\"+mapName);
 		out << str;
 		out.close();
@@ -1031,26 +1147,33 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
 	//Copy Terrains
 	aocDat->TerrainBlock.TerrainsUsed2 = 42;
 	aocDat->TerrainsUsed1 = 42;
-	//terrainSwap(hdDat, aocDat, 41,54,15030); //mangrove terrain
-	terrainSwap(hdDat, aocDat, 20,55,15012); //mangrove forest
-	terrainSwap(hdDat, aocDat, 16,49,15025); //baobab forest
-	terrainSwap(hdDat, aocDat, 41,50,15013); //acacia forest
+
+    terrainSwap(hdDat, aocDat, 33,38,15030); // Snow road to snow dirt
+    terrainSwap(hdDat, aocDat, 38,45,15032); // Cracked Earth to Snow road
+
+    terrainSwap(hdDat, aocDat, 11,54,15012); //mangrove terrain
+    terrainSwap(hdDat, aocDat, 20,55,15012); //mangrove forest
+    terrainSwap(hdDat, aocDat, 41,50,15013); //acacia forest
+    terrainSwap(hdDat, aocDat, 16,49,15025); //baobab forest
 
 	slpFiles[15012] = newTerrainFiles["DLC_MANGROVEFOREST.slp"];
 	slpFiles[15013] = newTerrainFiles["ACACIA_FOREST.slp"];
 	slpFiles[15025] = newTerrainFiles["BAOBAB.slp"];
     slpFiles[15003] = newTerrainFiles["15003.slp"];
+    slpFiles[15032] = newTerrainFiles["CRACKEDIT.slp"];
+    //slpFiles[15034] = newTerrainFiles["DLC_NEWSHALLOW.slp"];
 
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
 
+    aocDat->TerrainBlock.Terrains[36].TerrainToDraw = -1;
+    aocDat->TerrainBlock.Terrains[36].SLP = 15027;
+
     aocDat->TerrainBlock.Terrains[15].SLP = 15003;
     aocDat->TerrainBlock.Terrains[40].SLP = 15033;
     aocDat->TerrainBlock.Terrains[40].TerrainToDraw = -1;
     aocDat->TerrainBlock.Terrains[15].TerrainToDraw = -1;
-
-	//terrainSwap(hdDat, aocDat, 15,45,15000); //cracked sand
 }
 
 void MainWindow::adjustArchitectureFlags(genie::DatFile *aocDat, std::string flagFilename) {
@@ -1098,7 +1221,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
 						155, 179, 190, 209, 210, 234, 235, 236, 276, 463, 464, 465, 481, 482, 483, 484, 487, 488, 490, 491, 498,
-						562, 563, 564, 565, 566, 584, 585, 586, 587, 597, 611, 612, 613, 614, 615, 616, 617, 659, 660, 661,
+                        562, 563, 564, 565, 584, 585, 586, 587, 597, 611, 612, 613, 614, 615, 616, 617, 659, 660, 661,
                         662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673, 674, 1102, 1189};
 	short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
     short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
@@ -1155,14 +1278,15 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
 					{8,9,10,20,25,26,27},
 					{15,16,21}};
-    std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
-							 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
-	short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620};
-	short cgUnitIDs[] = {125,134,286};
+    //std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
+    //						 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
+    // short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620}; // There's no IA dark age building mod, but regular ones that get broken by enabling this, so we won't do it.
+    short cgUnitIDs[] = {125,134,286,4,3,5,98,6,100,7,238,24,26,37,113,38,111,39,34,74,152,75,154,77,180,93,140,238,139,329,330,495,358,501,
+                        359,502,440,441,480,448,449,473,500,474,631,492,496,546,547,567,568,569,570};
     for(int cg = 0; cg < 3; cg++) {
 		short monkHealingGraphic;
         if (cg != 2) {
-            int newSLP = 60000+10000*cg+135;
+            int newSLP = 60000+10000*cg+776;
 			genie::Graphic newGraphic = aocDat->Graphics[1597];
 			monkHealingGraphic = aocDat->Graphics.size();
 			newGraphic.ID = monkHealingGraphic;
@@ -1175,24 +1299,23 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 		}
         std::map<short,short> replacedGraphics;
         for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
+            /*
 			for(unsigned int b = 0; b < sizeof(cgBuildingIDs)/sizeof(short); b++) {
                 replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
                 for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].DamageGraphics.begin();
                     it != aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].DamageGraphics.end(); it++) {
                     replaceGraphic(aocDat, &(it->GraphicID), -1, cg, replacedGraphics, slpIdConversion);
 				}
-			}
-
-            //units, in this case monks
-			for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
-                replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
-                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1)
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
-                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Type50.AttackGraphic != -1)
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Type50.AttackGraphic, -1, cg, replacedGraphics, slpIdConversion);
-                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic.first != -1)
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
-			}
+            }*/
+            //Units
+            for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
+                replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].StandingGraphic.first, aocDat->Civs[0].Units[cgUnitIDs[u]].StandingGraphic.first, cg, replacedGraphics, true);
+                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1) { //Not a Dead Unit
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, aocDat->Civs[0].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, cg, replacedGraphics, true);
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Type50.AttackGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].Type50.AttackGraphic, cg, replacedGraphics, true);
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic.first, aocDat->Civs[0].Units[cgUnitIDs[u]].DyingGraphic.first, cg, replacedGraphics, true);
+                }
+            }
 			//special UP healing slp workaround
             for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
 				size_t code = 0x811E0000+monkHealingGraphic;
@@ -1238,16 +1361,13 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 
 }
 
-void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slpIdConversion) {
+void MainWindow::replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, bool civGroups) {
     if(replacedGraphics.count(*graphicID) != 0)
 		*graphicID = replacedGraphics[*graphicID];
     else {
         short newGraphicID;
         std::vector<short> duplicatedGraphics;
-		if (compareID != -1)
-            newGraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, *graphicID, compareID, c);
-		else
-            newGraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, *graphicID, compareID, c, false, slpIdConversion);
+        newGraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, *graphicID, compareID, c, civGroups);
 		*graphicID = newGraphicID;
 	}
 }
@@ -1277,7 +1397,7 @@ bool MainWindow::checkGraphics(genie::DatFile *aocDat, short graphicID, std::vec
 		return true;
 }
 
-short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>& replacedGraphics, std::vector<short> duplicatedGraphics, short graphicID, short compareID, short offset, bool manual, std::map<int,int> slpIdConversion) {
+short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>& replacedGraphics, std::vector<short> duplicatedGraphics, short graphicID, short compareID, short offset, bool civGroups) {
 
     /*
      * Parameters:
@@ -1287,10 +1407,8 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
      * graphicID: The ID of the graphic to be duplicated
      * compareID: The ID of the same building of the burmese, to serve as a comparison. If -1, it's one of the monk/dark age graphics to be duped, see slpIdConversion parameter
      * offset: The offset of the civ/civ group for the new SLPs (24000+offset*1000 and so on)
-     * slpIdConversion: To compare what id to give the newly duped slp files for monk/dark age graphics
-     * manual: Graphics where the original is different from the usual format. Needs manual adjustments & slp copying
+     * civGroup: This is mostly unit graphics, which are only seperated into civ groups, not per civs
      */
-
 
     if(replacedGraphics.count(graphicID)) //We've already replaced this, return the new graphics ID
         return replacedGraphics[graphicID];
@@ -1299,26 +1417,25 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
      * Check if at least one SLP in this graphic or graphic deltas is in the right range,
      * else we don't need to do any duplication in which case we can just return the current graphic ID as a result
      */
-	if (compareID != -1 && (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000)) {
+    if (civGroups && aocDat->Graphics[compareID].SLP >= 10000)
+        throw std::runtime_error("Unit slp over 10k");
+    if (!civGroups && (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000)) {
 		std::vector<int> checkedGraphics;
 		if(!checkGraphics(aocDat, compareID, checkedGraphics))
 			return graphicID;
 	}
 
-    genie::Graphic newGraphic = manual?aocDat->Graphics[compareID]:aocDat->Graphics[graphicID];
-    int newSLP = compareID==-1?60000:24000;
+    genie::Graphic newGraphic = aocDat->Graphics[graphicID];
+    int newSLP = civGroups?60000:24000;
 
 	short newGraphicID = aocDat->Graphics.size();
-	if(compareID==-1) { //Monk or Dark Age Graphics for the 4 big civ groups
-        if (slpIdConversion.count(aocDat->Graphics[graphicID].SLP) == 0 && aocDat->Graphics[graphicID].SLP != 2683)
-			newSLP = aocDat->Graphics[graphicID].SLP;
-		else
-            newSLP += 10000*offset+slpIdConversion[aocDat->Graphics[graphicID].SLP];
+    if(civGroups) { //Unit Graphics for the 4 civ groups
+        newSLP += 10000*offset+aocDat->Graphics[graphicID].SLP;
     } else if (aocDat->Graphics[compareID].SLP < 18000 || aocDat->Graphics[compareID].SLP >= 19000) {
-            if(slpFiles.count(aocDat->Graphics[graphicID].SLP)+aocSlpFiles.count(aocDat->Graphics[graphicID].SLP) != 0) {
-                newSLP = aocDat->Graphics[graphicID].SLP;
-            } else
-                newSLP = -1; //seems to happen only for 15516 and 15536 but not cause harm in these cases
+        if(slpFiles.count(aocDat->Graphics[graphicID].SLP)+aocSlpFiles.count(aocDat->Graphics[graphicID].SLP) != 0) {
+            newSLP = aocDat->Graphics[graphicID].SLP;
+        } else
+            newSLP = -1; //seems to happen only for 15516 and 15536 but not cause harm in these cases
     }
     else
         newSLP += aocDat->Graphics[compareID].SLP - 18000 + 1000*offset;
@@ -1326,7 +1443,7 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
     replacedGraphics[newGraphic.ID] = newGraphicID;
     duplicatedGraphics.push_back(newGraphic.ID);
     newGraphic.ID = newGraphicID;
-    if(newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && (compareID == -1 || newSLP != aocDat->Graphics[compareID].SLP)) {
+    if(newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && newSLP != aocDat->Graphics[compareID].SLP) {
         // This is a graphic where we want a new SLP file (as opposed to one where the a new SLP mayb just be needed for some deltas
         fs::path src = HDPath/("resources\\_common\\drs\\gamedata_x2\\"+std::to_string(newGraphic.SLP)+".slp");
 		if(fs::exists(src))
@@ -1339,11 +1456,11 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
         newGraphic.SLP = newSLP;
 	}
     std::string civCode;
-    if(compareID == -1) {
+    if(civGroups) {
         switch (offset) {
             case 0: civCode = "AS"; break;
-            case 1: civCode = "AM"; break;
-            case 2: civCode = "MA"; break;
+            case 1: civCode = "SO"; break;
+            case 2: civCode = "AM"; break;
         }
     } else {
         switch (offset) {
@@ -1379,13 +1496,7 @@ short MainWindow::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>
 	aocDat->Graphics.push_back(newGraphic);
 	aocDat->GraphicPointers.push_back(1);
 
-	if (compareID == -1) {
-			for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
-                if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-                    it->GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, it->GraphicID, -1, offset, false, slpIdConversion);
-			}
-			aocDat->Graphics.at(newGraphicID) = newGraphic;
-    } else if(aocDat->Graphics[compareID].Deltas.size() == newGraphic.Deltas.size()) {
+    if(!civGroups && aocDat->Graphics[compareID].Deltas.size() == newGraphic.Deltas.size()) {
 		/* don't copy graphics files if the amount of deltas is different to the comparison,
 		 * this is usually with damage graphics and different amount of Flames.
 		*/
@@ -1838,6 +1949,8 @@ int MainWindow::run()
         langReplacement[10626] = translation["10626"];
         langReplacement[10619] = translation["10619"];
         langReplacement[10679] = translation["10679"];
+        langReplacement[10668] = translation["10668"];
+        langReplacement[10677] = translation["10677"];
         //relics victory condition
         langReplacement[30195] = translation["30195"];
         //Hotkey Descriptions
@@ -1920,7 +2033,7 @@ int MainWindow::run()
         }
         bar->setValue(bar->value()+1);bar->repaint(); //82
 
-        if(patch >= 0 && (std::get<2>(dataModList[patch]) / 2) % 2 == 1) {
+        if(patch >= 0 && (std::get<3>(dataModList[patch]) / 2) % 2 == 1) {
             /*
              * A data mod might need slightly changed strings.
              */
@@ -2269,7 +2382,6 @@ int MainWindow::run()
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat file
             logFile << std::endl << "Copy DAT file";
-            //if(patch > 2) {
             fs::remove(outputDatPath);
             genie::DatFile dat;
             dat.setGameVersion(genie::GameVersion::GV_TC);
@@ -2277,12 +2389,10 @@ int MainWindow::run()
             if(this->ui->fixFlags->isChecked())
                 adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
             dat.saveAs(outputDatPath.string().c_str());
-            /*} else {
-                fs::copy_file(hdDatString,outputDatPath,fs::copy_option::overwrite_if_exists);
-            }*/
             bar->setValue(81);
+            version = std::get<2>(dataModList[patch]);
             std::ofstream versionOut(versionIniPath);
-            (versionOut << version) << std::endl;
+            versionOut << version;
             versionOut.close();
         }
 
@@ -2374,6 +2484,17 @@ int MainWindow::run()
                 CreateProcess( NULL, cmdLineString, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi );
                 CloseHandle( pi.hProcess );
                 CloseHandle( pi.hThread );
+
+                std::string newExeName;
+                if(patch >= 0 && (newExeName = std::get<4>(dataModList[patch])) != "") {
+                    if(fs::exists(outPath / ("age2_x1\\"+ newExeName+".exe"))) {
+                        fs::rename(outPath / ("age2_x1\\"+ newExeName+".exe"),
+                                   outPath / ("age2_x1\\"+ newExeName+".exe.bak"));
+                    }
+                    fs::rename(outPath / ("age2_x1\\"+ UPModdedExe+".exe"),
+                               outPath / ("age2_x1\\"+ newExeName+".exe"));
+                    UPModdedExe = newExeName;
+                }
 
                 bar->setValue(bar->value()+1);bar->repaint(); //90
                 line = translation["dialogExe"];

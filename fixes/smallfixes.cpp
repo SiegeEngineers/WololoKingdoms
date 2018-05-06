@@ -20,6 +20,19 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     size_t const sharkatzorID = 1222;
     size_t const kingID = 434;
     size_t const cartographyID = 19;
+    size_t const huntingDogsId = 526;
+    size_t const feudalAgeResearchId = 101;
+    size_t const fireShipResearchId = 243;
+    size_t const demoShipResearchId = 242;
+    size_t const demoShipTechId = 231;
+    size_t const fireShipTechId = 232;
+    size_t const demoShipId = 527;
+    size_t const demoRaftId = 1104;
+    size_t const fireShipId = 529;
+    size_t const fireGalleyId = 1103;
+    size_t const FireDemoShipEnablerId = 78;
+    size_t const FireDemoShipDisablerId = 79;
+    size_t const FireDemoShipDisablerTechId = 78;
 	size_t const mountains[] = {310,311,744,745,1041,1042,1043,1044,1045,1046,1047};
     size_t const gates[] = {85,88,90,91,490,491,667,688,669,670,673,674};
     //size_t const gateposts[] = {80,81,92,95,663,664,671,672};
@@ -78,7 +91,32 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	aocDat->TechTree.UnitConnections[101].Unknown1 = 29;
 	aocDat->TechTree.UnitConnections[116].Unknown1 = 37;
 	aocDat->TechTree.UnitConnections[117].Unknown1 = 37;
-
+    //Hunting Dogs got auto-researched in feudal+ games
+    aocDat->Researchs[huntingDogsId].RequiredTechs[0] = -1;
+    //Make it possible for maps to go back to aoc water by disabling fire/demo galley and a disabler for fire/demo shop
+    aocDat->Researchs[FireDemoShipEnablerId].Name = "Fire/Demo Enabler";
+    aocDat->Researchs[fireShipResearchId].RequiredTechs[1] = FireDemoShipEnablerId;
+    aocDat->Researchs[demoShipResearchId].RequiredTechs[1] = FireDemoShipEnablerId;
+    aocDat->Techages[fireShipTechId].Effects[0].A = fireGalleyId;
+    genie::TechageEffect effect = aocDat->Techages[fireShipTechId].Effects[0];
+    effect.A = demoRaftId;;
+    aocDat->Techages[demoShipTechId].Effects.push_back(effect);
+    effect.Type = 3;
+    effect.B = demoShipId;
+    aocDat->Techages[demoShipTechId].Effects.push_back(effect);
+    effect.A = fireGalleyId;
+    effect.B = fireShipId;
+    aocDat->Techages[fireShipTechId].Effects.push_back(effect);
+    aocDat->Researchs[FireDemoShipDisablerId].Name = "Fire/Demo Disabler";
+    aocDat->Researchs[FireDemoShipDisablerId].TechageID = FireDemoShipDisablerTechId;
+    aocDat->Researchs[FireDemoShipDisablerId].RequiredTechCount = 1;
+    aocDat->Researchs[FireDemoShipDisablerId].RequiredTechs = {feudalAgeResearchId, -1, -1, -1, -1, -1};
+    aocDat->Researchs[FireDemoShipDisablerId].Civ = -1;
+    aocDat->Researchs[FireDemoShipDisablerId].ResearchLocation = -1;
+    aocDat->Techages[FireDemoShipDisablerTechId].Effects[0].Type = 102;
+    aocDat->Techages[FireDemoShipDisablerTechId].Effects[0].D = FireDemoShipEnablerId;
+    aocDat->Techages[FireDemoShipDisablerTechId].Effects[1].Type = 102;
+    aocDat->Techages[FireDemoShipDisablerTechId].Effects[1].D = demoShipResearchId;
 }
 
 DatPatch smallFixes = {

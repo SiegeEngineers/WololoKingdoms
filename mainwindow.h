@@ -11,6 +11,13 @@
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 
+#define rt_getSLPName() std::get<0>(*repIt)
+#define rt_getPattern() std::get<1>(*repIt)
+#define rt_getReplaceName() std::get<2>(*repIt)
+#define rt_getOldId() std::get<3>(*repIt)
+#define rt_getNewId() std::get<4>(*repIt)
+#define rt_getTerrainType() std::get<5>(*repIt)
+
 
 namespace fs = boost::filesystem;
 
@@ -39,11 +46,11 @@ private:
     std::map<int, fs::path> wavFiles;
     std::map<std::string,fs::path> newTerrainFiles;
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
-    std::string version = "2.8";
+    std::string version = "5.7";
     std::string hash1;
     std::string hash2;
     std::string patchNumber;
-    std::map<int, std::tuple<std::string,std::string,int>> dataModList;
+    std::map<int, std::tuple<std::string,std::string, std::string, int, std::string>> dataModList;
     std::string language = "en";
     std::map<std::string, std::string> translation;
     bool secondAttempt = false;
@@ -58,15 +65,19 @@ private:
 
     fs::path nfzUpOutPath;
     fs::path nfzOutPath;
-    /*
-    fs::path modHkiOutPath;
-    fs::path modHki2OutPath;
-    fs::path upHkiOutPath;
-    fs::path upHki2OutPath; */
     fs::path vooblyDir;
     fs::path upDir;
     std::string referenceDir = "WololoKingdoms FE";
     fs::path resourceDir;
+
+    enum TerrainType {
+        None,
+        LandTerrain,
+        ForestTerrain,
+        DeepWaterTerrain,
+        UnbuildableTerrain,
+        FixedTerrain
+    };
 
 	Ui::MainWindow *ui;
     void changeLanguage();
@@ -89,9 +100,9 @@ private:
 	void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat);
     void adjustArchitectureFlags(genie::DatFile *aocDat, std::string flagFilename);
 	void patchArchitectures(genie::DatFile *aocDat);
-	bool checkGraphics(genie::DatFile *aocDat, short graphicID, std::vector<int> checkedGraphics);
-    void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, std::map<int,int> slpIdConversion = std::map<int,int>());
-    short duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>& replacedGraphics, std::vector<short> duplicatedGraphics, short graphicID, short compareID, short offset, bool manual = false, std::map<int,int> slpIdConversion = std::map<int,int>());
+    bool checkGraphics(genie::DatFile *aocDat, short graphicID, std::vector<int> checkedGraphics);
+    void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, bool civGroups = false);
+    short duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>& replacedGraphics, std::vector<short> duplicatedGraphics, short graphicID, short compareID, short offset, bool civGroups = false);
     bool identifyHotkeyFile(fs::path directory, fs::path& maxHki, fs::path& lastEditedHki);
     void copyHotkeyFile(fs::path maxHki, fs::path lastEditedHki, fs::path dst);
     void removeWkHotkeys();

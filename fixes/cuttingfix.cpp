@@ -28,6 +28,9 @@ void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     size_t const koreanTeamBonusID = 505;
     size_t const shinkichonID = 506;
 
+    size_t const turkTechTreeID = 263;
+    size_t const hunsTechTreeID = 448;
+
 
     genie::TechageEffect effect = aocDat->Techages[247].Effects[0];
 
@@ -55,8 +58,12 @@ void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     effect.Type = 102;
     effect.D = cuttingResearchID;
     aocDat->Techages[disablingTechID].Effects.push_back(effect);
+    aocDat->Techages[turkTechTreeID].Effects.push_back(effect);
+    aocDat->Techages[hunsTechTreeID].Effects.push_back(effect);
     effect.D = onagerCuttingResearchID;
     aocDat->Techages[disablingTechID].Effects.push_back(effect);
+    aocDat->Techages[turkTechTreeID].Effects.push_back(effect);
+    aocDat->Techages[hunsTechTreeID].Effects.push_back(effect);
 
     aocDat->Techages[chemistryID].Effects.push_back(aocDat->Techages[chemistryID].Effects[66]);
     aocDat->Techages[chemistryID].Effects.push_back(aocDat->Techages[chemistryID].Effects[66]);
@@ -105,10 +112,14 @@ void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     aocDat->Researchs[autoOnagerCuttingResearchID].ResourceCosts[1].Enabled = 0;
     aocDat->Researchs[autoOnagerCuttingResearchID].ResourceCosts[1].Type = -1;
     aocDat->Researchs[autoOnagerCuttingResearchID].Name = "Auto Onager Cutting";
+    aocDat->Researchs[autoOnagerCuttingResearchID].LanguageDLLDescription = 0;
+    aocDat->Researchs[autoOnagerCuttingResearchID].LanguageDLLName = 0;
 
     aocDat->Researchs[onagerCuttingResearchID] = aocDat->Researchs[autoOnagerCuttingResearchID];
     aocDat->Researchs[onagerCuttingResearchID].RequiredTechs[0] = cuttingResearchID;
     aocDat->Researchs[onagerCuttingResearchID].Name = "Onager Cutting";
+    aocDat->Researchs[onagerCuttingResearchID].LanguageDLLDescription = 0;
+    aocDat->Researchs[onagerCuttingResearchID].LanguageDLLName = 0;
 
     aocDat->Researchs[disablingResearchID] = aocDat->Researchs[332];
     aocDat->Researchs[disablingResearchID].TechageID = disablingTechID;
