@@ -43,9 +43,6 @@ Generally, if you encounter problems: Make sure you run the installer as adminis
 If you don't need to use an offline installation though, make sure that checkbox is unchecked, to avoid potential issues.
 - **Q**: Why is my interface is messed up? It looks like this: https://imgur.com/a/xouXF
 **A**: This happens if you reinstalled an older version of the compatibility patch after installing WololoKingdoms. To fix it, you can go into the Age2HD folder and delete the "compatslp" subfolder.
-- **Q**: Help! Why do my monks turn invisible?
-**A**: Make sure you unpack the installer into an empty directory instead of a folder that still has files from an older version of the installer. Leftover files can cause that effect.
-Rerun the installer after unpacking into an empty directory and this should be fixed.
 - **Q**: This doesn't work with Linux/Wine
 **A**: I made a shell script that should create missing symlinks that don't get created under wine: https://1drv.ms/u/s!Ark-SUz3-qr5qUcUahqd95ULA_sa
 Put this into your aoc folder (so next to the Voobly Mods directory) and run it. 
@@ -65,8 +62,7 @@ NoCut_Black_Forest is a concept map, showing off the possibility to disable regu
 The WololoKingdoms supports Independent Architecture like this HD Data Mod: http://steamcommunity.com/sharedfiles/filedetails/?id=893953860
 To replace a civ's architecture, download an IA mod for that civ from the steam workshop, find the folder you just downloaded in the steam workshop folder (usually C:\Program Files (x86)\Steam\steamapps\workshop\content\221380) and copy that folder.
 You can then paste it into the /mod_override folder you'll find next to the installer.
-Alternatively you can a Voobly mod like this one: http://www.voobly.com/gamemods/mod/858/WK-Architectures-showcase
-Do not delete the "berber mill fix folder", unless you use a graphics mod replacing the Berber Architecture
+Alternatively you can use a Voobly mod like this one: http://www.voobly.com/gamemods/mod/858/WK-Architectures-showcase
 You can also paste any graphics/sound mod you want to use offline into this folder.
 
 There's also a "new_terrain_override" folder, should you wish to use different terrain slps for the expansion terrains. You can look at "/resources/new terrains" to see the naming convention.
@@ -75,10 +71,10 @@ There are also additional monk skins for Middle Eastern/African and Asian Monks.
 
 ## Data Mods or old patches
 
-There are currently two data mod able to be selected for installation (the regular WololoKingdoms mod needs to be installed first for it to work):
+There are some data mods based on the regular WololoKingdoms that can be selected for installation (the regular WololoKingdoms mod needs to be installed first for it to work):
 - The WK Hippo mod moves Stone Walls&Gates to the Castle Age (with full HP) and makes players start with -370 stone (30 with medium resources. At request of Tsu_Nilpferd for the Clash of the Hippo tournament.
-- The WK Patch 5.4 mod is for watching older WK games played when 5.4 was the live patch on Steam. Note that you also need to select the correct version of the UP 1.5 beta patch to watch recorded games with (You can check the Voobly Match page to see which one you need).
-- The WK Installer 2.5 mod is for watching WK games played on patch 5.5 and version 2.5 of the installer. Note that you also need to select the correct version of the UP 1.5 beta patch to watch recorded games with (You can check the Voobly Match page to see which one you need, in most cases it's probably the Beta R5).
+- The WK No Wall or BBT mod - surprise, surprise - disables all walls and BBTs.
+- The other mods are for watching recordings played on older versions. Make sure you also select the proper version of UP 1.5 that the game was played on (You can check that on the Voobly match page)
 
 It's also possible for other data mods based on WK to be added to the installer. With the exception of older patches for rec viewing, you need to own all DLCs to be able to install a data mod.
 
@@ -91,6 +87,7 @@ Because of the features missing from the original AOC engine, not everything fro
 	- Genitours and Siege Towers use the old Turtle Ship hotkey that has become free
 	- Camel hotkey for Battle Elephants
 	- Wonder hotkey for Palisade Gates and Feitorias
+	(The in-game hotkey menu has been adjusted accordingly)
 - Everything else should be working identically to the HD version, but it's possible I've overlooked something.
 
 ## Keep in mind
@@ -105,6 +102,7 @@ I used Qt Creator for editing and building it, you will also need Boost installe
 ## Special thanks
 - Tails8521 for the African Kingdoms version of this installer. Without him this would never have happened.
 - The UserPatch team for making the new bonuses possible to use and all other great improvements that Userpatch brings.
+- The folks at Voobly for the support offered and a great platform to play the mod on.
 - Apre for the genieutils library
 - Tapsa for Advanced Genie Editor
 - Alqualunte and TriRem for advices and testing

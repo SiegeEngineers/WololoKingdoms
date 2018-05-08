@@ -7,7 +7,6 @@
 #include <sstream>
 #include <windows.h>
 #include <ShellAPI.h>
-#include <regex>
 
 #include <chrono>
 #include <thread>
@@ -76,8 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
         exit(EXIT_FAILURE);
     }
 
-    vooblyDir = outPath / "Voobly Mods\\AOC\\Data Mods\\WololoKingdoms FE";
-    upDir = outPath / "Games\\WololoKingdoms FE";
+    vooblyDir = outPath / ("Voobly Mods\\AOC\\Data Mods\\"+baseModName+" FE");
+    upDir = outPath / ("Games\\"+baseModName+" FE");
 
 	if(!fs::exists(vooblyDir)) {
 		this->ui->usePatch->setDisabled(true);
@@ -85,16 +84,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	nfzUpOutPath = upDir / "Player.nfz";
 	nfzOutPath = vooblyDir / "Player.nfz";
-    /*
-	modHkiOutPath = vooblyDir / "player1.hki";
-	modHki2OutPath = vooblyDir / "player2.hki";
-	upHkiOutPath = upDir / "player1.hki";
-	upHki2OutPath = upDir / "player2.hki";
-*/
+
     changeLanguage();
 
     QDialog* dialog;
-    this->ui->label->setText(("WololoKingdoms version " + version).c_str());
+    this->ui->label->setText((baseModName+" version " + version).c_str());
     if(outPath == fs::path()) {
         this->ui->label->setText(translation["noAoC"].c_str());
         dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
@@ -306,8 +300,8 @@ void MainWindow::changeModPatch() {
     }
 
     if(patch == -1) {
-		vooblyDir = vooblyDir.parent_path() / "WololoKingdoms FE";
-		upDir = upDir.parent_path() / "WololoKingdoms FE";
+        vooblyDir = vooblyDir.parent_path() / (baseModName+" FE");
+        upDir = upDir.parent_path() / (baseModName+" FE");
 	} else {
 		vooblyDir = vooblyDir.parent_path() / modName;
         upDir = upDir.parent_path() / modName;
@@ -688,7 +682,7 @@ void MainWindow::makeDrs(std::ofstream *out) {
 	this->ui->label->repaint();
 
 	// Exclude Forgotten Empires leftovers
-	slpFiles.erase(50163); // Forgotten Empires loading screen
+    //slpFiles.erase(50163); // Forgotten Empires loading screen
     slpFiles.erase(50189); // Forgotten Empires main menu
     //slpFiles.erase(53207); // Forgotten Empires in-game logo
 	slpFiles.erase(53208); // Forgotten Empires objective window
@@ -913,31 +907,21 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 	}
     bar->setValue(bar->value()+2);bar->repaint(); //14+18
 	std::map<std::string,fs::path> terrainOverrides;
-    std::array<std::map<int,std::string>,5> terrainsPerType = { {
+    std::array<std::map<int,std::regex>,6> terrainsPerType = { {
+        {}, //The Order is important, see the TerrainTypes Enum!
+        { {23,std::regex("\\WMED_WATER\\W")}, {22,std::regex("\\WDEEP_WATER\\W")} },
         {},
-        { {0,"GRASS"},
-            {3,"DIRT3"},
-            {6,"DIRT1"},
-            {9,"GRASS3"},
-            {12,"GRASS2"},
-            {14,"DESERT"},
-            {24,"ROAD"},
-            {25,"ROAD2"},
-            {39,"ROAD3"} },
-        { {10,"FOREST"},
-            {13,"PALM_DESERT"},
-            {21,"SNOW_FOREST"} },
-        { {23,"MED_WATER"},
-            {22,"DEEP_WATER"} },
-        { {40,"DLC_ROCK"},
-            {35,"ICE"} }
+        { {0,std::regex("\\WGRASS\\W")}, {3,std::regex("\\WDIRT3\\W")}, {6,std::regex("\\WDIRT1\\W")}, {9,std::regex("\\WGRASS3\\W")},
+          {12,std::regex("\\WGRASS2\\W")}, {14,std::regex("\\WDESERT\\W")}, {24,std::regex("\\WROAD\\W")}, {25,std::regex("\\WROAD2\\W")}, {39,std::regex("\\WROAD3\\W")} },
+        { {10,std::regex("\\WFOREST\\W")}, {13,std::regex("\\WPALM_DESERT\\W")}, {21,std::regex("\\WSNOW_FOREST\\W")} },
+        { {40,std::regex("\\WDLC_ROCK\\W")}, {35,std::regex("\\WICE\\W")} }
     } };
     std::vector<std::tuple<std::string,std::string,std::string,int,int,int>> replacements = {
         //<SLP Name,Regex Pattern,replace name,terrain ID, replace terrain ID,slp to replace,terrainType>
         std::make_tuple("DRAGONFOREST.slp","DRAGONFORES(T?)","DRAGONFORES$1",48,21,TerrainType::ForestTerrain),
         std::make_tuple("ACACIA_FOREST.slp","AC(C?)ACIA(_?)FORES(T?)","AC$1ACIA$2FORES$3",50,41,TerrainType::None),
         std::make_tuple("DLC_RAINFOREST.slp","DLC_RAINFOREST","DLC_RAINFOREST",56,10,TerrainType::ForestTerrain),
-        std::make_tuple("BAOBA.slpB","BAOBAB(S|_FOREST)?","BAOBAB$1",49,16,TerrainType::None),
+        std::make_tuple("BAOBAB.slp","BAOBAB(S|_FOREST)?","BAOBAB$1",49,16,TerrainType::None),
         std::make_tuple("DLC_MANGROVESHALLOW.slp","DLC_MANGROVESHALLOW","DLC_MANGROVESHALLOW",54,11,TerrainType::None),
         std::make_tuple("DLC_MANGROVEFOREST.slp","DLC_MANGROVEFOREST","DLC_MANGROVEFOREST",55,20,TerrainType::None),
         std::make_tuple("DLC_NEWSHALLOW.slp","DLC_NEWSHALLOW","DLC_NEWSHALLOW",59,4,TerrainType::FixedTerrain),
@@ -951,35 +935,20 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
         std::make_tuple("DLC_BEACH3.slp","DLC_BEACH3","DLC_BEACH3",52,2,TerrainType::FixedTerrain),
         std::make_tuple("DLC_BEACH4.slp","DLC_BEACH4","DLC_BEACH4",53,2,TerrainType::FixedTerrain),
         std::make_tuple("DLC_DRYROAD.slp","DLC_DRYROAD","DLC_DRYROAD",43,25,TerrainType::LandTerrain),
-        std::make_tuple("DLC_WATER4.slp","DLC_WATER4","DLC_WATER4",57,22,TerrainType::DeepWaterTerrain),
-        std::make_tuple("DLC_WATER5.slp","DLC_WATER5","DLC_WATER5",58,1,TerrainType::FixedTerrain),
+        std::make_tuple("DLC_WATER4.slp","DLC_WATER4","DLC_WATER4",57,22,TerrainType::WaterTerrain),
+        std::make_tuple("DLC_WATER5.slp","DLC_WATER5","DLC_WATER5",58,1,TerrainType::WaterTerrain),
         std::make_tuple("DLC_JUNGLELEAVES.slp","DLC_JUNGLELEAVES","DLC_JUNGLELEAVES",62,5,TerrainType::LandTerrain),
         std::make_tuple("DLC_JUNGLEROAD.slp","DLC_JUNGLEROAD","DLC_JUNGLEROAD",61,39,TerrainType::LandTerrain),
         std::make_tuple("DLC_JUNGLEGRASS.slp","DLC_JUNGLEGRASS","DLC_JUNGLEGRASS",60,12,TerrainType::LandTerrain)
 	};
     std::map<int,std::string> slpNumbers = {
-        {0,"15001.slp"},
-        {1,"15002.slp"},
-        {2,"15017.slp"},
-        {3,"15007.slp"},
-        {4,"15014.slp"},
-        {5,"15011.slp"},
-        {6,"15014.slp"},
-        {9,"15009.slp"},
-        {10,"15011.slp"},
-        {12,"15008.slp"},
-        {13,"15010.slp"},
-        {14,"15010.slp"},
-        {21,"15029.slp"},
-        {22,"15015.slp"},
-        {23,"15016.slp"},
-        {24,"15018.slp"},
-        {25,"15019.slp"},
-        {35,"15024.slp"},
-        {39,"15031.slp"},
-        {40,"15033.slp"}
+        {0,"15001.slp"}, {1,"15002.slp"}, {2,"15017.slp"}, {3,"15007.slp"}, {4,"15014.slp"},
+        {5,"15011.slp"}, {6,"15014.slp"}, {9,"15009.slp"}, {10,"15011.slp"}, {12,"15008.slp"},
+        {13,"15010.slp"}, {14,"15010.slp"}, {21,"15029.slp"},  {22,"15015.slp"}, {23,"15016.slp"},
+        {24,"15018.slp"},  {25,"15019.slp"}, {35,"15024.slp"}, {39,"15031.slp"}, {40,"15033.slp"}
     };
     std::vector<std::tuple<std::string,std::string,std::string,int,int,int>>::iterator repIt;
+
 	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end(); it++) {
 		std::string mapName = it->stem().string()+".rms";
         if (mapName.substr(0,3) == "ZR@") {
@@ -994,7 +963,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
         }
         fs::remove(outputDir/("ZR@"+it->filename().string()));
 		std::ifstream input(inputDir.string()+it->filename().string());
-		std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
+        std::string map(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
         input.close();
         /*
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
@@ -1006,7 +975,7 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 					"#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  terrain_state 0 0 0 1$1\n");
 		}
         */
-        std::map<int,bool> isTerrainUsed = {
+        std::map<int,bool> terrainsUsed = {
             {0,false}, {1,false}, {2,false}, {3,false}, {4,false},
             {5,false}, {6,false}, {9,false}, {10,false}, {11,false},
             {12,false}, {13,false}, {14,false}, {16,false}, {20,false},
@@ -1022,79 +991,69 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
 
         for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {         
             std::regex terrainName = std::regex(rt_getPattern());
-            if(std::regex_search(str,terrainName)) {
+            if(std::regex_search(map,terrainName)) {
                 if(rt_getNewId() < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
-                    isTerrainUsed.at(rt_getNewId()) = true;
-                isTerrainUsed.at(rt_getOldId()) = true;
+                    terrainsUsed.at(rt_getNewId()) = true;
+                terrainsUsed.at(rt_getOldId()) = true;
             }
         }
 
         for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
-            if(!isTerrainUsed.at(rt_getOldId()))
+            if(!terrainsUsed.at(rt_getOldId()))
                 continue;
-            /* Check if replacment candidate is already used */
+            // Check if replacement candidate is already used
             std::regex terrainConstDef = std::regex("#const\\s+" +rt_getPattern()+ "\\s+" +std::to_string(rt_getOldId()));
             int usedTerrain = rt_getNewId();
-            if(rt_getTerrainType() != TerrainType::None && rt_getTerrainType() != TerrainType::FixedTerrain
-                    && str.find(terrainsPerType[rt_getTerrainType()].at(usedTerrain))!=std::string::npos) {
-                for(std::map<int,std::string>::iterator tIt = terrainsPerType[rt_getTerrainType()].begin();
+            //If it's one of the terrains with a shared slp, we need to search the map for these other terrains too, else just the usedTerrain
+            if(rt_getTerrainType() > TerrainType::FixedTerrain
+                   && isTerrainUsed(usedTerrain, terrainsUsed, map, terrainsPerType[rt_getTerrainType()])) {
+                bool success = false;
+                for(std::map<int,std::regex>::iterator tIt = terrainsPerType[rt_getTerrainType()].begin();
                     tIt != terrainsPerType[rt_getTerrainType()].end(); tIt++) {
-                    if(isTerrainUsed.at(tIt->first))
+                    if(terrainsUsed.at(tIt->first))
                         continue;
-                    else if(str.find(terrainsPerType[rt_getTerrainType()].at(tIt->first))!=std::string::npos) {
-                        isTerrainUsed.at(tIt->first) = true;
+                    else if(isTerrainUsed(tIt->first,terrainsUsed,map, terrainsPerType[rt_getTerrainType()])) {
                         continue;
                     }
+                    success = true;
                     usedTerrain = tIt->first;
-                    isTerrainUsed.at(tIt->first) = true;
+                    terrainsUsed.at(tIt->first) = true;
                     break;
+                }
+                if(!success && rt_getTerrainType() == TerrainType::LandTerrain && !isTerrainUsed(5, terrainsUsed, map, terrainsPerType[rt_getTerrainType()])) {
+                    usedTerrain = 5; //Leaves is a last effort, usually likely to be used already
+                    terrainsUsed[5] = true;
                 }
             }
 
             if(usedTerrain != rt_getNewId()) {
                 std::regex terrainName = std::regex(rt_getPattern());
-                str = std::regex_replace(str,terrainName, "MY"+rt_getReplaceName());
+                map = std::regex_replace(map,terrainName, "MY"+rt_getReplaceName());
                 terrainConstDef = std::regex("#const\\sMY+" +rt_getPattern()+ "\\s+" +std::to_string(rt_getOldId()));
-                std::string temp = std::regex_replace(str,terrainConstDef, "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain));
-                if (temp != str)
-                    str = temp;
+                std::string temp = std::regex_replace(map,terrainConstDef, "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain));
+                if (temp != map)
+                    map = temp;
                 else  {
-                    str = "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain)+"\n"+str;
+                    map = "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain)+"\n"+map;
                 }
             } else {
-                str = std::regex_replace(str,terrainConstDef, "#const "+rt_getReplaceName()+" "+std::to_string(usedTerrain));
+                map = std::regex_replace(map,terrainConstDef, "#const "+rt_getReplaceName()+" "+std::to_string(usedTerrain));
             }
 
 
-            if(rt_getTerrainType() == TerrainType::None)
+            if(rt_getTerrainType() == TerrainType::None ||
+                    (rt_getTerrainType() == TerrainType::WaterTerrain && usesMultipleWaterTerrains(map,terrainsUsed)) )
                 continue;
 
             terrainOverrides[slpNumbers.at(usedTerrain)] = newTerrainFiles.at(rt_getSLPName());
 
             if(rt_getTerrainType() == TerrainType::ForestTerrain) {
-                std::string newTree;
-                std::string oldTree;
-                switch(usedTerrain) {
-                    case 10: oldTree = "FOREST_TREE"; break;
-                    case 13: oldTree = "PALMTREE"; break;
-                    case 21: oldTree = "SNOWPINETREE"; break;
-                }
-                if(rt_getOldId() == 48) {
-                    newTree = "DRAGONTREE";
-                } else {
-                    newTree = "DLC_RAINTREE";
-                }
-                if(str.find("<PLAYER_SETUP>")!=std::string::npos)
-                    str = std::regex_replace(str, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
-                        "<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
-                else
-                    str = std::regex_replace(str, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
-                        "#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
+                upgradeTrees(usedTerrain, rt_getOldId(), map);
             }
 
 
 		}
-        if(isTerrainUsed.at(11)) {
+        if(terrainsUsed.at(11)) {
             terrainOverrides["15004.slp"] = newTerrainFiles.at("15004.slp");
             terrainOverrides["15005.slp"] = newTerrainFiles.at("15005.slp");
             terrainOverrides["15021.slp"] = newTerrainFiles.at("15021.slp");
@@ -1102,34 +1061,90 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
             terrainOverrides["15023.slp"] = newTerrainFiles.at("15023.slp");
         }
         std::ofstream out(outputDir.string()+"\\"+mapName);
-		out << str;
+        out << map;
 		out.close();
 		if (mapName.substr(0,3) == "rw_" || mapName.substr(0,3) == "sm_") {
 			std::string scenarioFile = it->stem().string()+".scx";
             terrainOverrides[scenarioFile] = fs::path(inputDir.string()+"\\"+scenarioFile);
 		}
 		if (terrainOverrides.size() != 0) {
-            QuaZip zip(QString((outputDir.string()+"\\ZR@"+mapName).c_str()));
-			zip.open(QuaZip::mdAdd, NULL);
-            terrainOverrides[mapName] = fs::path(outputDir.string()+"\\"+mapName);
-			for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
-				QuaZipFile outFile(&zip);
-				QuaZipNewInfo fileInfo(QString(files->first.c_str()));;
-				fileInfo.uncompressedSize = fs::file_size(files->second);
-				outFile.open(QIODevice::WriteOnly,fileInfo,NULL,0,0,0,false);
-				QFile inFile;
-				inFile.setFileName(files->second.string().c_str());
-				inFile.open(QIODevice::ReadOnly);
-				copyData(inFile, outFile);
-				outFile.close();
-				inFile.close();
-			}
-			zip.close();
-            fs::remove(fs::path(outputDir.string()+"\\"+mapName));
+            createZRmap(terrainOverrides, outputDir, mapName);
 		}
 		terrainOverrides.clear();
 	}
 	bar->setValue(bar->value()+1);bar->repaint(); //15+19
+}
+
+bool MainWindow::usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed) {
+    if(!terrainsUsed[23]) {
+        int hits = (int)std::regex_search(map,std::regex("\\WDLC_WATER4\\W")) + (int)std::regex_search(map,std::regex("\\DLC_WATER5\\W"))
+                + (int)std::regex_search(map,std::regex("\\WATER\\W")) + (int)std::regex_search(map,std::regex("\\MED_WATER\\W"))
+                + (int)std::regex_search(map,std::regex("\\DEEP_WATER\\W"));
+        terrainsUsed[23] = hits > 1;
+    }
+    return terrainsUsed[23];
+}
+
+void MainWindow::upgradeTrees(int usedTerrain, int oldTerrain, std::string& map) {
+
+    std::string newTree;
+    std::string oldTree;
+    switch(usedTerrain) {
+        case 10: oldTree = "FOREST_TREE"; break;
+        case 13: oldTree = "PALMTREE"; break;
+        case 21: oldTree = "SNOWPINETREE"; break;
+    }
+    if(oldTerrain == 48) {
+        newTree = "DRAGONTREE";
+    } else {
+        newTree = "DLC_RAINTREE";
+    }
+    if(map.find("<PLAYER_SETUP>")!=std::string::npos)
+        map = std::regex_replace(map, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
+            "<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
+    else
+        map = std::regex_replace(map, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
+            "#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
+}
+
+bool MainWindow::isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns) {
+    if(terrain == 5 || terrain == 10) {
+        if(!terrainsUsed[63]) {
+            terrainsUsed[63] = true;
+            terrainsUsed[64] = std::regex_search(map,std::regex("\\WPINE_FOREST\\W")) || std::regex_search(map,std::regex("\\WLEAVES\\W"))
+              || std::regex_search(map,std::regex("\\WJUNGLE\\W")) ||  std::regex_search(map,std::regex("\\BAMBOO\\W")) || std::regex_search(map,std::regex("\\WFOREST\\W"));
+        }
+        return terrainsUsed[64];
+    }
+    if(terrain == 13 || terrain == 14) {
+        if(!terrainsUsed[65]) {
+            terrainsUsed[65] = true;
+            terrainsUsed[66] = std::regex_search(map,std::regex("\\WPALM_DESERT\\W")) || std::regex_search(map,std::regex("\\WDESERT\\W"));
+        }
+        return terrainsUsed[66];
+    } else {
+        return terrainsUsed[terrain] = std::regex_search(map,patterns[terrain]);
+    }
+}
+
+void MainWindow::createZRmap(std::map<std::string,fs::path>& terrainOverrides, fs::path outputDir, std::string mapName) {
+    QuaZip zip(QString((outputDir.string()+"\\ZR@"+mapName).c_str()));
+    zip.open(QuaZip::mdAdd, NULL);
+    terrainOverrides[mapName] = fs::path(outputDir.string()+"\\"+mapName);
+    for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
+        QuaZipFile outFile(&zip);
+        QuaZipNewInfo fileInfo(QString(files->first.c_str()));;
+        fileInfo.uncompressedSize = fs::file_size(files->second);
+        outFile.open(QIODevice::WriteOnly,fileInfo,NULL,0,0,0,false);
+        QFile inFile;
+        inFile.setFileName(files->second.string().c_str());
+        inFile.open(QIODevice::ReadOnly);
+        copyData(inFile, outFile);
+        outFile.close();
+        inFile.close();
+    }
+    zip.close();
+    fs::remove(fs::path(outputDir.string()+"\\"+mapName));
 }
 
 void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
@@ -1162,6 +1177,8 @@ void MainWindow::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *ao
     slpFiles[15003] = newTerrainFiles["15003.slp"];
     slpFiles[15032] = newTerrainFiles["CRACKEDIT.slp"];
     //slpFiles[15034] = newTerrainFiles["DLC_NEWSHALLOW.slp"];
+
+    aocDat->TerrainRestrictions[4].PassableBuildableDmgMultiplier[38] = 1.2;
 
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
 	aocDat->TerrainBlock.Terrains[35].SLP = 15024;
@@ -1268,24 +1285,26 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 		bar->setValue(bar->value()+1);bar->repaint(); //37-52
 	}
 
-    /*
-     * We'll temporarily give the monk 10 frames so this value is the one used for the new
-     * Asian and African/Middle Eastern civs.
-     */
-    aocDat->Graphics[998].FrameCount = 10;
-
-	//Separate Monks and DA buildings into 4 major regions (Europe, Asian, Southern, American)
-	std::vector<std::vector<short>> civGroups = { {5,6,12,18,28,29,30,31},
-					{8,9,10,20,25,26,27},
-					{15,16,21}};
+    //Separate Units into 4 major regions (Europe, Asian, Southern, American)
+    std::vector<std::vector<short>> civGroups = { {3,4,11}, {7,17,22,23}, {14,19,24}, //Central Eu, East Eu, Mediterranean
+                    {5},{6,12,18},{28,29,30,31}, //Japanese, East Asian, SE Asian
+                    {8,9,10,27},{20},{25,26}, //Middle Eastern, Indian, African
+                    {15,16,21}, //American
+                    };
     //std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
     //						 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
     // short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620}; // There's no IA dark age building mod, but regular ones that get broken by enabling this, so we won't do it.
     short cgUnitIDs[] = {125,134,286,4,3,5,98,6,100,7,238,24,26,37,113,38,111,39,34,74,152,75,154,77,180,93,140,238,139,329,330,495,358,501,
                         359,502,440,441,480,448,449,473,500,474,631,492,496,546,547,567,568,569,570};
-    for(int cg = 0; cg < 3; cg++) {
+    for(int cg = 0; cg < civGroups.size(); cg++) {
+        if(cg == 3) {
+            /* We'll temporarily give the monk 10 frames so this value is the one used for the new
+             * Asian and African/Middle Eastern civs.
+             */
+            aocDat->Graphics[998].FrameCount = 10;
+        }
 		short monkHealingGraphic;
-        if (cg != 2) {
+        if (cg != civGroups.size()-1) {
             int newSLP = 60000+10000*cg+776;
 			genie::Graphic newGraphic = aocDat->Graphics[1597];
 			monkHealingGraphic = aocDat->Graphics.size();
@@ -1322,10 +1341,10 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
 				int ccode = (int) code;
                 aocDat->Civs[civGroups[cg][civ]].Units[125].LanguageDLLHelp = ccode;
 
-                if (cg == 0) {
+                if (cg >= 3 && cg <= 5) { //Asian civ groups
                     aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 218;
                     aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 218;
-                } else if (cg == 1) {
+                } else if (cg >= 6 && cg <= 8) { //Middle Eastern/southern civ groups
                     aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 169;
                     aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 169;
 				}
@@ -2427,8 +2446,8 @@ int MainWindow::run()
 
                 logFile << std::endl << "AK Setup";
 				fs::path xmlIn = resourceDir/"WK2.xml";
-				fs::path vooblyDir2 = vooblyDir.parent_path() / "WololoKingdoms AK";
-				fs::path upDir2 = upDir.parent_path() / "WololoKingdoms AK";
+                fs::path vooblyDir2 = vooblyDir.parent_path() / (baseModName+" AK");
+                fs::path upDir2 = upDir.parent_path() / (baseModName+" AK");
 				symlinkSetup(vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml", true, true);
 				if(this->ui->createExe->isChecked()) {
                     symlinkSetup(upDir2, xmlIn, upDir.parent_path()/"WKAK.xml", false, false);
@@ -2437,8 +2456,8 @@ int MainWindow::run()
 			if (dlcLevel > 2) {
                 logFile << std::endl << "RotR Setup";
 				fs::path xmlIn = resourceDir/"WK3.xml";
-				fs::path vooblyDir3 = vooblyDir.parent_path() / "WololoKingdoms";
-				fs::path upDir3 = upDir.parent_path() / "WololoKingdoms";
+                fs::path vooblyDir3 = vooblyDir.parent_path() / baseModName;
+                fs::path upDir3 = upDir.parent_path() / baseModName;
 				symlinkSetup(vooblyDir3, xmlIn, vooblyDir3/"age2_x1.xml", true, true);
 				if(this->ui->createExe->isChecked()) {
                     symlinkSetup(upDir3, xmlIn, upDir.parent_path()/"WK.xml",  false, false);

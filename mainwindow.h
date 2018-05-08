@@ -6,6 +6,7 @@
 #include <QPushButton>
 
 #include <set>
+#include <regex>
 
 #include <boost/filesystem.hpp>
 #include "genie/dat/DatFile.h"
@@ -67,16 +68,17 @@ private:
     fs::path nfzOutPath;
     fs::path vooblyDir;
     fs::path upDir;
-    std::string referenceDir = "WololoKingdoms FE";
+    std::string baseModName = "WololoKingdoms";
+    std::string referenceDir = baseModName+" FE";
     fs::path resourceDir;
 
     enum TerrainType {
         None,
+        WaterTerrain,
+        FixedTerrain,
         LandTerrain,
         ForestTerrain,
-        DeepWaterTerrain,
-        UnbuildableTerrain,
-        FixedTerrain
+        UnbuildableTerrain
     };
 
 	Ui::MainWindow *ui;
@@ -85,6 +87,10 @@ private:
 	void changeModPatch();
 	void updateUI();
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
+    bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
+    bool isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns);
+    void upgradeTrees(int usedTerrain, int oldTerrain, std::string& map);
+    void createZRmap(std::map<std::string,fs::path>& terrainOverrides, fs::path outputDir, std::string mapName);
 	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID);
     void recCopy(fs::path const &src, fs::path const &dst, bool skip = false, bool force = false);
     void indexDrsFiles(fs::path const &src, bool expansionFiles = true, bool terrainFiles = false);
