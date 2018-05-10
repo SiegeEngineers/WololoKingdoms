@@ -18,6 +18,8 @@ void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     size_t const autoOnagerCuttingResearchID = 153;
     size_t const onagerCuttingResearchID = 154;
     size_t const disablingResearchID = 155;
+    size_t const onagerResearchID = 257;
+    size_t const onagerTechID = 247;
 
     size_t const cuttingTechID = 307;
     size_t const onagerCuttingTechID = 308;
@@ -32,27 +34,28 @@ void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     size_t const hunsTechTreeID = 448;
 
 
-    genie::TechageEffect effect = aocDat->Techages[247].Effects[0];
+    genie::TechageEffect effect = aocDat->Techages[onagerTechID].Effects[0];
 
     aocDat->UnitHeaders[newOnagerID] = aocDat->UnitHeaders[onagerID];
-    aocDat->UnitHeaders[newMangonelID] = aocDat->UnitHeaders[mangonelID];
-    aocDat->UnitHeaders[newMangonelID].Commands.push_back(aocDat->UnitHeaders[onagerID].Commands[4]);
+    //aocDat->UnitHeaders[newMangonelID] = aocDat->UnitHeaders[mangonelID];
+    //aocDat->UnitHeaders[newMangonelID].Commands.push_back(aocDat->UnitHeaders[onagerID].Commands[4]);
     aocDat->UnitHeaders[onagerID].Commands.erase(aocDat->UnitHeaders[onagerID].Commands.begin()+4);
     for(int i = 0; i< (int) aocDat->Civs.size(); i++) {
         aocDat->Civs[i].Units[newOnagerID] = aocDat->Civs[i].Units[onagerID];
-        aocDat->Civs[i].Units[newMangonelID] = aocDat->Civs[i].Units[mangonelID];
+        //aocDat->Civs[i].Units[newMangonelID] = aocDat->Civs[i].Units[mangonelID];
         aocDat->Civs[i].Units[onagerID].Type50.BlastAttackLevel = 2;
-        aocDat->Civs[i].Units[newMangonelID].Type50.BlastAttackLevel = 1;
+        //aocDat->Civs[i].Units[newMangonelID].Type50.BlastAttackLevel = 1;
     }
-    effect.B = newMangonelID;
-    aocDat->Techages[cuttingTechID].Effects.push_back(effect);
+    //effect.B = newMangonelID;
+    //aocDat->Techages[cuttingTechID].Effects.push_back(effect);
     effect.B = newOnagerID;
     aocDat->Techages[onagerCuttingTechID].Effects.push_back(effect);
     effect.A = onagerID;
     aocDat->Techages[onagerCuttingTechID].Effects.push_back(effect);
-    effect.A = newMangonelID;
-    effect.B = siegeOnagerID;
-    aocDat->Techages[siegeOnagerTechID].Effects.push_back(effect);
+    aocDat->Techages[onagerCuttingTechID].Name = "Onager Cutting Tech";
+    //effect.A = newMangonelID;
+    //effect.B = siegeOnagerID;
+    //aocDat->Techages[siegeOnagerTechID].Effects.push_back(effect);
     effect.A = newOnagerID;
     aocDat->Techages[siegeOnagerTechID].Effects.push_back(effect);
     effect.Type = 102;
@@ -64,35 +67,38 @@ void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     aocDat->Techages[disablingTechID].Effects.push_back(effect);
     aocDat->Techages[turkTechTreeID].Effects.push_back(effect);
     aocDat->Techages[hunsTechTreeID].Effects.push_back(effect);
+    effect.D = autoOnagerCuttingResearchID;
+    aocDat->Techages[turkTechTreeID].Effects.push_back(effect);
+    aocDat->Techages[hunsTechTreeID].Effects.push_back(effect);
 
     aocDat->Techages[chemistryID].Effects.push_back(aocDat->Techages[chemistryID].Effects[66]);
-    aocDat->Techages[chemistryID].Effects.push_back(aocDat->Techages[chemistryID].Effects[66]);
+    //aocDat->Techages[chemistryID].Effects.push_back(aocDat->Techages[chemistryID].Effects[66]);
     aocDat->Techages[chemistryID].Effects[69].A = newOnagerID;
-    aocDat->Techages[chemistryID].Effects[70].A = newMangonelID;
+    //aocDat->Techages[chemistryID].Effects[70].A = newMangonelID;
 
     aocDat->Techages[furorCelticaID].Effects.push_back(aocDat->Techages[furorCelticaID].Effects[0]);
-    aocDat->Techages[furorCelticaID].Effects.push_back(aocDat->Techages[furorCelticaID].Effects[0]);
+    //aocDat->Techages[furorCelticaID].Effects.push_back(aocDat->Techages[furorCelticaID].Effects[0]);
     aocDat->Techages[furorCelticaID].Effects[12].A = newOnagerID;
-    aocDat->Techages[furorCelticaID].Effects[13].A = newMangonelID;
+    //aocDat->Techages[furorCelticaID].Effects[13].A = newMangonelID;
 
     aocDat->Techages[koreanTeamBonusID].Effects.push_back(aocDat->Techages[koreanTeamBonusID].Effects[0]);
-    aocDat->Techages[koreanTeamBonusID].Effects.push_back(aocDat->Techages[koreanTeamBonusID].Effects[0]);
+    //aocDat->Techages[koreanTeamBonusID].Effects.push_back(aocDat->Techages[koreanTeamBonusID].Effects[0]);
     aocDat->Techages[koreanTeamBonusID].Effects[3].A = newOnagerID;
-    aocDat->Techages[koreanTeamBonusID].Effects[4].A = newMangonelID;
+    //aocDat->Techages[koreanTeamBonusID].Effects[4].A = newMangonelID;
 
     aocDat->Techages[shinkichonID].Effects.push_back(aocDat->Techages[shinkichonID].Effects[0]);
-    aocDat->Techages[shinkichonID].Effects.push_back(aocDat->Techages[shinkichonID].Effects[0]);
+    //aocDat->Techages[shinkichonID].Effects.push_back(aocDat->Techages[shinkichonID].Effects[0]);
     aocDat->Techages[shinkichonID].Effects.push_back(aocDat->Techages[shinkichonID].Effects[1]);
-    aocDat->Techages[shinkichonID].Effects.push_back(aocDat->Techages[shinkichonID].Effects[1]);
+    //aocDat->Techages[shinkichonID].Effects.push_back(aocDat->Techages[shinkichonID].Effects[1]);
     aocDat->Techages[shinkichonID].Effects[12].A = newOnagerID;
-    aocDat->Techages[shinkichonID].Effects[13].A = newMangonelID;
-    aocDat->Techages[shinkichonID].Effects[14].A = newOnagerID;
-    aocDat->Techages[shinkichonID].Effects[15].A = newMangonelID;
+    aocDat->Techages[shinkichonID].Effects[13].A = newOnagerID;
+    //aocDat->Techages[shinkichonID].Effects[13].A = newMangonelID;
+    //aocDat->Techages[shinkichonID].Effects[15].A = newMangonelID;
 
     aocDat->Researchs[cuttingResearchID] = aocDat->Researchs[siegeOnagerTechID];
-    aocDat->Researchs[cuttingResearchID].RequiredTechs[1] = -1;
-    aocDat->Researchs[cuttingResearchID].RequiredTechCount = 1;
-    aocDat->Researchs[cuttingResearchID].TechageID = cuttingTechID;
+    aocDat->Researchs[cuttingResearchID].RequiredTechs[1] = onagerResearchID;
+    aocDat->Researchs[cuttingResearchID].RequiredTechCount = 2;
+    aocDat->Researchs[cuttingResearchID].TechageID = -1;
     aocDat->Researchs[cuttingResearchID].ButtonID = 10;
     aocDat->Researchs[cuttingResearchID].IconID = 5;
     aocDat->Researchs[cuttingResearchID].Name = "Cutting Research";

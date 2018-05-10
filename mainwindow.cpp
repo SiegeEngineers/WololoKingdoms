@@ -929,8 +929,8 @@ void MainWindow::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace)
         std::make_tuple("DIRT4.slp","(DLC_)?DIRT4","$1DIRT4",42,3,TerrainType::LandTerrain),
         std::make_tuple("MOORLAND.slp","(DLC_)?MOORLAND","$1MOORLAND",44,9,TerrainType::LandTerrain),
         std::make_tuple("CRACKEDIT.slp","CRACKEDIT","CRACKEDIT",45,38,TerrainType::None),
-        std::make_tuple("QUICKSAND.slp","(DLC_)?QUICKSAND","$1QUICKSAND",46,40,TerrainType::UnbuildableTerrain),
-        std::make_tuple("BLACK.slp","(DLC_)?BLACK(?!_)","$1BLACK",47,40,TerrainType::UnbuildableTerrain),
+        std::make_tuple("QUICKSAND.slp","(DLC_)?QUICKSAND","$1QUICKSAND",46,40,TerrainType::FixedTerrain),
+        std::make_tuple("BLACK.slp","(DLC_)?BLACK(?!_)","$1BLACK",47,40,TerrainType::FixedTerrain),
         std::make_tuple("DLC_BEACH2.slp","DLC_BEACH2","DLC_BEACH2",51,2,TerrainType::FixedTerrain),
         std::make_tuple("DLC_BEACH3.slp","DLC_BEACH3","DLC_BEACH3",52,2,TerrainType::FixedTerrain),
         std::make_tuple("DLC_BEACH4.slp","DLC_BEACH4","DLC_BEACH4",53,2,TerrainType::FixedTerrain),
@@ -1294,7 +1294,7 @@ void MainWindow::patchArchitectures(genie::DatFile *aocDat) {
     //std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
     //						 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
     // short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620}; // There's no IA dark age building mod, but regular ones that get broken by enabling this, so we won't do it.
-    short cgUnitIDs[] = {125,134,286,4,3,5,98,6,100,7,238,24,26,37,113,38,111,39,34,74,152,75,154,77,180,93,140,238,139,329,330,495,358,501,
+    short cgUnitIDs[] = {125,134,286,4,3,5,98,6,100,7,238,24,26,37,113,38,111,39,34,74,152,75,154,77,180,93,140,283,139,329,330,495,358,501,
                         359,502,440,441,480,448,449,473,500,474,631,492,496,546,547,567,568,569,570};
     for(int cg = 0; cg < civGroups.size(); cg++) {
         if(cg == 3) {

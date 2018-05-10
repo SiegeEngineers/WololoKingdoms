@@ -17,6 +17,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1104, 527}, // Demolition Raft, Demolition Ship NOTE: These two are special to make the tech tree work
 
 	{1001, 106}, // Organ Gun, INFIL_D
+    {949, 108}, // X Patch Trade Cart, JUNKX_D
     {1003, 114}, // Elite Organ Gun, LNGBT_D
 	{1006, 183}, // Elite Caravel, TMISB
 	{1007, 203}, // Camel Archer, VDML
