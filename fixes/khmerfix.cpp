@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void khmerPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void khmerPatch(genie::DatFile *aocDat) {
 
 	//Civ Bonus Fix
 	size_t const khmerBonusTechId = 693;

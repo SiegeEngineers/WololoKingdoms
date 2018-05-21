@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void hotkeysPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void hotkeysPatch(genie::DatFile *aocDat) {
 
 	int const wonderUnitId = 276; //We will use that hotkey for Feitorias and Palisade Gates
 	int const palisadeGateUnitIdStart = 789;

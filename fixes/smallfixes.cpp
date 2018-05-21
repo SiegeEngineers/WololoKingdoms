@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void smallPatches(genie::DatFile *aocDat) {
 
 	size_t const eliteCamelArcherID = 1009;
     size_t const monkeyBoyID = 860;
@@ -14,9 +14,7 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	size_t const teutonTeamBonusID = 404;
 	size_t const PTWC = 444;
 	size_t const pTrebId = 331;
-	size_t const relicID = 285;
-	size_t const feitoriaID = 1021;
-    size_t const tradeWorkshopID = 110;
+    size_t const relicID = 285;
     size_t const sharkatzorID = 1222;
     size_t const kingID = 434;
     size_t const cartographyID = 19;
@@ -62,9 +60,7 @@ void smallPatches(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
 	aocDat->UnitHeaders[PTWC].Commands.push_back(aocDat->UnitHeaders[pTrebId].Commands[0]);
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionMode = 0;
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionEnabler = 0;
-	//Trade Workshop with gold trickle
-	aocDat->UnitHeaders[tradeWorkshopID].Commands.push_back(aocDat->UnitHeaders[feitoriaID].Commands[3]);
-	aocDat->UnitHeaders[tradeWorkshopID].Commands[0].Quantity = 1;
+
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		//fixes faulty elite camel archer data for non-gaia civs
 		aocDat->Civs[civIndex].Units[eliteCamelArcherID] = aocDat->Civs[0].Units[eliteCamelArcherID];

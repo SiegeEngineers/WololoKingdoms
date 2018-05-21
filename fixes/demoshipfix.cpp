@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void demoshipPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void demoshipPatch(genie::DatFile *aocDat) {
 	/*
 	 * There are a few hardcoded detonation units, UP 1.5 offers a way to do it without
 	 * However, it does full damage in the entire blast radius

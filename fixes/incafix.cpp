@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void incaPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void incaPatch(genie::DatFile *aocDat) {
 
 	//Civ Bonus Fix
 	/*

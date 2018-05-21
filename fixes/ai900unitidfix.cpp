@@ -25,13 +25,14 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
 	{1010, 223}, // Genitour, VFREP_D
 	{1012, 230}, // Elite Genitour, VMREP_D
 	{1013, 260}, // Gbeto, OLD-FISH3
+    {936, 412}, // Elephant, MONKX_S_D
 	{1015, 418}, // Elite Gbeto, TROCK
 	{1016, 453}, // Shotel Warrior, DOLPH4
 	{1018, 459}, // Elite Shotel Warrior, FISH5
 	{1103, 467}, // Fire Ship, Nonexistent
 	{1105, 494}, // Siege Tower, CVLRY_D
 	{1104, 653}, // Demolition Ship, HFALS_D
-    {947, 699}, // Cutting Mangonel, HSUBO_D
+    //{947, 699}, // Cutting Mangonel, HSUBO_D
     {948, 701}, // Cutting Onager, HWOLF_D
 	{1079, 732}, // Genitour placeholder, HKHAN_D
 	{1021, 734}, // Feitoria, Nonexistent
@@ -163,7 +164,7 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 	}
 }
 
-void ai900unitidPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void ai900unitidPatch(genie::DatFile *aocDat) {
 	for (size_t i = 0; i < unitsIDtoSwap.size(); i++) {
 		swapUnits(aocDat, unitsIDtoSwap[i].first, unitsIDtoSwap[i].second);
 	}

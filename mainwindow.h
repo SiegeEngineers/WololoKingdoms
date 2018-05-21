@@ -54,6 +54,7 @@ private:
     std::map<int, std::tuple<std::string,std::string, std::string, int, std::string>> dataModList;
     std::string language = "en";
     std::map<std::string, std::string> translation;
+    std::map<int, std::string> gameTranslation;
     bool secondAttempt = false;
     bool allowRun = true;
 
@@ -65,11 +66,11 @@ private:
     std::ofstream logFile;
 
     fs::path nfzUpOutPath;
-    fs::path nfzOutPath;
+    fs::path nfzVooblyOutPath;
     fs::path vooblyDir;
     fs::path upDir;
+    fs::path installDir;
     std::string baseModName = "WololoKingdoms";
-    std::string referenceDir = baseModName+" FE";
     fs::path resourceDir;
 
     enum TerrainType {
@@ -82,9 +83,16 @@ private:
     };
 
 	Ui::MainWindow *ui;
+    int initialize();
+    void setInstallDirectory(std::string directory);
     void changeLanguage();
     void setButtonWhatsThis(QPushButton* button, std::string title);
+    void readDataModList();
+    void checkSteamApi();
+    void readSettings();
+    void writeSettings();
 	void changeModPatch();
+    void callExternalExe(std::wstring exe);
 	void updateUI();
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
@@ -97,6 +105,10 @@ private:
     void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
     std::pair<int,std::string> getTextLine(std::string line);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
+    bool createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
+    void loadModdedStrings(std::string moddedStringsFile, std::map<int, std::string>& langReplacement);
+    bool openLanguageDll(genie::LangFile *langDll, fs::path langDllPath, fs::path langDllFile);
+    bool saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile);
 	void makeDrs(std::ofstream *out);
     void uglyHudHack(fs::path);
     void copyCivIntroSounds(fs::path inputDir, fs::path outputDir);
@@ -113,7 +125,7 @@ private:
     void copyHotkeyFile(fs::path maxHki, fs::path lastEditedHki, fs::path dst);
     void removeWkHotkeys();
 	void hotkeySetup();
-    void symlinkSetup(fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool vooblySrc, bool vooblyDst, bool dataMod = false);
+    void symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool dataMod = false);
 	bool copyData(QIODevice &inFile, QIODevice &outFile);
 };
 

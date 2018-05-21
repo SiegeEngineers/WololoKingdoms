@@ -3,13 +3,10 @@
 
 namespace wololo {
 
-void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void cuttingPatch(genie::DatFile *aocDat) {
 
-	//Civ Bonus Fix
-    size_t const mangonelID = 280;
+    //Civ Bonus Fix
     size_t const onagerID = 550;
-    size_t const siegeOnagerID = 588;
-    size_t const newMangonelID = 947;
     size_t const newOnagerID = 948;
     size_t const siegeOnagerTechID = 320;
 
@@ -21,7 +18,6 @@ void cuttingPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplac
     size_t const onagerResearchID = 257;
     size_t const onagerTechID = 247;
 
-    size_t const cuttingTechID = 307;
     size_t const onagerCuttingTechID = 308;
     size_t const disablingTechID = 309;
 

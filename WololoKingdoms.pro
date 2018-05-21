@@ -33,7 +33,9 @@ SOURCES += main.cpp \
     dialog.cpp \
     fixes/smallfixes.cpp \
 	fixes/siegetowerfix.cpp \
-    fixes/cuttingfix.cpp
+    fixes/mongolnomadsfix.cpp \
+    fixes/cuttingfix.cpp \
+    fixes/tricklebuildingfix.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -75,7 +77,9 @@ HEADERS += \
     fixes/smallfixes.h \
 	fixes/siegetowerfix.h \
     include/sdk/public/steam/steam_api.h \
-    fixes/cuttingfix.h
+    fixes/mongolnomadsfix.h \
+    fixes/cuttingfix.h \
+    fixes/tricklebuildingfix.h
 
 DISTFILES += \
     WololoKingdoms.ico

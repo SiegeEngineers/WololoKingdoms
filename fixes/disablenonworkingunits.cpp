@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void disableNonWorkingUnitsPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void disableNonWorkingUnitsPatch(genie::DatFile *aocDat) {
 	/*
 	 * Disabling units that are not supposed to show in the scenario editor
 	 */

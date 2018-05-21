@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void feitoriaPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void feitoriaPatch(genie::DatFile *aocDat) {
 	float const feitoriaCooldown = 1;
 	float const woodAdded = 0.8;
 	float const foodAdded = 0.8;

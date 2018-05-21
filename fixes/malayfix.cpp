@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void malayPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void malayPatch(genie::DatFile *aocDat) {
 	/*
 	 * In order to work in AoC, research time manipulation has to be part of the tech tree tech
 	 */

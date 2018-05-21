@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void PortuguesePatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void PortuguesePatch(genie::DatFile *aocDat) {
 	/*
 	 * The imported Portuguese team bonus makes the game crash
 	 * so let's replace it by something simpler (and functionally identical ?)
