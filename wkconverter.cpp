@@ -163,7 +163,7 @@ void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
         langIn.close();
         std::wstring wideContent = strtowstr(contents);
         std::string outputContent;
-        ConvertUnicode2CP(wideContent.c_str(), outputContent, settings->language == "zht2"?950:CP_ACP);
+        ConvertUnicode2CP(wideContent.c_str(), outputContent, CP_ACP);
         langOut << outputContent;
         langOut.close();
     }
@@ -272,7 +272,7 @@ std::pair<int,std::string> WKConverter::getTextLine(std::string line) {
 bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFolder) {
 
     std::map<int, std::string> langReplacement;
-    fs::path keyValuesStringsPath = settings->language == "zht1" || settings->language == "zht2"?resourceDir/"zht\\key-value-strings-utf8.txt":
+    fs::path keyValuesStringsPath = settings->language == "zht"?resourceDir/"zht\\key-value-strings-utf8.txt":
                                                       settings->HDPath / "resources" / settings->language / "strings\\key-value\\key-value-strings-utf8.txt";
     std::string modLangIni = resourceDir.string()+settings->language+".ini";
     fs::path langDllFile("language_x1_p1.dll");
@@ -388,7 +388,7 @@ void WKConverter::loadModdedStrings(std::string moddedStringsFile, std::map<int,
         line = line.substr(spaceIdx + 1, std::string::npos);
 
         std::wstring outputLine;
-        ConvertCP2Unicode(line.c_str(), outputLine, settings->language == "zht2"?950:CP_ACP);
+        ConvertCP2Unicode(line.c_str(), outputLine, CP_ACP);
         line = wstrtostr(outputLine);
         langReplacement[nb] = line;
     }
@@ -468,7 +468,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 		//convert UTF-8 into ANSI
 		std::wstring wideLine = strtowstr(line);
 		std::string outputLine;
-        ConvertUnicode2CP(wideLine.c_str(), outputLine, settings->language == "zht2"?950:CP_ACP);
+        ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
 
         *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
 
@@ -514,7 +514,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 		std::wstring wideLine = strtowstr(it->second);
 		std::string outputLine;
 
-        ConvertUnicode2CP(wideLine.c_str(), outputLine, settings->language == "zht2"?950:CP_ACP);
+        ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
 
 		*iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
 
@@ -1787,7 +1787,7 @@ int WKConverter::run()
         fs::path patchFolder;
 
         //HD Resources
-        fs::path historyInputPath = settings->language == "zht1" || settings->language == "zht2"?resourceDir/"zht\\history\\":
+        fs::path historyInputPath = settings->language == "zht"?resourceDir/"zht\\history\\":
                                                       settings->HDPath / ("resources\\"+settings->language+"\\strings\\history\\");
         fs::path soundsInputPath = settings->HDPath / "resources\\_common\\sound\\";
         fs::path tauntInputPath = settings->HDPath / "resources\\en\\sound\\taunt\\";

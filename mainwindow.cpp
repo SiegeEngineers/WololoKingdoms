@@ -99,8 +99,7 @@ int MainWindow::initialize() {
             case 8: language = "nl"; break;
             case 9: language = "ru"; break;
             case 10: language = "zh"; break;
-            case 11: language = "zht1"; break;
-            case 12: language = "zht2"; break;
+            case 11: language = "zht"; break;
             default: language = "en";
         }
         changeLanguage();

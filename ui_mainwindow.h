@@ -305,7 +305,6 @@ public:
         languageChoice->addItem(QString());
         languageChoice->addItem(QString());
         languageChoice->addItem(QString());
-        languageChoice->addItem(QString());
         languageChoice->setObjectName(QStringLiteral("languageChoice"));
 
         gridLayout->addWidget(languageChoice, 6, 0, 1, 1);
@@ -470,8 +469,7 @@ public:
         languageChoice->setItemText(8, QApplication::translate("MainWindow", "Nederlands (Dutch)", nullptr));
         languageChoice->setItemText(9, QApplication::translate("MainWindow", "\321\200\321\203\321\201\321\201\320\272\320\270\320\271 (Russian)", nullptr));
         languageChoice->setItemText(10, QApplication::translate("MainWindow", "Simplified Chinese (\347\256\200\344\275\223\344\270\255\346\226\207)", nullptr));
-        languageChoice->setItemText(11, QApplication::translate("MainWindow", "Test 1 Traditional Chinese", nullptr));
-        languageChoice->setItemText(12, QApplication::translate("MainWindow", "Test 2 Traditional Chinese", nullptr));
+        languageChoice->setItemText(11, QApplication::translate("MainWindow", "Traditional Chinese (\347\271\201\351\253\224\344\270\255\346\226\207)", nullptr));
 
         usePatch->setText(QApplication::translate("MainWindow", "Patch/Data Mod", nullptr));
         patchSelectionTip->setText(QString());

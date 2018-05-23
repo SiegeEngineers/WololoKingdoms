@@ -356,7 +356,7 @@
      <item row="6" column="0">
       <widget class="QComboBox" name="languageChoice">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <item>
         <property name="text">
@@ -415,12 +415,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Test 1 Traditional Chinese</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Test 2 Traditional Chinese</string>
+         <string>Traditional Chinese (繁體中文)</string>
         </property>
        </item>
       </widget>
