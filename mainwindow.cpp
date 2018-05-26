@@ -40,6 +40,7 @@ MainWindow::~MainWindow()
 
 int MainWindow::initialize() {
 
+    logFile = std::ofstream("prelog.txt");
     QDialog* dialog;
     resourceDir = fs::path("resources\\");
     readSettings();
@@ -52,6 +53,7 @@ int MainWindow::initialize() {
         this->ui->label->setText(translation["noSteamInstallation"].c_str());
         dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
         dialog->exec();
+        log("NoSteam. Path: "+steamPath);
         allowRun = false;
         return -1;
     }
@@ -73,7 +75,6 @@ int MainWindow::initialize() {
         this->ui->restrictedCivMods->setEnabled(!this->ui->useExe->isChecked());
         updateUI();
     } );
-
 
     if(QCoreApplication::arguments().back() != "-s") {
         callExternalExe(std::wstring(L"WKUpdater.exe"));
@@ -170,6 +171,7 @@ void MainWindow::runConverter() {
         bar->repaint();
     }
     qApp->processEvents();
+    logFile.close();
     logFile = std::ofstream("log.txt");
     WKSettings* settings = new WKSettings(this->ui->useVoobly->isChecked(), this->ui->useExe->isChecked(),
         this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(), this->ui->usePw->isChecked(),
@@ -256,9 +258,13 @@ void MainWindow::setInstallDirectory(std::string directory) {
     }
 
 
+    nfzUpOutPath = upDir / "Player.nfz";
+    nfzVooblyOutPath = vooblyDir / "Player.nfz";
+
     if(!fs::exists(outPath/"age2_x1")) {
         this->ui->label->setText(translation["noAoC"].c_str());
         QDialog* dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
+        log("No Aoc. Path: "+(outPath/"age2_x1").string());
         dialog->exec();
         allowRun = false;
     } else {
@@ -274,8 +280,6 @@ void MainWindow::setInstallDirectory(std::string directory) {
         this->ui->usePatch->setDisabled(false);
     }
 
-    nfzUpOutPath = upDir / "Player.nfz";
-    nfzVooblyOutPath = vooblyDir / "Player.nfz";
 }
 
 void MainWindow::setButtonWhatsThis(QPushButton* button, std::string title) {
@@ -354,10 +358,11 @@ void MainWindow::checkSteamApi() {
     }
     if(!SteamApps()) {
         if(!SteamAPI_Init()) {
+            log("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath);
             this->ui->label->setText(translation["noSteamApi"].c_str());
             dialog = new Dialog(this,translation["noSteamApi"].c_str(),translation["errorTitle"]);
-            dialog->exec();
         } else {
+            log("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath);
             this->ui->label->setText(translation["noSteam"].c_str());
             dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
         }
@@ -378,6 +383,7 @@ void MainWindow::checkSteamApi() {
             dialog->exec();
         }
     } else {
+        log("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath);
         this->ui->label->setText(translation["noFE"].c_str());
         dialog = new Dialog(this,translation["noFE"],translation["errorTitle"]);
         dialog->exec();

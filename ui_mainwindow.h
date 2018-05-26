@@ -90,7 +90,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(404, 572);
+        MainWindow->resize(404, 589);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
@@ -384,10 +384,10 @@ public:
         runButton = new QPushButton(centralWidget);
         runButton->setObjectName(QStringLiteral("runButton"));
         runButton->setEnabled(false);
-        runButton->setGeometry(QRect(160, 500, 75, 23));
+        runButton->setGeometry(QRect(160, 520, 75, 23));
         verticalLayoutWidget = new QWidget(centralWidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(30, 460, 341, 31));
+        verticalLayoutWidget->setGeometry(QRect(30, 480, 341, 31));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
@@ -395,7 +395,7 @@ public:
         verticalLayout->setContentsMargins(0, 0, 0, 0);
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(30, 390, 339, 61));
+        label->setGeometry(QRect(30, 410, 339, 61));
         label->setAlignment(Qt::AlignCenter);
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
@@ -407,7 +407,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        languageChoice->setCurrentIndex(2);
+        languageChoice->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);

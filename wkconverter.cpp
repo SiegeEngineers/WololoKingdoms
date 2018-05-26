@@ -86,7 +86,7 @@ void WKConverter::recCopy(fs::path const &src, fs::path const &dst, bool skip, b
 	}
 }
 
-void WKConverter::loadGameStrings() {
+void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
     std::ifstream translationFile("resources\\"+settings->language+"_game.txt");
     while (std::getline(translationFile, line)) {
@@ -101,7 +101,7 @@ void WKConverter::loadGameStrings() {
         std::string key = line.substr(0, index);
         try {
             int keyNo = std::stoi(key);
-            gameTranslation[keyNo] = line.substr(index+1, std::string::npos);
+            langReplacement[keyNo] = line.substr(index+1, std::string::npos);
         } catch (std::invalid_argument e) {
             continue;
         }
@@ -280,11 +280,8 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     /*
      * Create the language files (.ini for Voobly, .dll for offline)
      */
-    for(std::map<int,std::string>::iterator iter = gameTranslation.begin(); iter != gameTranslation.end(); iter++) {
-        if(!iter->second.empty()) {
-            langReplacement[iter->first] = iter->second;
-        }
-    }
+
+    loadGameStrings(langReplacement);
 
     gui->log("Open Missing strings");
     std::string line;
@@ -303,7 +300,6 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
         rmsCodeStrings.push_back(std::make_pair(nb,line));
     }
     missingStrings.close();
-
 
     gui->log("Replace tooltips");
     if(settings->replaceTooltips) {
@@ -1534,7 +1530,7 @@ void WKConverter::hotkeySetup() {
     fs::path maxSrcHki;
     fs::path lastSrcHki;
 
-	fs::path nfz1Path = resourceDir / "Player1.nfz";
+    fs::path nfz1Path = resourceDir / "player1.nfz";
     fs::path nfzPath = settings->outPath / "player.nfz";
     fs::path aocHkiPath = resourceDir / "player1.hki";
     fs::path nfzOutPath = settings->useExe ? settings->nfzUpOutPath : settings->nfzVooblyOutPath;
@@ -1642,7 +1638,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
 	fs::remove_all(newDir/"Script.Ai");
 	fs::remove_all(newDir/"Screenshots");
 	fs::remove_all(newDir/"Scenario");
-    fs::remove(newDir/"Player.nfz");
+    fs::remove(newDir/"player.nfz");
     for (fs::directory_iterator current(newDir), end;current != end; ++current) {
         std::string extension = current->path().extension().string();
         if (extension == ".hki") {
@@ -1682,7 +1678,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
             "mklink /J \""+newDirString+"Screenshots\" \""+ oldDirString+"Screenshots\" & "
             "mklink /J \""+newDirString+"Scenario\" \""+ oldDirString+"Scenario\" & "
             + languageString +
-            "mklink /H \""+newDirString+"Player.nfz\" \""+ oldDirString+"Player.nfz\"";
+            "mklink /H \""+newDirString+"player.nfz\" \""+ oldDirString+"player.nfz\"";
     std::wstring wcmd = strtowstr(cmd);
 	ShellExecute(NULL,L"open",L"cmd.exe",wcmd.c_str(),NULL,SW_HIDE);
     if(!fs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
@@ -1702,13 +1698,23 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
 
     gui->log("Check for symlink");
     if(fs::is_symlink(installDir/"Taunt")) {
-        gui->log("Removing all but SaveGame");
+        gui->log("Removing all but SaveGame and profile");
         fs::path tempFolder = installDir.parent_path()/"temp";
-        fs::create_directory(tempFolder);
-        recCopy(installDir/"SaveGame",tempFolder);
+        fs::create_directories(tempFolder/"Scenario");
+        fs::create_directories(tempFolder/"SaveGame");
+        fs::create_directories(tempFolder/"Script.RM");
+        recCopy(installDir/"SaveGame",tempFolder/"SaveGame");
+        recCopy(installDir/"Script.RM",tempFolder/"Script.RM");
+        recCopy(installDir/"Scenario",tempFolder/"Scenario");
+        fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz");
         fs::remove_all(installDir);
         fs::create_directories(installDir/"SaveGame");
-        recCopy(tempFolder,installDir/"SaveGame");
+        fs::create_directories(installDir/"SaveGame");
+        fs::create_directories(installDir/"Script.RM");
+        recCopy(tempFolder/"SaveGame",installDir/"SaveGame");
+        recCopy(tempFolder/"Script.RM",installDir/"Script.RM");
+        recCopy(tempFolder/"Scenario",installDir/"Scenario");
+        fs::copy_file(tempFolder/"player.nfz",installDir/"player.nfz");
         fs::remove_all(tempFolder);
     }
 

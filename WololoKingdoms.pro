@@ -35,7 +35,8 @@ SOURCES += main.cpp \
 	fixes/siegetowerfix.cpp \
     fixes/mongolnomadsfix.cpp \
     fixes/cuttingfix.cpp \
-    fixes/tricklebuildingfix.cpp
+    fixes/tricklebuildingfix.cpp \
+    wkconverter.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
 LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
@@ -79,7 +80,10 @@ HEADERS += \
     include/sdk/public/steam/steam_api.h \
     fixes/mongolnomadsfix.h \
     fixes/cuttingfix.h \
-    fixes/tricklebuildingfix.h
+    fixes/tricklebuildingfix.h \
+    wkconverter.h \
+    wkgui.h \
+    wksettings.h
 
 DISTFILES += \
     WololoKingdoms.ico

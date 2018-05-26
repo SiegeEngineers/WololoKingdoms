@@ -162,6 +162,13 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 			swapId(&unitIt->DeadUnitID, id1, id2);
 		}
 	}
+
+    //Iterate through Unit commands (e.g. villagers hunting animals)
+    for (std::vector<genie::UnitHeader>::iterator unitIt = aocDat->UnitHeaders.begin(), end = aocDat->UnitHeaders.end(); unitIt != end; ++unitIt) {
+        for (std::vector<genie::UnitCommand>::iterator commandIt = unitIt->Commands.begin(), end = unitIt->Commands.end(); commandIt != end; ++commandIt) {
+            swapId(&commandIt->UnitID, id1, id2);
+        }
+    }
 }
 
 void ai900unitidPatch(genie::DatFile *aocDat) {

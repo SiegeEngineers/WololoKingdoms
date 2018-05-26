@@ -28,10 +28,8 @@ void smallPatches(genie::DatFile *aocDat) {
     size_t const demoRaftId = 1104;
     size_t const fireShipId = 529;
     size_t const fireGalleyId = 1103;
-    size_t const FireShipEnablerId = 168;
     size_t const FireShipDisablerId = 167;
-    size_t const DemoShipEnablerId = 170;
-    size_t const DemoShipDisablerId = 169;
+    size_t const DemoShipDisablerId = 168;
     size_t const FireShipDisablerTechId = 56;
     size_t const DemoShipDisablerTechId = 57;
     size_t const tradeCartId = 128;
@@ -111,10 +109,6 @@ void smallPatches(genie::DatFile *aocDat) {
     //Hunting Dogs got auto-researched in feudal+ games
     aocDat->Researchs[huntingDogsId].RequiredTechs[0] = -1;
     //Make it possible for maps to go back to aoc water by disabling fire/demo galley and a disabler for fire/demo shop
-    aocDat->Researchs[FireShipEnablerId].Name = "Fire Ship Enabler";
-    aocDat->Researchs[DemoShipEnablerId].Name = "Demo Ship Enabler";
-    aocDat->Researchs[fireShipResearchId].RequiredTechs[1] = FireShipEnablerId;
-    aocDat->Researchs[demoShipResearchId].RequiredTechs[1] = DemoShipEnablerId;
     aocDat->Techages[fireShipTechId].Effects[0].A = fireGalleyId;
     genie::TechageEffect effect = aocDat->Techages[fireShipTechId].Effects[0];
     effect.A = demoRaftId;
@@ -133,17 +127,22 @@ void smallPatches(genie::DatFile *aocDat) {
     aocDat->Researchs[FireShipDisablerId].Civ = -1;
     aocDat->Researchs[FireShipDisablerId].ResearchLocation = -1;
     aocDat->Techages[FireShipDisablerTechId].Effects[0].Type = 102;
-    aocDat->Techages[FireShipDisablerTechId].Effects[0].D = FireShipEnablerId;
-    aocDat->Techages[FireShipDisablerTechId].Effects[1].Type = 102;
-    aocDat->Techages[FireShipDisablerTechId].Effects[1].D = fireShipResearchId;
+    aocDat->Techages[FireShipDisablerTechId].Effects[0].D = fireShipResearchId;
+    aocDat->Techages[FireShipDisablerTechId].Effects.pop_back();
 
     aocDat->Researchs[DemoShipDisablerId] = aocDat->Researchs[FireShipDisablerId];
     aocDat->Researchs[DemoShipDisablerId].Name = "Demo Ship Disabler";
     aocDat->Researchs[DemoShipDisablerId].TechageID = DemoShipDisablerTechId;
+    //aocDat->Techages[DemoShipDisablerTechId].Effects[0].Type = 102;
+    //aocDat->Techages[DemoShipDisablerTechId].Effects[0].D = DemoShipEnablerId;
     aocDat->Techages[DemoShipDisablerTechId].Effects[0].Type = 102;
-    aocDat->Techages[DemoShipDisablerTechId].Effects[0].D = DemoShipEnablerId;
-    aocDat->Techages[DemoShipDisablerTechId].Effects[1].Type = 102;
-    aocDat->Techages[DemoShipDisablerTechId].Effects[1].D = demoShipResearchId;
+    aocDat->Techages[DemoShipDisablerTechId].Effects[0].D = demoShipResearchId;
+    aocDat->Techages[DemoShipDisablerTechId].Effects.pop_back();
+
+    aocDat->Researchs[fireShipResearchId].Name = "Fire Ship (make avail)";
+    aocDat->Researchs[demoShipResearchId].Name = "Demo Ship (make avail)";
+    aocDat->Researchs[fireShipResearchId].RequiredTechCount = 1;
+    aocDat->Researchs[demoShipResearchId].RequiredTechCount = 1;
 
     // Have an x-patch upgrade to trade carts that's disabled by default
 
@@ -155,6 +154,7 @@ void smallPatches(genie::DatFile *aocDat) {
         aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[1].Amount *= 2;
         aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[2].Amount *= 2;
         aocDat->Civs[i].Units[xtradeCartId].Bird.WorkRate *= 1.65;
+        aocDat->Civs[i].Units[xtradeCartId].Creatable.TrainTime *= 1.65;
         aocDat->Civs[i].Units[xtradeCartId].HitPoints = 115;
         aocDat->Civs[i].Units[xtradeCartId].Creatable.ResourceCosts[0].Amount *= 1.65;
         aocDat->Civs[i].Units[xtradeCartId].Creatable.ResourceCosts[1].Amount *= 1.65;

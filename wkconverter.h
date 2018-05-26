@@ -40,7 +40,6 @@ private:
     std::map<int, fs::path> wavFiles;
     std::map<std::string,fs::path> newTerrainFiles;
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
-    std::map<int, std::string> gameTranslation;
     bool secondAttempt = false;
     bool allowRun = true;
     std::string modName;
@@ -62,7 +61,6 @@ private:
         UnbuildableTerrain
     };
 
-    void loadGameStrings();
     void callExternalExe(std::wstring exe);
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
@@ -76,6 +74,7 @@ private:
     std::pair<int,std::string> getTextLine(std::string line);
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
     bool createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
+    void loadGameStrings(std::map<int,std::string>& langReplacement);
     void loadModdedStrings(std::string moddedStringsFile, std::map<int, std::string>& langReplacement);
     bool openLanguageDll(genie::LangFile *langDll, fs::path langDllPath, fs::path langDllFile);
     bool saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile);
