@@ -87,22 +87,7 @@ int MainWindow::initialize() {
     readDataModList();
 
     //Language selection dropdown
-    QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
-        switch(this->ui->languageChoice->currentIndex()) {
-            case 0: language = "br"; break;
-            case 1: language = "de"; break;
-            case 2: language = "en"; break;
-            case 3: language = "es"; break;
-            case 4: language = "fr"; break;
-            case 5: language = "it"; break;
-            case 6: language = "jp"; break;
-            case 7: language = "ko"; break;
-            case 8: language = "nl"; break;
-            case 9: language = "ru"; break;
-            case 10: language = "zh"; break;
-            case 11: language = "zht"; break;
-            default: language = "en";
-        }
+    QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {        
         changeLanguage();
     } );
 
@@ -137,6 +122,7 @@ int MainWindow::initialize() {
             this->ui->useMonks->setDisabled(true);
             this->ui->usePw->setDisabled(true);
             this->ui->useWalls->setDisabled(true);
+            this->ui->useNoSnow->setDisabled(true);
             this->ui->copyMaps->setDisabled(true);
             this->ui->copyCustomMaps->setDisabled(true);
             this->ui->restrictedCivMods->setDisabled(true);
@@ -147,6 +133,7 @@ int MainWindow::initialize() {
             this->ui->useMonks->setDisabled(false);
             this->ui->usePw->setDisabled(false);
             this->ui->useWalls->setDisabled(false);
+            this->ui->useNoSnow->setDisabled(false);
             this->ui->copyMaps->setDisabled(false);
             this->ui->copyCustomMaps->setDisabled(false);
             this->ui->restrictedCivMods->setDisabled(false);
@@ -179,7 +166,7 @@ void MainWindow::runConverter() {
         this->ui->restrictedCivMods->isChecked(),this->ui->useNoSnow->isChecked(), this->ui->fixFlags->isChecked(),
         this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), installDir, language, version, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
-        HDPath, outPath, vooblyDir, upDir, dataModList);
+        HDPath, outPath, vooblyDir, upDir, dataModList, modName);
     WKConverter* converter = new WKConverter(this, settings);
     try {
         converter->run();
@@ -407,7 +394,6 @@ void MainWindow::writeSettings()
     settings.setValue("useMonks", this->ui->useMonks->isChecked());
     settings.setValue("useWalls", this->ui->useWalls->isChecked());
     settings.setValue("replaceTooltips", this->ui->replaceTooltips->isChecked());
-    settings.setValue("usePatch", this->ui->usePatch->isChecked());
     settings.setValue("restrictedCivMods", this->ui->restrictedCivMods->isChecked());
     settings.setValue("languageChoice", this->ui->languageChoice->currentIndex());
     settings.setValue("patchSelection", this->ui->patchSelection->currentIndex());
@@ -428,7 +414,6 @@ void MainWindow::readSettings()
         this->ui->useWalls->setChecked(settings.value("useWalls").toBool());
         this->ui->useNoSnow->setChecked(settings.value("useNoSnow").toBool());
         this->ui->replaceTooltips->setChecked(settings.value("replaceTooltips").toBool());
-        this->ui->usePatch->setChecked(settings.value("usePatch").toBool());
         this->ui->useMonks->setChecked(settings.value("useMonks").toBool());
         this->ui->restrictedCivMods->setChecked(settings.value("restrictedCivMods").toBool());
         this->ui->languageChoice->setCurrentIndex(settings.value("languageChoice").toInt());
@@ -463,11 +448,39 @@ void MainWindow::changeModPatch() {
 }
 
 void MainWindow::changeLanguage() {
+
+    switch(this->ui->languageChoice->currentIndex()) {
+        case 0: language = "br"; break;
+        case 1: language = "de"; break;
+        case 2: language = "en"; break;
+        case 3: language = "es"; break;
+        case 4: language = "fr"; break;
+        case 5: language = "it"; break;
+        case 6: language = "jp"; break;
+        case 7: language = "ko"; break;
+        case 8: language = "nl"; break;
+        case 9: language = "ru"; break;
+        case 10: language = "zh"; break;
+        case 11: language = "zht"; break;
+        default: language = "en";
+    }
     /*
      * Loads the contents of <language>.txt into memory (If it exists). This is used to change the language of the installer ui,
      * as well as some special in-game lines (Terrain names in the scenario editor, some fixes for faulty lines in the original language files)
      */
 	std::string line;
+    std::string langBackup;
+    if(!fs::exists("resources\\"+language+".txt")) {
+        if(translation["runButton"].empty()) {
+            langBackup = language;
+            language = "en";
+        } else {
+            updateUI();
+            return;
+        }
+    } else {
+        langBackup = language;
+    }
     std::ifstream translationFile("resources\\"+language+".txt");
 	while (std::getline(translationFile, line)) {
         /*
@@ -489,6 +502,8 @@ void MainWindow::changeLanguage() {
     this->ui->useBoth->setText(translation["useBoth"].c_str());
     this->ui->copyMaps->setText(translation["copyMaps"].c_str());
     this->ui->copyCustomMaps->setText(translation["copyCustomMaps"].c_str());
+    this->ui->fixFlags->setText(translation["fixFlags"].c_str());
+    this->ui->restrictedCivMods->setText(translation["restrictedCivMods"].c_str());
 	this->ui->useGrid->setText(translation["useGrid"].c_str());
 	this->ui->usePw->setText(translation["usePw"].c_str());
 	this->ui->useWalls->setText(translation["useWalls"].c_str());
@@ -499,6 +514,7 @@ void MainWindow::changeLanguage() {
 	this->ui->hotkeyChoice->setItemText(1,translation["hotkeys1"].c_str());
 	this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"].c_str());
     this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
+    language=langBackup;
 	updateUI();
 }
 
@@ -534,18 +550,21 @@ void MainWindow::updateUI() {
     /*
      * Based on whether a <language>.ini file exists, we can offer
      * modded tooltips to be enabled
+     * Not needed anymore with the new system?
      */
+    /*
     fs::path patchFolder;
-    if((std::get<3>(dataModList[patch]) / 2) % 2 == 1)
+    if(std::get<3>(dataModList[patch]) & 2)
         patchFolder = resourceDir/("patches\\"+std::get<0>(dataModList[patch])+"\\");
     else
         patchFolder = resourceDir;
-
-    if(!fs::exists(patchFolder/(language+".ini"))) {
+    */
+    if(!fs::exists(resourceDir/(language+".ini"))) {
 		this->ui->replaceTooltips->setEnabled(false);
 		this->ui->replaceTooltips->setChecked(false);
 	} else {
 		this->ui->replaceTooltips->setEnabled(true);
 	}
+
 	qApp->processEvents();
 }

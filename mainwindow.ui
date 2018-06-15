@@ -356,7 +356,7 @@
      <item row="6" column="0">
       <widget class="QComboBox" name="languageChoice">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <item>
         <property name="text">

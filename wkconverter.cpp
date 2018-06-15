@@ -2157,7 +2157,7 @@ int WKConverter::run()
             std::ifstream input(resourceDir.string()+("WK"+std::to_string(settings->dlcLevel)+".xml"));
 			std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
             std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
-            boost::replace_all(str,baseModName+dlcExtension,modName);
+            boost::replace_all(str,baseModName+dlcExtension,settings->modName);
 			std::ofstream out(xmlIn.string());
 			out << str;
             input.close();

@@ -42,7 +42,6 @@ private:
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
     bool secondAttempt = false;
     bool allowRun = true;
-    std::string modName;
 
     fs::path nfzUpOutPath;
     fs::path nfzVooblyOutPath;
