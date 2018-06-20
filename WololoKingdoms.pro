@@ -39,8 +39,8 @@ SOURCES += main.cpp \
     wkconverter.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
-LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
 LIBS += -L$$PWD/lib/ -lsteam_api
+LIBS += -LD:/boost_1_63_0/stage/lib -lboost_system-mgw53-mt-1_63 -lboost_filesystem-mgw53-mt-1_63
 INCLUDEPATH += C:\GnuWin32\src\zlib-1.2.3
 LIBS += -LC:\GnuWin32\src\zlib-1.2.3 -lz
 INCLUDEPATH += C:\quazip-0.7.3\quazip
@@ -51,8 +51,11 @@ win32:RC_ICONS += WololoKingdoms.ico
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
 
+INCLUDEPATH += $$PWD/../.
+DEPENDPATH += $$PWD/../.
+
 INCLUDEPATH += include/
-INCLUDEPATH += D:/local/boost_1_60_0/
+INCLUDEPATH += D:/boost_1_63_0/
 
 HEADERS += \
     paths.h\

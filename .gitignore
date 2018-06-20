@@ -52,3 +52,12 @@ lib/libgenieutils.dll
 resources/
 mod_override/
 include/sdk/
+mainwindow_OLD.h
+mainwindow_OLD.cpp
+main_OLD.cpp
+log.txt
+OLDREADME.md
+fixes/mongolnomadsfix.h
+fixes/mongolnomadsfix.cpp
+*.dll
+steam_api.lib

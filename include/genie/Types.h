@@ -34,6 +34,7 @@ enum GameVersion
   GV_AoEB, // 7.04 - 7.11
   GV_AoE, // 7.2
   GV_RoR, // 7.24
+  GV_AoKE3, // 9.36
   GV_AoKA, // 10.19
   GV_AoKB, // 11.05
   GV_AoK, // 11.5
