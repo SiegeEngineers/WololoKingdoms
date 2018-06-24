@@ -694,6 +694,184 @@ void WKConverter::makeDrs(std::ofstream *out) {
     out->close();
 }
 
+/** A method to add extra (slp) files to an already existing drs file.
+ *  Reads the old files, changes the offsets where necessary and writes back to a new file with changed offsets and the new files
+ *  in: The stream of the old drs file
+ *  out: The stream of the new drs file
+ */
+void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
+
+    int numberOfSlpFiles = slpFiles.size(); //These are the new files to be added to the drs
+
+    gui->log("number of files"+std::to_string(numberOfSlpFiles));
+    gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDrs2"));
+
+    char * buffer;
+    char * intBuffer = new char[4];
+    gui->increaseProgress(1);
+
+
+    gui->log("write header");
+    // header, no changes here
+    int length = sizeof (wololo::DrsHeader::copyright) + sizeof (wololo::DrsHeader::version) + sizeof (wololo::DrsHeader::ftype)
+            +sizeof (wololo::DrsHeader::table_count);
+    buffer = new char[length];
+    in->read(buffer,length);
+    gui->log(std::string(buffer));
+    out->write(buffer, length);
+    gui->increaseProgress(1);
+
+    //There are extra file infos added, so the offset of the first file changes
+    int extraOffset = sizeof (wololo::DrsFileInfo) * (numberOfSlpFiles);
+    in->read(intBuffer,4);
+    int offsetOfFirstFile = *(reinterpret_cast<int *>(intBuffer));
+    offsetOfFirstFile += extraOffset;
+    out->write(reinterpret_cast<const char *>(&offsetOfFirstFile), sizeof (wololo::DrsHeader::file_offset));
+    gui->increaseProgress(1);
+
+    gui->log("slp table info");
+    //slp table info
+    length = sizeof (wololo::DrsTableInfo::file_type) + sizeof (wololo::DrsTableInfo::file_extension) + sizeof (wololo::DrsTableInfo::file_info_offset);
+    buffer = new char[length];
+    in->read(buffer,length);
+    out->write(buffer, length);
+    in->read(intBuffer,4);
+    int numberOfOldSlpFiles = *(reinterpret_cast<int *>(intBuffer));
+    gui->log(intBuffer);
+    gui->log(std::to_string(numberOfOldSlpFiles));
+    int totalSlpFiles = numberOfOldSlpFiles+numberOfSlpFiles;
+    out->write(reinterpret_cast<const char *>(&totalSlpFiles), sizeof (wololo::DrsTableInfo::num_files));
+    gui->increaseProgress(1);
+
+    gui->log("wav table info");
+    length = sizeof (wololo::DrsTableInfo::file_type) + sizeof (wololo::DrsTableInfo::file_extension);
+    buffer = new char[length];
+    in->read(buffer,length);
+    out->write(buffer, length);
+    in->read(intBuffer,4);
+    gui->log(intBuffer);
+    int wavInfoOffset = *(reinterpret_cast<int *>(intBuffer)) + extraOffset;
+    out->write(reinterpret_cast<const char *>(&wavInfoOffset), sizeof (wololo::DrsTableInfo::file_info_offset));
+    in->read(intBuffer,4);
+    gui->log(intBuffer);
+    int numberOfOldWavFiles = *(reinterpret_cast<int *>(intBuffer));
+    gui->log(std::to_string(numberOfOldWavFiles));
+    out->write(reinterpret_cast<const char *>(&numberOfOldWavFiles), sizeof (wololo::DrsTableInfo::num_files));
+    gui->increaseProgress(1);
+
+
+    // file infos
+    int fileOffset = 0;
+    int fileSize = 0;
+    int slpBlockSize = 0;
+    int wavBlockSize = 0;
+
+    gui->log("old slp file infos");
+    for (int i = 0; i < numberOfOldSlpFiles; i++) {
+        in->read(intBuffer,4);
+        int fileId = *(reinterpret_cast<int *>(intBuffer));
+        if(fileId >= 60000 && (fileId <= 60138 || (fileId >= 70000 && fileId <= 70138) || (fileId >= 80000 && fileId <= 80017))) {
+            //First if is just a cheaper hardcoded precheck, can be removed if the function needs to be more general
+            if(slpFiles.count(fileId) > 0) {
+                fileId += 900000; //Doesn't really matter, just a large number that the game will never read
+            }
+        }
+        in->read(intBuffer,4);
+        fileOffset = *(reinterpret_cast<int *>(intBuffer))+extraOffset;
+        in->read(intBuffer,4);
+        fileSize = *(reinterpret_cast<int *>(intBuffer));
+        slpBlockSize += fileSize;
+        out->write(reinterpret_cast<const char *>(&fileId), sizeof (wololo::DrsFileInfo::file_id));
+        out->write(reinterpret_cast<const char *>(&fileOffset), sizeof (wololo::DrsFileInfo::file_data_offset));
+        out->write(reinterpret_cast<const char *>(&fileSize), sizeof (wololo::DrsFileInfo::file_size));
+        gui->increaseProgress(0);
+    }
+    gui->increaseProgress(1);
+    int offset = fileOffset + fileSize;
+
+    gui->log("new slp file infos");
+
+    std::vector<wololo::DrsFileInfo> slpFileInfos;
+
+    for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
+        wololo::DrsFileInfo slp;
+        size_t size;
+        size = fs::file_size(it->second);
+        slp.file_id = it->first;
+        slp.file_data_offset = offset;
+        slp.file_size = size;
+        offset += size;
+        slpFileInfos.push_back(slp);
+        gui->increaseProgress(0);
+    }
+    gui->increaseProgress(1);
+
+    for (std::vector<wololo::DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
+        out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
+        out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
+        out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
+    }
+    gui->increaseProgress(1);
+
+    gui->log("wav file infos");
+    for (int i = 0; i < numberOfOldWavFiles; i++) {
+        in->read(intBuffer,4);
+        int fileId = *(reinterpret_cast<int *>(intBuffer));
+        in->read(intBuffer,4); //Old offset, not relevant anymore
+        in->read(intBuffer,4);
+        fileSize = *(reinterpret_cast<int *>(intBuffer));
+        wavBlockSize += fileSize;
+        out->write(reinterpret_cast<const char *>(&fileId), sizeof (wololo::DrsFileInfo::file_id));
+        out->write(reinterpret_cast<const char *>(&offset), sizeof (wololo::DrsFileInfo::file_data_offset));
+        out->write(reinterpret_cast<const char *>(&fileSize), sizeof (wololo::DrsFileInfo::file_size));
+        offset += fileSize;
+        gui->increaseProgress(0);
+    }
+    gui->increaseProgress(1);
+
+
+    gui->log("old slp files");
+    int bufferSize = 4096;
+    buffer = new char[bufferSize];
+    int i;
+    for(i = bufferSize; i < slpBlockSize; i+=bufferSize) {
+        in->read(buffer, bufferSize);
+        out->write(buffer, bufferSize);
+        gui->increaseProgress(0);
+    }
+    length = slpBlockSize - i + bufferSize;
+    in->read(buffer,length);
+    out->write(buffer, length);
+    gui->increaseProgress(1);
+    gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDrs3"));
+
+
+    gui->log("new slp files");
+    for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
+            std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
+            *out << srcStream.rdbuf();
+            srcStream.close();
+            gui->increaseProgress(0);
+    }
+    gui->increaseProgress(1);
+
+
+    gui->log("old wav files");
+    buffer = new char[bufferSize];
+    for(i = bufferSize; i < wavBlockSize; i+=bufferSize) {
+        in->read(buffer, bufferSize);
+        out->write(buffer, bufferSize);
+        gui->increaseProgress(0);
+    }
+    length = wavBlockSize - i + bufferSize;
+    in->read(buffer,length);
+    out->write(buffer, length);
+    gui->increaseProgress(1);
+
+    in->close();
+    out->close();
+}
+
 void WKConverter::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
 	std::string const civs[] = {"italians", "indians", "incas", "magyars", "slavs",
 								"portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
@@ -1783,6 +1961,7 @@ int WKConverter::run()
         fs::path newTerrainInputDir = resourceDir/"new terrains";
         fs::path newGridTerrainInputDir = resourceDir/"new grid terrains";
         fs::path architectureFixDir = resourceDir/"architecture fixes";
+        fs::path slpCompatDir = resourceDir/"old dat slp compatibility";
         fs::path modOverrideDir("mod_override\\");
         fs::path terrainOverrideDir("new_terrain_override\\");
         fs::path wallsInputDir = resourceDir/"short_walls";
@@ -2134,7 +2313,7 @@ int WKConverter::run()
             if(settings->fixFlags)
                 adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
             dat.saveAs(outputDatPath.string().c_str());
-            gui->setProgress(95);
+            gui->setProgress(20);
             settings->version = std::get<2>(settings->dataModList[settings->patch]);
             std::ofstream versionOut(versionIniPath);
             versionOut << settings->version;
@@ -2164,8 +2343,20 @@ int WKConverter::run()
             out.close();
             if(settings->useBoth || settings->useVoobly)
                 symlinkSetup(settings->vooblyDir.parent_path() / (baseModName+dlcExtension), settings->vooblyDir,xmlIn,settings->vooblyDir/"age2_x1.xml",true);
+                if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
+                    indexDrsFiles(slpCompatDir);
+                    std::ifstream oldDrs (settings->vooblyDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                    std::ofstream newDrs (settings->vooblyDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                    editDrs(&oldDrs, &newDrs);
+                }
             if(settings->useBoth || settings->useExe) {
                 symlinkSetup(settings->upDir.parent_path() / (baseModName+dlcExtension), settings->upDir, xmlIn, settings->upDir.parent_path()/(UPModdedExe+".xml"), true);
+                if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
+                    indexDrsFiles(slpCompatDir);
+                    std::ifstream oldDrs (settings->upDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                    std::ofstream newDrs (settings->upDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                    editDrs(&oldDrs, &newDrs);
+                }
             }
             fs::remove(xmlIn);
         } else if(settings->restrictedCivMods) {
