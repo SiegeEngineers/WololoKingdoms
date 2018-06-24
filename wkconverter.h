@@ -28,7 +28,7 @@ public:
     ~WKConverter();
 
 public:
-    int run();
+    int run(bool retry = false);
 
 
 private:
@@ -96,6 +96,7 @@ private:
 	void hotkeySetup();
     void symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool dataMod = false);
     void setupFolders(fs::path xmlOutPathUP);
+    void retryInstall();
     bool copyData(QIODevice &inFile, QIODevice &outFile);
 };
 

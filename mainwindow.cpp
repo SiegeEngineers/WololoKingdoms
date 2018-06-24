@@ -164,7 +164,7 @@ void MainWindow::runConverter() {
         this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(), this->ui->usePw->isChecked(),
         this->ui->useWalls->isChecked(), this->ui->copyMaps->isChecked(), this->ui->copyCustomMaps->isChecked(),
         this->ui->restrictedCivMods->isChecked(),this->ui->useNoSnow->isChecked(), this->ui->fixFlags->isChecked(),
-        this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), installDir, language, version, dlcLevel,
+        this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), installDir, language, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
         HDPath, outPath, vooblyDir, upDir, dataModList, modName);
     WKConverter* converter = new WKConverter(this, settings);

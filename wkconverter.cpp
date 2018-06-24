@@ -307,7 +307,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     }
     gui->increaseProgress(1); //2
 
-    if(settings->patch >= 0 && (std::get<3>(settings->dataModList[settings->patch]) / 2) % 2 == 1) {
+    if(settings->patch >= 0 && std::get<3>(settings->dataModList[settings->patch]) & 2) {
         /*
          * A data mod might need slightly changed strings.
          */
@@ -589,6 +589,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 		slp.file_size = size;
 		offset += size;
 		slpFileInfos.push_back(slp);
+        gui->increaseProgress(0);
 	}
     gui->increaseProgress(1); //60
 
@@ -601,6 +602,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 		wav.file_size = size;
 		offset += size;
 		wavFileInfos.push_back(wav);
+        gui->increaseProgress(0);
 	}
     gui->increaseProgress(1); //61
 
@@ -648,12 +650,14 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	out->write(header.ftype, sizeof (wololo::DrsHeader::ftype));
 	out->write(reinterpret_cast<const char *>(&header.table_count), sizeof (wololo::DrsHeader::table_count));
 	out->write(reinterpret_cast<const char *>(&header.file_offset), sizeof (wololo::DrsHeader::file_offset));
+    gui->increaseProgress(0);
 
 	// table infos
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_type), sizeof (wololo::DrsTableInfo::file_type));
 	out->write(slpTableInfo.file_extension, sizeof (wololo::DrsTableInfo::file_extension));
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (wololo::DrsTableInfo::file_info_offset));
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (wololo::DrsTableInfo::num_files));
+    gui->increaseProgress(0);
 
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_type), sizeof (wololo::DrsTableInfo::file_type));
 	out->write(wavTableInfo.file_extension, sizeof (wololo::DrsTableInfo::file_extension));
@@ -682,6 +686,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 			std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
 			*out << srcStream.rdbuf();
             srcStream.close();
+            gui->increaseProgress(0);
 	}
     gui->increaseProgress(1); //66
 
@@ -689,6 +694,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 		std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
 		*out << srcStream.rdbuf();
         srcStream.close();
+        gui->increaseProgress(0);
 	}
     gui->increaseProgress(1); //67
     out->close();
@@ -994,6 +1000,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
     std::vector<std::tuple<std::string,std::string,std::string,int,int,int>>::iterator repIt;
 
 	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end(); it++) {
+        gui->increaseProgress(0);
 		std::string mapName = it->stem().string()+".rms";
         if (mapName.substr(0,3) == "ZR@") {
 			fs::copy_file(*it,outputDir/mapName,fs::copy_option::overwrite_if_exists);
@@ -1303,6 +1310,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
     short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
 	short burmese = 30; //These are used for ID reference
     for(short c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
+        gui->increaseProgress(0);
 		std::map<short,short> replacedGraphics;
         std::map<short,short> replacedFlags;
 		//buildings
@@ -1377,6 +1385,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 		}
         std::map<short,short> replacedGraphics;
         for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
+            gui->increaseProgress(0);
             /*
 			for(unsigned int b = 0; b < sizeof(cgBuildingIDs)/sizeof(short); b++) {
                 replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
@@ -1867,6 +1876,40 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         fs::copy_file(oldDirString+"version.ini", newDir/"version.ini", fs::copy_option::overwrite_if_exists);
 }
 
+void WKConverter::retryInstall() {
+
+    gui->log("Retry installation with removing folders first");
+    fs::path tempFolder = "retryTemp";
+    try {
+        fs::create_directories(tempFolder/"Scenario");
+        fs::create_directories(tempFolder/"SaveGame");
+        fs::create_directories(tempFolder/"Script.RM");
+        recCopy(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
+        recCopy(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
+        recCopy(installDir/"Scenario",tempFolder/"Scenario",false,true);
+        fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_option::overwrite_if_exists);
+        if(fs::exists(installDir/"player1.hki"))
+            fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_option::overwrite_if_exists);
+    } catch (std::exception const & e) {
+        gui->createDialog(gui->translate("dialogException")+std::string()+e.what(),gui->translate("errorTitle"));
+        gui->log(e.what());
+        return;
+    }
+
+    fs::remove_all(installDir);
+    fs::remove_all(installDir.parent_path()/"WololoKingdoms AK");
+    fs::remove_all(installDir.parent_path()/"WololoKingdoms FE");
+
+    run(true);
+    recCopy(tempFolder/"SaveGame",installDir/"SaveGame",true);
+    recCopy(tempFolder/"Script.RM",installDir/"Script.RM",true);
+    recCopy(tempFolder/"Scenario",installDir/"Scenario",true);
+    boost::system::error_code ec;
+    fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
+    if(fs::exists(tempFolder/"player1.hki"))
+        fs::copy_file(tempFolder/"player1.hki", installDir/"player1.hki", ec);
+    fs::remove_all(tempFolder);
+}
 
 
 void WKConverter::setupFolders(fs::path xmlOutPathUP) {
@@ -1877,22 +1920,27 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     gui->log("Check for symlink");
     if(fs::is_symlink(installDir/"Taunt")) {
         gui->log("Removing all but SaveGame and profile");
-        fs::path tempFolder = installDir.parent_path()/"temp";
+        fs::path tempFolder = "temp";
         fs::create_directories(tempFolder/"Scenario");
         fs::create_directories(tempFolder/"SaveGame");
         fs::create_directories(tempFolder/"Script.RM");
-        recCopy(installDir/"SaveGame",tempFolder/"SaveGame");
-        recCopy(installDir/"Script.RM",tempFolder/"Script.RM");
-        recCopy(installDir/"Scenario",tempFolder/"Scenario");
-        fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz");
+        recCopy(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
+        recCopy(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
+        recCopy(installDir/"Scenario",tempFolder/"Scenario",false,true);
+        fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_option::overwrite_if_exists);
+        if(fs::exists(installDir/"player1.hki"))
+            fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_option::overwrite_if_exists);
         fs::remove_all(installDir);
         fs::create_directories(installDir/"SaveGame");
         fs::create_directories(installDir/"SaveGame");
         fs::create_directories(installDir/"Script.RM");
-        recCopy(tempFolder/"SaveGame",installDir/"SaveGame");
-        recCopy(tempFolder/"Script.RM",installDir/"Script.RM");
-        recCopy(tempFolder/"Scenario",installDir/"Scenario");
-        fs::copy_file(tempFolder/"player.nfz",installDir/"player.nfz");
+        recCopy(tempFolder/"SaveGame",installDir/"SaveGame",true);
+        recCopy(tempFolder/"Script.RM",installDir/"Script.RM",true);
+        recCopy(tempFolder/"Scenario",installDir/"Scenario",true);
+        boost::system::error_code ec;
+        fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
+        if(fs::exists(tempFolder/"player1.hki"))
+            fs::copy_file(tempFolder/"player1.hki", installDir/"player1.hki", ec);
         fs::remove_all(tempFolder);
     }
 
@@ -1933,7 +1981,7 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     }
 }
 
-int WKConverter::run()
+int WKConverter::run(bool retry)
 {
     gui->setInfo(gui->translate("working"));
 
@@ -2072,9 +2120,8 @@ int WKConverter::run()
             indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
 
             gui->log("Visual Mod Stuff");
-            if(settings->usePw || settings->useGrid || settings->useWalls) {
+            if(settings->usePw || settings->useGrid || settings->useWalls || settings->useNoSnow) {
                 gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingMods"));
-
 			}
             if(settings->usePw)
 				indexDrsFiles(pwInputDir);
@@ -2103,53 +2150,163 @@ int WKConverter::run()
 
             gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingFiles"));
 
-
-            gui->log("History Files");
-            copyHistoryFiles(historyInputPath, historyOutputPath);
-            gui->log("Civ Intro Sounds");
-            copyCivIntroSounds(soundsInputPath / "civ\\", soundsOutputPath / "stream\\");
+            try {
+                gui->log("History Files");
+                copyHistoryFiles(historyInputPath, historyOutputPath);
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("historyError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
+            try {
+                gui->log("Civ Intro Sounds");
+                copyCivIntroSounds(soundsInputPath / "civ\\", soundsOutputPath / "stream\\");
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("civIntroError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
             gui->increaseProgress(1); //12
             gui->log("Create Music Playlist");
-            createMusicPlaylist(soundsInputPath.string() + "music\\", soundsOutputPath.string() + "music.m3u");
+            try {
+                createMusicPlaylist(soundsInputPath.string() + "music\\", soundsOutputPath.string() + "music.m3u");
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("musicPlaylistError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
             gui->increaseProgress(1); //13
             gui->log("Copy Taunts");
-			recCopy(tauntInputPath, tauntOutputPath, true);
+            try {
+                recCopy(tauntInputPath, tauntOutputPath, true);
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("tauntError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
             gui->log("Copy Scenario Sounds");
-            recCopy(scenarioSoundsInputPath, scenarioSoundsOutputPath, true);
+            try {
+                recCopy(scenarioSoundsInputPath, scenarioSoundsOutputPath, true);
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("scenarioSoundError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
             gui->increaseProgress(1); //14
             gui->log("Copy XML");
             if(settings->useExe) {
-                fs::copy_file(xmlPath, xmlOutPathUP);
+                fs::copy_file(xmlPath, xmlOutPathUP, fs::copy_option::overwrite_if_exists);
             } else {
-                fs::copy_file(xmlPath, xmlOutPath);
+                fs::copy_file(xmlPath, xmlOutPath, fs::copy_option::overwrite_if_exists);
             }
             fs::path installMapDir = installDir/"Script.Rm";
             gui->log("Copy Voobly Map folder");
             if (fs::exists(settings->outPath/"Random")) {
-                recCopy(settings->outPath/"Random", installMapDir, true);
+                try {
+                    recCopy(settings->outPath/"Random", installMapDir, true);
+                } catch (std::exception const & e) {
+                    std::string message = gui->translate("vooblyMapError")+e.what();
+                    gui->log(message);
+                    if(retry) {
+                        gui->createDialog(message,gui->translate("errorTitle"));
+                    } else {
+                        retryInstall();
+                    }
+                }
 			} else {
-                create_directory(installMapDir);
+                fs::create_directory(installMapDir);
 			}
             gui->increaseProgress(1); //15
             if(settings->copyCustomMaps) {
                 gui->log("Copy HD Maps");
-                copyHDMaps(settings->HDPath/"resources\\_common\\random-map-scripts\\", installMapDir);
+                try {
+                    copyHDMaps(settings->HDPath/"resources\\_common\\random-map-scripts\\", installMapDir);
+                } catch (std::exception const & e) {
+                    std::string message = gui->translate("hdMapError")+e.what();
+                    gui->log(message);
+                    if(retry) {
+                        gui->createDialog(message,gui->translate("errorTitle"));
+                    } else {
+                        retryInstall();
+                    }
+                }
             } else
                 gui->increaseProgress(3);
             gui->increaseProgress(1); //19
             gui->log("Copy Special Maps");
-            if(settings->copyMaps)
-                copyHDMaps("resources\\Script.Rm\\", installMapDir, true);
-			else
+            if(settings->copyMaps) {
+                try {
+                    copyHDMaps("resources\\Script.Rm\\", installMapDir, true);
+                } catch (std::exception const & e) {
+                    std::string message = gui->translate("specialMapError")+e.what();
+                    gui->log(message);
+                    if(retry) {
+                        gui->createDialog(message,gui->translate("errorTitle"));
+                    } else {
+                        retryInstall();
+                    }
+                }
+            } else {
                 gui->increaseProgress(3);
+            }
             gui->increaseProgress(1); //23
-            recCopy(scenarioInputDir,installDir/"Scenario",false,true);
+            try {
+                recCopy(scenarioInputDir,installDir/"Scenario",false,true);
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("scenarioError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
             gui->log("Copying AI");
-            recCopy(aiInputPath, installDir/"Script.Ai", false, true);
+            try {
+                recCopy(aiInputPath, installDir/"Script.Ai", false, true);
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("aiError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
             gui->increaseProgress(1); //24
             gui->log("Hotkey Setup");
-            if(settings->hotkeyChoice != 0 || fs::exists("player1.hki"))
-                hotkeySetup();
+            try {
+                if(settings->hotkeyChoice != 0 || fs::exists("player1.hki"))
+                    hotkeySetup();
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("hotkeyError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                } else {
+                    retryInstall();
+                }
+            }
 
             gui->increaseProgress(1); //25
 
@@ -2157,79 +2314,103 @@ int WKConverter::run()
             gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingAoc"));
 
 
+
             genie::DatFile aocDat;
-            aocDat.setGameVersion(genie::GameVersion::GV_TC);
-            aocDat.load(aocDatString.c_str());
-            gui->increaseProgress(5); //30
-
-            gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingHD"));
-
             genie::DatFile hdDat;
-            hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
-            hdDat.load(hdDatString.c_str());
-            gui->increaseProgress(5); //35
+            try {
+                aocDat.setGameVersion(genie::GameVersion::GV_TC);
+                aocDat.load(aocDatString.c_str());
+                gui->increaseProgress(5); //30
 
-            gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingInterface"));
+                gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingHD"));
+
+                hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
+                hdDat.load(hdDatString.c_str());
+                gui->increaseProgress(5); //35
+
+                gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingInterface"));
 
 
-            gui->log("HUD Hack");
-            uglyHudHack(assetsPath);
-            gui->increaseProgress(1); //36
+                gui->log("HUD Hack");
+                uglyHudHack(assetsPath);
+                gui->increaseProgress(1); //36
 
-            gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDat"));
+                gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDat"));
 
 
-            gui->log("Transfer HD Dat elements");
-            transferHdDatElements(&hdDat, &aocDat); //TODO Possible cause 1
-            gui->increaseProgress(1); //37
+                gui->log("Transfer HD Dat elements");
+                transferHdDatElements(&hdDat, &aocDat);
+                gui->increaseProgress(1); //37
 
-            gui->log("Patch Architectures");
-            /*
-             * As usual, we have to fix some mediterranean stuff first where builidings that shouldn't
-             * share the same garrison flag graphics.
-             */
+                gui->log("Patch Architectures");
+                /*
+                 * As usual, we have to fix some mediterranean stuff first where builidings that shouldn't
+                 * share the same garrison flag graphics.
+                 */
 
-            short buildingIDs[] = { 47, 51, 116, 137, 234, 235, 236};
-            for(short i = 0; i < sizeof(buildingIDs)/sizeof(short); i++) {
-                short oldGraphicID = aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic;
-                genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
-                newFlag.ID = aocDat.Graphics.size();
-                aocDat.Graphics.push_back(newFlag);
-                aocDat.GraphicPointers.push_back(1); //TODO possible cause 2
-                aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
-                aocDat.Civs[24].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
+                short buildingIDs[] = { 47, 51, 116, 137, 234, 235, 236};
+                for(short i = 0; i < sizeof(buildingIDs)/sizeof(short); i++) {
+                    short oldGraphicID = aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic;
+                    genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
+                    newFlag.ID = aocDat.Graphics.size();
+                    aocDat.Graphics.push_back(newFlag);
+                    aocDat.GraphicPointers.push_back(1); //TODO possible cause 2
+                    aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
+                    aocDat.Civs[24].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
+                }
+
+                adjustArchitectureFlags(&aocDat,"resources\\Flags.txt"); //TODO possible cause 3,4,5
+
+                patchArchitectures(&aocDat);
+
+                if(settings->fixFlags)
+                    adjustArchitectureFlags(&aocDat,"resources\\WKFlags.txt");
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("datError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                    return -2;
+                } else {
+                    retryInstall();
+                }
             }
 
-            adjustArchitectureFlags(&aocDat,"resources\\Flags.txt"); //TODO possible cause 3,4,5
-
-            patchArchitectures(&aocDat);
-
-            if(settings->fixFlags)
-                adjustArchitectureFlags(&aocDat,"resources\\WKFlags.txt");
-
             gui->increaseProgress(1); //66
+            try {
+                if(settings->useMonks)
+                    indexDrsFiles(monkInputDir);
+                else
+                    indexDrsFiles(oldMonkInputDir);
+                gui->increaseProgress(1); //67
 
-            if(settings->useMonks)
-                indexDrsFiles(monkInputDir);
-            else
-                indexDrsFiles(oldMonkInputDir);
-            gui->increaseProgress(1); //67
-
-            indexDrsFiles(architectureFixDir);
-            gui->log("Mod Override Dir");
-            if(!fs::is_empty(modOverrideDir))
-                indexDrsFiles(modOverrideDir);
-            gui->increaseProgress(1); //68
-            gui->log("Opening DRS");
-            std::ofstream drsOut(drsOutPath, std::ios::binary);
-            gui->log("Make DRS");
-            makeDrs(&drsOut);
-            gui->increaseProgress(1); //69
+                indexDrsFiles(architectureFixDir);
+                gui->log("Mod Override Dir");
+                if(!fs::is_empty(modOverrideDir))
+                    indexDrsFiles(modOverrideDir);
+                gui->increaseProgress(1); //68
+                gui->log("Opening DRS");
+                std::ofstream drsOut(drsOutPath, std::ios::binary);
+                gui->log("Make DRS");
+                makeDrs(&drsOut);
+                gui->increaseProgress(1); //69
 
 
-            gui->log("copy gamedata_x1.drs");
-            fs::copy_file(gamedata_x1, installDir/"Data\\gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
-            gui->increaseProgress(1); //70
+                gui->log("copy gamedata_x1.drs");
+                fs::copy_file(gamedata_x1, installDir/"Data\\gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
+                gui->increaseProgress(1); //70
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("indexingError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                    return -2;
+                } else {
+                    retryInstall();
+                }
+            }
 
             wololo::DatPatch patchTab[] = {
 
@@ -2253,71 +2434,117 @@ int WKConverter::run()
 
             gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingPatches"));
 
-
             gui->log("DAT Patches");
+            try{
+                for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {
+                    patchTab[i].patch(&aocDat);
+                    gui->setInfo(gui->translate("working")+"\n"+patchTab[i].name);
+                    gui->increaseProgress(1); //71-86
+                }
 
-            for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {
-                patchTab[i].patch(&aocDat);
-
-                gui->increaseProgress(1); //71-86
+                gui->log("Save DAT");
+                aocDat.saveAs(outputDatPath.string().c_str());
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("datSaveError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                    return -2;
+                } else {
+                    retryInstall();
+                }
             }
-
-            gui->log("Save DAT");
-            aocDat.saveAs(outputDatPath.string().c_str());        
             if(!settings->useExe) {
-                /*
-                 * Generate version.ini based on the installer and the hash of the dat.
-                 */
-                gui->log("Create Hash");
-                QFile file(outputDatPath.string().c_str());
-
-                if (file.open(QIODevice::ReadOnly))
-                {
-                    QByteArray fileData = file.readAll();
-
-                    QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
-                    std::ofstream versionOut(versionIniPath);
-                    std::string hash = hashData.toBase64().toStdString().substr(0,6);
+                    try {
                     /*
-                     * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
+                     * Generate version.ini based on the installer and the hash of the dat.
                      */
-                    std::ifstream versionFile((resourceDir/"version.txt").string());
-                    std::string patchNumber;
-                    std::getline(versionFile, patchNumber);
-                    std::string hash1;
-                    std::string hash2;
-                    std::getline(versionFile, hash1);
-                    std::getline(versionFile, hash2);
-                    versionFile.close();
-                    if (hash != hash1 && hash != hash2) {
-                        gui->createDialog(gui->translate("dialogBeta"));
+                    gui->log("Create Hash");
+                    QFile file(outputDatPath.string().c_str());
 
-                        versionOut << (settings->version + ".") << hash;
-                    } else {
-                        versionOut << patchNumber;
+                    if (file.open(QIODevice::ReadOnly))
+                    {
+                        QByteArray fileData = file.readAll();
+
+                        QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
+                        std::ofstream versionOut(versionIniPath);
+                        std::string hash = hashData.toBase64().toStdString().substr(0,6);
+                        /*
+                         * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
+                         */
+                        std::ifstream versionFile((resourceDir/"version.txt").string());
+                        std::string patchNumber;
+                        std::getline(versionFile, patchNumber);
+                        std::string hash1;
+                        std::string hash2;
+                        std::getline(versionFile, hash1);
+                        std::getline(versionFile, hash2);
+                        versionFile.close();
+                        if (hash != hash1 && hash != hash2) {
+                            gui->createDialog(gui->translate("dialogBeta"));
+
+                            versionOut << (patchNumber + ".") << hash;
+                        } else {
+                            versionOut << patchNumber;
+                        }
+                        versionOut.close();
                     }
-                    versionOut.close();
+                } catch (std::exception const & e) {
+                    std::string message = gui->translate("versionFileError")+e.what();
+                    gui->log(message);
+                    if(retry) {
+                        gui->createDialog(message,gui->translate("errorTitle"));
+                        gui->setInfo(gui->translate("error"));
+                        return -2;
+                    } else {
+                        retryInstall();
+                    }
                 }
             }
             if (settings->useBoth) {
                 gui->log("Offline installation symlink");
-                symlinkSetup(settings->vooblyDir, settings->upDir, xmlPath, xmlOutPathUP);
+                try {
+                    symlinkSetup(settings->vooblyDir, settings->upDir, xmlPath, xmlOutPathUP);
+                } catch (std::exception const & e) {
+                    std::string message = gui->translate("symlinkError")+e.what();
+                    gui->log(message);
+                    if(retry) {
+                        gui->createDialog(message,gui->translate("errorTitle"));
+                        gui->setInfo(gui->translate("error"));
+                        return -2;
+                    } else {
+                        retryInstall();
+                    }
+                }
             }
 
-        } else { //If we use a balance mod or old patch, just copy the supplied dat file
-            gui->log("Copy DAT file");
-            fs::remove(outputDatPath);
-            genie::DatFile dat;
-            dat.setGameVersion(genie::GameVersion::GV_TC);
-            dat.load(hdDatString.c_str());
-            if(settings->fixFlags)
-                adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
-            dat.saveAs(outputDatPath.string().c_str());
-            gui->setProgress(20);
-            settings->version = std::get<2>(settings->dataModList[settings->patch]);
-            std::ofstream versionOut(versionIniPath);
-            versionOut << settings->version;
-            versionOut.close();
+        } else { //If we use a balance mod or old patch, just copy the supplied dat fil
+            try {
+                gui->log("Copy DAT file");
+                fs::remove(outputDatPath);
+                genie::DatFile dat;
+                dat.setGameVersion(genie::GameVersion::GV_TC);
+                dat.load(hdDatString.c_str());
+                if(settings->fixFlags)
+                    adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
+                dat.saveAs(outputDatPath.string().c_str());
+                gui->setProgress(20);
+                std::string patchNumber = std::get<2>(settings->dataModList[settings->patch]);
+                std::ofstream versionOut(versionIniPath);
+                versionOut << patchNumber;
+                versionOut.close();
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("patchDatError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                    return -2;
+                } else {
+                    retryInstall();
+                }
+            }
         }
 
 
@@ -2331,48 +2558,71 @@ int WKConverter::run()
 		 */
 
         if (settings->patch >= 0) {
-            gui->log("Patch setup");
-			fs::path xmlIn = resourceDir/"WKtemp.xml";
-            std::ifstream input(resourceDir.string()+("WK"+std::to_string(settings->dlcLevel)+".xml"));
-			std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
-            std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
-            boost::replace_all(str,baseModName+dlcExtension,settings->modName);
-			std::ofstream out(xmlIn.string());
-			out << str;
-            input.close();
-            out.close();
-            if(settings->useBoth || settings->useVoobly)
-                symlinkSetup(settings->vooblyDir.parent_path() / (baseModName+dlcExtension), settings->vooblyDir,xmlIn,settings->vooblyDir/"age2_x1.xml",true);
-                if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
-                    indexDrsFiles(slpCompatDir);
-                    std::ifstream oldDrs (settings->vooblyDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
-                    std::ofstream newDrs (settings->vooblyDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
-                    editDrs(&oldDrs, &newDrs);
+            try {
+                gui->log("Patch setup");
+                fs::path xmlIn = resourceDir/"WKtemp.xml";
+                std::ifstream input(resourceDir.string()+("WK"+std::to_string(settings->dlcLevel)+".xml"));
+                std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
+                std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
+                boost::replace_all(str,baseModName+dlcExtension,settings->modName);
+                std::ofstream out(xmlIn.string());
+                out << str;
+                input.close();
+                out.close();
+                if(settings->useBoth || settings->useVoobly)
+                    symlinkSetup(settings->vooblyDir.parent_path() / (baseModName+dlcExtension), settings->vooblyDir,xmlIn,settings->vooblyDir/"age2_x1.xml",true);
+                    if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
+                        indexDrsFiles(slpCompatDir);
+                        std::ifstream oldDrs (settings->vooblyDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        std::ofstream newDrs (settings->vooblyDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        editDrs(&oldDrs, &newDrs);
+                    }
+                if(settings->useBoth || settings->useExe) {
+                    symlinkSetup(settings->upDir.parent_path() / (baseModName+dlcExtension), settings->upDir, xmlIn, settings->upDir.parent_path()/(UPModdedExe+".xml"), true);
+                    if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
+                        indexDrsFiles(slpCompatDir);
+                        std::ifstream oldDrs (settings->upDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        std::ofstream newDrs (settings->upDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        editDrs(&oldDrs, &newDrs);
+                    }
                 }
-            if(settings->useBoth || settings->useExe) {
-                symlinkSetup(settings->upDir.parent_path() / (baseModName+dlcExtension), settings->upDir, xmlIn, settings->upDir.parent_path()/(UPModdedExe+".xml"), true);
-                if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
-                    indexDrsFiles(slpCompatDir);
-                    std::ifstream oldDrs (settings->upDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
-                    std::ofstream newDrs (settings->upDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
-                    editDrs(&oldDrs, &newDrs);
+                fs::remove(xmlIn);
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("patchError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                    return -2;
+                } else {
+                    retryInstall();
                 }
             }
-            fs::remove(xmlIn);
         } else if(settings->restrictedCivMods) {
-            if (settings->dlcLevel > 1) {
-                gui->log("FE Setup");
-                fs::path xmlIn = resourceDir/"WK1.xml";
-                fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" FE");
-                if(settings->useBoth || settings->useVoobly)
-                    symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
-			}
-            if (settings->dlcLevel > 2) {
-                gui->log("AK Setup");
-                fs::path xmlIn = resourceDir/"WK2.xml";
-                fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" AK");
-                if(settings->useBoth || settings->useVoobly)
-                    symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
+            try {
+                if (settings->dlcLevel > 1) {
+                    gui->log("FE Setup");
+                    fs::path xmlIn = resourceDir/"WK1.xml";
+                    fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" FE");
+                    if(settings->useBoth || settings->useVoobly)
+                        symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
+                }
+                if (settings->dlcLevel > 2) {
+                    gui->log("AK Setup");
+                    fs::path xmlIn = resourceDir/"WK2.xml";
+                    fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" AK");
+                    if(settings->useBoth || settings->useVoobly)
+                        symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
+                }
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("restrictedCivError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                } else {
+                    retryInstall();
+                }
             }
         }
 
@@ -2381,7 +2631,19 @@ int WKConverter::run()
          * create the offline exe
          */
         if(settings->useBoth) {
-            fs::copy_file(settings->vooblyDir / "Data\\empires2_x1_p1.dat", settings->upDir / "Data\\empires2_x1_p1.dat", fs::copy_option::overwrite_if_exists);
+            try {
+                fs::copy_file(settings->vooblyDir / "Data\\empires2_x1_p1.dat", settings->upDir / "Data\\empires2_x1_p1.dat", fs::copy_option::overwrite_if_exists);
+            } catch (std::exception const & e) {
+                std::string message = e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                    return -2;
+                } else {
+                    retryInstall();
+                }
+            }
         }
         if(settings->useVoobly) {
             gui->createDialog(gui->translate("dialogDone"));
@@ -2389,28 +2651,37 @@ int WKConverter::run()
         } else {
             gui->log("Create Offline Exe");
             gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingUp"));
-
-
-
             gui->increaseProgress(1); //96
             if (!dllPatched)
                 gui->createDialog(gui->translate("dialogNoDll"));
 
-            fs::copy_file(UPExe, UPExeOut, fs::copy_option::overwrite_if_exists);
+            try {
+                fs::copy_file(UPExe, UPExeOut, fs::copy_option::overwrite_if_exists);
 
-            gui->increaseProgress(1); //97
+                gui->increaseProgress(1); //97
 
-            callExternalExe(strtowstr("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
+                callExternalExe(strtowstr("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
 
-            std::string newExeName;
-            if(settings->patch >= 0 && (newExeName = std::get<4>(settings->dataModList[settings->patch])) != "") {
-                if(fs::exists(settings->outPath / ("age2_x1\\"+ newExeName+".exe"))) {
-                    fs::rename(settings->outPath / ("age2_x1\\"+ newExeName+".exe"),
-                               settings->outPath / ("age2_x1\\"+ newExeName+".exe.bak"));
+                std::string newExeName;
+                if(settings->patch >= 0 && (newExeName = std::get<4>(settings->dataModList[settings->patch])) != "") {
+                    if(fs::exists(settings->outPath / ("age2_x1\\"+ newExeName+".exe"))) {
+                        fs::rename(settings->outPath / ("age2_x1\\"+ newExeName+".exe"),
+                                   settings->outPath / ("age2_x1\\"+ newExeName+".exe.bak"));
+                    }
+                    fs::rename(settings->outPath / ("age2_x1\\"+ UPModdedExe+".exe"),
+                               settings->outPath / ("age2_x1\\"+ newExeName+".exe"));
+                    UPModdedExe = newExeName;
                 }
-                fs::rename(settings->outPath / ("age2_x1\\"+ UPModdedExe+".exe"),
-                           settings->outPath / ("age2_x1\\"+ newExeName+".exe"));
-                UPModdedExe = newExeName;
+            } catch (std::exception const & e) {
+                std::string message = gui->translate("exeError")+e.what();
+                gui->log(message);
+                if(retry) {
+                    gui->createDialog(message,gui->translate("errorTitle"));
+                    gui->setInfo(gui->translate("error"));
+                    return -2;
+                } else {
+                    retryInstall();
+                }
             }
 
             gui->increaseProgress(1); //98
