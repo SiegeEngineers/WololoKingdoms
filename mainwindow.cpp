@@ -76,7 +76,7 @@ int MainWindow::initialize() {
         updateUI();
     } );
 
-    if(QCoreApplication::arguments().back() != "-s") {
+    if(QCoreApplication::arguments().back() != "-s" && fs::exists("WKUpdater.exe")) {
         callExternalExe(std::wstring(L"WKUpdater.exe"));
         exit(EXIT_FAILURE);
     }
