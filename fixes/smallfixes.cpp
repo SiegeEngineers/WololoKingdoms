@@ -60,6 +60,7 @@ void smallPatches(genie::DatFile *aocDat) {
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionEnabler = 0;
 
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
+        aocDat->Civs[civIndex].Resources[198] = 1572; //Mod version: WK=1, version 5.7.2
 		//fixes faulty elite camel archer data for non-gaia civs
 		aocDat->Civs[civIndex].Units[eliteCamelArcherID] = aocDat->Civs[0].Units[eliteCamelArcherID];
 		aocDat->Civs[civIndex].Units[cannonGalleonID].Creatable.HeroMode -= 128; //restore patrol for cannon galleons
