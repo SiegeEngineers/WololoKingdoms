@@ -1,9 +1,7 @@
-# Important Note:
-For personal reasons, I will pause development on this project myself, and this github is **outdated**. However, future updates will still be released. **The new link for that is https://github.com/AoE2CommunityGitHub/WololoKingdoms/ Please download from there and also use the new link to report any issues or ask questions that you might have** 
-Trirem has accepted to maintain and continue the project, for that I am extremely grateful. TyRem!
-
 # WololoKingdoms
 A program for converting AOE2HD expansions files (The Forgotten, African Kingdoms and Rise of the Rajas) to the original AOC engine format.
+
+Note: This is a continuation of Jineapple's WololoKingdoms (https://github.com/Jineapple/WololoKingdoms). For personal reasons he has step down from this project, and I will be carrying over with his permission.
 
 ## Why ?
 People who play AOE2:HD are probably aware of all the issues currently affecting the game : lobbies not starting, desyncs, lag issues etc.
@@ -101,11 +99,12 @@ I used Qt Creator for editing and building it, you will also need Boost installe
 
 ## Special thanks
 - Tails8521 for the African Kingdoms version of this installer. Without him this would never have happened.
+- Jineapple for reviving this program when Rise of Rajas came out, for all the countless hours he spent programming and fixing bugs for the WK experience to be as good (if not better) as HD.
 - The UserPatch team for making the new bonuses possible to use and all other great improvements that Userpatch brings.
 - The folks at Voobly for the support offered and a great platform to play the mod on.
 - Apre for the genieutils library
 - Tapsa for Advanced Genie Editor
-- Alqualunte and TriRem for advices and testing
+- Alqualunte for advices and testing
 - CheeseOnToast for making his [A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) compatible with this project
 - Phoenix1vs for converting the interfaces for AK and RotR civilizations.
 - Saint_Michaels for creating the Independent Architecture mod on Steam which served as a template for this function on WololoKingdoms.
