@@ -44,7 +44,9 @@ int MainWindow::initialize() {
     QDialog* dialog;
     resourceDir = fs::path("resources\\");
     readSettings();
-    ui->label->setWordWrap(true);
+    ui->label->setWordWrap(true);    
+    changeLanguage();
+
     steamPath = getSteamPath();
     boost::replace_all(steamPath,"/","\\");
     HDPath = getHDPath(steamPath);
@@ -80,9 +82,6 @@ int MainWindow::initialize() {
         callExternalExe(std::wstring(L"WKUpdater.exe"));
         exit(EXIT_FAILURE);
     }
-
-    changeLanguage();
-    this->ui->label->setText((baseModName+" version " + version).c_str());
 
     readDataModList();
 
