@@ -32,8 +32,7 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     dialog.cpp \
     fixes/smallfixes.cpp \
-	fixes/siegetowerfix.cpp \
-    fixes/mongolnomadsfix.cpp \
+    fixes/siegetowerfix.cpp \
     fixes/cuttingfix.cpp \
     fixes/tricklebuildingfix.cpp \
     wkconverter.cpp
@@ -79,9 +78,8 @@ HEADERS += \
     mainwindow.h \
     dialog.h \
     fixes/smallfixes.h \
-	fixes/siegetowerfix.h \
+    fixes/siegetowerfix.h \
     include/sdk/public/steam/steam_api.h \
-    fixes/mongolnomadsfix.h \
     fixes/cuttingfix.h \
     fixes/tricklebuildingfix.h \
     wkconverter.h \
