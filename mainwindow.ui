@@ -208,11 +208,14 @@
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
         <widget class="QCheckBox" name="copyCustomMaps">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="text">
           <string>Try converting custom HD maps</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>

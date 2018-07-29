@@ -383,7 +383,7 @@ void MainWindow::writeSettings()
 {
     QSettings settings("Jineapple", "WololoKingdoms Installer");
     settings.setValue("copyMaps", this->ui->copyMaps->isChecked());
-    settings.setValue("copyCustomMaps", this->ui->copyCustomMaps->isChecked());
+    settings.setValue("customMapConversion", this->ui->copyCustomMaps->isChecked());
     settings.setValue("useExe", this->ui->useExe->isChecked());
     settings.setValue("useVoobly", this->ui->useVoobly->isChecked());
     settings.setValue("useBoth", this->ui->useBoth->isChecked());
@@ -404,7 +404,7 @@ void MainWindow::readSettings()
     QSettings settings("Jineapple", "WololoKingdoms Installer");
     if(settings.contains("copyMaps")) {
         this->ui->copyMaps->setChecked(settings.value("copyMaps").toBool());
-        this->ui->copyCustomMaps->setChecked(settings.value("copyCustomMaps").toBool());
+        this->ui->copyCustomMaps->setChecked(settings.value("customMapConversion").toBool());
         this->ui->useExe->setChecked(settings.value("useExe").toBool());
         this->ui->useBoth->setChecked(settings.value("useBoth").toBool());
         this->ui->useVoobly->setChecked(settings.value("useVoobly").toBool());

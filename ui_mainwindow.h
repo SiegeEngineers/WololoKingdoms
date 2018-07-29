@@ -214,7 +214,8 @@ public:
         horizontalLayout_10->setObjectName(QStringLiteral("horizontalLayout_10"));
         copyCustomMaps = new QCheckBox(gridLayoutWidget);
         copyCustomMaps->setObjectName(QStringLiteral("copyCustomMaps"));
-        copyCustomMaps->setChecked(true);
+        copyCustomMaps->setEnabled(true);
+        copyCustomMaps->setChecked(false);
 
         horizontalLayout_10->addWidget(copyCustomMaps);
 
