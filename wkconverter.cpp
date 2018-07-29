@@ -1006,7 +1006,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
 			fs::copy_file(*it,outputDir/mapName,fs::copy_option::overwrite_if_exists);
 			continue;
 		}        
-        if(fs::exists(outputDir/it->filename())) {
+        if(fs::exists(outputDir/it->filename()) || fs::exists(outputDir/("ZR@"+it->filename().string()))) {
             if(replace)
                 fs::remove(outputDir/it->filename());
             else
