@@ -11,6 +11,8 @@ void smallPatches(genie::DatFile *aocDat) {
 	size_t const eliteCannonGalleonID = 691;
     size_t const longboatID = 250;
     size_t const eliteLongboatID = 533;
+    size_t const battleElephantID = 1132;
+    size_t const eliteBattleElephantID = 1134;
 	size_t const teutonTeamBonusID = 404;
 	size_t const PTWC = 444;
 	size_t const pTrebId = 331;
@@ -68,6 +70,8 @@ void smallPatches(genie::DatFile *aocDat) {
         aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC]; //unpackable TC
         aocDat->Civs[civIndex].Units[monkeyBoyID].Class = 10; //This makes gaia monkey boys attack instead of being captured
         aocDat->Civs[civIndex].Units[sharkatzorID].HideInEditor = 0; //unhide sharkatzor in editor
+        aocDat->Civs[civIndex].Units[battleElephantID].Type50.BlastAttackLevel = 10; //give battle elephants half-attack blast damage
+        aocDat->Civs[civIndex].Units[eliteBattleElephantID].Type50.BlastAttackLevel = 10;
         //Kings can't attack, to make sure there are no graphics issues we set the attack graphic to the standing graphic
         aocDat->Civs[civIndex].Units[kingID].Type50.AttackGraphic = aocDat->Civs[civIndex].Units[kingID].StandingGraphic.first;
         //fix gate rubbles
