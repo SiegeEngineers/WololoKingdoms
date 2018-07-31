@@ -1353,10 +1353,11 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 	}
 
     //Separate Units into 4 major regions (Europe, Asian, Southern, American)
-    std::vector<std::vector<short>> civGroups = { {3,4,11}, {7,17,22,23}, {14,19,24}, //Central Eu, East Eu, Mediterranean
-                    {5},{6,12,18},{28,29,30,31}, //Japanese, East Asian, SE Asian
+    std::vector<std::vector<short>> civGroups = { {3,4,11}, {22,23}, {14,19,24}, //Central Eu, East Eu, Mediterranean
+                    {5},{6,18},{28,29,30,31}, //Japanese, East Asian, SE Asian
                     {8,9,10,27},{20},{25,26}, //Middle Eastern, Indian, African
                     {15,16,21}, //American
+                    {7},{17},{12} //Byzantines, Huns, Mongols TODO all three seperate?
                     };
     //std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
     //						 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
@@ -1369,9 +1370,11 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
              * Asian and African/Middle Eastern civs.
              */
             aocDat->Graphics[998].FrameCount = 10;
+        } else if (cg == 9) {
+            aocDat->Graphics[998].FrameCount = 6; //Old Value again
         }
 		short monkHealingGraphic;
-        if (cg != civGroups.size()-1) {
+        if (cg != 9) {
             int newSLP = 60000+10000*cg+776;
 			genie::Graphic newGraphic = aocDat->Graphics[1597];
 			monkHealingGraphic = aocDat->Graphics.size();
@@ -1421,8 +1424,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 
         }
         gui->increaseProgress(1); //52-55
-	}
-    aocDat->Graphics[998].FrameCount = 6; //Old Value again
+    }
 
     /*
      * Manual fixes after IA seperation
