@@ -62,7 +62,7 @@ void smallPatches(genie::DatFile *aocDat) {
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionEnabler = 0;
 
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
-        aocDat->Civs[civIndex].Resources[198] = 1572; //Mod version: WK=1, version 5.7.2
+        aocDat->Civs[civIndex].Resources[198] = 1580; //Mod version: WK=1, version 5.7.2
 		//fixes faulty elite camel archer data for non-gaia civs
 		aocDat->Civs[civIndex].Units[eliteCamelArcherID] = aocDat->Civs[0].Units[eliteCamelArcherID];
 		aocDat->Civs[civIndex].Units[cannonGalleonID].Creatable.HeroMode -= 128; //restore patrol for cannon galleons
@@ -82,9 +82,6 @@ void smallPatches(genie::DatFile *aocDat) {
     //Fix longboats having an unload ability that could mess with attacks
     aocDat->UnitHeaders[longboatID].Commands.pop_back();
     aocDat->UnitHeaders[eliteLongboatID].Commands.pop_back();
-	//Fix teuton team bonus being overwritten in post-imp
-	aocDat->Techages[teutonTeamBonusID].Effects[1].B = 1;
-	aocDat->Techages[teutonTeamBonusID].Effects[2].B = 1;
     //Fixes Autoresearch for cartography
     aocDat->Researchs[cartographyID].ResearchTime = 0;
     aocDat->Researchs[cartographyID].RequiredTechs[1] = 128;
@@ -95,24 +92,12 @@ void smallPatches(genie::DatFile *aocDat) {
     //mountains were too small for their graphics
 	for (size_t i = 0; i < sizeof(mountains)/sizeof(mountains[0]); i++) {
         aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3,3};
-	}
-	//fixes galleon sounds
-	for (size_t fileID = 5555; fileID < 5563; fileID++) {
-		genie::SoundItem* item = new genie::SoundItem();
-		item->ResourceID = fileID;
-		item->FileName = "wgal"+std::to_string(fileID-5554)+".wav";
-		item->Probability = fileID < 5557?5:15;
-		aocDat->Sounds[427].Items.push_back(*item);
-	}
-	aocDat->Graphics[3387].SoundID = 427;
-	aocDat->Graphics[3388].SoundID = 427;
+    }
     //Team Units tech tree fix
 	aocDat->TechTree.UnitConnections[132].Unknown1 = 41;
 	aocDat->TechTree.UnitConnections[101].Unknown1 = 29;
 	aocDat->TechTree.UnitConnections[116].Unknown1 = 37;
-	aocDat->TechTree.UnitConnections[117].Unknown1 = 37;
-    //Hunting Dogs got auto-researched in feudal+ games
-    aocDat->Researchs[huntingDogsId].RequiredTechs[0] = -1;
+    aocDat->TechTree.UnitConnections[117].Unknown1 = 37;
     //Make it possible for maps to go back to aoc water by disabling fire/demo galley and a disabler for fire/demo shop
     aocDat->Techages[fireShipTechId].Effects[0].A = fireGalleyId;
     genie::TechageEffect effect = aocDat->Techages[fireShipTechId].Effects[0];

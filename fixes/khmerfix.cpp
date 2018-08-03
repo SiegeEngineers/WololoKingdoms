@@ -14,10 +14,6 @@ void khmerPatch(genie::DatFile *aocDat) {
     size_t const doubleCrossbowId = 663;
     size_t const eliteBallistaTechId = 655;
 
-    size_t const khmerBuildingResearchId = 802;
-    size_t const buildingResearchs[] = {216,659,660,661,666,667,668};
-
-
 	genie::TechageEffect effect;
 
 	// imperial age
@@ -55,13 +51,6 @@ void khmerPatch(genie::DatFile *aocDat) {
     for(int i = 24; i < 28; i++) {
         aocDat->Techages[siegeEngineersId].Effects.push_back(aocDat->Techages[siegeEngineersId].Effects[i]);
         aocDat->Techages[siegeEngineersId].Effects[i+4].A = newElephantId;
-    }
-
-    aocDat->Researchs[khmerBuildingResearchId].Civ = 28;
-    aocDat->Researchs[khmerBuildingResearchId].Name = "Khmer Building Bonus";
-
-    for(int i = 0; i < sizeof(buildingResearchs)/sizeof(buildingResearchs[0]); i++) {
-        aocDat->Researchs[buildingResearchs[i]].RequiredTechs[1] = khmerBuildingResearchId;
     }
 
 }

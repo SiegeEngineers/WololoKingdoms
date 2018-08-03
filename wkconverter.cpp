@@ -1237,8 +1237,6 @@ void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *a
             slpFiles[iter->first] = newTerrainFiles[iter->second];
     }
 
-    aocDat->TerrainRestrictions[4].PassableBuildableDmgMultiplier[38] = 1.2;
-
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
     aocDat->TerrainBlock.Terrains[35].SLP = 15020;
 	aocDat->TerrainBlock.Terrains[35].Name2 = "g_ice";
@@ -1353,11 +1351,11 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 	}
 
     //Separate Units into 4 major regions (Europe, Asian, Southern, American)
-    std::vector<std::vector<short>> civGroups = { {3,4,11}, {22,23}, {14,19,24}, //Central Eu, East Eu, Mediterranean
+    std::vector<std::vector<short>> civGroups = { {3,4,11}, {23}, {14,19,24}, //Central Eu, East Eu, Mediterranean
                     {5},{6,18},{28,29,30,31}, //Japanese, East Asian, SE Asian
                     {8,9,10,27},{20},{25,26}, //Middle Eastern, Indian, African
                     {15,16,21}, //American
-                    {7},{17},{12} //Byzantines, Huns, Mongols TODO all three seperate?
+                    {7},{17,12},{22} //Byzantines, Huns, Mongols, Magyars TODO all three seperate?
                     };
     //std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
     //						 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
@@ -1606,9 +1604,7 @@ void WKConverter::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int
 	if (tNew == 41) {
 		for(size_t j = 0; j < aocDat->TerrainRestrictions.size(); j++) {
 			aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier.push_back(hdDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[tOld]);
-			aocDat->TerrainRestrictions[j].TerrainPassGraphics.push_back(hdDat->TerrainRestrictions[j].TerrainPassGraphics[tOld]);
-			if (j == 4)
-				aocDat->TerrainRestrictions[j].PassableBuildableDmgMultiplier[tNew] = 1.2;
+            aocDat->TerrainRestrictions[j].TerrainPassGraphics.push_back(hdDat->TerrainRestrictions[j].TerrainPassGraphics[tOld]);
 		}
 	} else {
 		for(size_t j = 0; j < aocDat->TerrainRestrictions.size(); j++) {
@@ -2356,12 +2352,12 @@ int WKConverter::run(bool retry)
                     genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
                     newFlag.ID = aocDat.Graphics.size();
                     aocDat.Graphics.push_back(newFlag);
-                    aocDat.GraphicPointers.push_back(1); //TODO possible cause 2
+                    aocDat.GraphicPointers.push_back(1);
                     aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
                     aocDat.Civs[24].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
                 }
 
-                adjustArchitectureFlags(&aocDat,"resources\\Flags.txt"); //TODO possible cause 3,4,5
+                adjustArchitectureFlags(&aocDat,"resources\\Flags.txt");
 
                 patchArchitectures(&aocDat);
 
