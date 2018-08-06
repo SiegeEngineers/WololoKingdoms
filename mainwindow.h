@@ -79,7 +79,7 @@ private:
     void changeLanguage();
     void setButtonWhatsThis(QPushButton* button, std::string title);
     void readDataModList();
-    void checkSteamApi();
+    bool checkSteamApi();
     void readSettings();
     void writeSettings();
 	void changeModPatch();

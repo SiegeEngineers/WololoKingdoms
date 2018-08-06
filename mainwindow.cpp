@@ -69,7 +69,10 @@ int MainWindow::initialize() {
         allowRun = false;
         return -1;
     }
-    checkSteamApi();
+    if(!checkSteamApi()) {
+        updateUI();
+        return -2;
+    }
     setInstallDirectory(getOutPath(HDPath).string());
     this->ui->installDirectory->setText(outPath.string().c_str());
     QObject::connect( this->ui->directoryDialogButton, &QPushButton::clicked, this, [this]() {
@@ -157,6 +160,10 @@ int MainWindow::initialize() {
 }
 
 void MainWindow::runConverter() {
+    if(dlcLevel < 1 || dlcLevel > 3 || vooblyDir == fs::path()) {
+        log("Issue with parameters: DLC level: " + std::to_string(dlcLevel)+", + vooblyDir: "+ vooblyDir.string());
+        return;
+    }
 
     writeSettings();
     if(bar == NULL) {
@@ -336,7 +343,7 @@ void MainWindow::readDataModList() {
     dataModFile.close();
 }
 
-void MainWindow::checkSteamApi() {
+bool MainWindow::checkSteamApi() {
     QDialog* dialog;
     SteamAPI_Init();
     if(!SteamApps()) {
@@ -349,7 +356,7 @@ void MainWindow::checkSteamApi() {
         std::this_thread::sleep_for(std::chrono::seconds(10));
         SteamAPI_Init();
         tries++;
-        if(tries>12)
+        if(tries>6)
             break;
     }
     if(!SteamApps()) {
@@ -377,7 +384,9 @@ void MainWindow::checkSteamApi() {
             dlcLevel = 1;
             dialog = new Dialog(this,translation["noAK"]);
             dialog->exec();
-        }
+        }       
+        SteamAPI_Shutdown();
+        return true;
     } else {
         log("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath);
         this->ui->label->setText(translation["noFE"].c_str());
@@ -386,6 +395,7 @@ void MainWindow::checkSteamApi() {
         allowRun = false;
     }
     SteamAPI_Shutdown();
+    return false;
 }
 
 void MainWindow::writeSettings()
