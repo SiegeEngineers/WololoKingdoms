@@ -1351,11 +1351,11 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 	}
 
     //Separate Units into 4 major regions (Europe, Asian, Southern, American)
-    std::vector<std::vector<short>> civGroups = { {3,4,11}, {23}, {14,19,24}, //Central Eu, East Eu, Mediterranean
+    std::vector<std::vector<short>> civGroups = { {3,4,11}, {7,23}, {14,19,24}, //Central Eu, Orthodox, Mediterranean
                     {5},{6,18},{28,29,30,31}, //Japanese, East Asian, SE Asian
                     {8,9,10,27},{20},{25,26}, //Middle Eastern, Indian, African
                     {15,16,21}, //American
-                    {7},{17,12},{22} //Byzantines, Huns, Mongols, Magyars TODO all three seperate?
+                    {17,12},{22} //Steppe, Magyars
                     };
     //std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
     //						 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
@@ -1368,7 +1368,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
              * Asian and African/Middle Eastern civs.
              */
             aocDat->Graphics[998].FrameCount = 10;
-        } else if (cg == 9) {
+        } else if (cg == 11) {
             aocDat->Graphics[998].FrameCount = 6; //Old Value again
         }
 		short monkHealingGraphic;
@@ -1410,10 +1410,10 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 				int ccode = (int) code;
                 aocDat->Civs[civGroups[cg][civ]].Units[125].LanguageDLLHelp = ccode;
 
-                if (cg >= 3 && cg <= 5) { //Asian civ groups
+                if (cg >= 3 && cg <= 5 || cg == 10) { //Shaman icons, "Eastern" civs
                     aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 218;
                     aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 218;
-                } else if (cg >= 6 && cg <= 8) { //Middle Eastern/southern civ groups
+                } else if (cg >= 6 && cg <= 8) { // Imam Icons, Middle Eastern/southern civ groups
                     aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 169;
                     aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 169;
 				}
@@ -2150,6 +2150,7 @@ int WKConverter::run(bool retry)
 
             try {
                 gui->log("History Files");
+                gui->increaseProgress(0);
                 copyHistoryFiles(historyInputPath, historyOutputPath);
             } catch (std::exception const & e) {
                 std::string message = gui->translate("historyError")+e.what();
@@ -2162,6 +2163,7 @@ int WKConverter::run(bool retry)
             }
             try {
                 gui->log("Civ Intro Sounds");
+                gui->increaseProgress(0);
                 copyCivIntroSounds(soundsInputPath / "civ\\", soundsOutputPath / "stream\\");
             } catch (std::exception const & e) {
                 std::string message = gui->translate("civIntroError")+e.what();
@@ -2176,6 +2178,8 @@ int WKConverter::run(bool retry)
             gui->log("Create Music Playlist");
             try {
                 createMusicPlaylist(soundsInputPath.string() + "music\\", soundsOutputPath.string() + "music.m3u");
+
+                gui->increaseProgress(0);
             } catch (std::exception const & e) {
                 std::string message = gui->translate("musicPlaylistError")+e.what();
                 gui->log(message);
@@ -2188,6 +2192,7 @@ int WKConverter::run(bool retry)
             gui->increaseProgress(1); //13
             gui->log("Copy Taunts");
             try {
+                gui->increaseProgress(0);
                 recCopy(tauntInputPath, tauntOutputPath, true);
             } catch (std::exception const & e) {
                 std::string message = gui->translate("tauntError")+e.what();
@@ -2200,6 +2205,7 @@ int WKConverter::run(bool retry)
             }
             gui->log("Copy Scenario Sounds");
             try {
+                gui->increaseProgress(0);
                 recCopy(scenarioSoundsInputPath, scenarioSoundsOutputPath, true);
             } catch (std::exception const & e) {
                 std::string message = gui->translate("scenarioSoundError")+e.what();
@@ -2217,6 +2223,7 @@ int WKConverter::run(bool retry)
             } else {
                 fs::copy_file(xmlPath, xmlOutPath, fs::copy_option::overwrite_if_exists);
             }
+            gui->increaseProgress(0);
             fs::path installMapDir = installDir/"Script.Rm";
             gui->log("Copy Voobly Map folder");
             if (fs::exists(settings->outPath/"Random")) {
@@ -2248,8 +2255,9 @@ int WKConverter::run(bool retry)
                         retryInstall();
                     }
                 }
-            } else
+            } else {
                 gui->increaseProgress(3);
+            }
             gui->increaseProgress(1); //19
             gui->log("Copy Special Maps");
             if(settings->copyMaps) {
@@ -2270,6 +2278,7 @@ int WKConverter::run(bool retry)
             gui->increaseProgress(1); //23
             try {
                 recCopy(scenarioInputDir,installDir/"Scenario",false,true);
+                gui->increaseProgress(0);
             } catch (std::exception const & e) {
                 std::string message = gui->translate("scenarioError")+e.what();
                 gui->log(message);
@@ -2282,6 +2291,7 @@ int WKConverter::run(bool retry)
             gui->log("Copying AI");
             try {
                 recCopy(aiInputPath, installDir/"Script.Ai", false, true);
+                gui->increaseProgress(0);
             } catch (std::exception const & e) {
                 std::string message = gui->translate("aiError")+e.what();
                 gui->log(message);
