@@ -70,3 +70,4 @@ Makefile.Debug
 Makefile
 .qmake.stash
 Setup.iss
+release/

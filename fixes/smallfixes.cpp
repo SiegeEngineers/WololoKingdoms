@@ -13,14 +13,13 @@ void smallPatches(genie::DatFile *aocDat) {
     size_t const eliteLongboatID = 533;
     size_t const battleElephantID = 1132;
     size_t const eliteBattleElephantID = 1134;
-	size_t const teutonTeamBonusID = 404;
+    size_t const siegeTowerID = 1105;
 	size_t const PTWC = 444;
 	size_t const pTrebId = 331;
     size_t const relicID = 285;
     size_t const sharkatzorID = 1222;
     size_t const kingID = 434;
     size_t const cartographyID = 19;
-    size_t const huntingDogsId = 526;
     size_t const feudalAgeResearchId = 101;
     size_t const fireShipResearchId = 243;
     size_t const demoShipResearchId = 242;
@@ -72,6 +71,8 @@ void smallPatches(genie::DatFile *aocDat) {
         aocDat->Civs[civIndex].Units[sharkatzorID].HideInEditor = 0; //unhide sharkatzor in editor
         aocDat->Civs[civIndex].Units[battleElephantID].Type50.BlastAttackLevel = 10; //give battle elephants half-attack blast damage
         aocDat->Civs[civIndex].Units[eliteBattleElephantID].Type50.BlastAttackLevel = 10;
+        //UP Siege Tower works better with 0.5 collision size
+        aocDat->Civs[civIndex].Units[siegeTowerID].CollisionSize = { 0.5, 0.5, 2};
         //Kings can't attack, to make sure there are no graphics issues we set the attack graphic to the standing graphic
         aocDat->Civs[civIndex].Units[kingID].Type50.AttackGraphic = aocDat->Civs[civIndex].Units[kingID].StandingGraphic.first;
         //fix gate rubbles
@@ -93,6 +94,17 @@ void smallPatches(genie::DatFile *aocDat) {
 	for (size_t i = 0; i < sizeof(mountains)/sizeof(mountains[0]); i++) {
         aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3,3};
     }
+    //fixes galleon sounds
+    for (size_t fileID = 5555; fileID < 5563; fileID++) {
+        genie::SoundItem* item = new genie::SoundItem();
+        item->ResourceID = fileID;
+        item->FileName = "wgal"+std::to_string(fileID-5554)+".wav";
+        item->Probability = fileID < 5557?5:15;
+        aocDat->Sounds[427].Items.push_back(*item);
+    }
+    aocDat->Graphics[3387].SoundID = 427;
+    aocDat->Graphics[3388].SoundID = 427;
+
     //Team Units tech tree fix
 	aocDat->TechTree.UnitConnections[132].Unknown1 = 41;
 	aocDat->TechTree.UnitConnections[101].Unknown1 = 29;
@@ -123,8 +135,6 @@ void smallPatches(genie::DatFile *aocDat) {
     aocDat->Researchs[DemoShipDisablerId] = aocDat->Researchs[FireShipDisablerId];
     aocDat->Researchs[DemoShipDisablerId].Name = "Demo Ship Disabler";
     aocDat->Researchs[DemoShipDisablerId].TechageID = DemoShipDisablerTechId;
-    //aocDat->Techages[DemoShipDisablerTechId].Effects[0].Type = 102;
-    //aocDat->Techages[DemoShipDisablerTechId].Effects[0].D = DemoShipEnablerId;
     aocDat->Techages[DemoShipDisablerTechId].Effects[0].Type = 102;
     aocDat->Techages[DemoShipDisablerTechId].Effects[0].D = demoShipResearchId;
     aocDat->Techages[DemoShipDisablerTechId].Effects.pop_back();
