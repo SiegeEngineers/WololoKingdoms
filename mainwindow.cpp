@@ -29,6 +29,16 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    TCHAR pszPathToSelf[MAX_PATH];
+    DWORD dwPathLength = GetModuleFileName(NULL, pszPathToSelf, MAX_PATH);
+    if(dwPathLength > 0)
+    {
+        fs::path exePath = fs::path(pszPathToSelf);
+
+        // Code that extracts directory path from pszPathToSelf and places it into variable pszNewWorkingDirectory of type TCHAR
+       SetCurrentDirectory(strtowstr(exePath.parent_path().string()).c_str());
+
+    }
     ui->setupUi(this);
     initialize();
 }
