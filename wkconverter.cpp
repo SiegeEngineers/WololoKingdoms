@@ -2751,6 +2751,24 @@ int WKConverter::run(bool retry)
 		ret = 1;
 	}
 
+
+    if(settings->patch < 0 && std::get<0>(settings->dataModList[0]) == "Patch 5.8 Beta") {
+        gui->createDialog("The converter will install the Patch 5.8 Beta as a separate mod now");
+        //Automatic Installation of Patch 5.8 Beta. Not super pretty as this duplicated code from mainwindow, but time restraints
+        settings->patch = 0;
+        settings->modName = "WK ";
+        std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
+        settings->modName += std::get<0>(settings->dataModList[settings->patch]);
+        if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
+            settings->modName += dlcExtension;
+        }
+        settings->vooblyDir = settings->vooblyDir.parent_path() / settings->modName;
+        settings->upDir = settings->upDir.parent_path() / settings->modName;
+        settings->nfzUpOutPath = settings->upDir / "Player.nfz";
+        settings->nfzVooblyOutPath = settings->vooblyDir / "Player.nfz";
+        run();
+    }
+
 	return ret;
 }
 
