@@ -1410,7 +1410,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 				int ccode = (int) code;
                 aocDat->Civs[civGroups[cg][civ]].Units[125].LanguageDLLHelp = ccode;
 
-                if (cg >= 3 && cg <= 5 || cg == 10) { //Shaman icons, "Eastern" civs
+                if ((cg >= 3 && cg <= 5) || cg == 10) { //Shaman icons, "Eastern" civs
                     aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 218;
                     aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 218;
                 } else if (cg >= 6 && cg <= 8) { // Imam Icons, Middle Eastern/southern civ groups
@@ -2437,6 +2437,7 @@ int WKConverter::run(bool retry)
             wololo::DatPatch patchTab[] = {
 
                 wololo::berbersUTFix,
+                wololo::demoShipFix,
                 wololo::vietFix,
                 wololo::malayFix,
                 wololo::ethiopiansFreePikeUpgradeFix,
@@ -2586,7 +2587,7 @@ int WKConverter::run(bool retry)
                 out.close();
                 if(settings->useBoth || settings->useVoobly)
                     symlinkSetup(settings->vooblyDir.parent_path() / (baseModName+dlcExtension), settings->vooblyDir,xmlIn,settings->vooblyDir/"age2_x1.xml",true);
-                    if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
+                    if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
                         std::ifstream oldDrs (settings->vooblyDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
                         std::ofstream newDrs (settings->vooblyDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
@@ -2594,7 +2595,7 @@ int WKConverter::run(bool retry)
                     }
                 if(settings->useBoth || settings->useExe) {
                     symlinkSetup(settings->upDir.parent_path() / (baseModName+dlcExtension), settings->upDir, xmlIn, settings->upDir.parent_path()/(UPModdedExe+".xml"), true);
-                    if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
+                    if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
                         std::ifstream oldDrs (settings->upDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
                         std::ofstream newDrs (settings->upDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
