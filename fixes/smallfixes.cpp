@@ -21,6 +21,8 @@ void smallPatches(genie::DatFile *aocDat) {
     size_t const kingID = 434;
     size_t const cartographyID = 19;
     size_t const feudalAgeResearchId = 101;
+    size_t const teutonTeamBonusID = 404;
+    size_t const huntingDogsId = 526;
     size_t const fireShipResearchId = 243;
     size_t const demoShipResearchId = 242;
     size_t const demoShipTechId = 231;
@@ -60,8 +62,7 @@ void smallPatches(genie::DatFile *aocDat) {
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionMode = 0;
     aocDat->UnitHeaders[PTWC].Commands[0].SelectionEnabler = 0;
 
-	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
-        aocDat->Civs[civIndex].Resources[198] = 1580; //Mod version: WK=1, version 5.7.2
+    for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		//fixes faulty elite camel archer data for non-gaia civs
 		aocDat->Civs[civIndex].Units[eliteCamelArcherID] = aocDat->Civs[0].Units[eliteCamelArcherID];
 		aocDat->Civs[civIndex].Units[cannonGalleonID].Creatable.HeroMode -= 128; //restore patrol for cannon galleons
@@ -90,6 +91,10 @@ void smallPatches(genie::DatFile *aocDat) {
     aocDat->TechTree.ResearchConnections.erase(aocDat->TechTree.ResearchConnections.begin()+6);
     //fixes holy line, relics block entire tile
     aocDat->Civs[0].Units[relicID].CollisionSize = {0.5,0.5,2};
+    //Fix teuton team bonus being overwritten in post-imp
+    aocDat->Techages[teutonTeamBonusID].Effects[1].B = 1;
+    aocDat->Techages[teutonTeamBonusID].Effects[2].B = 1;
+
     //mountains were too small for their graphics
 	for (size_t i = 0; i < sizeof(mountains)/sizeof(mountains[0]); i++) {
         aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3,3};
@@ -110,6 +115,8 @@ void smallPatches(genie::DatFile *aocDat) {
 	aocDat->TechTree.UnitConnections[101].Unknown1 = 29;
 	aocDat->TechTree.UnitConnections[116].Unknown1 = 37;
     aocDat->TechTree.UnitConnections[117].Unknown1 = 37;
+    //Hunting Dogs got auto-researched in feudal+ games
+    aocDat->Researchs[huntingDogsId].RequiredTechs[0] = -1;
     //Make it possible for maps to go back to aoc water by disabling fire/demo galley and a disabler for fire/demo shop
     aocDat->Techages[fireShipTechId].Effects[0].A = fireGalleyId;
     genie::TechageEffect effect = aocDat->Techages[fireShipTechId].Effects[0];
@@ -188,14 +195,14 @@ void smallPatches(genie::DatFile *aocDat) {
 
     aocDat->Researchs[castleCoinageResearchId] = aocDat->Researchs[coinageResearchId];
     aocDat->Researchs[castleCoinageResearchId].Name = "Castle Coinage";
-    aocDat->Researchs[castleCoinageResearchId].RequiredTechs[0] += 1;
+    aocDat->Researchs[castleCoinageResearchId].RequiredTechs[0] = 102;
     aocDat->Researchs[impCoinageResearchId] = aocDat->Researchs[coinageResearchId];
     aocDat->Researchs[impCoinageResearchId].Name = "Imp Coinage";
-    aocDat->Researchs[impCoinageResearchId].RequiredTechs[0] += 2;
+    aocDat->Researchs[impCoinageResearchId].RequiredTechs[0] = 103;
     aocDat->Researchs[bankingResearchId].RequiredTechs[2] = castleCoinageResearchId;
     aocDat->Researchs[impBankingResearchId] = aocDat->Researchs[bankingResearchId];
     aocDat->Researchs[impBankingResearchId].Name = "Imp Banking";
-    aocDat->Researchs[impBankingResearchId].RequiredTechs[0] += 1;
+    aocDat->Researchs[impBankingResearchId].RequiredTechs[0] = 103;
     aocDat->Researchs[impBankingResearchId].RequiredTechs[2] = castleCoinageResearchId;
     aocDat->Researchs[impBankingResearchId].RequiredTechs[3] = impCoinageResearchId;
 
