@@ -62,6 +62,7 @@ int MainWindow::initialize() {
     HDPath = getHDPath(steamPath);
     HDPath.make_preferred();
     if(HDPath == fs::path()) {
+        updateUI();
         this->ui->label->setText(translation["noSteamInstallation"].c_str());
         dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
         dialog->exec();
@@ -270,8 +271,8 @@ void MainWindow::setInstallDirectory(std::string directory) {
         log("No Aoc. Path: "+(outPath/"age2_x1").string());
         dialog->exec();
         allowRun = false;
-    } else {
-        this->ui->label->setText((baseModName+" version " + version).c_str());
+    } else {        
+        this->ui->label->setText(translation["version"].c_str());
         allowRun = true;
     }
     updateUI();
@@ -356,7 +357,7 @@ bool MainWindow::checkSteamApi() {
         std::this_thread::sleep_for(std::chrono::seconds(10));
         SteamAPI_Init();
         tries++;
-        if(tries>6)
+        if(tries>4)
             break;
     }
     if(!SteamApps()) {
@@ -450,7 +451,7 @@ void MainWindow::changeModPatch() {
 
     std::string dlcExtension = dlcLevel == 3?"":dlcLevel==2?" AK":" FE";
     modName += std::get<0>(dataModList[patch]);
-    if(std::get<3>(dataModList[patch]) % 2 == 1) {
+    if(std::get<3>(dataModList[patch]) & 1) {
         modName += dlcExtension;
     }
 
@@ -504,8 +505,6 @@ void MainWindow::changeLanguage() {
 	while (std::getline(translationFile, line)) {
         /*
          *  \\\\n -> \\n, means we want a \n in the text files for aoc
-         *  If no such line is found, it might be a line for the installer itself, where we want actual linebreaks,
-         * so replace \\n -> \n with a linebreak
          */
         if(line.find("\\\\n") == std::string::npos)
             boost::replace_all(line, "\\n", "\n");

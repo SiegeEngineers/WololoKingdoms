@@ -42,7 +42,7 @@ private:
     std::string steamPath;
     fs::path HDPath;
     fs::path outPath;
-    std::string version = "5.8"; //This is just for showing the version in the installer window
+    //std::string version = "5.8"; //This is just for showing the version in the installer window
     std::map<int, std::tuple<std::string,std::string, std::string, int, std::string>> dataModList;
     std::string language = "en";
     std::map<std::string, std::string> translation;
