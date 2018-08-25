@@ -14,7 +14,7 @@ void disableNonWorkingUnitsPatch(genie::DatFile *aocDat) {
 		aocDat->Civs[civIndex].Units[1147].HideInEditor = 1;
 		aocDat->Civs[civIndex].Units[1221].HideInEditor = 1;		
 		aocDat->Civs[civIndex].Units[1401].HideInEditor = 1;
-		for (size_t unitIndex = 1224; unitIndex <= 1390; unitIndex++) {
+        for (size_t unitIndex = 1224; unitIndex <= 1400; unitIndex++) {
 			aocDat->Civs[civIndex].Units[unitIndex].HideInEditor = 1;
 		}
 	}
