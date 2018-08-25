@@ -2420,6 +2420,20 @@ int WKConverter::run(bool retry)
                 }
             }
 
+            /*
+             * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
+             */
+            std::ifstream versionFile((resourceDir/"version.txt").string());
+            std::string patchNumber;
+            std::getline(versionFile, patchNumber);
+            std::string dataVersion;
+            std::getline(versionFile, dataVersion);
+            std::string hash1;
+            std::string hash2;
+            std::getline(versionFile, hash1);
+            std::getline(versionFile, hash2);
+            versionFile.close();
+
             wololo::DatPatch patchTab[] = {
 
                 wololo::berbersUTFix,
@@ -2450,6 +2464,10 @@ int WKConverter::run(bool retry)
                     gui->increaseProgress(1); //71-86
                 }
 
+                for (size_t civIndex = 0; civIndex < aocDat.Civs.size(); civIndex++) {
+                    aocDat.Civs[civIndex].Resources[198] = std::stoi(dataVersion); //Mod version: WK=1, last 3 digits are patch number
+                }
+
                 gui->log("Save DAT");
                 aocDat.saveAs(outputDatPath.string().c_str());
             } catch (std::exception const & e) {
@@ -2478,17 +2496,6 @@ int WKConverter::run(bool retry)
                         QByteArray hashData = QCryptographicHash::hash(fileData,QCryptographicHash::Md5);
                         std::ofstream versionOut(versionIniPath);
                         std::string hash = hashData.toBase64().toStdString().substr(0,6);
-                        /*
-                         * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
-                         */
-                        std::ifstream versionFile((resourceDir/"version.txt").string());
-                        std::string patchNumber;
-                        std::getline(versionFile, patchNumber);
-                        std::string hash1;
-                        std::string hash2;
-                        std::getline(versionFile, hash1);
-                        std::getline(versionFile, hash2);
-                        versionFile.close();
                         if (hash != hash1 && hash != hash2) {
                             gui->createDialog(gui->translate("dialogBeta"));
 
