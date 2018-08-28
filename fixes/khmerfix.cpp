@@ -58,6 +58,9 @@ void khmerPatch(genie::DatFile *aocDat) {
 
     aocDat->Researchs[khmerBuildingResearchId].Civ = 28;
     aocDat->Researchs[khmerBuildingResearchId].Name = "Khmer Building Bonus";
+    aocDat->Researchs[khmerBuildingResearchId].RequiredTechCount = 0;
+    aocDat->Researchs[khmerBuildingResearchId].RequiredTechs[0] = -1;
+    aocDat->Researchs[khmerBuildingResearchId].RequiredTechs[1] = -1;
 
     for(int i = 0; i < sizeof(buildingResearchs)/sizeof(buildingResearchs[0]); i++) {
         aocDat->Researchs[buildingResearchs[i]].RequiredTechs[1] = khmerBuildingResearchId;

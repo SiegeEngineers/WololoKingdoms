@@ -913,7 +913,7 @@ void WKConverter::copyWallFiles(fs::path inputDir) {
 	 * +4 per damage increase
 	 */
 	indexDrsFiles(inputDir);
-	int conversionTable[] = {3,-15,2,0,3,-18,-5,1,0,1,2,3,0,1,2};
+    int conversionTable[] = {3,-15,2,0,3,-18,-5,1,0,1,2,3,0,1,2,2,-5,-7};
 	int newBaseSLP = 24000;
 	for(size_t i = 0; i < sizeof(conversionTable)/sizeof(int); i++) {
 		int archID = conversionTable[i];
@@ -2141,10 +2141,7 @@ int WKConverter::run(bool retry)
                 indexDrsFiles(terrainOverrideDir, true, true);
 			}
             gui->increaseProgress(1); //10
-            if(settings->useWalls)
-				copyWallFiles(wallsInputDir);
             gui->increaseProgress(1); //11
-
 
             gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingFiles"));
 
@@ -2373,6 +2370,9 @@ int WKConverter::run(bool retry)
 
                 if(settings->fixFlags)
                     adjustArchitectureFlags(&aocDat,"resources\\WKFlags.txt");
+
+                if(settings->useWalls) //This needs to be AFTER patchArchitectures
+                    copyWallFiles(wallsInputDir);
             } catch (std::exception const & e) {
                 std::string message = gui->translate("datError")+e.what();
                 gui->log(message);
