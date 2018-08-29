@@ -29,12 +29,22 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow, public WKGui
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+public slots:
+    void log(QString logMessage);
+    void setInfo(QString info);
+    void createDialog(QString info);
+    void createDialog(QString info, QString title);
+    void createDialog(QString info, QString toReplace, QString replaceWith);
+    void setProgress(int i);
+    void increaseProgress(int i);
+    QString translate(QString line);
+
 public:
-	explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 private:
@@ -42,10 +52,9 @@ private:
     std::string steamPath;
     fs::path HDPath;
     fs::path outPath;
-    //std::string version = "5.8"; //This is just for showing the version in the installer window
     std::map<int, std::tuple<std::string,std::string, std::string, int, std::string>> dataModList;
     std::string language = "en";
-    std::map<std::string, std::string> translation;
+    std::map<QString, QString> translation;
     bool allowRun = true;
 
     QProgressBar* bar = NULL;
@@ -64,6 +73,7 @@ private:
 
 	Ui::MainWindow *ui;
 
+    /*
     void log(std::string logMessage);
     void setInfo(std::string info);
     void createDialog(std::string info);
@@ -71,13 +81,13 @@ private:
     void setProgress(int i);
     void increaseProgress(int i);
     std::string translate(std::string line);
-
+*/
     void runConverter();
 
     int initialize();
     void setInstallDirectory(std::string directory);
     void changeLanguage();
-    void setButtonWhatsThis(QPushButton* button, std::string title);
+    void setButtonWhatsThis(QPushButton* button, QString title);
     void readDataModList();
     bool checkSteamApi();
     void readSettings();

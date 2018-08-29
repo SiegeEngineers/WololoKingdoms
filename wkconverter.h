@@ -4,12 +4,14 @@
 #include <set>
 #include <regex>
 #include <map>
+#include <QObject>
 
 #include <boost/filesystem.hpp>
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 #include "wksettings.h"
 #include "wkgui.h"
+#include <QIODevice>
 
 #define rt_getSLPName() std::get<0>(*repIt)
 #define rt_getPattern() std::get<1>(*repIt)
@@ -21,18 +23,28 @@
 
 namespace fs = boost::filesystem;
 
-class WKConverter
+class WKConverter : public QObject
 {
-public:
-    explicit WKConverter(WKGui* gui, WKSettings* settings): gui(gui), settings(settings){}
-    ~WKConverter();
+    Q_OBJECT
+public slots:
+    void process();
 
 public:
-    int run(bool retry = false);
+    explicit WKConverter(WKSettings* settings): settings(settings){}
+    ~WKConverter() {}
 
+    signals:
+        void finished();
+        void log(QString logMessage);
+        void setInfo(QString info);
+        void createDialog(QString info);
+        void createDialog(QString info, QString title);
+        void createDialog(QString info, QString toReplace, QString replaceWith);
+        void setProgress(int i);
+        void increaseProgress(int i);
 
 private:
-    WKGui* gui;
+
     WKSettings* settings;
     std::set<char> civLetters;
     std::set<int> aocSlpFiles;
@@ -60,6 +72,7 @@ private:
         UnbuildableTerrain
     };
 
+    int run(bool retry = false);
     void callExternalExe(std::wstring exe);
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);

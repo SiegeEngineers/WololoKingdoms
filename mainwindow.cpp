@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 #include <windows.h>
-#include <ShellAPI.h>
+#include <shellapi.h>
 
 #include <chrono>
 #include <thread>
@@ -23,6 +23,9 @@
 #include <QProgressBar>
 #include <QSettings>
 #include <QFileDialog>
+#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
+#include <QThreadPool>
 #include "sdk/public/steam/steam_api.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -30,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     TCHAR pszPathToSelf[MAX_PATH];
-    DWORD dwPathLength = GetModuleFileName(NULL, pszPathToSelf, MAX_PATH);
+    DWORD dwPathLength = GetModuleFileName(nullptr, pszPathToSelf, MAX_PATH);
     if(dwPathLength > 0)
     {
         fs::path exePath = fs::path(pszPathToSelf);
@@ -50,12 +53,14 @@ MainWindow::~MainWindow()
 
 int MainWindow::initialize() {
 
+
     logFile = std::ofstream("prelog.txt");
     QDialog* dialog;
     resourceDir = fs::path("resources\\");
     readSettings();
     ui->label->setWordWrap(true);    
     changeLanguage();
+    this->setWindowTitle(translation["version"]);
 
     steamPath = getSteamPath();
     boost::replace_all(steamPath,"/","\\");
@@ -63,10 +68,10 @@ int MainWindow::initialize() {
     HDPath.make_preferred();
     if(HDPath == fs::path()) {
         updateUI();
-        this->ui->label->setText(translation["noSteamInstallation"].c_str());
+        this->ui->label->setText(translation["noSteamInstallation"]);
         dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
         dialog->exec();
-        log("NoSteam. Path: "+steamPath);
+        log(QString::fromStdString("NoSteam. Path: "+steamPath));
         allowRun = false;
         return -1;
     }
@@ -75,7 +80,7 @@ int MainWindow::initialize() {
         return -2;
     }
     setInstallDirectory(getOutPath(HDPath).string());
-    this->ui->installDirectory->setText(outPath.string().c_str());
+    this->ui->installDirectory->setText(QString::fromStdString(outPath.string()));
     QObject::connect( this->ui->directoryDialogButton, &QPushButton::clicked, this, [this]() {
         this->ui->installDirectory->setText(QFileDialog::getExistingDirectory(this, "Select Install Directory"));
         setInstallDirectory(this->ui->installDirectory->text().toStdString());
@@ -122,7 +127,7 @@ int MainWindow::initialize() {
 
     if(fs::exists("player1.hki")) {
         this->ui->hotkeyChoice->setDisabled(true);
-        this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"].c_str());
+        this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"]);
         this->ui->hotkeyTip->setDisabled(true);
     }
 
@@ -162,12 +167,13 @@ int MainWindow::initialize() {
 
 void MainWindow::runConverter() {
     if(dlcLevel < 1 || dlcLevel > 3 || vooblyDir == fs::path()) {
-        log("Issue with parameters: DLC level: " + std::to_string(dlcLevel)+", + vooblyDir: "+ vooblyDir.string());
+        log(QString::fromStdString("Issue with parameters: DLC level: " +
+                                   std::to_string(dlcLevel)+", + vooblyDir: "+ vooblyDir.string()));
         return;
     }
 
     writeSettings();
-    if(bar == NULL) {
+    if(bar == nullptr) {
         bar = new QProgressBar();
         this->ui->verticalLayout->addWidget(bar);
     } else {
@@ -184,38 +190,50 @@ void MainWindow::runConverter() {
         this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), installDir, language, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
         HDPath, outPath, vooblyDir, upDir, dataModList, modName);
-    WKConverter* converter = new WKConverter(this, settings);
-    try {
-        converter->run();
-    } catch (std::exception const & e) {
-        createDialog(translate("dialogException")+std::string()+e.what(),translate("errorTitle"));
+    QThread* thread = new QThread;
+    WKConverter* converter = new WKConverter(settings);
+    converter->moveToThread(thread);
+    connect(converter, SIGNAL(log(QString)), this, SLOT(log(QString)));
+    connect(converter, SIGNAL(setInfo(QString)), this, SLOT(setInfo(QString)));
+    connect(converter, SIGNAL(createDialog(QString)), this, SLOT(createDialog(QString)));
+    connect(converter, SIGNAL(createDialog(QString, QString)), this, SLOT(createDialog(QString, QString)));
+    connect(converter, SIGNAL(createDialog(QString, QString, QString)), this, SLOT(createDialog(QString, QString, QString)));
+    connect(converter, SIGNAL(setProgress(int)), this, SLOT(setProgress(int)));
+    connect(converter, SIGNAL(increaseProgress(int)), this, SLOT(increaseProgress(int)));
 
-        log(e.what());
-        setInfo(translate("error"));
-    }
-    catch (std::string const & e) {
-        createDialog(translate("dialogException")+e,translate("errorTitle"));
-
-        log(e);
-        setInfo(translate("error"));
-    }
+    connect(thread, SIGNAL(started()), converter, SLOT(process()));
+    connect(converter, SIGNAL(finished()), thread, SLOT(quit()));
+    connect(converter, SIGNAL(finished()), converter, SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    thread->start();
     logFile.close();
 }
 
-void MainWindow::log(std::string logMessage) {
-    logFile << logMessage << std::endl;
+void MainWindow::log(QString logMessage) {
+    logFile << logMessage.toStdString() << std::endl;
 }
 
-void MainWindow::setInfo(std::string info){
-    this->ui->label->setText(info.c_str());
+void MainWindow::setInfo(QString info){
+    info = translate(info);
+    this->ui->label->setText(info);
     this->ui->label->repaint();
 }
-void MainWindow::createDialog(std::string info){
-    QDialog* dialog = new Dialog(this,info.c_str());
+void MainWindow::createDialog(QString info){
+    info = translate(info);
+    QDialog* dialog = new Dialog(this,info);
     dialog->exec();
 }
-void MainWindow::createDialog(std::string info, std::string title){
-    QDialog* dialog = new Dialog(this,info.c_str(),title.c_str());
+void MainWindow::createDialog(QString info, QString title){
+    info = translate(info);
+    QDialog* dialog = new Dialog(this,info,title);
+    dialog->exec();
+}
+
+void MainWindow::createDialog(QString info, QString toReplace, QString replaceWith){
+    info = translate(info);
+    std::string infoStr = info.toStdString();
+    boost::replace_all(infoStr, toReplace.toStdString(), replaceWith.toStdString());
+    QDialog* dialog = new Dialog(this,QString::fromStdString(infoStr));
     dialog->exec();
 }
 
@@ -238,8 +256,20 @@ void MainWindow::increaseProgress(int i){
     bar->repaint();
 }
 
-std::string MainWindow::translate(std::string line) {
-    return translation[line];
+QString MainWindow::translate(QString line) {
+    /*
+     * Not the prettiest version but it should work fine.
+     * Parts of a message that need to be translated separately (or unchanged) are separated by $
+     */
+    int index = 0;
+    QString result = "";
+    while((index = line.indexOf('$')) != -1) {
+        QString sub = line.left(index);
+        result += translation[sub] == ""?sub:translation[sub];
+        line = line.mid(index+1,-1);
+    }
+    result += translation[line] == ""?line:translation[line];
+    return result;
 }
 
 void MainWindow::setInstallDirectory(std::string directory) {
@@ -266,13 +296,13 @@ void MainWindow::setInstallDirectory(std::string directory) {
     nfzVooblyOutPath = vooblyDir / "Player.nfz";
 
     if(!fs::exists(outPath/"age2_x1")) {
-        this->ui->label->setText(translation["noAoC"].c_str());
+        this->ui->label->setText(translation["noAoC"]);
         QDialog* dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
-        log("No Aoc. Path: "+(outPath/"age2_x1").string());
+        log(("No Aoc. Path: "+(outPath/"age2_x1").string()).c_str());
         dialog->exec();
         allowRun = false;
     } else {        
-        this->ui->label->setText(translation["version"].c_str());
+        this->ui->label->setText(translation["version"]);
         allowRun = true;
     }
     updateUI();
@@ -286,12 +316,12 @@ void MainWindow::setInstallDirectory(std::string directory) {
 
 }
 
-void MainWindow::setButtonWhatsThis(QPushButton* button, std::string title) {
+void MainWindow::setButtonWhatsThis(QPushButton* button, QString title) {
     const char * questionIcon = "resources\\question.png";
     //WhatsThis for the special maps option
     button->setIcon(QIcon(questionIcon));
     button->setIconSize(QSize(16,16));
-    button->setWhatsThis(translation[title].c_str());
+    button->setWhatsThis(translation[title]);
     QObject::connect( button, &QPushButton::clicked, this, [this, button]() {
             QWhatsThis::showText(button->mapToGlobal(QPoint(0,0)),button->whatsThis());
     } );
@@ -306,7 +336,7 @@ void MainWindow::callExternalExe(std::wstring exe) {
     ZeroMemory( &pi, sizeof(pi) );
     wchar_t cmdLineString[exe.length()+1];
     wcscpy(cmdLineString, exe.c_str());
-    CreateProcess( NULL, cmdLineString, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi );
+    CreateProcess( nullptr, cmdLineString, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi );
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );
 }
@@ -320,7 +350,7 @@ void MainWindow::readDataModList() {
     std::string line;
     while(std::getline(dataModFile, line)) {
         std::tuple<std::string,std::string,std::string,int,std::string> info;
-        int index = line.find(',');
+        unsigned int index = line.find(',');
         std::get<0>(info) = line.substr(0,index);
         line = line.substr(index+1, std::string::npos);
         index = line.find(',');
@@ -362,12 +392,12 @@ bool MainWindow::checkSteamApi() {
     }
     if(!SteamApps()) {
         if(!SteamAPI_Init()) {
-            log("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath);
-            this->ui->label->setText(translation["noSteamApi"].c_str());
-            dialog = new Dialog(this,translation["noSteamApi"].c_str(),translation["errorTitle"]);
+            log(("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath).c_str());
+            this->ui->label->setText(translation["noSteamApi"]);
+            dialog = new Dialog(this,translation["noSteamApi"],translation["errorTitle"]);
         } else {
-            log("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath);
-            this->ui->label->setText(translation["noSteam"].c_str());
+            log(("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath).c_str());
+            this->ui->label->setText(translation["noSteam"]);
             dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
         }
         dialog->exec();
@@ -389,8 +419,8 @@ bool MainWindow::checkSteamApi() {
         SteamAPI_Shutdown();
         return true;
     } else {
-        log("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath);
-        this->ui->label->setText(translation["noFE"].c_str());
+        log(("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath).c_str());
+        this->ui->label->setText(translation["noFE"]);
         dialog = new Dialog(this,translation["noFE"],translation["errorTitle"]);
         dialog->exec();
         allowRun = false;
@@ -491,7 +521,7 @@ void MainWindow::changeLanguage() {
 	std::string line;
     std::string langBackup;
     if(!fs::exists("resources\\"+language+".txt")) {
-        if(translation["runButton"].empty()) {
+        if(translation["runButton"].isEmpty()) {
             langBackup = language;
             language = "en";
         } else {
@@ -509,29 +539,29 @@ void MainWindow::changeLanguage() {
         if(line.find("\\\\n") == std::string::npos)
             boost::replace_all(line, "\\n", "\n");
 		int index = line.find('=');
-        std::string key = line.substr(0, index);
-        translation[key] = line.substr(index+1, std::string::npos);
+        QString key = QString::fromStdString(line.substr(0, index));
+        translation[key] = QString::fromStdString(line.substr(index+1, std::string::npos));
 	}
     translationFile.close();
-	this->ui->runButton->setText(translation["runButton"].c_str());
-	this->ui->replaceTooltips->setText(translation["replaceTooltips"].c_str());
-    this->ui->useExe->setText(translation["useExe"].c_str());
-    this->ui->useVoobly->setText(translation["useVoobly"].c_str());
-    this->ui->useBoth->setText(translation["useBoth"].c_str());
-    this->ui->copyMaps->setText(translation["copyMaps"].c_str());
-    this->ui->copyCustomMaps->setText(translation["copyCustomMaps"].c_str());
-    this->ui->fixFlags->setText(translation["fixFlags"].c_str());
-    this->ui->restrictedCivMods->setText(translation["restrictedCivMods"].c_str());
-	this->ui->useGrid->setText(translation["useGrid"].c_str());
-	this->ui->usePw->setText(translation["usePw"].c_str());
-	this->ui->useWalls->setText(translation["useWalls"].c_str());
-    this->ui->usePatch->setText(translation["usePatch"].c_str());
-    this->ui->useMonks->setText(translation["useMonks"].c_str());
-    this->ui->useNoSnow->setText(translation["useNoSnow"].c_str());
-    this->ui->installLabel->setText(translation["installLabel"].c_str());
-	this->ui->hotkeyChoice->setItemText(1,translation["hotkeys1"].c_str());
-	this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"].c_str());
-    this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"].c_str());
+    this->ui->runButton->setText(translation["runButton"]);
+    this->ui->replaceTooltips->setText(translation["replaceTooltips"]);
+    this->ui->useExe->setText(translation["useExe"]);
+    this->ui->useVoobly->setText(translation["useVoobly"]);
+    this->ui->useBoth->setText(translation["useBoth"]);
+    this->ui->copyMaps->setText(translation["copyMaps"]);
+    this->ui->copyCustomMaps->setText(translation["copyCustomMaps"]);
+    this->ui->fixFlags->setText(translation["fixFlags"]);
+    this->ui->restrictedCivMods->setText(translation["restrictedCivMods"]);
+    this->ui->useGrid->setText(translation["useGrid"]);
+    this->ui->usePw->setText(translation["usePw"]);
+    this->ui->useWalls->setText(translation["useWalls"]);
+    this->ui->usePatch->setText(translation["usePatch"]);
+    this->ui->useMonks->setText(translation["useMonks"]);
+    this->ui->useNoSnow->setText(translation["useNoSnow"]);
+    this->ui->installLabel->setText(translation["installLabel"]);
+    this->ui->hotkeyChoice->setItemText(1,translation["hotkeys1"]);
+    this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"]);
+    this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"]);
     language=langBackup;
 	updateUI();
 }
@@ -543,14 +573,14 @@ void MainWindow::updateUI() {
      * 3 for any data mod based on WK (to avoid further fragmentation)
      */
     if ((this->ui->useExe->isChecked() && fs::exists(nfzUpOutPath)) || fs::exists(nfzVooblyOutPath)) {
-		this->ui->hotkeyChoice->setItemText(0,translation["hotkeys0"].c_str());
+        this->ui->hotkeyChoice->setItemText(0,translation["hotkeys0"]);
         this->ui->hotkeyChoice->setStyleSheet("");
         if(allowRun)
 			this->ui->runButton->setDisabled(false);
         else
             this->ui->runButton->setDisabled(true);
 	} else {
-		this->ui->hotkeyChoice->setItemText(0,translation["hotkeyChoice"].c_str());
+        this->ui->hotkeyChoice->setItemText(0,translation["hotkeyChoice"]);
         if(!this->ui->usePatch->isChecked()) {
 			this->ui->runButton->setDisabled(true);
             this->ui->hotkeyChoice->setStyleSheet("border-style: solid; border-width: 2px; border-color: red;");

@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 #include <windows.h>
-#include <ShellAPI.h>
+#include <shellapi.h>
 
 #include <chrono>
 #include <thread>
@@ -42,6 +42,9 @@
 #include "JlCompress.h"
 #include "wkconverter.h"
 
+void WKConverter::process() {
+    run();
+}
 
 void WKConverter::callExternalExe(std::wstring exe) {
     STARTUPINFO si;
@@ -51,7 +54,7 @@ void WKConverter::callExternalExe(std::wstring exe) {
     ZeroMemory( &pi, sizeof(pi) );
     wchar_t cmdLineString[exe.length()+1];
     wcscpy(cmdLineString, exe.c_str());
-    CreateProcess( NULL, cmdLineString, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi );
+    CreateProcess( nullptr, cmdLineString, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi );
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );
 }
@@ -97,7 +100,7 @@ void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
          */
         if(line.find("\\\\n") == std::string::npos)
             boost::replace_all(line, "\\n", "\n");
-        int index = line.find('=');
+        unsigned int index = line.find('=');
         std::string key = line.substr(0, index);
         try {
             int keyNo = std::stoi(key);
@@ -283,7 +286,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
 
     loadGameStrings(langReplacement);
 
-    gui->log("Open Missing strings");
+    emit log("Open Missing strings");
     std::string line;
     std::ifstream missingStrings(resourceDir.string()+"missing_strings.txt");
     while (std::getline(missingStrings, line)) {
@@ -301,11 +304,11 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     }
     missingStrings.close();
 
-    gui->log("Replace tooltips");
+    emit log("Replace tooltips");
     if(settings->replaceTooltips) {
         loadModdedStrings(modLangIni, langReplacement);
     }
-    gui->increaseProgress(1); //2
+    emit increaseProgress(1); //2
 
     if(settings->patch >= 0 && std::get<3>(settings->dataModList[settings->patch]) & 2) {
         /*
@@ -343,24 +346,23 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
             fs::copy_file(langDllPath,langDllFile);
         }
     }
-    gui->increaseProgress(1); //3
+    emit increaseProgress(1); //3
     bool dllPatched = true;
 
-    gui->log("Open Lang Dll");
+    emit log("Open Lang Dll");
     if (patchLangDll && !openLanguageDll(&langDll, langDllPath, langDllFile)) {
         dllPatched = false;
         patchLangDll = false;
-        line = gui->translate("working")+"\n"+gui->translate("workingNoDll");
-        boost::replace_all(line,"<dll>",langDllPath.string());
-        gui->setInfo(line);
+        line = "working$\n$workingNoDll";
+        emit setInfo(QString::fromStdString(line));
 
     }
-    gui->increaseProgress(1); //4
+    emit increaseProgress(1); //4
 
-    gui->log("convert language file");
+    emit log("convert language file");
     convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
-    gui->increaseProgress(1); //5
-    gui->log("save lang dll file");
+    emit increaseProgress(1); //5
+    emit log("save lang dll file");
     if (patchLangDll && !saveLanguageDll(&langDll, langDllFile)) {
         dllPatched = false;
         patchLangDll = false;
@@ -372,7 +374,7 @@ void WKConverter::loadModdedStrings(std::string moddedStringsFile, std::map<int,
     std::ifstream modLang(moddedStringsFile);
     std::string line;
     while (std::getline(modLang, line)) {
-        int spaceIdx = line.find('=');
+        unsigned int spaceIdx = line.find('=');
         std::string number = line.substr(0, spaceIdx);
         int nb;
         try {
@@ -415,15 +417,14 @@ bool WKConverter::saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile
     fs::path langDllOutput = settings->upDir/"data"/langDllFile;
     std::string line;
     try {
-        line = gui->translate("working")+"\n"+gui->translate("workingDll");
-        boost::replace_all(line,"<dll>",langDllFile.string());
+        line = "working$\n$workingDll";
         langDll->save();
         fs::copy_file(langDllFile,langDllOutput,fs::copy_option::overwrite_if_exists);
         fs::remove(langDllFile);
-        gui->setInfo(line);
+        emit setInfo(QString::fromStdString(line));
 
     } catch (const std::ofstream::failure& e) {
-        gui->setInfo(gui->translate("workingError"));
+        emit setInfo("workingError");
 
         fs::remove(langDllFile);
         fs::remove(langDllOutput);
@@ -431,7 +432,7 @@ bool WKConverter::saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile
             langDll->save();
             fs::copy_file(langDllFile,langDllOutput,fs::copy_option::overwrite_if_exists);
             fs::remove(langDllFile);
-            gui->setInfo(line);
+            emit setInfo(QString::fromStdString(line));
 
         } catch (const std::ofstream::failure& e) {
             fs::remove(langDllFile);
@@ -544,7 +545,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 
 void WKConverter::makeDrs(std::ofstream *out) {
 
-    gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDrs"));
+    emit setInfo("working$\n$workingDrs");
 
 
 	// Exclude Forgotten Empires leftovers
@@ -589,9 +590,9 @@ void WKConverter::makeDrs(std::ofstream *out) {
 		slp.file_size = size;
 		offset += size;
 		slpFileInfos.push_back(slp);
-        gui->increaseProgress(0);
+
 	}
-    gui->increaseProgress(1); //60
+    emit increaseProgress(1); //67
 
 	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
 		wololo::DrsFileInfo wav;
@@ -602,9 +603,9 @@ void WKConverter::makeDrs(std::ofstream *out) {
 		wav.file_size = size;
 		offset += size;
 		wavFileInfos.push_back(wav);
-        gui->increaseProgress(0);
+
 	}
-    gui->increaseProgress(1); //61
+    emit increaseProgress(1); //68
 
 	// header infos
 
@@ -637,10 +638,10 @@ void WKConverter::makeDrs(std::ofstream *out) {
 		(int) (sizeof (wololo::DrsHeader) +  sizeof (wololo::DrsFileInfo) * numberOfTables + sizeof (wololo::DrsFileInfo) * slpFileInfos.size()), // file_info_offset
 		(int) wavFileInfos.size() // num_files
 	};
-    gui->increaseProgress(1); //62
+    emit increaseProgress(1); //69
 
 
-    gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDrs2"));
+    emit setInfo("working$\n$workingDrs2");
 
 	// now write the actual drs file
 
@@ -650,53 +651,55 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	out->write(header.ftype, sizeof (wololo::DrsHeader::ftype));
 	out->write(reinterpret_cast<const char *>(&header.table_count), sizeof (wololo::DrsHeader::table_count));
 	out->write(reinterpret_cast<const char *>(&header.file_offset), sizeof (wololo::DrsHeader::file_offset));
-    gui->increaseProgress(0);
+
 
 	// table infos
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_type), sizeof (wololo::DrsTableInfo::file_type));
 	out->write(slpTableInfo.file_extension, sizeof (wololo::DrsTableInfo::file_extension));
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (wololo::DrsTableInfo::file_info_offset));
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (wololo::DrsTableInfo::num_files));
-    gui->increaseProgress(0);
+
 
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_type), sizeof (wololo::DrsTableInfo::file_type));
 	out->write(wavTableInfo.file_extension, sizeof (wololo::DrsTableInfo::file_extension));
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (wololo::DrsTableInfo::file_info_offset));
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (wololo::DrsTableInfo::num_files));
 
-    gui->increaseProgress(1); //63
+    emit increaseProgress(1); //70
 	// file infos
 	for (std::vector<wololo::DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
 		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
 		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
 		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
+
 	}
-    gui->increaseProgress(1); //64
+    emit increaseProgress(1); //71
 	for (std::vector<wololo::DrsFileInfo>::iterator it = wavFileInfos.begin(); it != wavFileInfos.end(); it++) {
 		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
 		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
 		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
-	}
-    gui->increaseProgress(1); //65
 
-    gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDrs3"));
+	}
+    emit increaseProgress(1); //72
+
+    emit setInfo("working$\n$workingDrs3");
 
 	// now write the actual files
 	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
 			std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
 			*out << srcStream.rdbuf();
             srcStream.close();
-            gui->increaseProgress(0);
+
 	}
-    gui->increaseProgress(1); //66
+    emit increaseProgress(1); //73
 
 	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
 		std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
 		*out << srcStream.rdbuf();
         srcStream.close();
-        gui->increaseProgress(0);
+
 	}
-    gui->increaseProgress(1); //67
+    emit increaseProgress(1); //74
     out->close();
 }
 
@@ -709,23 +712,24 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
     int numberOfSlpFiles = slpFiles.size(); //These are the new files to be added to the drs
 
-    gui->log("number of files"+std::to_string(numberOfSlpFiles));
-    gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDrs2"));
+
+    emit log(QString("number of files")+QString().setNum(numberOfSlpFiles));
+    emit setInfo("working$\n$workingDrs2");
 
     char * buffer;
     char * intBuffer = new char[4];
-    gui->increaseProgress(1);
+    emit increaseProgress(1); //22
 
 
-    gui->log("write header");
+    emit log("write header");
     // header, no changes here
     int length = sizeof (wololo::DrsHeader::copyright) + sizeof (wololo::DrsHeader::version) + sizeof (wololo::DrsHeader::ftype)
             +sizeof (wololo::DrsHeader::table_count);
     buffer = new char[length];
     in->read(buffer,length);
-    gui->log(std::string(buffer));
+    emit log(QString(buffer));
     out->write(buffer, length);
-    gui->increaseProgress(1);
+    emit increaseProgress(1); //23
 
     //There are extra file infos added, so the offset of the first file changes
     int extraOffset = sizeof (wololo::DrsFileInfo) * (numberOfSlpFiles);
@@ -733,9 +737,9 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     int offsetOfFirstFile = *(reinterpret_cast<int *>(intBuffer));
     offsetOfFirstFile += extraOffset;
     out->write(reinterpret_cast<const char *>(&offsetOfFirstFile), sizeof (wololo::DrsHeader::file_offset));
-    gui->increaseProgress(1);
+    emit increaseProgress(1); //24
 
-    gui->log("slp table info");
+    emit log("slp table info");
     //slp table info
     length = sizeof (wololo::DrsTableInfo::file_type) + sizeof (wololo::DrsTableInfo::file_extension) + sizeof (wololo::DrsTableInfo::file_info_offset);
     buffer = new char[length];
@@ -743,27 +747,27 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     out->write(buffer, length);
     in->read(intBuffer,4);
     int numberOfOldSlpFiles = *(reinterpret_cast<int *>(intBuffer));
-    gui->log(intBuffer);
-    gui->log(std::to_string(numberOfOldSlpFiles));
+    emit log(intBuffer);
+    emit log(QString().setNum(numberOfOldSlpFiles));
     int totalSlpFiles = numberOfOldSlpFiles+numberOfSlpFiles;
     out->write(reinterpret_cast<const char *>(&totalSlpFiles), sizeof (wololo::DrsTableInfo::num_files));
-    gui->increaseProgress(1);
+    emit increaseProgress(1); //25
 
-    gui->log("wav table info");
+    emit log("wav table info");
     length = sizeof (wololo::DrsTableInfo::file_type) + sizeof (wololo::DrsTableInfo::file_extension);
     buffer = new char[length];
     in->read(buffer,length);
     out->write(buffer, length);
     in->read(intBuffer,4);
-    gui->log(intBuffer);
+    emit log(intBuffer);
     int wavInfoOffset = *(reinterpret_cast<int *>(intBuffer)) + extraOffset;
     out->write(reinterpret_cast<const char *>(&wavInfoOffset), sizeof (wololo::DrsTableInfo::file_info_offset));
     in->read(intBuffer,4);
-    gui->log(intBuffer);
+    emit log(intBuffer);
     int numberOfOldWavFiles = *(reinterpret_cast<int *>(intBuffer));
-    gui->log(std::to_string(numberOfOldWavFiles));
+    emit log(QString().setNum(numberOfOldWavFiles));
     out->write(reinterpret_cast<const char *>(&numberOfOldWavFiles), sizeof (wololo::DrsTableInfo::num_files));
-    gui->increaseProgress(1);
+    emit increaseProgress(1); //26
 
 
     // file infos
@@ -772,7 +776,7 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     int slpBlockSize = 0;
     int wavBlockSize = 0;
 
-    gui->log("old slp file infos");
+    emit log("old slp file infos");
     for (int i = 0; i < numberOfOldSlpFiles; i++) {
         in->read(intBuffer,4);
         int fileId = *(reinterpret_cast<int *>(intBuffer));
@@ -790,12 +794,12 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
         out->write(reinterpret_cast<const char *>(&fileId), sizeof (wololo::DrsFileInfo::file_id));
         out->write(reinterpret_cast<const char *>(&fileOffset), sizeof (wololo::DrsFileInfo::file_data_offset));
         out->write(reinterpret_cast<const char *>(&fileSize), sizeof (wololo::DrsFileInfo::file_size));
-        gui->increaseProgress(0);
+
     }
-    gui->increaseProgress(1);
+    emit increaseProgress(1); //27
     int offset = fileOffset + fileSize;
 
-    gui->log("new slp file infos");
+    emit log("new slp file infos");
 
     std::vector<wololo::DrsFileInfo> slpFileInfos;
 
@@ -808,18 +812,18 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
         slp.file_size = size;
         offset += size;
         slpFileInfos.push_back(slp);
-        gui->increaseProgress(0);
+
     }
-    gui->increaseProgress(1);
+    emit increaseProgress(1);//28
 
     for (std::vector<wololo::DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
         out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
         out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
         out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
     }
-    gui->increaseProgress(1);
+    emit increaseProgress(1);//29
 
-    gui->log("wav file infos");
+    emit log("wav file infos");
     for (int i = 0; i < numberOfOldWavFiles; i++) {
         in->read(intBuffer,4);
         int fileId = *(reinterpret_cast<int *>(intBuffer));
@@ -831,48 +835,48 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
         out->write(reinterpret_cast<const char *>(&offset), sizeof (wololo::DrsFileInfo::file_data_offset));
         out->write(reinterpret_cast<const char *>(&fileSize), sizeof (wololo::DrsFileInfo::file_size));
         offset += fileSize;
-        gui->increaseProgress(0);
+
     }
-    gui->increaseProgress(1);
+    emit increaseProgress(1);//30
 
 
-    gui->log("old slp files");
+    emit log("old slp files");
     int bufferSize = 4096;
     buffer = new char[bufferSize];
     int i;
     for(i = bufferSize; i < slpBlockSize; i+=bufferSize) {
         in->read(buffer, bufferSize);
         out->write(buffer, bufferSize);
-        gui->increaseProgress(0);
+
     }
     length = slpBlockSize - i + bufferSize;
     in->read(buffer,length);
     out->write(buffer, length);
-    gui->increaseProgress(1);
-    gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDrs3"));
+    emit increaseProgress(1);//31
+    emit setInfo("working$\n$workingDrs3");
 
 
-    gui->log("new slp files");
+    emit log("new slp files");
     for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
             std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
             *out << srcStream.rdbuf();
             srcStream.close();
-            gui->increaseProgress(0);
+
     }
-    gui->increaseProgress(1);
+    emit increaseProgress(1);//32
 
 
-    gui->log("old wav files");
+    emit log("old wav files");
     buffer = new char[bufferSize];
     for(i = bufferSize; i < wavBlockSize; i+=bufferSize) {
         in->read(buffer, bufferSize);
         out->write(buffer, bufferSize);
-        gui->increaseProgress(0);
+
     }
     length = wavBlockSize - i + bufferSize;
     in->read(buffer,length);
     out->write(buffer, length);
-    gui->increaseProgress(1);
+    emit increaseProgress(1);//33
 
     in->close();
     out->close();
@@ -918,17 +922,17 @@ void WKConverter::copyWallFiles(fs::path inputDir) {
 	for(size_t i = 0; i < sizeof(conversionTable)/sizeof(int); i++) {
 		int archID = conversionTable[i];
 		if (archID < 0) {
-			archID = -archID;
+            archID *= -1;
 			int digits = archID == 5 || archID == 7?124:324;
-			slpFiles[newBaseSLP+i*1000+digits+200] = inputDir/(std::to_string(archID*1000+digits)+".slp");
-			slpFiles[newBaseSLP+i*1000+digits+202] = inputDir/(std::to_string(archID*1000+digits+2)+".slp");
+            slpFiles[newBaseSLP+i*1000+324] = inputDir/(std::to_string(archID*1000+digits)+".slp");
+            slpFiles[newBaseSLP+i*1000+326] = inputDir/(std::to_string(archID*1000+digits+2)+".slp");
 			for (int j = 0; j <= 10; j+=2)
-				slpFiles[newBaseSLP+i*1000+digits+221+j] = inputDir/(std::to_string(archID*1000+digits+21+j)+".slp");
+                slpFiles[newBaseSLP+i*1000+345+j] = inputDir/(std::to_string(archID*1000+digits+21+j)+".slp");
 		} else {
 			slpFiles[newBaseSLP+i*1000+324] = inputDir/(std::to_string(2098+archID)+".slp");
 			slpFiles[newBaseSLP+i*1000+326] = inputDir/(std::to_string(2110+archID)+".slp");
-			for (int j = 0; j <= 20; j+=4)
-				slpFiles[newBaseSLP+i*1000+345+j] = inputDir/(std::to_string(4169+archID+j)+".slp");
+            for (int j = 0; j <= 10; j+=2)
+                slpFiles[newBaseSLP+i*1000+345+j] = inputDir/(std::to_string(4169+archID+j*2)+".slp");
 		}
 	}
 }
@@ -955,7 +959,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
 			mapNames.push_back(it->path());
 		}
 	}
-    gui->increaseProgress(2); //14+18
+    emit increaseProgress(2); //15+19
 	std::map<std::string,fs::path> terrainOverrides;
     std::array<std::map<int,std::regex>,6> terrainsPerType = { {
         {}, //The Order is important, see the TerrainTypes Enum!
@@ -1000,7 +1004,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
     std::vector<std::tuple<std::string,std::string,std::string,int,int,int>>::iterator repIt;
 
 	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end(); it++) {
-        gui->increaseProgress(0);
+
 		std::string mapName = it->stem().string()+".rms";
         if (mapName.substr(0,3) == "ZR@") {
 			fs::copy_file(*it,outputDir/mapName,fs::copy_option::overwrite_if_exists);
@@ -1123,7 +1127,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
 		}
 		terrainOverrides.clear();
 	}
-    gui->increaseProgress(1); //15+19
+    emit increaseProgress(1); //16+20 22?
 }
 
 bool WKConverter::usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed) {
@@ -1180,13 +1184,13 @@ bool WKConverter::isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, s
 
 void WKConverter::createZRmap(std::map<std::string,fs::path>& terrainOverrides, fs::path outputDir, std::string mapName) {
     QuaZip zip(QString((outputDir.string()+"\\ZR@"+mapName).c_str()));
-    zip.open(QuaZip::mdAdd, NULL);
+    zip.open(QuaZip::mdAdd, nullptr);
     terrainOverrides[mapName] = fs::path(outputDir.string()+"\\"+mapName);
     for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
         QuaZipFile outFile(&zip);
         QuaZipNewInfo fileInfo(QString(files->first.c_str()));;
         fileInfo.uncompressedSize = fs::file_size(files->second);
-        outFile.open(QIODevice::WriteOnly,fileInfo,NULL,0,0,0,false);
+        outFile.open(QIODevice::WriteOnly,fileInfo,nullptr,0,0,0,false);
         QFile inFile;
         inFile.setFileName(files->second.string().c_str());
         inFile.open(QIODevice::ReadOnly);
@@ -1299,20 +1303,20 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
      * IA seperation
      */
 
-	short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
+    short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
 						155, 179, 190, 209, 210, 234, 235, 236, 276, 463, 464, 465, 481, 482, 483, 484, 487, 488, 490, 491, 498,
                         562, 563, 564, 565, 584, 585, 586, 587, 597, 611, 612, 613, 614, 615, 616, 617, 659, 660, 661,
                         662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673, 674, 1102, 1189};
-	short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
+    short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
     short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
-	short burmese = 30; //These are used for ID reference
+    short burmese = 30; //These are used for ID reference
     for(short c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
-        gui->increaseProgress(0);
-		std::map<short,short> replacedGraphics;
+
+        std::map<short,short> replacedGraphics;
         std::map<short,short> replacedFlags;
 		//buildings
-		for(unsigned int b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
+        for(unsigned int b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].StandingGraphic.first,
 					aocDat->Civs[burmese].Units[buildingIDs[b]].StandingGraphic.first, c, replacedGraphics);
 			short oldGraphicID = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Building.ConstructionGraphicID;
@@ -1347,7 +1351,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Type50.AttackGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Type50.AttackGraphic, c, replacedGraphics);
 		}
 
-        gui->increaseProgress(1); //37-52
+        emit increaseProgress(1); //34-51
 	}
 
     //Separate Units into 4 major regions (Europe, Asian, Southern, American)
@@ -1386,7 +1390,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 		}
         std::map<short,short> replacedGraphics;
         for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
-            gui->increaseProgress(0);
+
             /*
 			for(unsigned int b = 0; b < sizeof(cgBuildingIDs)/sizeof(short); b++) {
                 replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
@@ -1421,7 +1425,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 			}
 
         }
-        gui->increaseProgress(1); //52-55
+        emit increaseProgress(1); //52-63
     }
 
     /*
@@ -1865,7 +1869,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
             + languageString +
             "mklink /H \""+newDirString+"player.nfz\" \""+ oldDirString+"player.nfz\"";
     std::wstring wcmd = strtowstr(cmd);
-	ShellExecute(NULL,L"open",L"cmd.exe",wcmd.c_str(),NULL,SW_HIDE);
+    ShellExecute(nullptr,L"open",L"cmd.exe",wcmd.c_str(),nullptr,SW_HIDE);
     if(!fs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
         recCopy(oldDirString,newDir,true);
     }
@@ -1876,7 +1880,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
 
 void WKConverter::retryInstall() {
 
-    gui->log("Retry installation with removing folders first");
+    emit log("Retry installation with removing folders first");
     fs::path tempFolder = "retryTemp";
     try {
         fs::create_directories(tempFolder/"Scenario");
@@ -1889,8 +1893,8 @@ void WKConverter::retryInstall() {
         if(fs::exists(installDir/"player1.hki"))
             fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_option::overwrite_if_exists);
     } catch (std::exception const & e) {
-        gui->createDialog(gui->translate("dialogException")+std::string()+e.what(),gui->translate("errorTitle"));
-        gui->log(e.what());
+        emit createDialog(QString("dialogException$")+QString(e.what()),"errorTitle");
+        emit log(e.what());
         return;
     }
 
@@ -1915,9 +1919,9 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     fs::path languageIniPath = settings->vooblyDir / "language.ini";
     std::string versionIniPath = settings->vooblyDir.string() + "\\version.ini";
 
-    gui->log("Check for symlink");
+    emit log("Check for symlink");
     if(fs::is_symlink(installDir/"Taunt")) {
-        gui->log("Removing all but SaveGame and profile");
+        emit log("Removing all but SaveGame and profile");
         fs::path tempFolder = "temp";
         fs::create_directories(tempFolder/"Scenario");
         fs::create_directories(tempFolder/"SaveGame");
@@ -1942,7 +1946,7 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
         fs::remove_all(tempFolder);
     }
 
-    gui->log("Removing base folders");
+    emit log("Removing base folders");
     fs::remove_all(installDir/"Data");
     /*
     fs::remove_all(installDir/"Script.Ai\\Brutal2");
@@ -1950,7 +1954,7 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     fs::remove(installDir/"Script.Ai\\BruteForce3.1.per");
     */
 
-    gui->log("Creating base folders");
+    emit log("Creating base folders");
     fs::create_directories(installDir/"SaveGame\\Multi");
     fs::create_directories(installDir/"Sound\\stream");
     fs::create_directory(installDir/"Data");
@@ -1962,10 +1966,10 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     if(!settings->useExe) {
         fs::remove(settings->vooblyDir/"age2_x1.xml");
         fs::remove(versionIniPath);
-        gui->log("Removing language.ini");
+        emit log("Removing language.ini");
         fs::remove(languageIniPath);
     } else {
-        gui->log("Removing UP base folders");
+        emit log("Removing UP base folders");
         fs::remove(xmlOutPathUP);
         fs::remove(settings->upDir/"Data\\empires2_x1_p1.dat");
         fs::remove(settings->upDir/"Data\\gamedata_x1.drs");
@@ -1981,11 +1985,11 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
 
 int WKConverter::run(bool retry)
 {
-    gui->setInfo(gui->translate("working"));
+    emit setInfo("working");
 
     if (settings->dlcLevel == 0) { //This should never happen
-        gui->setInfo(gui->translate("noSteam"));
-        gui->createDialog("You shouldn't be here! "+gui->translate("noSteam"),gui->translate("errorTitle"));
+        emit setInfo("noSteam");
+        emit createDialog("You shouldn't be here! $noSteam","errorTitle");
 		return -1;
 	}
 
@@ -2068,24 +2072,24 @@ int WKConverter::run(bool retry)
         }
 
         if(secondAttempt) {
-            gui->log("\nSecond Attempt");
-            gui->log("\n");
+            emit log("\nSecond Attempt");
+            emit log("\n");
         } else {
-            gui->log("New Run");
-            gui->log("\n");
+            emit log("New Run");
+            emit log("\n");
         }      
-        gui->log("\nHD Path:");
-        gui->log(settings->HDPath.string() + "\n" + "AoC Path:");
-        gui->log(installDir.string() + "\n");
+        emit log("\nHD Path:");
+        emit log(QString::fromStdString(settings->HDPath.string() + "\n" + "AoC Path:"));
+        emit log(QString::fromStdString(installDir.string() + "\n"));
 
-        gui->log("Patch mode: ");
-        gui->log(std::to_string(settings->patch));
-        gui->log("DLC level: ");
-        gui->log(std::to_string(settings->dlcLevel));
+        emit log("Patch mode: ");
+        emit log(QString().setNum(settings->patch));
+        emit log("DLC level: ");
+        emit log(QString().setNum(settings->dlcLevel));
 
         std::string line;
 
-        gui->setProgress(1); //1
+        emit setProgress(1); //1
 
         if (settings->patch < 0) {
             setupFolders(xmlOutPathUP);
@@ -2110,127 +2114,126 @@ int WKConverter::run(bool retry)
             }
         }
 
-        gui->increaseProgress(1); //5
+        emit increaseProgress(1); //6
 
         if (settings->patch < 0) {
-            gui->log("index DRS files");
+            emit log("index DRS files");
             indexDrsFiles(assetsPath); //Slp/wav files to be written into gamedata_x1_p1.drs
             indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
 
-            gui->log("Visual Mod Stuff");
+            emit log("Visual Mod Stuff");
             if(settings->usePw || settings->useGrid || settings->useWalls || settings->useNoSnow) {
-                gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingMods"));
+                emit setInfo("working$\n$workingMods");
 			}
             if(settings->usePw)
 				indexDrsFiles(pwInputDir);
-            gui->increaseProgress(1); //6
+            emit increaseProgress(1); //7
             if(settings->useGrid) {
 				indexDrsFiles(gridInputDir);
-                gui->increaseProgress(1); //7
+                emit increaseProgress(1); //8
                 indexDrsFiles(newGridTerrainInputDir, true, true);
-                gui->increaseProgress(2); //9
+                emit increaseProgress(2); //10
                 if(settings->useNoSnow)
                     indexDrsFiles(gridNoSnowInputDir);
 			} else {
                 indexDrsFiles(newTerrainInputDir, true, true);
-                gui->increaseProgress(3); //9
+                emit increaseProgress(3); //10
                 if(settings->useNoSnow)
                     indexDrsFiles(noSnowInputDir);
 			}
 			if(!fs::is_empty(terrainOverrideDir)) {
                 indexDrsFiles(terrainOverrideDir, true, true);
 			}
-            gui->increaseProgress(1); //10
-            gui->increaseProgress(1); //11
+            emit increaseProgress(1); //11
 
-            gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingFiles"));
+            emit setInfo("working$\n$workingFiles");
 
             try {
-                gui->log("History Files");
-                gui->increaseProgress(0);
+                emit log("History Files");
+
                 copyHistoryFiles(historyInputPath, historyOutputPath);
             } catch (std::exception const & e) {
-                std::string message = gui->translate("historyError")+e.what();
-                gui->log(message);
+                QString message = QString("historyError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
             try {
-                gui->log("Civ Intro Sounds");
-                gui->increaseProgress(0);
+                emit log("Civ Intro Sounds");
+
                 copyCivIntroSounds(soundsInputPath / "civ\\", soundsOutputPath / "stream\\");
             } catch (std::exception const & e) {
-                std::string message = gui->translate("civIntroError")+e.what();
-                gui->log(message);
+                QString message = QString("civIntroError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
-            gui->increaseProgress(1); //12
-            gui->log("Create Music Playlist");
+            emit increaseProgress(1); //12
+            emit log("Create Music Playlist");
             try {
                 createMusicPlaylist(soundsInputPath.string() + "music\\", soundsOutputPath.string() + "music.m3u");
 
-                gui->increaseProgress(0);
+
             } catch (std::exception const & e) {
-                std::string message = gui->translate("musicPlaylistError")+e.what();
-                gui->log(message);
+               QString message =QString("musicPlaylistError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
-            gui->increaseProgress(1); //13
-            gui->log("Copy Taunts");
+            emit increaseProgress(1); //13
+            emit log("Copy Taunts");
             try {
-                gui->increaseProgress(0);
+
                 recCopy(tauntInputPath, tauntOutputPath, true);
             } catch (std::exception const & e) {
-                std::string message = gui->translate("tauntError")+e.what();
-                gui->log(message);
+               QString message =QString("tauntError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
-            gui->log("Copy Scenario Sounds");
+            emit log("Copy Scenario Sounds");
             try {
-                gui->increaseProgress(0);
+
                 recCopy(scenarioSoundsInputPath, scenarioSoundsOutputPath, true);
             } catch (std::exception const & e) {
-                std::string message = gui->translate("scenarioSoundError")+e.what();
-                gui->log(message);
+               QString message =QString("scenarioSoundError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
-            gui->increaseProgress(1); //14
-            gui->log("Copy XML");
+            emit increaseProgress(1); //14
+            emit log("Copy XML");
             if(settings->useExe) {
                 fs::copy_file(xmlPath, xmlOutPathUP, fs::copy_option::overwrite_if_exists);
             } else {
                 fs::copy_file(xmlPath, xmlOutPath, fs::copy_option::overwrite_if_exists);
             }
-            gui->increaseProgress(0);
+
             fs::path installMapDir = installDir/"Script.Rm";
-            gui->log("Copy Voobly Map folder");
+            emit log("Copy Voobly Map folder");
             if (fs::exists(settings->outPath/"Random")) {
                 try {
                     recCopy(settings->outPath/"Random", installMapDir, true);
                 } catch (std::exception const & e) {
-                    std::string message = gui->translate("vooblyMapError")+e.what();
-                    gui->log(message);
+                   QString message =QString("vooblyMapError$")+e.what();
+                    emit log(message);
                     if(retry) {
-                        gui->createDialog(message,gui->translate("errorTitle"));
+                        emit createDialog(message,"errorTitle");
                     } else {
                         retryInstall();
                     }
@@ -2238,85 +2241,85 @@ int WKConverter::run(bool retry)
 			} else {
                 fs::create_directory(installMapDir);
 			}
-            gui->increaseProgress(1); //15
+            emit increaseProgress(1); //15
             if(settings->copyCustomMaps) {
-                gui->log("Copy HD Maps");
+                emit log("Copy HD Maps");
                 try {
                     copyHDMaps(settings->HDPath/"resources\\_common\\random-map-scripts\\", installMapDir);
                 } catch (std::exception const & e) {
-                    std::string message = gui->translate("hdMapError")+e.what();
-                    gui->log(message);
+                    QString message = QString("hdMapError$")+e.what();
+                    emit log(message);
                     if(retry) {
-                        gui->createDialog(message,gui->translate("errorTitle"));
+                        emit createDialog(message,"errorTitle");
                     } else {
                         retryInstall();
                     }
                 }
             } else {
-                gui->increaseProgress(3);
+                emit increaseProgress(3); //18
             }
-            gui->increaseProgress(1); //19
-            gui->log("Copy Special Maps");
+            emit increaseProgress(1); //19
+            emit log("Copy Special Maps");
             if(settings->copyMaps) {
                 try {
                     copyHDMaps("resources\\Script.Rm\\", installMapDir, true);
                 } catch (std::exception const & e) {
-                    std::string message = gui->translate("specialMapError")+e.what();
-                    gui->log(message);
+                    QString message = QString("specialMapError$")+e.what();
+                    emit log(message);
                     if(retry) {
-                        gui->createDialog(message,gui->translate("errorTitle"));
+                        emit createDialog(message,"errorTitle");
                     } else {
                         retryInstall();
                     }
                 }
             } else {
-                gui->increaseProgress(3);
+                emit increaseProgress(3);
             }
-            gui->increaseProgress(1); //23
+            emit increaseProgress(1); //23
             try {
                 recCopy(scenarioInputDir,installDir/"Scenario",false,true);
-                gui->increaseProgress(0);
+
             } catch (std::exception const & e) {
-                std::string message = gui->translate("scenarioError")+e.what();
-                gui->log(message);
+                QString message = QString("scenarioError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
-            gui->log("Copying AI");
+            emit log("Copying AI");
             try {
                 recCopy(aiInputPath, installDir/"Script.Ai", false, true);
-                gui->increaseProgress(0);
+
             } catch (std::exception const & e) {
-                std::string message = gui->translate("aiError")+e.what();
-                gui->log(message);
+                QString message = QString("aiError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
-            gui->increaseProgress(1); //24
-            gui->log("Hotkey Setup");
+            emit increaseProgress(1); //24
+            emit log("Hotkey Setup");
             try {
                 if(settings->hotkeyChoice != 0 || fs::exists("player1.hki"))
                     hotkeySetup();
             } catch (std::exception const & e) {
-                std::string message = gui->translate("hotkeyError")+e.what();
-                gui->log(message);
+                QString message = QString("hotkeyError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
+                    emit createDialog(message,"errorTitle");
                 } else {
                     retryInstall();
                 }
             }
 
-            gui->increaseProgress(1); //25
+            emit increaseProgress(1); //25
 
-            gui->log("Opening dats");
-            gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingAoc"));
+            emit log("Opening dats");
+            emit setInfo("working$\n$workingAoc");
 
 
 
@@ -2325,29 +2328,29 @@ int WKConverter::run(bool retry)
             try {
                 aocDat.setGameVersion(genie::GameVersion::GV_TC);
                 aocDat.load(aocDatString.c_str());
-                gui->increaseProgress(5); //30
+                emit increaseProgress(3); //28
 
-                gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingHD"));
+                emit setInfo("working$\n$workingHD");
 
                 hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
                 hdDat.load(hdDatString.c_str());
-                gui->increaseProgress(5); //35
+                emit increaseProgress(3); //31
 
-                gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingInterface"));
+                emit setInfo("working$\n$workingInterface");
 
 
-                gui->log("HUD Hack");
+                emit log("HUD Hack");
                 uglyHudHack(assetsPath);
-                gui->increaseProgress(1); //36
+                emit increaseProgress(1); //32
 
-                gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingDat"));
+                emit setInfo("working$\n$workingDat");
 
 
-                gui->log("Transfer HD Dat elements");
+                emit log("Transfer HD Dat elements");
                 transferHdDatElements(&hdDat, &aocDat);
-                gui->increaseProgress(1); //37
+                emit increaseProgress(1); //33
 
-                gui->log("Patch Architectures");
+                emit log("Patch Architectures");
                 /*
                  * As usual, we have to fix some mediterranean stuff first where builidings that shouldn't
                  * share the same garrison flag graphics.
@@ -2374,46 +2377,46 @@ int WKConverter::run(bool retry)
                 if(settings->useWalls) //This needs to be AFTER patchArchitectures
                     copyWallFiles(wallsInputDir);
             } catch (std::exception const & e) {
-                std::string message = gui->translate("datError")+e.what();
-                gui->log(message);
+                QString message = QString("datError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                     return -2;
                 } else {
                     retryInstall();
                 }
             }
 
-            gui->increaseProgress(1); //66
+            emit increaseProgress(1); //64
             try {
                 if(settings->useMonks)
                     indexDrsFiles(monkInputDir);
                 else
                     indexDrsFiles(oldMonkInputDir);
-                gui->increaseProgress(1); //67
+                emit increaseProgress(1); //65
 
                 indexDrsFiles(architectureFixDir);
-                gui->log("Mod Override Dir");
+                emit log("Mod Override Dir");
                 if(!fs::is_empty(modOverrideDir))
                     indexDrsFiles(modOverrideDir);
-                gui->increaseProgress(1); //68
-                gui->log("Opening DRS");
+                emit increaseProgress(1); //66
+                emit log("Opening DRS");
                 std::ofstream drsOut(drsOutPath, std::ios::binary);
-                gui->log("Make DRS");
+                emit log("Make DRS");
                 makeDrs(&drsOut);
-                gui->increaseProgress(1); //69
+                emit increaseProgress(1); //75
 
 
-                gui->log("copy gamedata_x1.drs");
+                emit log("copy gamedata_x1.drs");
                 fs::copy_file(gamedata_x1, installDir/"Data\\gamedata_x1.drs", fs::copy_option::overwrite_if_exists);
-                gui->increaseProgress(1); //70
+                emit increaseProgress(1); //76
             } catch (std::exception const & e) {
-                std::string message = gui->translate("indexingError")+e.what();
-                gui->log(message);
+                QString message = QString("indexingError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                     return -2;
                 } else {
                     retryInstall();
@@ -2423,16 +2426,20 @@ int WKConverter::run(bool retry)
             /*
              * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
              */
+
+
             std::ifstream versionFile((resourceDir/"version.txt").string());
             std::string patchNumber;
             std::getline(versionFile, patchNumber);
             std::string dataVersion;
             std::getline(versionFile, dataVersion);
+
             std::string hash1;
             std::string hash2;
             std::getline(versionFile, hash1);
             std::getline(versionFile, hash2);
             versionFile.close();
+
 
             wololo::DatPatch patchTab[] = {
 
@@ -2455,28 +2462,28 @@ int WKConverter::run(bool retry)
                 wololo::ai900UnitIdFix
             };
 
-            gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingPatches"));
+            emit setInfo("working$\n$workingPatches");
 
-            gui->log("DAT Patches");
+            emit log("DAT Patches");
             try{
                 for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {
                     patchTab[i].patch(&aocDat);
-                    gui->setInfo(gui->translate("working")+"\n"+patchTab[i].name);
-                    gui->increaseProgress(1); //71-86
+                    emit setInfo(QString::fromStdString("working$\n$"+patchTab[i].name));
+                    emit increaseProgress(1); //77-93
                 }
 
                 for (size_t civIndex = 0; civIndex < aocDat.Civs.size(); civIndex++) {
                     aocDat.Civs[civIndex].Resources[198] = std::stoi(dataVersion); //Mod version: WK=1, last 3 digits are patch number
                 }
 
-                gui->log("Save DAT");
+                emit log("Save DAT");
                 aocDat.saveAs(outputDatPath.string().c_str());
             } catch (std::exception const & e) {
-                std::string message = gui->translate("datSaveError")+e.what();
-                gui->log(message);
+                QString message = QString("datSaveError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                     return -2;
                 } else {
                     retryInstall();
@@ -2487,7 +2494,7 @@ int WKConverter::run(bool retry)
                     /*
                      * Generate version.ini based on the installer and the hash of the dat.
                      */
-                    gui->log("Create Hash");
+                    emit log("Create Hash");
                     QFile file(outputDatPath.string().c_str());
 
                     if (file.open(QIODevice::ReadOnly))
@@ -2498,7 +2505,7 @@ int WKConverter::run(bool retry)
                         std::ofstream versionOut(versionIniPath);
                         std::string hash = hashData.toBase64().toStdString().substr(0,6);
                         if (hash != hash1 && hash != hash2) {
-                            gui->createDialog(gui->translate("dialogBeta"));
+                            emit createDialog("dialogBeta");
 
                             versionOut << (patchNumber + ".") << hash;
                         } else {
@@ -2507,11 +2514,11 @@ int WKConverter::run(bool retry)
                         versionOut.close();
                     }
                 } catch (std::exception const & e) {
-                    std::string message = gui->translate("versionFileError")+e.what();
-                    gui->log(message);
+                    QString message = QString("versionFileError$")+e.what();
+                    emit log(message);
                     if(retry) {
-                        gui->createDialog(message,gui->translate("errorTitle"));
-                        gui->setInfo(gui->translate("error"));
+                        emit createDialog(message,"errorTitle");
+                        emit setInfo("error");
                         return -2;
                     } else {
                         retryInstall();
@@ -2519,15 +2526,15 @@ int WKConverter::run(bool retry)
                 }
             }
             if (settings->useBoth) {
-                gui->log("Offline installation symlink");
+                emit log("Offline installation symlink");
                 try {
                     symlinkSetup(settings->vooblyDir, settings->upDir, xmlPath, xmlOutPathUP);
                 } catch (std::exception const & e) {
-                    std::string message = gui->translate("symlinkError")+e.what();
-                    gui->log(message);
+                    QString message = QString("symlinkError$")+e.what();
+                    emit log(message);
                     if(retry) {
-                        gui->createDialog(message,gui->translate("errorTitle"));
-                        gui->setInfo(gui->translate("error"));
+                        emit createDialog(message,"errorTitle");
+                        emit setInfo("error");
                         return -2;
                     } else {
                         retryInstall();
@@ -2537,7 +2544,7 @@ int WKConverter::run(bool retry)
 
         } else { //If we use a balance mod or old patch, just copy the supplied dat fil
             try {
-                gui->log("Copy DAT file");
+                emit log("Copy DAT file");
                 fs::remove(outputDatPath);
                 genie::DatFile dat;
                 dat.setGameVersion(genie::GameVersion::GV_TC);
@@ -2545,17 +2552,17 @@ int WKConverter::run(bool retry)
                 if(settings->fixFlags)
                     adjustArchitectureFlags(&dat,"resources\\WKFlags.txt");
                 dat.saveAs(outputDatPath.string().c_str());
-                gui->setProgress(20);
+                emit setProgress(20);
                 std::string patchNumber = std::get<2>(settings->dataModList[settings->patch]);
                 std::ofstream versionOut(versionIniPath);
                 versionOut << patchNumber;
                 versionOut.close();
             } catch (std::exception const & e) {
-                std::string message = gui->translate("patchDatError")+e.what();
-                gui->log(message);
+                QString message = QString("patchDatError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                     return -2;
                 } else {
                     retryInstall();
@@ -2565,7 +2572,7 @@ int WKConverter::run(bool retry)
 
 
 
-        gui->increaseProgress(1); //96
+        emit increaseProgress(1); //94
 
 		/*
 		 * If a user has access to more than just FE, also generate those versions
@@ -2575,7 +2582,7 @@ int WKConverter::run(bool retry)
 
         if (settings->patch >= 0) {
             try {
-                gui->log("Patch setup");
+                emit log("Patch setup");
                 fs::path xmlIn = resourceDir/"WKtemp.xml";
                 std::ifstream input(resourceDir.string()+("WK"+std::to_string(settings->dlcLevel)+".xml"));
                 std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
@@ -2604,11 +2611,11 @@ int WKConverter::run(bool retry)
                 }
                 fs::remove(xmlIn);
             } catch (std::exception const & e) {
-                std::string message = gui->translate("patchError")+e.what();
-                gui->log(message);
+                QString message = QString("patchError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                     return -2;
                 } else {
                     retryInstall();
@@ -2617,25 +2624,25 @@ int WKConverter::run(bool retry)
         } else if(settings->restrictedCivMods) {
             try {
                 if (settings->dlcLevel > 1) {
-                    gui->log("FE Setup");
+                    emit log("FE Setup");
                     fs::path xmlIn = resourceDir/"WK1.xml";
                     fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" FE");
                     if(settings->useBoth || settings->useVoobly)
                         symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
                 }
                 if (settings->dlcLevel > 2) {
-                    gui->log("AK Setup");
+                    emit log("AK Setup");
                     fs::path xmlIn = resourceDir/"WK2.xml";
                     fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" AK");
                     if(settings->useBoth || settings->useVoobly)
                         symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
                 }
             } catch (std::exception const & e) {
-                std::string message = gui->translate("restrictedCivError")+e.what();
-                gui->log(message);
+                QString message = QString("restrictedCivError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                 } else {
                     retryInstall();
                 }
@@ -2650,11 +2657,11 @@ int WKConverter::run(bool retry)
             try {
                 fs::copy_file(settings->vooblyDir / "Data\\empires2_x1_p1.dat", settings->upDir / "Data\\empires2_x1_p1.dat", fs::copy_option::overwrite_if_exists);
             } catch (std::exception const & e) {
-                std::string message = e.what();
-                gui->log(message);
+                QString message = e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                     return -2;
                 } else {
                     retryInstall();
@@ -2662,19 +2669,19 @@ int WKConverter::run(bool retry)
             }
         }
         if(settings->useVoobly) {
-            gui->createDialog(gui->translate("dialogDone"));
+            emit createDialog("dialogDone");
 
         } else {
-            gui->log("Create Offline Exe");
-            gui->setInfo(gui->translate("working")+"\n"+gui->translate("workingUp"));
-            gui->increaseProgress(1); //96
+            emit log("Create Offline Exe");
+            emit setInfo("working$\n$workingUP");
+            emit increaseProgress(1); //95
             if (!dllPatched)
-                gui->createDialog(gui->translate("dialogNoDll"));
+                emit createDialog("dialogNoDll");
 
             try {
                 fs::copy_file(UPExe, UPExeOut, fs::copy_option::overwrite_if_exists);
 
-                gui->increaseProgress(1); //97
+                emit increaseProgress(1); //96
 
                 callExternalExe(strtowstr("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
 
@@ -2689,31 +2696,31 @@ int WKConverter::run(bool retry)
                     UPModdedExe = newExeName;
                 }
             } catch (std::exception const & e) {
-                std::string message = gui->translate("exeError")+e.what();
-                gui->log(message);
+                QString message = QString("exeError$")+e.what();
+                emit log(message);
                 if(retry) {
-                    gui->createDialog(message,gui->translate("errorTitle"));
-                    gui->setInfo(gui->translate("error"));
+                    emit createDialog(message,"errorTitle");
+                    emit setInfo("error");
                     return -2;
                 } else {
                     retryInstall();
                 }
             }
 
-            gui->increaseProgress(1); //98
+            emit increaseProgress(1); //97
+            QString info;
             if(settings->useBoth)
-                line = gui->translate("dialogBoth");
+                info = "dialogBoth";
             else
-                line = gui->translate("dialogExe");
-            boost::replace_all(line,"<exe>",UPModdedExe);
-            gui->createDialog(line);
+                info = "dialogExe";
+            emit createDialog(info,"<exe>",QString::fromStdString(UPModdedExe));
 
         }
-        gui->setInfo(gui->translate("workingDone"));
+        emit setInfo("workingDone");
 
         if (settings->patch < 0 && fs::equivalent(settings->outPath,settings->HDPath)) {
 
-            gui->log("Fix Compat Patch");
+            emit log("Fix Compat Patch");
 			/*
 			 * Several small fixes for the compatibility patch. This only needs to be run once
 			 * An update to the compatibility patch would make this unnecessary most likely.
@@ -2723,37 +2730,37 @@ int WKConverter::run(bool retry)
 
             fs::create_directory(settings->outPath/"data\\Load");
             if(settings->useExe) { //this causes a crash with UP 1.5 otherwise
-                gui->setInfo(gui->translate("workingDone"));
+                emit setInfo("workingDone");
 
                 if(fs::file_size(settings->outPath/"data\\blendomatic.dat") < 400000) {
                     fs::rename(settings->outPath/"data\\blendomatic.dat",settings->outPath/"data\\blendomatic.dat.bak");
                     fs::rename(settings->outPath/"data\\blendomatic_x1.dat",settings->outPath/"data\\blendomatic.dat");
                 }
-                gui->increaseProgress(1);
+                emit increaseProgress(1); //98
             }
 		}
 
 
-        gui->setProgress(100);
+        emit setProgress(100);
 	}
 	catch (std::exception const & e) {
-        gui->createDialog(gui->translate("dialogException")+std::string()+e.what(),gui->translate("errorTitle"));
+        emit createDialog(QString("dialogException$$")+e.what(),"errorTitle");
 
-        gui->log(e.what());
-        gui->setInfo(gui->translate("error"));
+        emit log(e.what());
+        emit setInfo("error");
         ret = 1;
 	}
 	catch (std::string const & e) {		
-        gui->createDialog(gui->translate("dialogException")+e,gui->translate("errorTitle"));
+        emit createDialog(QString::fromStdString("dialogException$"+e),"errorTitle");
 
-        gui->log(e);
-        gui->setInfo(gui->translate("error"));
+        emit log(QString::fromStdString(e));
+        emit setInfo("error");
 		ret = 1;
 	}
 
 
     if(settings->patch < 0 && std::get<0>(settings->dataModList[0]) == "Patch 5.8 Beta") {
-        gui->createDialog("The converter will install the Patch 5.8 Beta as a separate mod now");
+        emit createDialog("The converter will install the Patch 5.8 Beta as a separate mod now");
         //Automatic Installation of Patch 5.8 Beta. Not super pretty as this duplicated code from mainwindow, but time restraints
         settings->patch = 0;
         settings->modName = "WK ";
@@ -2769,6 +2776,7 @@ int WKConverter::run(bool retry)
         run();
     }
 
+    emit finished();
 	return ret;
 }
 
