@@ -29,7 +29,6 @@
 #include "fixes/hotkeysfix.h"
 #include "fixes/disablenonworkingunits.h"
 #include "fixes/burmesefix.h"
-#include "fixes/incafix.h"
 #include "fixes/siegetowerfix.h"
 #include "fixes/khmerfix.h"
 #include "fixes/cuttingfix.h"
@@ -2453,7 +2452,6 @@ int WKConverter::run(bool retry)
                 wololo::portugueseFix,
                 wololo::disableNonWorkingUnits,
                 wololo::burmeseFix,
-                wololo::incaFix,
                 wololo::siegeTowerFix,
                 wololo::khmerFix,
                 wololo::trickleBuildingFix,
