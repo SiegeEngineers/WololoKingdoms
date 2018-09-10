@@ -26,7 +26,6 @@ SOURCES += main.cpp \
     fixes/malayfix.cpp \
     fixes/feitoriafix.cpp \
     fixes/burmesefix.cpp \
-    fixes/incafix.cpp \
     fixes/khmerfix.cpp \
     fixes/vietfix.cpp \
     mainwindow.cpp \
@@ -73,7 +72,6 @@ HEADERS += \
     fixes/malayfix.h \
     fixes/feitoriafix.h \
     fixes/burmesefix.h \
-    fixes/incafix.h \
     fixes/khmerfix.h \
     mainwindow.h \
     dialog.h \
