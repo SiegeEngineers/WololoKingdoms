@@ -1212,6 +1212,13 @@ void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *a
 	aocDat->Researchs = hdDat->Researchs;
 	aocDat->UnitLines = hdDat->UnitLines;
 	aocDat->TechTree = hdDat->TechTree;
+    aocDat->TerrainRestrictions.push_back(aocDat->TerrainRestrictions[14]);
+    aocDat->TerrainRestrictionPointers1.push_back(1);
+    aocDat->TerrainRestrictionPointers2.push_back(1);
+    for(std::vector<genie::TerrainPassGraphic>::iterator it = aocDat->TerrainRestrictions[22].TerrainPassGraphics.begin();
+        it !=  aocDat->TerrainRestrictions[22].TerrainPassGraphics.end(); it++) {
+        it->EnterTileSpriteID = 11164;
+    }
 
 	//Copy Terrains
 	aocDat->TerrainBlock.TerrainsUsed2 = 42;
