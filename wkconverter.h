@@ -74,6 +74,7 @@ private:
 
     int run(bool retry = false);
     void callExternalExe(std::wstring exe);
+    void callWaitExe(std::wstring exe);
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
     bool isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns);

@@ -58,6 +58,21 @@ void WKConverter::callExternalExe(std::wstring exe) {
     CloseHandle( pi.hThread );
 }
 
+void WKConverter::callWaitExe(std::wstring exe) {
+    SHELLEXECUTEINFO ShExecInfo = {0};
+    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    ShExecInfo.hwnd = nullptr;
+    ShExecInfo.lpVerb = nullptr;
+    ShExecInfo.lpFile = L"cmd.exe";
+    ShExecInfo.lpParameters = exe.c_str();
+    ShExecInfo.lpDirectory = nullptr;
+    ShExecInfo.nShow = SW_SHOW;
+    ShExecInfo.hInstApp = nullptr;
+    ShellExecuteEx(&ShExecInfo);
+    WaitForSingleObject(ShExecInfo.hProcess,INFINITE);
+}
+
 void WKConverter::recCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
     /*
      * Recursive copy of a folder (or file, but then this isn't necessary)
@@ -1841,7 +1856,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         }
     }
     std::string hotkeyString = "";
-    for (fs::directory_iterator current(oldDirString), end;current != end; ++current) {
+    for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
         fs::path currentPath = current->path();
         std::string extension = currentPath.extension().string();
         if (extension == ".hki") {
@@ -1875,9 +1890,15 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
             + languageString +
             "mklink /H \""+newDirString+"player.nfz\" \""+ oldDirString+"player.nfz\"";
     std::wstring wcmd = strtowstr(cmd);
-    ShellExecute(nullptr,L"open",L"cmd.exe",wcmd.c_str(),nullptr,SW_HIDE);
+    //ShellExecute(nullptr,L"open",L"cmd.exe",wcmd.c_str(),nullptr,SW_HIDE);
+    callWaitExe(wcmd);
     if(!fs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
-        recCopy(oldDirString,newDir,true);
+        for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
+            fs::path currentPath(current->path());
+            if(!fs::is_directory(currentPath) || tolower(currentPath.filename().string()) != "savegame") {
+                recCopy(currentPath,newDir/currentPath.filename(),true);
+            }
+        }
     }
     fs::create_directories(newDir/"Savegame\\Multi");
     if(vooblyDst && !dataMod)
