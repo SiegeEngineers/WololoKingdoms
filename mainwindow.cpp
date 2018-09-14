@@ -114,17 +114,6 @@ int MainWindow::initialize() {
         changeModPatch();
     } );
 
-    setButtonWhatsThis(this->ui->hotkeyTip,"hotkeyTip");
-    setButtonWhatsThis(this->ui->tooltipTip,"tooltipTip");
-    setButtonWhatsThis(this->ui->patchSelectionTip,"patchSelectionTip");
-    setButtonWhatsThis(this->ui->flagsTip,"flagsTip");
-    setButtonWhatsThis(this->ui->installTypeTip,"installTypeTip");
-    setButtonWhatsThis(this->ui->modsTip,"modsTip");
-    setButtonWhatsThis(this->ui->mapsTip,"mapsTip");
-    setButtonWhatsThis(this->ui->customMapsTip,"customMapsTip");
-    setButtonWhatsThis(this->ui->directoryTip,"directoryTip");
-    setButtonWhatsThis(this->ui->restrictedCivTip,"restrictedCivTip");
-
     if(fs::exists("player1.hki")) {
         this->ui->hotkeyChoice->setDisabled(true);
         this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"]);
@@ -322,6 +311,7 @@ void MainWindow::setButtonWhatsThis(QPushButton* button, QString title) {
     button->setIcon(QIcon(questionIcon));
     button->setIconSize(QSize(16,16));
     button->setWhatsThis(translation[title]);
+    button->disconnect();
     QObject::connect( button, &QPushButton::clicked, this, [this, button]() {
             QWhatsThis::showText(button->mapToGlobal(QPoint(0,0)),button->whatsThis());
     } );
@@ -562,6 +552,16 @@ void MainWindow::changeLanguage() {
     this->ui->hotkeyChoice->setItemText(1,translation["hotkeys1"]);
     this->ui->hotkeyChoice->setItemText(2,translation["hotkeys2"]);
     this->ui->hotkeyChoice->setItemText(3,translation["hotkeys3"]);
+    setButtonWhatsThis(this->ui->hotkeyTip,"hotkeyTip");
+    setButtonWhatsThis(this->ui->tooltipTip,"tooltipTip");
+    setButtonWhatsThis(this->ui->patchSelectionTip,"patchSelectionTip");
+    setButtonWhatsThis(this->ui->flagsTip,"flagsTip");
+    setButtonWhatsThis(this->ui->installTypeTip,"installTypeTip");
+    setButtonWhatsThis(this->ui->modsTip,"modsTip");
+    setButtonWhatsThis(this->ui->mapsTip,"mapsTip");
+    setButtonWhatsThis(this->ui->customMapsTip,"customMapsTip");
+    setButtonWhatsThis(this->ui->directoryTip,"directoryTip");
+    setButtonWhatsThis(this->ui->restrictedCivTip,"restrictedCivTip");
     language=langBackup;
 	updateUI();
 }
