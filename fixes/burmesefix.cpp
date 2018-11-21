@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void burmesePatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void burmesePatch(genie::DatFile *aocDat) {
 
 	//It doesn't work as a TB tech, has to be a normal tech with team effect
 

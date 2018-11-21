@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void vietPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void vietPatch(genie::DatFile *aocDat) {
 
 	//Civ Bonus Fix
 

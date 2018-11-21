@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void berbersUTPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void berbersUTPatch(genie::DatFile *aocDat) {
 	/*
 	 * Thanks to UP 1.5 Kasbah works natively, the regeneration works with the hero ability and just needs slight adjustments
 	 */
