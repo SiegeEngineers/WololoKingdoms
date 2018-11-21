@@ -12,7 +12,7 @@ Usage of the converter should hopefully be intuitive, but there are more detaile
 
 ## Requirements
 
-To run it, you will need to own HD and its expansions. If you don't own all expansions, civilizations of DLCs that you don't own and and civs of any DLCs released later will not be available to you. That means:
+To run it, you will need to own HD and its expansions. If you don't own all expansions, civilizations of DLCs that you don't own and civs of any DLCs released later will not be available to you. This means:
 1. If you don't own the Forgotten Empires (FE) DLC, you can't use this mod
 2. If you don't own African Kingdoms (AK), you will only have access to AoC and FE civs (regardless if you own Rise of the Rajas or not)
 3. If you don't own Rise of the Rajas (RotR), you won't have access to RotR civs.
