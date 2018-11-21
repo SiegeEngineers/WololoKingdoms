@@ -1,7 +1,7 @@
 # WololoKingdoms
 A program for converting AOE2HD expansions files (The Forgotten, African Kingdoms and Rise of the Rajas) to the original AOC engine format.
 
-Note: Please post any issues, pull requests, etc. on the current main repository (https://github.com/AoE2CommunityGitHub/WololoKingdoms). This is a continuation of Jineapple's WololoKingdoms (https://github.com/Jineapple/WololoKingdoms). For personal reasons he has stepped down from this project, and Trirem will be carrying over with his permission.
+Note: Please download the program or post any issues, pull requests, etc. on the **current main repository (https://github.com/AoE2CommunityGitHub/WololoKingdoms). ** This is a continuation of Jineapple's WololoKingdoms (https://github.com/Jineapple/WololoKingdoms). For personal reasons he has stepped down from this project, and Trirem will be carrying over with his permission.
 
 ## Why ?
 People who play AOE2:HD are probably aware of all the issues currently affecting the game : lobbies not starting, desyncs, lag issues etc.
