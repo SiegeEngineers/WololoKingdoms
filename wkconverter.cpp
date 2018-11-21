@@ -1860,35 +1860,35 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         fs::path currentPath = current->path();
         std::string extension = currentPath.extension().string();
         if (extension == ".hki") {
-           hotkeyString += "mklink /H \""+newDirString+currentPath.filename().string()+"\" \""+ currentPath.string()+"\" & ";
+           hotkeyString += "mklink \""+newDirString+currentPath.filename().string()+"\" \""+ currentPath.string()+"\" & ";
         }
     }
-	std::string datastring = datalink?"mklink /J \""+newDirString+"Data\" \""+ oldDirString+"Data\" & ":
-                                      "mklink /H \""+newDirString+"Data\\gamedata_x1_p1.drs\" \""+ oldDirString+"Data\\gamedata_x1_p1.drs\" & "
-                                      "mklink /H \""+newDirString+"Data\\gamedata_x1.drs\" \""+ oldDirString+"Data\\gamedata_x1.drs\" & ";
+	std::string datastring = datalink?"mklink /D \""+newDirString+"Data\" \""+ oldDirString+"Data\" & ":
+                                      "mklink \""+newDirString+"Data\\gamedata_x1_p1.drs\" \""+ oldDirString+"Data\\gamedata_x1_p1.drs\" & "
+                                      "mklink \""+newDirString+"Data\\gamedata_x1.drs\" \""+ oldDirString+"Data\\gamedata_x1.drs\" & ";
     std::string languageString = "";
 
     if(!dataMod) {
         if(vooblyDst) {
             fs::remove(newDir/"language.ini");
-            languageString = "mklink /H \""+newDirString+"language.ini\" \""+ oldDirString+"language.ini\" & ";
+            languageString = "mklink \""+newDirString+"language.ini\" \""+ oldDirString+"language.ini\" & ";
         } else if (!vooblySrc) {
             fs::remove(newDir/"Data\\language_x1_p1.dll");
-            languageString = "mklink /H \""+newDirString+"Data\\language_x1_p1.dll\" \""+ oldDirString+"Data\\language_x1_p1.dll\" & ";
+            languageString = "mklink \""+newDirString+"Data\\language_x1_p1.dll\" \""+ oldDirString+"Data\\language_x1_p1.dll\" & ";
         }
     }
 
-    std::string cmd = "/C mklink /J \""+newDirString+"Taunt\" \""+ oldDirString+"Taunt\" & "
+    std::string cmd = "/C mklink /D \""+newDirString+"Taunt\" \""+ oldDirString+"Taunt\" & "
 			+ datastring +
             hotkeyString +
-            "mklink /J \""+newDirString+"Script.Rm\" \""+ oldDirString+"Script.Rm\" & "
-            "mklink /J \""+newDirString+"Script.Ai\" \""+ oldDirString+"Script.Ai\" & "
-            "mklink /J \""+newDirString+"Sound\" \""+ oldDirString+"Sound\" & "
-            "mklink /J \""+newDirString+"History\" \""+ oldDirString+"History\" & "
-            "mklink /J \""+newDirString+"Screenshots\" \""+ oldDirString+"Screenshots\" & "
-            "mklink /J \""+newDirString+"Scenario\" \""+ oldDirString+"Scenario\" & "
+            "mklink /D \""+newDirString+"Script.Rm\" \""+ oldDirString+"Script.Rm\" & "
+            "mklink /D \""+newDirString+"Script.Ai\" \""+ oldDirString+"Script.Ai\" & "
+            "mklink /D \""+newDirString+"Sound\" \""+ oldDirString+"Sound\" & "
+            "mklink /D \""+newDirString+"History\" \""+ oldDirString+"History\" & "
+            "mklink /D \""+newDirString+"Screenshots\" \""+ oldDirString+"Screenshots\" & "
+            "mklink /D \""+newDirString+"Scenario\" \""+ oldDirString+"Scenario\" & "
             + languageString +
-            "mklink /H \""+newDirString+"player.nfz\" \""+ oldDirString+"player.nfz\"";
+            "mklink \""+newDirString+"player.nfz\" \""+ oldDirString+"player.nfz\"";
     std::wstring wcmd = strtowstr(cmd);
     //ShellExecute(nullptr,L"open",L"cmd.exe",wcmd.c_str(),nullptr,SW_HIDE);
     callWaitExe(wcmd);
