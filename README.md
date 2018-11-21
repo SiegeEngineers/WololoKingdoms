@@ -148,7 +148,7 @@ To allow for maps with the new expansion terrains, some changes have been made. 
 
 WololoKingdoms has some additional unique features:
 
--There are new "Resource Workshop" buildings, which have a resource trickle like a feitoria for map makers to use.
+- There are new "Resource Workshop" buildings, which have a resource trickle like a feitoria for map makers to use.
 	- IDs 1300-1303: Auto-Convertible Food, Wood, Stone Gold Workshops
 	- IDs 1304-1307: Regular Food, Wood, Stone Gold Workshops
 	- 1308: Auto-Convertible Workshop with all four resource trickles
