@@ -3,7 +3,7 @@
 
 namespace wololo {
 
-void siegeTowerPatch(genie::DatFile *aocDat, std::map<int, std::string> *langReplacement) {
+void siegeTowerPatch(genie::DatFile *aocDat) {
 	/*
 	 * This makes Siege Towers work (sooo much better than HD :O)
 	 */

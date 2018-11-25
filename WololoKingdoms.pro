@@ -26,18 +26,19 @@ SOURCES += main.cpp \
     fixes/malayfix.cpp \
     fixes/feitoriafix.cpp \
     fixes/burmesefix.cpp \
-    fixes/incafix.cpp \
     fixes/khmerfix.cpp \
     fixes/vietfix.cpp \
     mainwindow.cpp \
     dialog.cpp \
     fixes/smallfixes.cpp \
-	fixes/siegetowerfix.cpp \
-    fixes/cuttingfix.cpp
+    fixes/siegetowerfix.cpp \
+    fixes/cuttingfix.cpp \
+    fixes/tricklebuildingfix.cpp \
+    wkconverter.cpp
 
 win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
-LIBS += -LD:/local/boost_1_60_0/stage/lib -lboost_system-mgw49-mt-1_60 -lboost_filesystem-mgw49-mt-1_60
 LIBS += -L$$PWD/lib/ -lsteam_api
+LIBS += -LD:/boost_1_63_0/stage/lib -lboost_system-mgw53-mt-1_63 -lboost_filesystem-mgw53-mt-1_63
 INCLUDEPATH += C:\GnuWin32\src\zlib-1.2.3
 LIBS += -LC:\GnuWin32\src\zlib-1.2.3 -lz
 INCLUDEPATH += C:\quazip-0.7.3\quazip
@@ -48,8 +49,11 @@ win32:RC_ICONS += WololoKingdoms.ico
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
 
+INCLUDEPATH += $$PWD/../.
+DEPENDPATH += $$PWD/../.
+
 INCLUDEPATH += include/
-INCLUDEPATH += D:/local/boost_1_60_0/
+INCLUDEPATH += D:/boost_1_63_0/
 
 HEADERS += \
     paths.h\
@@ -68,14 +72,17 @@ HEADERS += \
     fixes/malayfix.h \
     fixes/feitoriafix.h \
     fixes/burmesefix.h \
-    fixes/incafix.h \
     fixes/khmerfix.h \
     mainwindow.h \
     dialog.h \
     fixes/smallfixes.h \
-	fixes/siegetowerfix.h \
+    fixes/siegetowerfix.h \
     include/sdk/public/steam/steam_api.h \
-    fixes/cuttingfix.h
+    fixes/cuttingfix.h \
+    fixes/tricklebuildingfix.h \
+    wkconverter.h \
+    wkgui.h \
+    wksettings.h
 
 DISTFILES += \
     WololoKingdoms.ico
