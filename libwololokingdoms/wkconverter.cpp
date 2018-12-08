@@ -14,7 +14,6 @@
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 #include "md5.h"
-#include "paths.h"
 #include "wololo/datPatch.h"
 #include "wololo/Drs.h"
 #include "fixes/berbersutfix.h"

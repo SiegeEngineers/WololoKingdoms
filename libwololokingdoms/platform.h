@@ -43,13 +43,30 @@ static void callWaitExe(std::wstring exe) {
 }
 
 static void mklink(char type, std::string link, std::string dest) {
+  std::wstring wlink;
+  std::wstring wdest;
+  for (auto c : link) {
+    wchar_t w = c;
+    wlink.push_back(w);
+  }
+  for (auto c : dest) {
+    wchar_t w = c;
+    wdest.push_back(w);
+  }
+
   if (type == MKLINK_HARD) {
-    CreateHardLinkA(link.c_str(), dest.c_str(), NULL);
+    CreateHardLink(wlink.c_str(), wdest.c_str(), NULL);
   } else if (type == MKLINK_DIR) {
-    CreateSymbolicLinkA(link.c_str(), dest.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY);
+#ifdef CreateSymbolicLink
+    CreateSymbolicLink(wlink.c_str(), wdest.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY);
+#else
+    std::wstringstream line;
+    line << L"/C mklink /d " << wlink << L" " << wdest;
+    callWaitExe(line.str().c_str());
+#endif
   } else if (type == MKLINK_JUNCTION) {
     std::wstringstream line;
-    line << L"/C mklink /J " << strtowstr(link) << L" " << strtowstr(dest);
+    line << L"/C mklink /J " << wlink << L" " << wdest;
     callWaitExe(line.str().c_str());
   }
 }
