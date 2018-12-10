@@ -1,6 +1,6 @@
 SOURCES = wkconverter.cpp md5.cpp
 CFLAGS = -std=c++17 -fPIC -I./include -I./third_party/genieutils/include
-W_CFLAGS = $(CFLAGS) -I./third_party/win-iconv -DUNICODE
+W_CFLAGS = $(CFLAGS) -I./third_party/genieutils/extern/win-iconv -DUNICODE
 L_OBJECTS = $(addprefix bin/linux/intermediate/, $(SOURCES:.cpp=.o))
 W_OBJECTS = $(addprefix bin/win32/intermediate/, $(SOURCES:.cpp=.o))
 
@@ -36,4 +36,10 @@ bin/linux/intermediate/genieutils/Makefile:
 	  cmake ../../../../third_party/genieutils
 bin/linux/intermediate/genieutils/libgenieutils.so: bin/linux/intermediate/genieutils/Makefile
 	make -C bin/linux/intermediate/genieutils
-bin/win32/genieutils.dll:
+
+bin/win32/intermediate/genieutils/Makefile:
+	mkdir -p bin/win32/intermediate/genieutils
+	cd bin/win32/intermediate/genieutils && \
+	  cmake ../../../../third_party/genieutils
+bin/win32/intermediate/genieutils/libgenieutils.so: bin/win32/intermediate/genieutils/Makefile
+	make -C bin/win32/intermediate/genieutils
