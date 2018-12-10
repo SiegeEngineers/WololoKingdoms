@@ -1,5 +1,15 @@
 QT += core gui
 
+win32 {
+} else {
+  libwololokingdoms.target = lib/libwololokingdoms.so
+  libwololokingdoms.commands = make -C $$PWD/libwololokingdoms linux && \
+    cp $$PWD/libwololokingdoms/bin/linux/lib*.so lib
+}
+
+QMAKE_EXTRA_TARGETS += libwololokingdoms
+PRE_TARGETDEPS += lib/libwololokingdoms.so
+
 QMAKE_CXXFLAGS += -std=c++17
 win32: QMAKE_CXXFLAGS += -DUNICODE
 
