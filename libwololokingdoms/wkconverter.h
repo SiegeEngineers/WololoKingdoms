@@ -154,7 +154,6 @@ private:
     void uglyHudHack(fs::path);
     void copyCivIntroSounds(fs::path inputDir, fs::path outputDir);
     void copyWallFiles(fs::path inputDir);
-	std::string tolower(std::string line);
 	void createMusicPlaylist(std::string inputDir, std::string const outputDir);
 	void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat);
     void adjustArchitectureFlags(genie::DatFile *aocDat, std::string flagFilename);

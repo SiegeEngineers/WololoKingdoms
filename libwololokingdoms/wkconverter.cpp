@@ -61,6 +61,11 @@ static std::string wstrtostr(std::wstring wide) {
   return narrow;
 }
 
+static std::string tolower(std::string line) {
+	std::transform(line.begin(), line.end(), line.begin(), static_cast<int(*)(int)>(std::tolower));
+	return line;
+}
+
 static std::string readFullStream(std::istream& stream) {
     std::stringstream strstr;
     strstr << stream.rdbuf();
@@ -972,11 +977,6 @@ void WKConverter::copyWallFiles(fs::path inputDir) {
                 slpFiles[newBaseSLP+i*1000+345+j] = inputDir/(std::to_string(4169+archID+j*2)+".slp");
 		}
 	}
-}
-
-std::string WKConverter::tolower(std::string line) {
-	std::transform(line.begin(), line.end(), line.begin(), static_cast<int(*)(int)>(std::tolower));
-	return line;
 }
 
 void WKConverter::createMusicPlaylist(std::string inputDir, std::string const outputDir) {
