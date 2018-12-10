@@ -1,22 +1,22 @@
 SOURCES = wkconverter.cpp md5.cpp
-CFLAGS = -std=c++17 -I./include -I./third_party/genieutils/include
+CFLAGS = -std=c++17 -fPIC -I./include -I./third_party/genieutils/include
 W_CFLAGS = $(CFLAGS) -I./third_party/win-iconv -DUNICODE
 L_OBJECTS = $(addprefix bin/linux/intermediate/, $(SOURCES:.cpp=.o))
 W_OBJECTS = $(addprefix bin/win32/intermediate/, $(SOURCES:.cpp=.o))
 
 all: linux win32
-linux: bin/linux/libwololokingdoms.lib bin/linux/libwololokingdoms.so
+linux: bin/linux/libwololokingdoms.a bin/linux/libwololokingdoms.so
 win32: bin/win32/libwololokingdoms.lib bin/win32/libwololokingdoms.dll
 .PHONY: linux win32 all
 
-bin/linux/libwololokingdoms.lib: bin/linux $(L_OBJECTS)
-	ar rvs $@ $(L_OBJECTS)
-bin/linux/libwololokingdoms.so: bin/linux/libgenieutils.so $(L_OBJECTS)
-	g++ -shared -o $@ -L./bin/linux $(L_OBJECTS) -lgenieutils
+bin/linux/libwololokingdoms.a: bin/linux/intermediate/genieutils/libgenieutils.a $(L_OBJECTS)
+	g++ -static -o $@ -L./bin/linux/intermediate/genieutils $(L_OBJECTS) -lgenieutils
+bin/linux/libwololokingdoms.so: bin/linux/intermediate/genieutils/libgenieutils.so $(L_OBJECTS)
+	g++ -shared -fPIC -o $@ -L./bin/linux/intermediate/genieutils $(L_OBJECTS) -lgenieutils
 bin/win32/libwololokingdoms.lib: bin/win32 $(W_OBJECTS)
 	i686-w64-mingw32-ar rvs $@ $(W_OBJECTS)
 bin/win32/libwololokingdoms.dll: bin/win32 $(W_OBJECTS)
-	i686-w64-mingw32-g++ -shared -L./bin/win32 $(W_OBJECTS) -lgenieutils
+	i686-w64-mingw32-g++ -shared -L./bin/win32/intermediate/genieutils $(W_OBJECTS) -lgenieutils
 
 bin/linux/intermediate/%.o: %.cpp
 	g++ -c $(CFLAGS) -o $@ $<
@@ -33,7 +33,7 @@ bin/win32:
 bin/linux/intermediate/genieutils/Makefile:
 	mkdir -p bin/linux/intermediate/genieutils
 	cd bin/linux/intermediate/genieutils && \
-	  cmake -D GENIEUTILS_STATIC_BUILD=1 ../../../../third_party/genieutils
-bin/linux/libgenieutils.so: bin/linux/intermediate/genieutils/Makefile
+	  cmake ../../../../third_party/genieutils
+bin/linux/intermediate/genieutils/libgenieutils.so: bin/linux/intermediate/genieutils/Makefile
 	make -C bin/linux/intermediate/genieutils
 bin/win32/genieutils.dll:
