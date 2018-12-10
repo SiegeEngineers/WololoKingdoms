@@ -1,10 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#ifndef _WIN32
-#error "Only Windows is supported in the installer UI."
-#endif
-
 #include <QMainWindow>
 #include <QProgressBar>
 #include <QPushButton>
@@ -15,8 +11,6 @@
 #include "wkgui.h"
 #include "libwololokingdoms/wksettings.h"
 #include "libwololokingdoms/wkconverter.h"
-#include "genie/dat/DatFile.h"
-#include "genie/lang/LangFile.h"
 
 namespace fs = std::filesystem;
 

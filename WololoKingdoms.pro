@@ -15,21 +15,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     paths.cpp \
-    conversions.cpp \
     mainwindow.cpp \
     dialog.cpp
 
 win32: {
   LIBS += -L$$PWD/lib/ -L$$PWD/libwololokingdoms/bin/win32 -llibgenieutils.dll -llibwololokingdoms.dll
 } else {
-  LIBS += -L$$PWD/lib/ -L$$PWD/libwololokingdoms/bin/linux -lgenieutils -lwololokingdoms
+  LIBS += -L$$PWD/libwololokingdoms/bin/linux -lwololokingdoms
+  LIBS += -L$$PWD/libwololokingdoms/bin/linux/intermediate/genieutils -lgenieutils
 }
 LIBS += -L$$PWD/lib/ -lsteam_api
-LIBS += -LD:/boost_1_63_0/stage/lib -lboost_system-mgw53-mt-1_63 -lboost_filesystem-mgw53-mt-1_63
-INCLUDEPATH += C:\GnuWin32\src\zlib-1.2.3
-LIBS += -LC:\GnuWin32\src\zlib-1.2.3 -lz
-INCLUDEPATH += C:\quazip-0.7.3\quazip
-LIBS += -LC:\quazip-0.7.3\quazip\release -lquazip
+LIBS += -lstdc++fs
 
 win32:RC_ICONS += WololoKingdoms.ico
 
@@ -44,11 +40,9 @@ INCLUDEPATH += $$PWD/libwololokingdoms/third_party/pcrio/include
 INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv
 
 INCLUDEPATH += include/
-INCLUDEPATH += D:/boost_1_63_0/
 
 HEADERS += \
     paths.h\
-    conversions.h\
     libwololokingdoms/include/wololo/Drs.h \
     libwololokingdoms/fixes/portuguesefix.h \
     libwololokingdoms/fixes/demoshipfix.h \

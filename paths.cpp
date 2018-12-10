@@ -1,21 +1,27 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <stdexcept>
 #include <filesystem>
 #include <stdio.h>
 #include "libwololokingdoms/platform.h"
 #include "paths.h"
+
+#ifdef _WIN32
 #include <windows.h>
 #include <tchar.h>
+#endif
 
 namespace fs = std::filesystem;
 
+#ifdef _WIN32
 typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE,PBOOL);
+#endif
 
 fs::path extractHDPath(std::string steamPath) {
 	std::string line;
     std::string HDPath = "";
-	std::ifstream manifest((steamPath+"/steamapps/appmanifest_221380.acf").c_str());
+	std::ifstream manifest(steamPath+"/steamapps/appmanifest_221380.acf");
 	while (std::getline(manifest,line)) {
 		u_int i;
 		if ((i = line.find("installdir")) != std::string::npos) {
@@ -30,6 +36,7 @@ fs::path extractHDPath(std::string steamPath) {
 	return fs::path(HDPath);
 }
 
+#ifdef _WIN32
 std::string getSteamPath() {
 	TCHAR temp[300];
 	unsigned long size = sizeof(temp);
@@ -46,6 +53,11 @@ std::string getSteamPath() {
 	std::string steamPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
 	return steamPath;
 }
+#else
+std::string getSteamPath() {
+  return "";
+}
+#endif
 
 fs::path getHDPath(std::string steamPath) {
 	fs::path HDPath("../");
@@ -82,6 +94,7 @@ fs::path getHDPath(std::string steamPath) {
 	return HDPath;
 }
 
+#ifdef _WIN32
 fs::path getOutPath(fs::path HDPath) {
 
 	TCHAR temp[300];
@@ -109,3 +122,8 @@ fs::path getOutPath(fs::path HDPath) {
 	}
 	return outPath;
 }
+#else
+fs::path getOutPath(fs::path HDPath) {
+  return fs::path("wololokingdoms_out");
+}
+#endif

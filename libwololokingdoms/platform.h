@@ -128,7 +128,14 @@ static int ConvertCP2Unicode(const char *source, std::wstring &resultString)
 #include <unistd.h>
 #define ERROR_SUCCESS 0
 
-static int ConvertUnicode2CP(const wchar_t *source, std::string &resultString)
+#ifdef __GNUC__
+#define ALLOWUNUSED __attribute__ ((unused))
+#else
+#define ALLOWUNUSED
+#endif
+
+
+static int ALLOWUNUSED ConvertUnicode2CP(const wchar_t *source, std::string &resultString)
 {
   resultString.clear();
   if (wcslen(source) <= 0)
@@ -136,7 +143,7 @@ static int ConvertUnicode2CP(const wchar_t *source, std::string &resultString)
   return ERROR_SUCCESS;
 }
 
-static int ConvertCP2Unicode(const char *source, std::wstring &resultString)
+static int ALLOWUNUSED ConvertCP2Unicode(const char *source, std::wstring &resultString)
 {
   resultString.clear();
   if (strlen(source) <= 0)
@@ -144,7 +151,7 @@ static int ConvertCP2Unicode(const char *source, std::wstring &resultString)
   return ERROR_SUCCESS;
 }
 
-static void mklink(char type, std::string link, std::string dest) {
+static void ALLOWUNUSED mklink(char type, std::string link, std::string dest) {
   symlink(dest.c_str(), link.c_str());
 }
 

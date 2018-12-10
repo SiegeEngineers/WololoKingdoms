@@ -5,14 +5,16 @@
 #include <cctype>
 #include <string>
 #include <sstream>
+#ifdef _WIN32
 #include <windows.h>
 #include <shellapi.h>
+#endif
 
 #include <chrono>
 #include <thread>
-/* #include <boost/algorithm/string/replace.hpp> */
 #include "paths.h"
-#include "conversions.h"
+#include "libwololokingdoms/string_helpers.h"
+#include "libwololokingdoms/platform.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -27,15 +29,15 @@
 #include <QThreadPool>
 #include "sdk/public/steam/steam_api.h"
 
-class WKQConverter: public WKConvertListener {
-  G_OBJECT
+class WKQConverter: public QObject, WKConvertListener {
+  Q_OBJECT
 private:
   WKConverter* converter;
 public slots:
   void process() {
-    run();
+    converter->run();
   }
-public signals:
+signals:
     void finished();
     void log(std::string logMessage);
     void setInfo(std::string info);
@@ -53,21 +55,27 @@ public:
   ~WKQConverter() {
     delete converter;
   }
+};
+
+#ifdef _WIN32
+fs::path get_exe_path() {
+    TCHAR pszPathToSelf[MAX_PATH];
+    DWORD dwPathLength = GetModuleFileName(nullptr, pszPathToSelf, MAX_PATH);
+    return dwPathLength > 0 ? fs::path(pszPathToSelf) : fs::path();
 }
+#else
+fs::path get_exe_path() {
+    return fs::read_symlink("/proc/self/exe");
+}
+#endif
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    TCHAR pszPathToSelf[MAX_PATH];
-    DWORD dwPathLength = GetModuleFileName(nullptr, pszPathToSelf, MAX_PATH);
-    if(dwPathLength > 0)
-    {
-        fs::path exePath = fs::path(pszPathToSelf);
-
-        // Code that extracts directory path from pszPathToSelf and places it into variable pszNewWorkingDirectory of type TCHAR
-       SetCurrentDirectory(strtowstr(exePath.parent_path().string()).c_str());
-
+    fs::path exePath = get_exe_path();
+    if (exePath != fs::path()) {
+        fs::current_path(exePath.parent_path());
     }
     ui->setupUi(this);
     initialize();
@@ -90,7 +98,7 @@ int MainWindow::initialize() {
     this->setWindowTitle(translation["version"]);
 
     steamPath = getSteamPath();
-    boost::replace_all(steamPath,"/","\\");
+    replace_all(steamPath,"/","\\");
     HDPath = getHDPath(steamPath);
     HDPath.make_preferred();
     if(HDPath == fs::path()) {
@@ -253,7 +261,7 @@ void MainWindow::createDialog(std::string info, std::string toReplace, std::stri
     QString qinfo = QString::fromStdString(info);
     qinfo = translate(qinfo);
     std::string infoStr = qinfo.toStdString();
-    boost::replace_all(infoStr, toReplace, replaceWith);
+    replace_all(infoStr, toReplace, replaceWith);
     QDialog* dialog = new Dialog(this,QString::fromStdString(infoStr));
     dialog->exec();
 }
@@ -351,6 +359,7 @@ void MainWindow::setButtonWhatsThis(QPushButton* button, QString title) {
 }
 
 void MainWindow::callExternalExe(std::wstring exe) {
+#ifdef _WIN32
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
     ZeroMemory( &si, sizeof(si) );
@@ -361,6 +370,10 @@ void MainWindow::callExternalExe(std::wstring exe) {
     CreateProcess( nullptr, cmdLineString, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi );
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );
+#else
+    std::cerr << "Tried to call process but we're on Linux" << std::endl;
+    exit(1);
+#endif
 }
 
 void MainWindow::readDataModList() {
@@ -559,7 +572,7 @@ void MainWindow::changeLanguage() {
          *  \\\\n -> \\n, means we want a \n in the text files for aoc
          */
         if(line.find("\\\\n") == std::string::npos)
-            boost::replace_all(line, "\\n", "\n");
+            replace_all(line, "\\n", "\n");
 		int index = line.find('=');
         QString key = QString::fromStdString(line.substr(0, index));
         translation[key] = QString::fromStdString(line.substr(index+1, std::string::npos));
