@@ -1,11 +1,11 @@
 #ifndef WKSETTINGS_H
 #define WKSETTINGS_H
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <string>
 #include <map>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 class WKSettings
 {

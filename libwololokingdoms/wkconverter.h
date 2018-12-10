@@ -4,8 +4,8 @@
 #include <set>
 #include <regex>
 #include <map>
+#include <filesystem>
 
-#include <boost/filesystem.hpp>
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 #include "wksettings.h"
@@ -18,7 +18,7 @@
 #define rt_getTerrainType() std::get<5>(*repIt)
 
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 /**
  * interface.

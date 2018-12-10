@@ -21,7 +21,7 @@ BOOST = -I./third_party/boost/libs/algorithm/include \
         -I./third_party/boost/libs/utility/include \
         -I./third_party/boost/libs/winapi/include
 
-CFLAGS = -std=c++14 -I./include -I./third_party/genieutils/include $(BOOST)
+CFLAGS = -std=c++17 -I./include -I./third_party/genieutils/include $(BOOST)
 W_CFLAGS = $(CFLAGS) -I./third_party/win-iconv -DUNICODE
 L_OBJECTS = $(addprefix bin/linux/intermediate/, $(SOURCES:.cpp=.o))
 W_OBJECTS = $(addprefix bin/win32/intermediate/, $(SOURCES:.cpp=.o))
