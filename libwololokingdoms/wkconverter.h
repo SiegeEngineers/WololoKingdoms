@@ -101,6 +101,8 @@ public:
 
     ~WKConverter() {}
 
+    int run(bool retry = false);
+
 private:
 
     WKSettings* settings;
@@ -131,7 +133,6 @@ private:
         UnbuildableTerrain
     };
 
-    int run(bool retry = false);
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
     bool isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns);
