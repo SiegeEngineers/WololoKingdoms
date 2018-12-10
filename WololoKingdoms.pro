@@ -40,7 +40,7 @@ DEPENDPATH += $$PWD/../.
 
 INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/include
 INCLUDEPATH += $$PWD/libwololokingdoms/third_party/pcrio/include
-INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv/include
+INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv
 
 INCLUDEPATH += include/
 INCLUDEPATH += D:/boost_1_63_0/

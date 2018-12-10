@@ -28,15 +28,28 @@
 #include <QThreadPool>
 #include "sdk/public/steam/steam_api.h"
 
-class WKQConverter {
+class WKQConverter: public WKConvertListener {
+  G_OBJECT
+private:
   WKConverter* converter;
 public slots:
   void process() {
     run();
   }
+public signals:
+    void finished();
+    void log(std::string logMessage);
+    void setInfo(std::string info);
+    void error(std::exception const & err);
+    void error(std::string message);
+    void createDialog(std::string info);
+    void createDialog(std::string info, std::string title);
+    void createDialog(std::string info, std::string toReplace, std::string replaceWith);
+    void setProgress(int i);
+    void increaseProgress(int i);
 public:
   WKQConverter(WKSettings* settings) {
-    converter = new WKConverter(settings);
+    converter = new WKConverter(settings, this);
   }
   ~WKQConverter() {
     delete converter;
@@ -86,7 +99,7 @@ int MainWindow::initialize() {
         this->ui->label->setText(translation["noSteamInstallation"]);
         dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
         dialog->exec();
-        log(QString::fromStdString("NoSteam. Path: "+steamPath));
+        log("NoSteam. Path: "+steamPath);
         allowRun = false;
         return -1;
     }
@@ -171,8 +184,8 @@ int MainWindow::initialize() {
 
 void MainWindow::runConverter() {
     if(dlcLevel < 1 || dlcLevel > 3 || vooblyDir == fs::path()) {
-        log(QString::fromStdString("Issue with parameters: DLC level: " +
-                                   std::to_string(dlcLevel)+", + vooblyDir: "+ vooblyDir.string()));
+        log("Issue with parameters: DLC level: " +
+                                   std::to_string(dlcLevel)+", + vooblyDir: "+ vooblyDir.string());
         return;
     }
 
@@ -197,11 +210,11 @@ void MainWindow::runConverter() {
     QThread* thread = new QThread;
     WKQConverter* converter = new WKQConverter(settings);
     converter->moveToThread(thread);
-    connect(converter, SIGNAL(log(QString)), this, SLOT(log(QString)));
-    connect(converter, SIGNAL(setInfo(QString)), this, SLOT(setInfo(QString)));
-    connect(converter, SIGNAL(createDialog(QString)), this, SLOT(createDialog(QString)));
-    connect(converter, SIGNAL(createDialog(QString, QString)), this, SLOT(createDialog(QString, QString)));
-    connect(converter, SIGNAL(createDialog(QString, QString, QString)), this, SLOT(createDialog(QString, QString, QString)));
+    connect(converter, SIGNAL(log(std::string)), this, SLOT(log(std::string)));
+    connect(converter, SIGNAL(setInfo(std::string)), this, SLOT(setInfo(std::string)));
+    connect(converter, SIGNAL(createDialog(std::string)), this, SLOT(createDialog(std::string)));
+    connect(converter, SIGNAL(createDialog(std::string, std::string)), this, SLOT(createDialog(std::string, std::string)));
+    connect(converter, SIGNAL(createDialog(std::string, std::string, std::string)), this, SLOT(createDialog(std::string, std::string, std::string)));
     connect(converter, SIGNAL(setProgress(int)), this, SLOT(setProgress(int)));
     connect(converter, SIGNAL(increaseProgress(int)), this, SLOT(increaseProgress(int)));
 
@@ -217,26 +230,31 @@ void MainWindow::log(QString logMessage) {
     logFile << logMessage.toStdString() << std::endl;
 }
 
-void MainWindow::setInfo(QString info){
-    info = translate(info);
-    this->ui->label->setText(info);
+void MainWindow::setInfo(std::string info){
+    QString qinfo = QString::fromStdString(info);
+    qinfo = translate(qinfo);
+    this->ui->label->setText(qinfo);
     this->ui->label->repaint();
 }
-void MainWindow::createDialog(QString info){
-    info = translate(info);
-    QDialog* dialog = new Dialog(this,info);
+void MainWindow::createDialog(std::string info){
+    QString qinfo = QString::fromStdString(info);
+    qinfo = translate(qinfo);
+    QDialog* dialog = new Dialog(this,qinfo);
     dialog->exec();
 }
-void MainWindow::createDialog(QString info, QString title){
-    info = translate(info);
-    QDialog* dialog = new Dialog(this,info,title);
+void MainWindow::createDialog(std::string info, std::string title){
+    QString qinfo = QString::fromStdString(info);
+    QString qtitle = QString::fromStdString(qtitle);
+    qinfo = translate(qinfo);
+    QDialog* dialog = new Dialog(this,qinfo,qtitle);
     dialog->exec();
 }
 
-void MainWindow::createDialog(QString info, QString toReplace, QString replaceWith){
-    info = translate(info);
-    std::string infoStr = info.toStdString();
-    boost::replace_all(infoStr, toReplace.toStdString(), replaceWith.toStdString());
+void MainWindow::createDialog(std::string info, std::string toReplace, std::string replaceWith){
+    QString qinfo = QString::fromStdString(info);
+    qinfo = translate(qinfo);
+    std::string infoStr = qinfo.toStdString();
+    boost::replace_all(infoStr, toReplace, replaceWith);
     QDialog* dialog = new Dialog(this,QString::fromStdString(infoStr));
     dialog->exec();
 }
@@ -302,7 +320,7 @@ void MainWindow::setInstallDirectory(std::string directory) {
     if(!fs::exists(outPath/"age2_x1")) {
         this->ui->label->setText(translation["noAoC"]);
         QDialog* dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
-        log(("No Aoc. Path: "+(outPath/"age2_x1").string()).c_str());
+        log("No Aoc. Path: "+(outPath/"age2_x1").string());
         dialog->exec();
         allowRun = false;
     } else {        

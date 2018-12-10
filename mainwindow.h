@@ -18,14 +18,6 @@
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 
-#define rt_getSLPName() std::get<0>(*repIt)
-#define rt_getPattern() std::get<1>(*repIt)
-#define rt_getReplaceName() std::get<2>(*repIt)
-#define rt_getOldId() std::get<3>(*repIt)
-#define rt_getNewId() std::get<4>(*repIt)
-#define rt_getTerrainType() std::get<5>(*repIt)
-
-
 namespace fs = std::filesystem;
 
 namespace Ui {
