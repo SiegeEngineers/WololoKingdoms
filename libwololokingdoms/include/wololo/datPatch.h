@@ -2,7 +2,6 @@
 #define DATPATCH_H
 #include "genie/dat/DatFile.h"
 #include <map>
-#include <boost/filesystem.hpp>
 
 namespace wololo {
 

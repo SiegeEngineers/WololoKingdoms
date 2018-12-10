@@ -1,6 +1,3 @@
 [submodule "libwololokingdoms/third_party/genieutils"]
 	path = libwololokingdoms/third_party/genieutils
 	url = git@github.com:sandsmark/genieutils
-[submodule "libwololokingdoms/third_party/boost"]
-	path = libwololokingdoms/third_party/boost
-	url = git@github.com:boostorg/boost

@@ -1,27 +1,5 @@
 SOURCES = wkconverter.cpp md5.cpp
-BOOST = -I./third_party/boost/libs/algorithm/include \
-        -I./third_party/boost/libs/assert/include \
-        -I./third_party/boost/libs/concept_check/include \
-        -I./third_party/boost/libs/config/include \
-        -I./third_party/boost/libs/container_hash/include \
-        -I./third_party/boost/libs/core/include \
-        -I./third_party/boost/libs/detail/include \
-        -I./third_party/boost/libs/filesystem/include \
-        -I./third_party/boost/libs/io/include \
-        -I./third_party/boost/libs/iterator/include \
-        -I./third_party/boost/libs/mpl/include \
-        -I./third_party/boost/libs/predef/include \
-        -I./third_party/boost/libs/preprocessor/include \
-        -I./third_party/boost/libs/range/include \
-        -I./third_party/boost/libs/smart_ptr/include \
-        -I./third_party/boost/libs/static_assert/include \
-        -I./third_party/boost/libs/system/include \
-        -I./third_party/boost/libs/throw_exception/include \
-        -I./third_party/boost/libs/type_traits/include \
-        -I./third_party/boost/libs/utility/include \
-        -I./third_party/boost/libs/winapi/include
-
-CFLAGS = -std=c++17 -I./include -I./third_party/genieutils/include $(BOOST)
+CFLAGS = -std=c++17 -I./include -I./third_party/genieutils/include
 W_CFLAGS = $(CFLAGS) -I./third_party/win-iconv -DUNICODE
 L_OBJECTS = $(addprefix bin/linux/intermediate/, $(SOURCES:.cpp=.o))
 W_OBJECTS = $(addprefix bin/win32/intermediate/, $(SOURCES:.cpp=.o))
