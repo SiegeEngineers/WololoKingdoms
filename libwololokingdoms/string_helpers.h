@@ -1,39 +1,31 @@
 #pragma once
 #include <string>
+#include <istream>
+#include <sstream>
 
-static void replace_all(std::string& str, const std::string& from, const std::string& to) {
-  size_t start_pos = 0;
-  while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-    str.replace(start_pos, from.length(), to);
-    start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-  }
-}
+/**
+ * Replace all occurrences of `from` with `to` in `str`.
+ *
+ * This mutates `str`.
+ */
+void replace_all(std::string& str, const std::string& from, const std::string& to);
 
-static std::wstring strtowstr(std::string narrow) {
-  std::wstring wide;
-  for (auto c : narrow) {
-    wchar_t w = c;
-    wide.push_back(w);
-  }
-  return wide;
-}
+/**
+ * Convert a std::string to a std::wstring.
+ */
+std::wstring strtowstr(std::string narrow);
 
-static std::string wstrtostr(std::wstring wide) {
-  std::string narrow;
-  for (auto c : wide) {
-    char n = c;
-    narrow.push_back(n);
-  }
-  return narrow;
-}
+/**
+ * Convert a std::wstring to a std::string.
+ */
+std::string wstrtostr(std::wstring wide);
 
-static std::string tolower(std::string line) {
-	std::transform(line.begin(), line.end(), line.begin(), static_cast<int(*)(int)>(std::tolower));
-	return line;
-}
+/**
+ * Convert a std::string to lowercase.
+ */
+std::string tolower(std::string line);
 
-static std::string concat_stream(std::istream& stream) {
-    std::stringstream strstr;
-    strstr << stream.rdbuf();
-    return strstr.str();
-}
+/**
+ * Completely consume a readable stream and concatenate it into a std::string.
+ */
+std::string concat_stream(std::istream& stream);
