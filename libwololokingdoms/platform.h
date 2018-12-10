@@ -2,6 +2,7 @@
 #define _WK_PLATFORM_H
 
 #include <string>
+#include <cstring>
 
 /**
  * This contains platform specific functions; things that are different between Linux and Windows

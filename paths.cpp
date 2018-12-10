@@ -1,14 +1,14 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <boost/filesystem.hpp>
+#include <filesystem>
+#include <stdio.h>
+#include "libwololokingdoms/platform.h"
+#include "paths.h"
 #include <windows.h>
 #include <tchar.h>
-#include <stdio.h>
-#include "paths.h"
-#include "conversions.h"
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE,PBOOL);
 
@@ -50,9 +50,9 @@ std::string getSteamPath() {
 fs::path getHDPath(std::string steamPath) {
 	fs::path HDPath("../");
 	std::string line;
-	if(boost::filesystem::exists(steamPath+"/steamapps/appmanifest_221380.acf")) {
+	if(fs::exists(steamPath+"/steamapps/appmanifest_221380.acf")) {
 		HDPath = extractHDPath(steamPath);
-	} else if (boost::filesystem::exists(steamPath+"/steamapps/libraryfolders.vdf")) {
+	} else if (fs::exists(steamPath+"/steamapps/libraryfolders.vdf")) {
 		std::ifstream libraryFolders((steamPath+"/steamapps/libraryfolders.vdf").c_str());
 		while (std::getline(libraryFolders,line)) {
 			u_int i;
@@ -61,7 +61,7 @@ fs::path getHDPath(std::string steamPath) {
 				int j = line.find("\"", i+1);
 				line = line.substr(i+1,j-i-1);
 				steamPath = line;
-				if(boost::filesystem::exists(steamPath+"/steamapps/appmanifest_221380.acf")) {
+				if(fs::exists(steamPath+"/steamapps/appmanifest_221380.acf")) {
 					HDPath = extractHDPath(steamPath);
 					break;
 				}
@@ -70,10 +70,10 @@ fs::path getHDPath(std::string steamPath) {
         libraryFolders.close();
 	}
 
-	if(!boost::filesystem::exists(HDPath/"/Launcher.exe")) {
-		if(boost::filesystem::exists("../../Launcher.exe")) {
+	if(!fs::exists(HDPath/"/Launcher.exe")) {
+		if(fs::exists("../../Launcher.exe")) {
 			HDPath = fs::path("../../");
-        } else if (boost::filesystem::exists(steamPath+"/steamapps/common/Age2HD/")) {
+        } else if (fs::exists(steamPath+"/steamapps/common/Age2HD/")) {
             HDPath = fs::path(steamPath+"/steamapps/common/Age2HD/");
         } else { //Error Case
             HDPath = fs::path();
@@ -100,8 +100,8 @@ fs::path getOutPath(fs::path HDPath) {
     if(outPathString.at(outPathString.length()-1) != '\\')
         outPathString += "\\";
     fs::path outPath(outPathString);
-    if(!boost::filesystem::exists(outPath/"age2_x1")) {
-		if(boost::filesystem::exists(HDPath / "age2_x1")) {
+    if(!fs::exists(outPath/"age2_x1")) {
+		if(fs::exists(HDPath / "age2_x1")) {
 			outPath = HDPath;
 		} else {
 			outPath = fs::path();

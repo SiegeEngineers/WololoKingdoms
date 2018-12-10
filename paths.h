@@ -1,10 +1,12 @@
 #ifndef PATHS_H
 #define PATHS_H
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 std::string getSteamPath();
-boost::filesystem::path getHDPath(std::string steamPath);
-boost::filesystem::path getOutPath(boost::filesystem::path HDPath);
+fs::path getHDPath(std::string steamPath);
+fs::path getOutPath(fs::path HDPath);
 
 #endif // PATHS_H

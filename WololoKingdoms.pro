@@ -1,6 +1,6 @@
 QT += core gui
 
-CONFIG += c++11
+QMAKE_CXXFLAGS += -std=c++17
 
 TARGET = WololoKingdoms
 CONFIG -= console
@@ -15,28 +15,14 @@ TEMPLATE = app
 SOURCES += main.cpp \
     paths.cpp \
     conversions.cpp \
-    fixes/portuguesefix.cpp \
-    fixes/demoshipfix.cpp \
-    fixes/berbersutfix.cpp \
-    fixes/ethiopiansfreepikeupgradefix.cpp \
-    fixes/maliansfreeminingupgradefix.cpp \
-    fixes/ai900unitidfix.cpp \
-    fixes/hotkeysfix.cpp \
-    fixes/disablenonworkingunits.cpp \
-    fixes/malayfix.cpp \
-    fixes/feitoriafix.cpp \
-    fixes/burmesefix.cpp \
-    fixes/khmerfix.cpp \
-    fixes/vietfix.cpp \
     mainwindow.cpp \
-    dialog.cpp \
-    fixes/smallfixes.cpp \
-    fixes/siegetowerfix.cpp \
-    fixes/cuttingfix.cpp \
-    fixes/tricklebuildingfix.cpp \
-    wkconverter.cpp
+    dialog.cpp
 
-win32: LIBS += -L$$PWD/lib/ -llibgenieutils.dll
+win32: {
+  LIBS += -L$$PWD/lib/ -L$$PWD/libwololokingdoms/bin/win32 -llibgenieutils.dll -llibwololokingdoms.dll
+} else {
+  LIBS += -L$$PWD/lib/ -L$$PWD/libwololokingdoms/bin/linux -lgenieutils -lwololokingdoms
+}
 LIBS += -L$$PWD/lib/ -lsteam_api
 LIBS += -LD:/boost_1_63_0/stage/lib -lboost_system-mgw53-mt-1_63 -lboost_filesystem-mgw53-mt-1_63
 INCLUDEPATH += C:\GnuWin32\src\zlib-1.2.3
@@ -52,37 +38,41 @@ DEPENDPATH += $$PWD/.
 INCLUDEPATH += $$PWD/../.
 DEPENDPATH += $$PWD/../.
 
+INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/include
+INCLUDEPATH += $$PWD/libwololokingdoms/third_party/pcrio/include
+INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv/include
+
 INCLUDEPATH += include/
 INCLUDEPATH += D:/boost_1_63_0/
 
 HEADERS += \
     paths.h\
     conversions.h\
-    include/wololo/Drs.h \
-    fixes/portuguesefix.h \
-    fixes/demoshipfix.h \
-    fixes/berbersutfix.h \
-    fixes/ethiopiansfreepikeupgradefix.h \
-    fixes/maliansfreeminingupgradefix.h \
-    fixes/ai900unitidfix.h \
-    fixes/hotkeysfix.h \
-    fixes/disablenonworkingunits.h \
-    fixes/vietfix.h \
-    include/wololo/datPatch.h \
-    fixes/malayfix.h \
-    fixes/feitoriafix.h \
-    fixes/burmesefix.h \
-    fixes/khmerfix.h \
+    libwololokingdoms/include/wololo/Drs.h \
+    libwololokingdoms/fixes/portuguesefix.h \
+    libwololokingdoms/fixes/demoshipfix.h \
+    libwololokingdoms/fixes/berbersutfix.h \
+    libwololokingdoms/fixes/ethiopiansfreepikeupgradefix.h \
+    libwololokingdoms/fixes/maliansfreeminingupgradefix.h \
+    libwololokingdoms/fixes/ai900unitidfix.h \
+    libwololokingdoms/fixes/hotkeysfix.h \
+    libwololokingdoms/fixes/disablenonworkingunits.h \
+    libwololokingdoms/fixes/vietfix.h \
+    libwololokingdoms/include/wololo/datPatch.h \
+    libwololokingdoms/fixes/malayfix.h \
+    libwololokingdoms/fixes/feitoriafix.h \
+    libwololokingdoms/fixes/burmesefix.h \
+    libwololokingdoms/fixes/khmerfix.h \
     mainwindow.h \
     dialog.h \
-    fixes/smallfixes.h \
-    fixes/siegetowerfix.h \
+    libwololokingdoms/fixes/smallfixes.h \
+    libwololokingdoms/fixes/siegetowerfix.h \
     include/sdk/public/steam/steam_api.h \
-    fixes/cuttingfix.h \
-    fixes/tricklebuildingfix.h \
-    wkconverter.h \
+    libwololokingdoms/fixes/cuttingfix.h \
+    libwololokingdoms/fixes/tricklebuildingfix.h \
+    libwololokingdoms/wkconverter.h \
     wkgui.h \
-    wksettings.h
+    libwololokingdoms/wksettings.h
 
 DISTFILES += \
     WololoKingdoms.ico

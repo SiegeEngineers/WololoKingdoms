@@ -28,6 +28,21 @@
 #include <QThreadPool>
 #include "sdk/public/steam/steam_api.h"
 
+class WKQConverter {
+  WKConverter* converter;
+public slots:
+  void process() {
+    run();
+  }
+public:
+  WKQConverter(WKSettings* settings) {
+    converter = new WKConverter(settings);
+  }
+  ~WKQConverter() {
+    delete converter;
+  }
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -180,7 +195,7 @@ void MainWindow::runConverter() {
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
         HDPath, outPath, vooblyDir, upDir, dataModList, modName);
     QThread* thread = new QThread;
-    WKConverter* converter = new WKConverter(settings);
+    WKQConverter* converter = new WKQConverter(settings);
     converter->moveToThread(thread);
     connect(converter, SIGNAL(log(QString)), this, SLOT(log(QString)));
     connect(converter, SIGNAL(setInfo(QString)), this, SLOT(setInfo(QString)));

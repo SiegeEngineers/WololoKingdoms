@@ -1,17 +1,20 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#ifndef _WIN32
+#error "Only Windows is supported in the installer UI."
+#endif
+
 #include <QMainWindow>
 #include <QProgressBar>
 #include <QPushButton>
 
 #include <set>
 #include <regex>
+#include <filesystem>
 #include "wkgui.h"
-#include "wksettings.h"
-#include "wkconverter.h"
-
-#include <boost/filesystem.hpp>
+#include "libwololokingdoms/wksettings.h"
+#include "libwololokingdoms/wkconverter.h"
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 
@@ -23,7 +26,7 @@
 #define rt_getTerrainType() std::get<5>(*repIt)
 
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 namespace Ui {
 class MainWindow;
