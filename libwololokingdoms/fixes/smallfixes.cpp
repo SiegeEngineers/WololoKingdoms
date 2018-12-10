@@ -59,8 +59,9 @@ void smallPatches(genie::DatFile *aocDat) {
 
 	//unpackable TC
 	aocDat->UnitHeaders[PTWC].TaskList.push_back(aocDat->UnitHeaders[pTrebId].TaskList[0]);
-    aocDat->UnitHeaders[PTWC].TaskList[0].SelectionMode = 0;
-    aocDat->UnitHeaders[PTWC].TaskList[0].SelectionEnabler = 0;
+   /* TODO TEMPORARILY DISABLED */
+    /* aocDat->UnitHeaders[PTWC].TaskList[0].SelectionMode = 0; */
+    /* aocDat->UnitHeaders[PTWC].TaskList[0].SelectionEnabler = 0; */
 
     for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		//fixes faulty elite camel archer data for non-gaia civs
