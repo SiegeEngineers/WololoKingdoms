@@ -37,36 +37,6 @@
 #include "zr_map_creator.h"
 #include "wkconverter.h"
 
-static void copyRecursive(fs::path const &src, fs::path const &dst, bool skip = false, bool force = false) {
-    /*
-     * Recursive copy of a folder (or file, but then this isn't necessary)
-     * Parameters:
-     * src: The folder to be copied from
-     * dst: The folder to be copied into
-     * skip: If true, if a file already exists, copying will be skipped
-     * force: If true, if a file already exists, it will be replaced
-     * If both skip and force are false, an exception is thrown if a file already exists
-     */
-	if (fs::is_directory(src)) {
-		if(!fs::exists(dst)) {
-			fs::create_directories(dst);
-		}
-		for (fs::directory_iterator current(src), end;current != end; ++current) {
-			fs::path currentPath(current->path());
-			copyRecursive(currentPath, dst / currentPath.filename(), skip, force);
-		}
-	}
-	else {
-		if (skip) {
-			std::error_code ec;
-			fs::copy_file(src, dst, ec);
-		} else if (force)
-			fs::copy_file(src,dst,fs::copy_options::overwrite_existing);
-		else
-			fs::copy_file(src, dst);
-	}
-}
-
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
     std::ifstream translationFile("resources\\"+settings->language+"_game.txt");
@@ -1847,7 +1817,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
             fs::path currentPath(current->path());
             if(!fs::is_directory(currentPath) || tolower(currentPath.filename().string()) != "savegame") {
-                copyRecursive(currentPath,newDir/currentPath.filename(),true);
+              fs::copy(currentPath,newDir/currentPath.filename(), fs::copy_options::recursive | fs::copy_options::skip_existing);
             }
         }
     }
@@ -1864,9 +1834,9 @@ void WKConverter::retryInstall() {
         fs::create_directories(tempFolder/"Scenario");
         fs::create_directories(tempFolder/"SaveGame");
         fs::create_directories(tempFolder/"Script.RM");
-        copyRecursive(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
-        copyRecursive(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
-        copyRecursive(installDir/"Scenario",tempFolder/"Scenario",false,true);
+        fs::copy(installDir/"SaveGame",tempFolder/"SaveGame", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        fs::copy(installDir/"Script.RM",tempFolder/"Script.RM", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        fs::copy(installDir/"Scenario",tempFolder/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
         fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
         if(fs::exists(installDir/"player1.hki"))
             fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
@@ -1881,9 +1851,9 @@ void WKConverter::retryInstall() {
     fs::remove_all(installDir.parent_path()/"WololoKingdoms FE");
 
     run(true);
-    copyRecursive(tempFolder/"SaveGame",installDir/"SaveGame",true);
-    copyRecursive(tempFolder/"Script.RM",installDir/"Script.RM",true);
-    copyRecursive(tempFolder/"Scenario",installDir/"Scenario",true);
+    fs::copy(tempFolder/"SaveGame",installDir/"SaveGame", fs::copy_options::recursive | fs::copy_options::skip_existing);
+    fs::copy(tempFolder/"Script.RM",installDir/"Script.RM", fs::copy_options::recursive | fs::copy_options::skip_existing);
+    fs::copy(tempFolder/"Scenario",installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::skip_existing);
     std::error_code ec;
     fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
     if(fs::exists(tempFolder/"player1.hki"))
@@ -1904,9 +1874,9 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
         fs::create_directories(tempFolder/"Scenario");
         fs::create_directories(tempFolder/"SaveGame");
         fs::create_directories(tempFolder/"Script.RM");
-        copyRecursive(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
-        copyRecursive(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
-        copyRecursive(installDir/"Scenario",tempFolder/"Scenario",false,true);
+        fs::copy(installDir/"SaveGame",tempFolder/"SaveGame", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        fs::copy(installDir/"Script.RM",tempFolder/"Script.RM", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        fs::copy(installDir/"Scenario",tempFolder/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
         fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
         if(fs::exists(installDir/"player1.hki"))
             fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
@@ -1914,9 +1884,9 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
         fs::create_directories(installDir/"SaveGame");
         fs::create_directories(installDir/"SaveGame");
         fs::create_directories(installDir/"Script.RM");
-        copyRecursive(tempFolder/"SaveGame",installDir/"SaveGame",true);
-        copyRecursive(tempFolder/"Script.RM",installDir/"Script.RM",true);
-        copyRecursive(tempFolder/"Scenario",installDir/"Scenario",true);
+        fs::copy(tempFolder/"SaveGame",installDir/"SaveGame", fs::copy_options::recursive | fs::copy_options::skip_existing);
+        fs::copy(tempFolder/"Script.RM",installDir/"Script.RM", fs::copy_options::recursive | fs::copy_options::skip_existing);
+        fs::copy(tempFolder/"Scenario",installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::skip_existing);
         std::error_code ec;
         fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
         if(fs::exists(tempFolder/"player1.hki"))
@@ -2174,7 +2144,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Taunts");
             try {
 
-                copyRecursive(tauntInputPath, tauntOutputPath, true);
+              fs::copy(tauntInputPath, tauntOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
             } catch (std::exception const & e) {
                 std::string message = "tauntError$";
                 message += e.what();
@@ -2188,7 +2158,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Scenario Sounds");
             try {
 
-                copyRecursive(scenarioSoundsInputPath, scenarioSoundsOutputPath, true);
+              fs::copy(scenarioSoundsInputPath, scenarioSoundsOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
             } catch (std::exception const & e) {
                 std::string message = "scenarioSoundError$";
                 message += e.what();
@@ -2211,7 +2181,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Voobly Map folder");
             if (fs::exists(settings->outPath/"Random")) {
                 try {
-                    copyRecursive(settings->outPath/"Random", installMapDir, true);
+                  fs::copy(settings->outPath/"Random", installMapDir, fs::copy_options::recursive | fs::copy_options::skip_existing);
                 } catch (std::exception const & e) {
                     std::string message = "vooblyMapError$";
                     message += e.what();
@@ -2263,7 +2233,7 @@ int WKConverter::run(bool retry)
             }
             listener->increaseProgress(1); //23
             try {
-                copyRecursive(scenarioInputDir,installDir/"Scenario",false,true);
+              fs::copy(scenarioInputDir,installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
 
             } catch (std::exception const & e) {
                 std::string message = "scenarioError$";
@@ -2277,7 +2247,7 @@ int WKConverter::run(bool retry)
             }
             listener->log("Copying AI");
             try {
-                copyRecursive(aiInputPath, installDir/"Script.Ai", false, true);
+              fs::copy(aiInputPath, installDir/"Script.Ai", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
 
             } catch (std::exception const & e) {
                 std::string message = "aiError$";
