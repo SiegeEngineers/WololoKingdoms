@@ -10,21 +10,21 @@ void berbersUTPatch(genie::DatFile *aocDat) {
 
 	size_t const berbersUT2TechId = 608;
 
-	genie::TechageEffect effect;
+	genie::EffectCommand effect;
 
 	// imperial age
-	std::vector<genie::TechageEffect> *effectsPtr = &aocDat->Techages[berbersUT2TechId].Effects;
-	std::vector<genie::TechageEffect> effectsToAdd;
-	for (std::vector<genie::TechageEffect>::iterator it = effectsPtr->begin(), end = effectsPtr->end(); it != end; it++) {
+	std::vector<genie::EffectCommand> *effectsPtr = &aocDat->Effects[berbersUT2TechId].EffectCommands;
+	std::vector<genie::EffectCommand> effectsToAdd;
+	for (std::vector<genie::EffectCommand>::iterator it = effectsPtr->begin(), end = effectsPtr->end(); it != end; it++) {
 		//set a hero attribute for regen
 		it->Type = 0; // set attribute
-		it->C = 40; // hero attribute
-		it->D = 4; // regen
+		it->AttributeID = 40; // hero attribute
+		it->Amount = 4.0f; // regen
 
 		// add an attribute to modify the timer
 		effect = *it;
-		effect.C = 45;
-		effect.D = 4;
+		effect.AttributeID = 45;
+		effect.Amount = 4.0f;
 		effectsToAdd.push_back(effect);
 	}
 	effectsPtr->insert(effectsPtr->end(), effectsToAdd.begin(), effectsToAdd.end());

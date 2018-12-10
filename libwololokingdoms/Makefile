@@ -1,4 +1,4 @@
-SOURCES = $(shell echo *.cpp)
+SOURCES = $(shell echo *.cpp fixes/*.cpp)
 CFLAGS = -std=c++17 -fPIC -I./include -I./third_party/genieutils/include
 W_CFLAGS = $(CFLAGS) -I./third_party/genieutils/extern/win-iconv -DUNICODE
 L_OBJECTS = $(addprefix bin/linux/intermediate/, $(SOURCES:.cpp=.o))
@@ -27,8 +27,10 @@ bin/win32/intermediate/%.o: %.cpp
 
 bin/linux:
 	mkdir -p bin/linux/intermediate
+	mkdir -p bin/linux/intermediate/fixes
 bin/win32:
 	mkdir -p bin/win32/intermediate
+	mkdir -p bin/win32/intermediate/fixes
 
 bin/linux/intermediate/genieutils/Makefile:
 	mkdir -p bin/linux/intermediate/genieutils

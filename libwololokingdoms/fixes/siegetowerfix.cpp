@@ -9,8 +9,8 @@ void siegeTowerPatch(genie::DatFile *aocDat) {
 	 */
 
 	size_t const siegeTowerUnitId = 1105;
-	aocDat->UnitHeaders[siegeTowerUnitId].Commands[2].Type = 12;
-	aocDat->UnitHeaders[siegeTowerUnitId].Commands[2].RightClickMode = 0;
+	aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].ActionType = 12;
+	aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].TargetDiplomacy = 0; // targets all objects
 }
 
 DatPatch siegeTowerFix = {

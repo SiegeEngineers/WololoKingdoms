@@ -85,12 +85,12 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 	aocDat->UnitHeaders[id2] = tmpHeader;
 	for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); ++civIndex) {
         /* switch all 3 ids around first*/
-		aocDat->Civs[civIndex].Units[id1].ID1 = id2;
-        aocDat->Civs[civIndex].Units[id1].ID2 = id2;
-        aocDat->Civs[civIndex].Units[id1].ID3 = id2;
-		aocDat->Civs[civIndex].Units[id2].ID1 = id1;
-        aocDat->Civs[civIndex].Units[id2].ID2 = id1;
-        aocDat->Civs[civIndex].Units[id2].ID3 = id1;
+		aocDat->Civs[civIndex].Units[id1].ID = id2;
+        aocDat->Civs[civIndex].Units[id1].CopyID = id2;
+        aocDat->Civs[civIndex].Units[id1].BaseID = id2;
+		aocDat->Civs[civIndex].Units[id2].ID = id1;
+        aocDat->Civs[civIndex].Units[id2].CopyID = id1;
+        aocDat->Civs[civIndex].Units[id2].BaseID = id1;
         /*switch the units*/
 		genie::Unit tmpUnit = aocDat->Civs[civIndex].Units[id1];
 		aocDat->Civs[civIndex].Units[id1] = aocDat->Civs[civIndex].Units[id2];
@@ -105,17 +105,17 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 	// Then : modify all references to these units
 
 	// Iterate techs
-	for (std::vector<genie::Techage>::iterator techIt = aocDat->Techages.begin(), end = aocDat->Techages.end(); techIt != end; ++techIt) {
+	for (std::vector<genie::Effect>::iterator techIt = aocDat->Effects.begin(), end = aocDat->Effects.end(); techIt != end; ++techIt) {
 		// Iterate effects of each tech
-		for (std::vector<genie::TechageEffect>::iterator techEffectsIt = techIt->Effects.begin(), end = techIt->Effects.end(); techEffectsIt != end; ++techEffectsIt) {
+		for (std::vector<genie::EffectCommand>::iterator techEffectsIt = techIt->EffectCommands.begin(), end = techIt->EffectCommands.end(); techEffectsIt != end; ++techEffectsIt) {
 			switch (techEffectsIt->Type) {
 			case 3: // upgrade unit (this ones uses 2 units hence the special case, notice the absence of break)
-				swapId(&techEffectsIt->B, id1, id2);
+				swapId(&techEffectsIt->UnitClassID, id1, id2);
 			case 0: // attribute modifier
 			case 2: // enable/disable unit
 			case 4: // attribute modifier (+/-)
 			case 5: // attribute modifier (*)
-				swapId(&techEffectsIt->A, id1, id2);
+				swapId(&techEffectsIt->TargetUnit, id1, id2);
 			}
 		}
 	}
@@ -165,8 +165,8 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 
     //Iterate through Unit commands (e.g. villagers hunting animals)
     for (std::vector<genie::UnitHeader>::iterator unitIt = aocDat->UnitHeaders.begin(), end = aocDat->UnitHeaders.end(); unitIt != end; ++unitIt) {
-        for (std::vector<genie::UnitCommand>::iterator commandIt = unitIt->Commands.begin(), end = unitIt->Commands.end(); commandIt != end; ++commandIt) {
-            swapId(&commandIt->UnitID, id1, id2);
+        for (std::vector<genie::Task>::iterator taskIt = unitIt->TaskList.begin(), end = unitIt->TaskList.end(); taskIt != end; ++taskIt) {
+            swapId(&taskIt->UnitID, id1, id2);
         }
     }
 }

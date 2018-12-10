@@ -17,53 +17,53 @@ void khmerPatch(genie::DatFile *aocDat) {
     size_t const buildingResearchs[] = {216,659,660,661,666,667,668};
 
 
-	genie::TechageEffect effect;
+	genie::EffectCommand effect;
 
 	// imperial age
-	std::vector<genie::TechageEffect> *effectsPtr = &aocDat->Techages[khmerBonusTechId].Effects;
-	std::vector<genie::TechageEffect> effectsToAdd;
-	for (std::vector<genie::TechageEffect>::iterator it = effectsPtr->begin(), end = effectsPtr->end(); it != end; it++) {
+	std::vector<genie::EffectCommand> *effectsPtr = &aocDat->Effects[khmerBonusTechId].EffectCommands;
+	std::vector<genie::EffectCommand> effectsToAdd;
+	for (std::vector<genie::EffectCommand>::iterator it = effectsPtr->begin(), end = effectsPtr->end(); it != end; it++) {
 		// add an attribute to disable drop-off
 		effect = *it;
 		effect.Type = 0;
-		effect.C = 31; // Drop-off of resources
-		effect.D = 4;
+		effect.AttributeID = 31; // Drop-off of resources
+		effect.Amount = 4.0f;
 		effectsToAdd.push_back(effect);
 	}
 	effectsPtr->insert(effectsPtr->end(), effectsToAdd.begin(), effectsToAdd.end());
 
     //We create a seperate Castle Age Ballista Elephant that can't cut trees, for use in CtR maps
     aocDat->UnitHeaders[newElephantId] = aocDat->UnitHeaders[ballistaElephantId];
-    aocDat->UnitHeaders[newElephantId].Commands.pop_back();
+    aocDat->UnitHeaders[newElephantId].TaskList.pop_back();
     for(int i = 0; i<aocDat->Civs.size(); i++) {
         aocDat->Civs[i].Units[newElephantId] = aocDat->Civs[i].Units[ballistaElephantId];
-        aocDat->Civs[i].Units[newElephantId].Type50.Attacks.erase(aocDat->Civs[i].Units[newElephantId].Type50.Attacks.begin()+4);
-        aocDat->Civs[i].Units[newElephantId].Type50.BlastAttackLevel = 2;
+        aocDat->Civs[i].Units[newElephantId].Combat.Attacks.erase(aocDat->Civs[i].Units[newElephantId].Combat.Attacks.begin()+4);
+        aocDat->Civs[i].Units[newElephantId].Combat.BlastAttackLevel = 2;
     }
-    aocDat->Techages[doubleCrossbowId].Effects.push_back(aocDat->Techages[doubleCrossbowId].Effects[0]);
-    aocDat->Techages[doubleCrossbowId].Effects.push_back(aocDat->Techages[doubleCrossbowId].Effects[4]);
-    aocDat->Techages[doubleCrossbowId].Effects[8].A = newElephantId;
-    aocDat->Techages[doubleCrossbowId].Effects[9].A = newElephantId;
+    aocDat->Effects[doubleCrossbowId].EffectCommands.push_back(aocDat->Effects[doubleCrossbowId].EffectCommands[0]);
+    aocDat->Effects[doubleCrossbowId].EffectCommands.push_back(aocDat->Effects[doubleCrossbowId].EffectCommands[4]);
+    aocDat->Effects[doubleCrossbowId].EffectCommands[8].TargetUnit = newElephantId;
+    aocDat->Effects[doubleCrossbowId].EffectCommands[9].TargetUnit = newElephantId;
 
-    aocDat->Techages[chemistryId].Effects.push_back(aocDat->Techages[chemistryId].Effects[66]);
-    aocDat->Techages[chemistryId].Effects[68].A = newElephantId;
+    aocDat->Effects[chemistryId].EffectCommands.push_back(aocDat->Effects[chemistryId].EffectCommands[66]);
+    aocDat->Effects[chemistryId].EffectCommands[68].TargetUnit = newElephantId;
 
-    aocDat->Techages[eliteBallistaTechId].Effects.push_back(aocDat->Techages[eliteBallistaTechId].Effects[0]);
-    aocDat->Techages[eliteBallistaTechId].Effects[1].A = newElephantId;
+    aocDat->Effects[eliteBallistaTechId].EffectCommands.push_back(aocDat->Effects[eliteBallistaTechId].EffectCommands[0]);
+    aocDat->Effects[eliteBallistaTechId].EffectCommands[1].TargetUnit = newElephantId;
 
     for(int i = 24; i < 28; i++) {
-        aocDat->Techages[siegeEngineersId].Effects.push_back(aocDat->Techages[siegeEngineersId].Effects[i]);
-        aocDat->Techages[siegeEngineersId].Effects[i+4].A = newElephantId;
+        aocDat->Effects[siegeEngineersId].EffectCommands.push_back(aocDat->Effects[siegeEngineersId].EffectCommands[i]);
+        aocDat->Effects[siegeEngineersId].EffectCommands[i+4].TargetUnit = newElephantId;
     }
 
-    aocDat->Researchs[khmerBuildingResearchId].Civ = 28;
-    aocDat->Researchs[khmerBuildingResearchId].Name = "Khmer Building Bonus";
-    aocDat->Researchs[khmerBuildingResearchId].RequiredTechCount = 0;
-    aocDat->Researchs[khmerBuildingResearchId].RequiredTechs[0] = -1;
-    aocDat->Researchs[khmerBuildingResearchId].RequiredTechs[1] = -1;
+    aocDat->Techs[khmerBuildingResearchId].Civ = 28;
+    aocDat->Techs[khmerBuildingResearchId].Name = "Khmer Building Bonus";
+    aocDat->Techs[khmerBuildingResearchId].RequiredTechCount = 0;
+    aocDat->Techs[khmerBuildingResearchId].RequiredTechs[0] = -1;
+    aocDat->Techs[khmerBuildingResearchId].RequiredTechs[1] = -1;
 
     for(int i = 0; i < sizeof(buildingResearchs)/sizeof(buildingResearchs[0]); i++) {
-        aocDat->Researchs[buildingResearchs[i]].RequiredTechs[1] = khmerBuildingResearchId;
+        aocDat->Techs[buildingResearchs[i]].RequiredTechs[1] = khmerBuildingResearchId;
     }
 
 

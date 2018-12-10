@@ -11,18 +11,18 @@ void burmesePatch(genie::DatFile *aocDat) {
 	size_t const relicTechID = 803;
 	size_t const relicResearchID = 803;
 
-	if(aocDat->Researchs.size() < relicResearchID+1)
-		aocDat->Researchs.resize(relicResearchID+1);
-	aocDat->Researchs[relicResearchID].TechageID = relicTechID;
-	aocDat->Researchs[relicResearchID].Civ = 30;
-	aocDat->Researchs[relicResearchID].Name = "Enable Relic LoS";
+	if(aocDat->Techs.size() < relicResearchID+1)
+		aocDat->Techs.resize(relicResearchID+1);
+	aocDat->Techs[relicResearchID].EffectID = relicTechID;
+	aocDat->Techs[relicResearchID].Civ = 30;
+	aocDat->Techs[relicResearchID].Name = "Enable Relic LoS";
 
-	if(aocDat->Techages.size() < relicTechID+1)
-		aocDat->Techages.resize(relicTechID+1);
+	if(aocDat->Effects.size() < relicTechID+1)
+		aocDat->Effects.resize(relicTechID+1);
 
-	genie::TechageEffect effect = aocDat->Techages[burmeseTeamBonusTechId].Effects[0];
+	genie::EffectCommand effect = aocDat->Effects[burmeseTeamBonusTechId].EffectCommands[0];
 	effect.Type = 11;
-	aocDat->Techages[relicTechID].Effects.push_back(effect);
+	aocDat->Effects[relicTechID].EffectCommands.push_back(effect);
 
 	aocDat->Civs[30].Resources[210] = 0;
 
@@ -36,12 +36,12 @@ void burmesePatch(genie::DatFile *aocDat) {
 	size_t const burmeseMonasteryTech = 689;
 	size_t const burmeseTechTree = 650;
 
-	for (size_t i = 0; i < aocDat->Techages[burmeseLcTech].Effects.size(); i++) {
-		aocDat->Techages[burmeseTechTree].Effects.push_back(aocDat->Techages[burmeseLcTech].Effects[i]);
+	for (size_t i = 0; i < aocDat->Effects[burmeseLcTech].EffectCommands.size(); i++) {
+		aocDat->Effects[burmeseTechTree].EffectCommands.push_back(aocDat->Effects[burmeseLcTech].EffectCommands[i]);
 	}
 
-	for (size_t i = 0; i < aocDat->Techages[burmeseMonasteryTech].Effects.size(); i++) {
-		aocDat->Techages[burmeseTechTree].Effects.push_back(aocDat->Techages[burmeseMonasteryTech].Effects[i]);
+	for (size_t i = 0; i < aocDat->Effects[burmeseMonasteryTech].EffectCommands.size(); i++) {
+		aocDat->Effects[burmeseTechTree].EffectCommands.push_back(aocDat->Effects[burmeseMonasteryTech].EffectCommands[i]);
 	}
 }
 

@@ -13,17 +13,17 @@ void malayPatch(genie::DatFile *aocDat) {
     size_t const malayEffectTechId = 674;
     size_t const fishtrapTechId = 677;
 
-    for(int i = 0; i < aocDat->Techages[malayEffectTechId].Effects.size() ; i++) {
-        aocDat->Techages[malayTechTreeId].Effects.push_back(aocDat->Techages[malayEffectTechId].Effects[i]);
+    for(int i = 0; i < aocDat->Effects[malayEffectTechId].EffectCommands.size() ; i++) {
+        aocDat->Effects[malayTechTreeId].EffectCommands.push_back(aocDat->Effects[malayEffectTechId].EffectCommands[i]);
     }
-    if(aocDat->Techages[fishtrapTechId].Effects.size() == 0 || aocDat->Techages[fishtrapTechId].Effects[0].A != 88) {
+    if(aocDat->Effects[fishtrapTechId].EffectCommands.size() == 0 || aocDat->Effects[fishtrapTechId].EffectCommands[0].TargetUnit != 88) {
         //Fish trap effect not fixed on HD yet
-        genie::TechageEffect effect;
+        genie::EffectCommand effect;
         effect.Type = 1; // ressource modifier
-        effect.A = fishtrapResourceId;
-        effect.B = 0; // Set
-        effect.D = aocDat->Civs[29].Resources[fishtrapResourceId] > 715 ? aocDat->Civs[29].Resources[fishtrapResourceId] : 70000000000000; //7e+13...
-        aocDat->Techages[malayTechTreeId].Effects.push_back(effect);
+        effect.TargetUnit = fishtrapResourceId;
+        effect.UnitClassID = 0; // Set
+        effect.Amount = aocDat->Civs[29].Resources[fishtrapResourceId] > 715 ? aocDat->Civs[29].Resources[fishtrapResourceId] : 70000000000000; //7e+13...
+        aocDat->Effects[malayTechTreeId].EffectCommands.push_back(effect);
         aocDat->Civs[29].Resources[fishtrapResourceId] = 700;
     }
 

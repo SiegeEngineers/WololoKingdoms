@@ -49,13 +49,14 @@ void feitoriaPatch(genie::DatFile *aocDat) {
 		aocDat->Civs[civIndex].Units[feitoriaId].Building.DisappearsWhenBuilt = 1;
 		aocDat->Civs[civIndex].Units[feitoriaId].HideInEditor = 1;
 
-		aocDat->Civs[civIndex].Units[feitoriaStackId].DyingGraphic = {-1, -1};
+		aocDat->Civs[civIndex].Units[feitoriaStackId].DyingGraphic = -1;
+		aocDat->Civs[civIndex].Units[feitoriaStackId].UndeadGraphic = -1;
 		aocDat->Civs[civIndex].Units[feitoriaStackId].DeadUnitID = feitoriaDeadStackId;
-		aocDat->Civs[civIndex].Units[feitoriaStackId].SelectionMask = 6;
+		aocDat->Civs[civIndex].Units[feitoriaStackId].OcclusionMode = 6;
 		aocDat->Civs[civIndex].Units[feitoriaStackId].Creatable.TrainLocationID = 0;
 		aocDat->Civs[civIndex].Units[feitoriaStackId].ResourceStorages[2].Type = -1;
 		aocDat->Civs[civIndex].Units[feitoriaStackId].ResourceStorages[2].Amount = 0;
-		aocDat->Civs[civIndex].Units[feitoriaStackId].ResourceStorages[2].Enabled = 0;
+		aocDat->Civs[civIndex].Units[feitoriaStackId].ResourceStorages[2].Paid = 0;
 		aocDat->Civs[civIndex].Units[feitoriaStackId].Building.HeadUnit = feitoriaId;
 		aocDat->Civs[civIndex].Units[feitoriaStackId].Building.Annexes[0].UnitID = woodAnnexId;
 		aocDat->Civs[civIndex].Units[feitoriaStackId].Building.Annexes[1].UnitID = foodAnnexId;
@@ -68,7 +69,8 @@ void feitoriaPatch(genie::DatFile *aocDat) {
 		// dead unit
 		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].Type = 80;
 		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].Class = 3;
-		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].DyingGraphic = {42, -1};
+		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].DyingGraphic = 42;
+		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].UndeadGraphic = -1;
 		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].HitPoints = 0;
 		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].ResourceDecay = 1;
 		aocDat->Civs[civIndex].Units[feitoriaDeadStackId].Enabled = 0;
@@ -102,12 +104,12 @@ void feitoriaPatch(genie::DatFile *aocDat) {
 		trickle.Class = 11;
 		trickle.HitPoints = 0;
 		trickle.ResourceDecay = 1;
-		trickle.AirMode = 1;
+		trickle.CanBeBuiltOn = 1;
 		trickle.HideInEditor = 1;
 		trickle.ResourceStorages[0].Type = 12; // Corpse Decay Time
 		trickle.ResourceStorages[0].Amount = feitoriaCooldown; // time it takes to generate ressources again
-		trickle.ResourceStorages[0].Enabled = 0; // Decayable ressource
-		trickle.ResourceStorages[1].Enabled = 1; // Stored after death also
+		trickle.ResourceStorages[0].Paid = 0; // Decayable ressource
+		trickle.ResourceStorages[1].Paid = 1; // Stored after death also
 		// wood
 		trickle.ResourceStorages[1].Type = 0; // Wood storage
 		trickle.ResourceStorages[1].Amount = woodAdded;
@@ -130,35 +132,35 @@ void feitoriaPatch(genie::DatFile *aocDat) {
 		aocDat->Civs[civIndex].Units[stoneTrickleId] = trickle;
 
 		//Fix IDs
-		aocDat->Civs[civIndex].Units[feitoriaStackId].ID1 = feitoriaStackId;
-		aocDat->Civs[civIndex].Units[woodAnnexId].ID1 = woodAnnexId;
-		aocDat->Civs[civIndex].Units[foodAnnexId].ID1 = foodAnnexId;
-		aocDat->Civs[civIndex].Units[goldAnnexId].ID1 = goldAnnexId;
-		aocDat->Civs[civIndex].Units[stoneAnnexId].ID1 = stoneAnnexId;
-		aocDat->Civs[civIndex].Units[woodTrickleId].ID1 = woodTrickleId;
-		aocDat->Civs[civIndex].Units[foodTrickleId].ID1 = foodTrickleId;
-		aocDat->Civs[civIndex].Units[goldTrickleId].ID1 = goldTrickleId;
-		aocDat->Civs[civIndex].Units[stoneTrickleId].ID1 = stoneTrickleId;
+		aocDat->Civs[civIndex].Units[feitoriaStackId].ID = feitoriaStackId;
+		aocDat->Civs[civIndex].Units[woodAnnexId].ID = woodAnnexId;
+		aocDat->Civs[civIndex].Units[foodAnnexId].ID = foodAnnexId;
+		aocDat->Civs[civIndex].Units[goldAnnexId].ID = goldAnnexId;
+		aocDat->Civs[civIndex].Units[stoneAnnexId].ID = stoneAnnexId;
+		aocDat->Civs[civIndex].Units[woodTrickleId].ID = woodTrickleId;
+		aocDat->Civs[civIndex].Units[foodTrickleId].ID = foodTrickleId;
+		aocDat->Civs[civIndex].Units[goldTrickleId].ID = goldTrickleId;
+		aocDat->Civs[civIndex].Units[stoneTrickleId].ID = stoneTrickleId;
 
-		aocDat->Civs[civIndex].Units[feitoriaStackId].ID2 = feitoriaStackId;
-		aocDat->Civs[civIndex].Units[woodAnnexId].ID2 = woodAnnexId;
-		aocDat->Civs[civIndex].Units[foodAnnexId].ID2 = foodAnnexId;
-		aocDat->Civs[civIndex].Units[goldAnnexId].ID2 = goldAnnexId;
-		aocDat->Civs[civIndex].Units[stoneAnnexId].ID2 = stoneAnnexId;
-		aocDat->Civs[civIndex].Units[woodTrickleId].ID2 = woodTrickleId;
-		aocDat->Civs[civIndex].Units[foodTrickleId].ID2 = foodTrickleId;
-		aocDat->Civs[civIndex].Units[goldTrickleId].ID2 = goldTrickleId;
-		aocDat->Civs[civIndex].Units[stoneTrickleId].ID2 = stoneTrickleId;
+		aocDat->Civs[civIndex].Units[feitoriaStackId].CopyID = feitoriaStackId;
+		aocDat->Civs[civIndex].Units[woodAnnexId].CopyID = woodAnnexId;
+		aocDat->Civs[civIndex].Units[foodAnnexId].CopyID = foodAnnexId;
+		aocDat->Civs[civIndex].Units[goldAnnexId].CopyID = goldAnnexId;
+		aocDat->Civs[civIndex].Units[stoneAnnexId].CopyID = stoneAnnexId;
+		aocDat->Civs[civIndex].Units[woodTrickleId].CopyID = woodTrickleId;
+		aocDat->Civs[civIndex].Units[foodTrickleId].CopyID = foodTrickleId;
+		aocDat->Civs[civIndex].Units[goldTrickleId].CopyID = goldTrickleId;
+		aocDat->Civs[civIndex].Units[stoneTrickleId].CopyID = stoneTrickleId;
 
-		aocDat->Civs[civIndex].Units[feitoriaStackId].ID3 = feitoriaStackId;
-		aocDat->Civs[civIndex].Units[woodAnnexId].ID3 = woodAnnexId;
-		aocDat->Civs[civIndex].Units[foodAnnexId].ID3 = foodAnnexId;
-		aocDat->Civs[civIndex].Units[goldAnnexId].ID3 = goldAnnexId;
-		aocDat->Civs[civIndex].Units[stoneAnnexId].ID3 = stoneAnnexId;
-		aocDat->Civs[civIndex].Units[woodTrickleId].ID3 = woodTrickleId;
-		aocDat->Civs[civIndex].Units[foodTrickleId].ID3 = foodTrickleId;
-		aocDat->Civs[civIndex].Units[goldTrickleId].ID3 = goldTrickleId;
-		aocDat->Civs[civIndex].Units[stoneTrickleId].ID3 = stoneTrickleId;
+		aocDat->Civs[civIndex].Units[feitoriaStackId].BaseID = feitoriaStackId;
+		aocDat->Civs[civIndex].Units[woodAnnexId].BaseID = woodAnnexId;
+		aocDat->Civs[civIndex].Units[foodAnnexId].BaseID = foodAnnexId;
+		aocDat->Civs[civIndex].Units[goldAnnexId].BaseID = goldAnnexId;
+		aocDat->Civs[civIndex].Units[stoneAnnexId].BaseID = stoneAnnexId;
+		aocDat->Civs[civIndex].Units[woodTrickleId].BaseID = woodTrickleId;
+		aocDat->Civs[civIndex].Units[foodTrickleId].BaseID = foodTrickleId;
+		aocDat->Civs[civIndex].Units[goldTrickleId].BaseID = goldTrickleId;
+		aocDat->Civs[civIndex].Units[stoneTrickleId].BaseID = stoneTrickleId;
 	}
 
 

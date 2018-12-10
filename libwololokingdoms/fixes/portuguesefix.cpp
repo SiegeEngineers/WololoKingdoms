@@ -16,12 +16,12 @@ void PortuguesePatch(genie::DatFile *aocDat) {
 	size_t const dockId = 45;
 	size_t const castleId = 82;
 
-	std::vector<genie::TechageEffect> effects;
-	genie::TechageEffect effect;
+	std::vector<genie::EffectCommand> effects;
+	genie::EffectCommand effect;
 	effect.Type = 1; // ressource modifier
-	effect.A = 50; // reveal ally
-	effect.B = 1; // (+/-)
-	effect.D = 1; // +1
+	effect.TargetUnit = 50; // reveal ally
+	effect.UnitClassID = 1; // (+/-)
+	effect.Amount = 1; // +1
 	effects.push_back(effect);
 
 	// broken : prevents from researching caravan
@@ -29,8 +29,8 @@ void PortuguesePatch(genie::DatFile *aocDat) {
 //	effect.D = 19; // cartography
 //	effects.push_back(effect);
 
-	aocDat->Techages[portugueseTBonusTechId].Effects = effects;
-	aocDat->Techages[portugueseBrokenTBonusTechId].Effects = std::vector<genie::TechageEffect>(); // nothing
+	aocDat->Effects[portugueseTBonusTechId].EffectCommands = effects;
+	aocDat->Effects[portugueseBrokenTBonusTechId].EffectCommands = std::vector<genie::EffectCommand>(); // nothing
 
 	//This moves the Caraval in the Tech tree to the castle, so that it shows up only for portuguese and doesn't obscure shipwright
 	//Delete Caravels from the dock and add them to the castle

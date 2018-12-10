@@ -58,9 +58,9 @@ void smallPatches(genie::DatFile *aocDat) {
     //size_t const gateposts[] = {80,81,92,95,663,664,671,672};
 
 	//unpackable TC
-	aocDat->UnitHeaders[PTWC].Commands.push_back(aocDat->UnitHeaders[pTrebId].Commands[0]);
-    aocDat->UnitHeaders[PTWC].Commands[0].SelectionMode = 0;
-    aocDat->UnitHeaders[PTWC].Commands[0].SelectionEnabler = 0;
+	aocDat->UnitHeaders[PTWC].TaskList.push_back(aocDat->UnitHeaders[pTrebId].TaskList[0]);
+    aocDat->UnitHeaders[PTWC].TaskList[0].SelectionMode = 0;
+    aocDat->UnitHeaders[PTWC].TaskList[0].SelectionEnabler = 0;
 
     for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
 		//fixes faulty elite camel archer data for non-gaia civs
@@ -70,30 +70,30 @@ void smallPatches(genie::DatFile *aocDat) {
         aocDat->Civs[civIndex].Units[PTWC] = aocDat->Civs[0].Units[PTWC]; //unpackable TC
         aocDat->Civs[civIndex].Units[monkeyBoyID].Class = 10; //This makes gaia monkey boys attack instead of being captured
         aocDat->Civs[civIndex].Units[sharkatzorID].HideInEditor = 0; //unhide sharkatzor in editor
-        aocDat->Civs[civIndex].Units[battleElephantID].Type50.BlastAttackLevel = 10; //give battle elephants half-attack blast damage
-        aocDat->Civs[civIndex].Units[eliteBattleElephantID].Type50.BlastAttackLevel = 10;
+        aocDat->Civs[civIndex].Units[battleElephantID].Combat.BlastAttackLevel = 10; //give battle elephants half-attack blast damage
+        aocDat->Civs[civIndex].Units[eliteBattleElephantID].Combat.BlastAttackLevel = 10;
         //UP Siege Tower works better with 0.5 collision size
-        aocDat->Civs[civIndex].Units[siegeTowerID].CollisionSize = { 0.5, 0.5, 2};
+        aocDat->Civs[civIndex].Units[siegeTowerID].Size = { 0.5, 0.5, 2};
         //Kings can't attack, to make sure there are no graphics issues we set the attack graphic to the standing graphic
-        aocDat->Civs[civIndex].Units[kingID].Type50.AttackGraphic = aocDat->Civs[civIndex].Units[kingID].StandingGraphic.first;
+        aocDat->Civs[civIndex].Units[kingID].Combat.AttackGraphic = aocDat->Civs[civIndex].Units[kingID].StandingGraphic.first;
         //fix gate rubbles
         for (size_t i = 0; i < sizeof(gates)/sizeof(gates[0]); i++) {
             aocDat->Civs[civIndex].Units[gates[i]].DeadUnitID = 144;
         }
 	}
     //Fix longboats having an unload ability that could mess with attacks
-    aocDat->UnitHeaders[longboatID].Commands.pop_back();
-    aocDat->UnitHeaders[eliteLongboatID].Commands.pop_back();
+    aocDat->UnitHeaders[longboatID].TaskList.pop_back();
+    aocDat->UnitHeaders[eliteLongboatID].TaskList.pop_back();
     //Fixes Autoresearch for cartography
-    aocDat->Researchs[cartographyID].ResearchTime = 0;
-    aocDat->Researchs[cartographyID].RequiredTechs[1] = 128;
-    aocDat->Researchs[cartographyID].RequiredTechCount = 2;
+    aocDat->Techs[cartographyID].ResearchTime = 0;
+    aocDat->Techs[cartographyID].RequiredTechs[1] = 128;
+    aocDat->Techs[cartographyID].RequiredTechCount = 2;
     aocDat->TechTree.ResearchConnections.erase(aocDat->TechTree.ResearchConnections.begin()+6);
     //fixes holy line, relics block entire tile
-    aocDat->Civs[0].Units[relicID].CollisionSize = {0.5,0.5,2};
+    aocDat->Civs[0].Units[relicID].Size = {0.5,0.5,2};
     //Fix teuton team bonus being overwritten in post-imp
-    aocDat->Techages[teutonTeamBonusID].Effects[1].B = 1;
-    aocDat->Techages[teutonTeamBonusID].Effects[2].B = 1;
+    aocDat->Effects[teutonTeamBonusID].EffectCommands[1].UnitClassID = 1;
+    aocDat->Effects[teutonTeamBonusID].EffectCommands[2].UnitClassID = 1;
 
     //mountains were too small for their graphics
 	for (size_t i = 0; i < sizeof(mountains)/sizeof(mountains[0]); i++) {
@@ -111,45 +111,45 @@ void smallPatches(genie::DatFile *aocDat) {
     aocDat->Graphics[3388].SoundID = 427;
 
     //Team Units tech tree fix
-	aocDat->TechTree.UnitConnections[132].Unknown1 = 41;
-	aocDat->TechTree.UnitConnections[101].Unknown1 = 29;
-	aocDat->TechTree.UnitConnections[116].Unknown1 = 37;
-    aocDat->TechTree.UnitConnections[117].Unknown1 = 37;
+	aocDat->TechTree.UnitConnections[132].Status = 41;
+	aocDat->TechTree.UnitConnections[101].Status = 29;
+	aocDat->TechTree.UnitConnections[116].Status = 37;
+    aocDat->TechTree.UnitConnections[117].Status = 37;
     //Hunting Dogs got auto-researched in feudal+ games
-    aocDat->Researchs[huntingDogsId].RequiredTechs[0] = -1;
+    aocDat->Techs[huntingDogsId].RequiredTechs[0] = -1;
     //Make it possible for maps to go back to aoc water by disabling fire/demo galley and a disabler for fire/demo shop
-    aocDat->Techages[fireShipTechId].Effects[0].A = fireGalleyId;
-    genie::TechageEffect effect = aocDat->Techages[fireShipTechId].Effects[0];
-    effect.A = demoRaftId;
-    aocDat->Techages[demoShipTechId].Effects.push_back(effect);
+    aocDat->Effects[fireShipTechId].EffectCommands[0].TargetUnit = fireGalleyId;
+    genie::EffectCommand effect = aocDat->Effects[fireShipTechId].EffectCommands[0];
+    effect.TargetUnit = demoRaftId;
+    aocDat->Effects[demoShipTechId].EffectCommands.push_back(effect);
     effect.Type = 3;
-    effect.B = demoShipId;
-    aocDat->Techages[demoShipTechId].Effects.push_back(effect);
-    effect.A = fireGalleyId;
-    effect.B = fireShipId;
-    aocDat->Techages[fireShipTechId].Effects.push_back(effect);
+    effect.UnitClassID = demoShipId;
+    aocDat->Effects[demoShipTechId].EffectCommands.push_back(effect);
+    effect.TargetUnit = fireGalleyId;
+    effect.UnitClassID = fireShipId;
+    aocDat->Effects[fireShipTechId].EffectCommands.push_back(effect);
 
-    aocDat->Researchs[FireShipDisablerId].Name = "Fire Ship Disabler";
-    aocDat->Researchs[FireShipDisablerId].TechageID = FireShipDisablerTechId;
-    aocDat->Researchs[FireShipDisablerId].RequiredTechCount = 1;
-    aocDat->Researchs[FireShipDisablerId].RequiredTechs = {feudalAgeResearchId, -1, -1, -1, -1, -1};
-    aocDat->Researchs[FireShipDisablerId].Civ = -1;
-    aocDat->Researchs[FireShipDisablerId].ResearchLocation = -1;
-    aocDat->Techages[FireShipDisablerTechId].Effects[0].Type = 102;
-    aocDat->Techages[FireShipDisablerTechId].Effects[0].D = fireShipResearchId;
-    aocDat->Techages[FireShipDisablerTechId].Effects.pop_back();
+    aocDat->Techs[FireShipDisablerId].Name = "Fire Ship Disabler";
+    aocDat->Techs[FireShipDisablerId].EffectID = FireShipDisablerTechId;
+    aocDat->Techs[FireShipDisablerId].RequiredTechCount = 1;
+    aocDat->Techs[FireShipDisablerId].RequiredTechs = {feudalAgeResearchId, -1, -1, -1, -1, -1};
+    aocDat->Techs[FireShipDisablerId].Civ = -1;
+    aocDat->Techs[FireShipDisablerId].ResearchLocation = -1;
+    aocDat->Effects[FireShipDisablerTechId].EffectCommands[0].Type = 102;
+    aocDat->Effects[FireShipDisablerTechId].EffectCommands[0].Amount = fireShipResearchId;
+    aocDat->Effects[FireShipDisablerTechId].EffectCommands.pop_back();
 
-    aocDat->Researchs[DemoShipDisablerId] = aocDat->Researchs[FireShipDisablerId];
-    aocDat->Researchs[DemoShipDisablerId].Name = "Demo Ship Disabler";
-    aocDat->Researchs[DemoShipDisablerId].TechageID = DemoShipDisablerTechId;
-    aocDat->Techages[DemoShipDisablerTechId].Effects[0].Type = 102;
-    aocDat->Techages[DemoShipDisablerTechId].Effects[0].D = demoShipResearchId;
-    aocDat->Techages[DemoShipDisablerTechId].Effects.pop_back();
+    aocDat->Techs[DemoShipDisablerId] = aocDat->Techs[FireShipDisablerId];
+    aocDat->Techs[DemoShipDisablerId].Name = "Demo Ship Disabler";
+    aocDat->Techs[DemoShipDisablerId].EffectID = DemoShipDisablerTechId;
+    aocDat->Effects[DemoShipDisablerTechId].EffectCommands[0].Type = 102;
+    aocDat->Effects[DemoShipDisablerTechId].EffectCommands[0].Amount = demoShipResearchId;
+    aocDat->Effects[DemoShipDisablerTechId].EffectCommands.pop_back();
 
-    aocDat->Researchs[fireShipResearchId].Name = "Fire Ship (make avail)";
-    aocDat->Researchs[demoShipResearchId].Name = "Demo Ship (make avail)";
-    aocDat->Researchs[fireShipResearchId].RequiredTechCount = 1;
-    aocDat->Researchs[demoShipResearchId].RequiredTechCount = 1;
+    aocDat->Techs[fireShipResearchId].Name = "Fire Ship (make avail)";
+    aocDat->Techs[demoShipResearchId].Name = "Demo Ship (make avail)";
+    aocDat->Techs[fireShipResearchId].RequiredTechCount = 1;
+    aocDat->Techs[demoShipResearchId].RequiredTechCount = 1;
 
     // Have an x-patch upgrade to trade carts that's disabled by default
 
@@ -160,62 +160,62 @@ void smallPatches(genie::DatFile *aocDat) {
         aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[0].Amount *= 2;
         aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[1].Amount *= 2;
         aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[2].Amount *= 2;
-        aocDat->Civs[i].Units[xtradeCartId].Bird.WorkRate *= 1.65;
+        aocDat->Civs[i].Units[xtradeCartId].Action.WorkRate *= 1.65;
         aocDat->Civs[i].Units[xtradeCartId].Creatable.TrainTime *= 1.65;
         aocDat->Civs[i].Units[xtradeCartId].HitPoints = 115;
         aocDat->Civs[i].Units[xtradeCartId].Creatable.ResourceCosts[0].Amount *= 1.65;
         aocDat->Civs[i].Units[xtradeCartId].Creatable.ResourceCosts[1].Amount *= 1.65;
     }
 
-    aocDat->Researchs[xPatchResearchId] = aocDat->Researchs[FireShipDisablerId];
-    aocDat->Researchs[xPatchResearchId].Name = "X Patch Trade Change";
-    aocDat->Researchs[xPatchResearchId].TechageID = xPatchTechId;
-    aocDat->Researchs[xPatchResearchId].RequiredTechCount = 2;
-    aocDat->Researchs[xPatchResearchId].RequiredTechs[1] = shadowMarketId;
-    aocDat->Researchs[xPatchDisablingResearchId] = aocDat->Researchs[FireShipDisablerId];
-    aocDat->Researchs[xPatchDisablingResearchId].Name = "X Patch Disabler";
-    aocDat->Researchs[xPatchDisablingResearchId].TechageID = xPatchDisablingTechId;
-    aocDat->Techages[xPatchDisablingTechId].Effects[0].Type = 102;
-    aocDat->Techages[xPatchDisablingTechId].Effects[0].D = xPatchResearchId;
+    aocDat->Techs[xPatchResearchId] = aocDat->Techs[FireShipDisablerId];
+    aocDat->Techs[xPatchResearchId].Name = "X Patch Trade Change";
+    aocDat->Techs[xPatchResearchId].EffectID = xPatchTechId;
+    aocDat->Techs[xPatchResearchId].RequiredTechCount = 2;
+    aocDat->Techs[xPatchResearchId].RequiredTechs[1] = shadowMarketId;
+    aocDat->Techs[xPatchDisablingResearchId] = aocDat->Techs[FireShipDisablerId];
+    aocDat->Techs[xPatchDisablingResearchId].Name = "X Patch Disabler";
+    aocDat->Techs[xPatchDisablingResearchId].EffectID = xPatchDisablingTechId;
+    aocDat->Effects[xPatchDisablingTechId].EffectCommands[0].Type = 102;
+    aocDat->Effects[xPatchDisablingTechId].EffectCommands[0].Amount = xPatchResearchId;
     effect.Type = 3;
-    effect.A = tradeCartId;
-    effect.B = xtradeCartId;
-    aocDat->Techages[xPatchTechId].Effects[0] = effect;
+    effect.TargetUnit = tradeCartId;
+    effect.UnitClassID = xtradeCartId;
+    aocDat->Effects[xPatchTechId].EffectCommands[0] = effect;
 
     // Make it possible to control the age of coinage and banking techs.
-    aocDat->Researchs[castleCoinageDisablingResearchId] = aocDat->Researchs[FireShipDisablerId];
-    aocDat->Researchs[castleCoinageDisablingResearchId].Name = "Castle Coinage Disabler";
-    aocDat->Researchs[castleCoinageDisablingResearchId].TechageID = castleCoinageDisablingTechId;
-    aocDat->Researchs[impCoinageDisablingResearchId] = aocDat->Researchs[FireShipDisablerId];
-    aocDat->Researchs[impCoinageDisablingResearchId].Name = "Imp Coinage Disabler";
-    aocDat->Researchs[impCoinageDisablingResearchId].TechageID = impCoinageDisablingTechId;
-    aocDat->Researchs[impBankingDisablingResearchId] = aocDat->Researchs[FireShipDisablerId];
-    aocDat->Researchs[impBankingDisablingResearchId].Name = "Imp Banking Disabler";
-    aocDat->Researchs[impBankingDisablingResearchId].TechageID = impBankingDisablingTechId;
+    aocDat->Techs[castleCoinageDisablingResearchId] = aocDat->Techs[FireShipDisablerId];
+    aocDat->Techs[castleCoinageDisablingResearchId].Name = "Castle Coinage Disabler";
+    aocDat->Techs[castleCoinageDisablingResearchId].EffectID = castleCoinageDisablingTechId;
+    aocDat->Techs[impCoinageDisablingResearchId] = aocDat->Techs[FireShipDisablerId];
+    aocDat->Techs[impCoinageDisablingResearchId].Name = "Imp Coinage Disabler";
+    aocDat->Techs[impCoinageDisablingResearchId].EffectID = impCoinageDisablingTechId;
+    aocDat->Techs[impBankingDisablingResearchId] = aocDat->Techs[FireShipDisablerId];
+    aocDat->Techs[impBankingDisablingResearchId].Name = "Imp Banking Disabler";
+    aocDat->Techs[impBankingDisablingResearchId].EffectID = impBankingDisablingTechId;
 
-    aocDat->Researchs[castleCoinageResearchId] = aocDat->Researchs[coinageResearchId];
-    aocDat->Researchs[castleCoinageResearchId].Name = "Castle Coinage";
-    aocDat->Researchs[castleCoinageResearchId].RequiredTechs[0] = 102;
-    aocDat->Researchs[impCoinageResearchId] = aocDat->Researchs[coinageResearchId];
-    aocDat->Researchs[impCoinageResearchId].Name = "Imp Coinage";
-    aocDat->Researchs[impCoinageResearchId].RequiredTechs[0] = 103;
-    aocDat->Researchs[bankingResearchId].RequiredTechs[2] = castleCoinageResearchId;
-    aocDat->Researchs[impBankingResearchId] = aocDat->Researchs[bankingResearchId];
-    aocDat->Researchs[impBankingResearchId].Name = "Imp Banking";
-    aocDat->Researchs[impBankingResearchId].RequiredTechs[0] = 103;
-    aocDat->Researchs[impBankingResearchId].RequiredTechs[2] = castleCoinageResearchId;
-    aocDat->Researchs[impBankingResearchId].RequiredTechs[3] = impCoinageResearchId;
+    aocDat->Techs[castleCoinageResearchId] = aocDat->Techs[coinageResearchId];
+    aocDat->Techs[castleCoinageResearchId].Name = "Castle Coinage";
+    aocDat->Techs[castleCoinageResearchId].RequiredTechs[0] = 102;
+    aocDat->Techs[impCoinageResearchId] = aocDat->Techs[coinageResearchId];
+    aocDat->Techs[impCoinageResearchId].Name = "Imp Coinage";
+    aocDat->Techs[impCoinageResearchId].RequiredTechs[0] = 103;
+    aocDat->Techs[bankingResearchId].RequiredTechs[2] = castleCoinageResearchId;
+    aocDat->Techs[impBankingResearchId] = aocDat->Techs[bankingResearchId];
+    aocDat->Techs[impBankingResearchId].Name = "Imp Banking";
+    aocDat->Techs[impBankingResearchId].RequiredTechs[0] = 103;
+    aocDat->Techs[impBankingResearchId].RequiredTechs[2] = castleCoinageResearchId;
+    aocDat->Techs[impBankingResearchId].RequiredTechs[3] = impCoinageResearchId;
 
 
-    aocDat->Techages[castleCoinageDisablingTechId].Effects[0].Type = 102;
-    aocDat->Techages[castleCoinageDisablingTechId].Effects[0].D = castleCoinageResearchId;
-    aocDat->Techages[castleCoinageDisablingTechId].Effects.pop_back();
-    aocDat->Techages[impCoinageDisablingTechId].Effects[0].Type = 102;
-    aocDat->Techages[impCoinageDisablingTechId].Effects[0].D = impCoinageResearchId;
-    aocDat->Techages[impCoinageDisablingTechId].Effects.pop_back();
-    aocDat->Techages[impBankingDisablingTechId].Effects[0].Type = 102;
-    aocDat->Techages[impBankingDisablingTechId].Effects[0].D = impBankingResearchId;
-    aocDat->Techages[impBankingDisablingTechId].Effects.pop_back();
+    aocDat->Effects[castleCoinageDisablingTechId].EffectCommands[0].Type = 102;
+    aocDat->Effects[castleCoinageDisablingTechId].EffectCommands[0].Amount = castleCoinageResearchId;
+    aocDat->Effects[castleCoinageDisablingTechId].EffectCommands.pop_back();
+    aocDat->Effects[impCoinageDisablingTechId].EffectCommands[0].Type = 102;
+    aocDat->Effects[impCoinageDisablingTechId].EffectCommands[0].Amount = impCoinageResearchId;
+    aocDat->Effects[impCoinageDisablingTechId].EffectCommands.pop_back();
+    aocDat->Effects[impBankingDisablingTechId].EffectCommands[0].Type = 102;
+    aocDat->Effects[impBankingDisablingTechId].EffectCommands[0].Amount = impBankingResearchId;
+    aocDat->Effects[impBankingDisablingTechId].EffectCommands.pop_back();
 
 
 }
