@@ -72,3 +72,4 @@ WololoKingdoms_resource.rc
 Setup.iss
 release/
 libwololokingdoms/bin
+*.o

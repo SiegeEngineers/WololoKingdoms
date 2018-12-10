@@ -18,7 +18,7 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     dialog.cpp
 
-win32: {
+win32 {
   LIBS += -L$$PWD/lib/ -L$$PWD/libwololokingdoms/bin/win32 -llibgenieutils.dll -llibwololokingdoms.dll
 } else {
   LIBS += -L$$PWD/libwololokingdoms/bin/linux -lgenieutils -lwololokingdoms
@@ -41,32 +41,32 @@ INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv
 INCLUDEPATH += include/
 
 HEADERS += \
-    paths.h\
-    libwololokingdoms/include/wololo/Drs.h \
-    libwololokingdoms/fixes/portuguesefix.h \
-    libwololokingdoms/fixes/demoshipfix.h \
-    libwololokingdoms/fixes/berbersutfix.h \
-    libwololokingdoms/fixes/ethiopiansfreepikeupgradefix.h \
-    libwololokingdoms/fixes/maliansfreeminingupgradefix.h \
-    libwololokingdoms/fixes/ai900unitidfix.h \
-    libwololokingdoms/fixes/hotkeysfix.h \
-    libwololokingdoms/fixes/disablenonworkingunits.h \
-    libwololokingdoms/fixes/vietfix.h \
-    libwololokingdoms/include/wololo/datPatch.h \
-    libwololokingdoms/fixes/malayfix.h \
-    libwololokingdoms/fixes/feitoriafix.h \
-    libwololokingdoms/fixes/burmesefix.h \
-    libwololokingdoms/fixes/khmerfix.h \
-    mainwindow.h \
-    dialog.h \
-    libwololokingdoms/fixes/smallfixes.h \
-    libwololokingdoms/fixes/siegetowerfix.h \
     include/sdk/public/steam/steam_api.h \
+    libwololokingdoms/fixes/ai900unitidfix.h \
+    libwololokingdoms/fixes/berbersutfix.h \
+    libwololokingdoms/fixes/burmesefix.h \
     libwololokingdoms/fixes/cuttingfix.h \
+    libwololokingdoms/fixes/demoshipfix.h \
+    libwololokingdoms/fixes/disablenonworkingunits.h \
+    libwololokingdoms/fixes/ethiopiansfreepikeupgradefix.h \
+    libwololokingdoms/fixes/feitoriafix.h \
+    libwololokingdoms/fixes/hotkeysfix.h \
+    libwololokingdoms/fixes/khmerfix.h \
+    libwololokingdoms/fixes/malayfix.h \
+    libwololokingdoms/fixes/maliansfreeminingupgradefix.h \
+    libwololokingdoms/fixes/portuguesefix.h \
+    libwololokingdoms/fixes/siegetowerfix.h \
+    libwololokingdoms/fixes/smallfixes.h \
     libwololokingdoms/fixes/tricklebuildingfix.h \
+    libwololokingdoms/fixes/vietfix.h \
+    libwololokingdoms/include/wololo/Drs.h \
+    libwololokingdoms/include/wololo/datPatch.h \
     libwololokingdoms/wkconverter.h \
-    wkgui.h \
-    libwololokingdoms/wksettings.h
+    libwololokingdoms/wksettings.h \
+    dialog.h \
+    mainwindow.h \
+    paths.h\
+    wkgui.h
 
 DISTFILES += \
     WololoKingdoms.ico
