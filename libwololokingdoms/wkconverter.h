@@ -4,6 +4,8 @@
 #include <set>
 #include <regex>
 #include <map>
+#include <vector>
+#include <string>
 #include <filesystem>
 
 #include "genie/dat/DatFile.h"
@@ -17,30 +19,76 @@
 #define rt_getNewId() std::get<4>(*repIt)
 #define rt_getTerrainType() std::get<5>(*repIt)
 
-
 namespace fs = std::filesystem;
 
 /**
- * interface.
+ * WK Conversion event listener, used to update the UI and to implement platform/app-specific
+ * things like UserPatch installation.
  */
 class WKConvertListener {
     int m_cachedProgress = 0;
 public:
-    void finished();
-    void log(std::string logMessage);
-    void setInfo(std::string info);
-    void error(std::exception const & err);
-    void error(std::string message) {
+    /**
+     * Called when conversion has finished.
+     */
+    virtual void finished();
+
+    /**
+     * Log a message.
+     */
+    virtual void log(std::string logMessage);
+
+    /**
+     * Set the information line, usually describing what the converter is currently working on.
+     */
+    virtual void setInfo(std::string info);
+
+    /**
+     * Report an error.
+     */
+    virtual void error(std::exception const & err);
+
+    /**
+     * Report an error (message only).
+     */
+    virtual void error(std::string message) {
       error(std::runtime_error(message));
     }
-    void createDialog(std::string info);
-    void createDialog(std::string info, std::string title);
-    void createDialog(std::string info, std::string toReplace, std::string replaceWith);
-    void setProgress(int i);
-    void increaseProgress(int i) {
+
+    /**
+     * Create a dialog (this can usually be a noop if you're not building a UI)
+     */
+    virtual void createDialog(std::string info);
+
+    /**
+     * Create a dialog (this can usually be a noop if you're not building a UI)
+     */
+    virtual void createDialog(std::string info, std::string title);
+
+    /**
+     * Create a dialog (this can usually be a noop if you're not building a UI)
+     */
+    virtual void createDialog(std::string info, std::string toReplace, std::string replaceWith);
+
+    /**
+     * Set the current progress (0-100).
+     */
+    virtual void setProgress(int i);
+
+    /**
+     * Increase the current progress.
+     */
+    virtual void increaseProgress(int i) {
       m_cachedProgress += i;
       setProgress(m_cachedProgress);
     }
+
+    /**
+     * Install UserPatch.
+     * userPatchExe is the path to the UserPatch SetupAoC.exe file.
+     * cliFlags are strings that should be passed to the installer as command-line flags
+     */
+    virtual void installUserPatch(fs::path userPatchExe, std::vector<std::string> cliFlags);
 };
 
 class WKConverter {
@@ -84,8 +132,6 @@ private:
     };
 
     int run(bool retry = false);
-    void callExternalExe(std::wstring exe);
-    void callWaitExe(std::wstring exe);
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
     bool isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns);

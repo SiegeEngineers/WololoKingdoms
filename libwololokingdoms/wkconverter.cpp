@@ -2738,7 +2738,9 @@ int WKConverter::run(bool retry)
 
                 listener->increaseProgress(1); //96
 
-                callExternalExe(strtowstr("\""+UPExeOut.string()+"\" -g:"+UPModdedExe).c_str());
+                std::vector<std::string> flags;
+                flags.push_back("-g:" + UPModdedExe);
+                listener->installUserPatch(UPExeOut, flags);
 
                 std::string newExeName;
                 if(settings->patch >= 0 && (newExeName = std::get<4>(settings->dataModList[settings->patch])) != "") {
