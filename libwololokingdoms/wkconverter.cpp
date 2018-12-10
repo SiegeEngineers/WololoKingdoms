@@ -1231,15 +1231,15 @@ void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *a
 	aocDat->Sounds = hdDat->Sounds;
 	aocDat->GraphicPointers = hdDat->GraphicPointers;
 	aocDat->Graphics = hdDat->Graphics;
-	aocDat->Techages = hdDat->Techages;
+	aocDat->Effects = hdDat->Effects;
 	aocDat->UnitHeaders = hdDat->UnitHeaders;
 	aocDat->Civs = hdDat->Civs;
-	aocDat->Researchs = hdDat->Researchs;
+	aocDat->Techs = hdDat->Techs;
 	aocDat->UnitLines = hdDat->UnitLines;
 	aocDat->TechTree = hdDat->TechTree;
     aocDat->TerrainRestrictions.push_back(aocDat->TerrainRestrictions[14]);
-    aocDat->TerrainRestrictionPointers1.push_back(1);
-    aocDat->TerrainRestrictionPointers2.push_back(1);
+    aocDat->FloatPtrTerrainTables.push_back(1);
+    aocDat->TerrainPassGraphicPointers.push_back(1);
     for(std::vector<genie::TerrainPassGraphic>::iterator it = aocDat->TerrainRestrictions[22].TerrainPassGraphics.begin();
         it !=  aocDat->TerrainRestrictions[22].TerrainPassGraphics.end(); it++) {
         it->EnterTileSpriteID = 11164;
@@ -1305,11 +1305,11 @@ void WKConverter::adjustArchitectureFlags(genie::DatFile *aocDat, std::string fl
         int x = std::atoi(line.substr(0,index).c_str());
         int y = std::atoi(line.substr(index+1,std::string::npos).c_str());
         if (unitID == 18 || unitID == 103) {
-            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].StandingGraphic.first].Deltas[delta].DirectionX = x;
-            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].StandingGraphic.first].Deltas[delta].DirectionY = y;
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].StandingGraphic.first].Deltas[delta].OffsetX = x;
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].StandingGraphic.first].Deltas[delta].OffsetY = y;
         } else {
-            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].Creatable.GarrisonGraphic].Deltas[delta].DirectionX = x;
-            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].Creatable.GarrisonGraphic].Deltas[delta].DirectionY = y;
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].Creatable.GarrisonGraphic].Deltas[delta].OffsetX = x;
+            aocDat->Graphics[aocDat->Civs[civID].Units[unitID].Creatable.GarrisonGraphic].Deltas[delta].OffsetY = y;
         }
     }
     flagFile.close();
@@ -1378,8 +1378,8 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 		//units like ships
 		for(unsigned int u = 0; u < sizeof(unitIDs)/sizeof(short); u++) {
 			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].StandingGraphic.first, aocDat->Civs[burmese].Units[unitIDs[u]].StandingGraphic.first, c, replacedGraphics);
-			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].DeadFish.WalkingGraphic.first, aocDat->Civs[burmese].Units[unitIDs[u]].DeadFish.WalkingGraphic.first, c, replacedGraphics);
-			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Type50.AttackGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Type50.AttackGraphic, c, replacedGraphics);
+			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Moving.WalkingGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Moving.WalkingGraphic, c, replacedGraphics);
+			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Combat.AttackGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Combat.AttackGraphic, c, replacedGraphics);
 		}
 
         listener->increaseProgress(1); //34-51
@@ -1433,10 +1433,10 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
             //Units
             for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
                 replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].StandingGraphic.first, aocDat->Civs[0].Units[cgUnitIDs[u]].StandingGraphic.first, cg, replacedGraphics, true);
-                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first != -1) { //Not a Dead Unit
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, aocDat->Civs[0].Units[cgUnitIDs[u]].DeadFish.WalkingGraphic.first, cg, replacedGraphics, true);
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Type50.AttackGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].Type50.AttackGraphic, cg, replacedGraphics, true);
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic.first, aocDat->Civs[0].Units[cgUnitIDs[u]].DyingGraphic.first, cg, replacedGraphics, true);
+                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Moving.WalkingGraphic != -1) { //Not a Dead Unit
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Moving.WalkingGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].Moving.WalkingGraphic, cg, replacedGraphics, true);
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Combat.AttackGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].Combat.AttackGraphic, cg, replacedGraphics, true);
+                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].DyingGraphic, cg, replacedGraphics, true);
                 }
             }
 			//special UP healing slp workaround
@@ -1609,9 +1609,9 @@ short WKConverter::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short
 
     char civLetter = newGraphic.Name.at(newGraphic.Name.length()-1);
     if(civLetters.count(civLetter)) {
-        if(newGraphic.Name2 == newGraphic.Name) {
-            newGraphic.Name2.replace(newGraphic.Name2.length()-1,1,civCode);
-            newGraphic.Name = newGraphic.Name2;
+        if(newGraphic.FileName == newGraphic.Name) {
+            newGraphic.FileName.replace(newGraphic.FileName.length()-1,1,civCode);
+            newGraphic.Name = newGraphic.FileName;
         } else
             newGraphic.Name.replace(newGraphic.Name.length()-1,1,civCode);
     }
