@@ -21,8 +21,7 @@ SOURCES += main.cpp \
 win32: {
   LIBS += -L$$PWD/lib/ -L$$PWD/libwololokingdoms/bin/win32 -llibgenieutils.dll -llibwololokingdoms.dll
 } else {
-  LIBS += -L$$PWD/libwololokingdoms/bin/linux -lwololokingdoms
-  LIBS += -L$$PWD/libwololokingdoms/bin/linux/intermediate/genieutils -lgenieutils
+  LIBS += -L$$PWD/libwololokingdoms/bin/linux -lgenieutils -lwololokingdoms
 }
 LIBS += -L$$PWD/lib/ -lsteam_api
 LIBS += -lstdc++fs

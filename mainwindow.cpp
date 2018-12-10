@@ -29,33 +29,17 @@
 #include <QThreadPool>
 #include "sdk/public/steam/steam_api.h"
 
-class WKQConverter: public QObject, WKConvertListener {
-  Q_OBJECT
-private:
-  WKConverter* converter;
-public slots:
-  void process() {
+void WKQConverter::process() {
     converter->run();
-  }
-signals:
-    void finished();
-    void log(std::string logMessage);
-    void setInfo(std::string info);
-    void error(std::exception const & err);
-    void error(std::string message);
-    void createDialog(std::string info);
-    void createDialog(std::string info, std::string title);
-    void createDialog(std::string info, std::string toReplace, std::string replaceWith);
-    void setProgress(int i);
-    void increaseProgress(int i);
-public:
-  WKQConverter(WKSettings* settings) {
+}
+
+WKQConverter::WKQConverter(WKSettings* settings) {
     converter = new WKConverter(settings, this);
-  }
-  ~WKQConverter() {
+}
+
+WKQConverter::~WKQConverter() {
     delete converter;
-  }
-};
+}
 
 #ifdef _WIN32
 fs::path get_exe_path() {

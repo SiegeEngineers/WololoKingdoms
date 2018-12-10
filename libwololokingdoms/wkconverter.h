@@ -31,22 +31,22 @@ public:
     /**
      * Called when conversion has finished.
      */
-    virtual void finished();
+    virtual void finished() {}
 
     /**
      * Log a message.
      */
-    virtual void log(std::string logMessage);
+    virtual void log(std::string logMessage) {}
 
     /**
      * Set the information line, usually describing what the converter is currently working on.
      */
-    virtual void setInfo(std::string info);
+    virtual void setInfo(std::string info) {}
 
     /**
      * Report an error.
      */
-    virtual void error(std::exception const & err);
+    virtual void error(std::exception const & err) {}
 
     /**
      * Report an error (message only).
@@ -58,22 +58,22 @@ public:
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(std::string info);
+    virtual void createDialog(std::string info) {}
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(std::string info, std::string title);
+    virtual void createDialog(std::string info, std::string title) {}
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(std::string info, std::string toReplace, std::string replaceWith);
+    virtual void createDialog(std::string info, std::string toReplace, std::string replaceWith) {}
 
     /**
      * Set the current progress (0-100).
      */
-    virtual void setProgress(int i);
+    virtual void setProgress(int i) {}
 
     /**
      * Increase the current progress.
@@ -88,7 +88,7 @@ public:
      * userPatchExe is the path to the UserPatch SetupAoC.exe file.
      * cliFlags are strings that should be passed to the installer as command-line flags
      */
-    virtual void installUserPatch(fs::path userPatchExe, std::vector<std::string> cliFlags);
+    virtual void installUserPatch(fs::path userPatchExe, std::vector<std::string> cliFlags) {}
 };
 
 class WKConverter {
