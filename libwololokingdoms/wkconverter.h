@@ -139,7 +139,6 @@ private:
     void upgradeTrees(int usedTerrain, int oldTerrain, std::string& map);
     void createZRmap(std::map<std::string,fs::path>& terrainOverrides, fs::path outputDir, std::string mapName);
 	void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID);
-    void recCopy(fs::path const &src, fs::path const &dst, bool skip = false, bool force = false);
     void indexDrsFiles(fs::path const &src, bool expansionFiles = true, bool terrainFiles = false);
     void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
     std::pair<int,std::string> getTextLine(std::string line);

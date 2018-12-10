@@ -32,76 +32,12 @@
 #include "fixes/smallfixes.h"
 #include "fixes/tricklebuildingfix.h"
 
+#include "string_helpers.h"
 #include "platform.h"
+#include "zr_map_creator.h"
 #include "wkconverter.h"
 
-static void replace_all(std::string& str, const std::string& from, const std::string& to) {
-  size_t start_pos = 0;
-  while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-    str.replace(start_pos, from.length(), to);
-    start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-  }
-}
-
-static std::wstring strtowstr(std::string narrow) {
-  std::wstring wide;
-  for (auto c : narrow) {
-    wchar_t w = c;
-    wide.push_back(w);
-  }
-  return wide;
-}
-
-static std::string wstrtostr(std::wstring wide) {
-  std::string narrow;
-  for (auto c : wide) {
-    char n = c;
-    narrow.push_back(n);
-  }
-  return narrow;
-}
-
-static std::string tolower(std::string line) {
-	std::transform(line.begin(), line.end(), line.begin(), static_cast<int(*)(int)>(std::tolower));
-	return line;
-}
-
-static std::string readFullStream(std::istream& stream) {
-    std::stringstream strstr;
-    strstr << stream.rdbuf();
-    return strstr.str();
-}
-
-class ZRMapCreator {
-    std::ostream& output;
-    void writeLocalFileHeader(std::string name, uint32_t size) {
-        uint32_t signature = 0x04034b50;
-        uint16_t short_dummy = 0;
-        char* short_ptr = reinterpret_cast<char*>(&short_dummy);
-        output.write(reinterpret_cast<char*>(&signature), sizeof(signature));
-        output.write(short_ptr, sizeof(uint16_t)); // version
-        output.write(short_ptr, sizeof(uint16_t)); // flag
-        output.write(short_ptr, sizeof(uint16_t)); // mtime
-        output.write(short_ptr, sizeof(uint16_t)); // compression
-        output.write(short_ptr, sizeof(uint16_t)); // mdate
-        output.write(reinterpret_cast<char*>(&size), sizeof(size)); // compressed size
-        output.write(reinterpret_cast<char*>(&size), sizeof(size)); // uncompressed size
-        uint16_t nameLength = name.length();
-        output.write(reinterpret_cast<char*>(&nameLength), sizeof(nameLength));
-        output.write(short_ptr, sizeof(uint16_t)); // extra length
-        output.write(name.c_str(), size);
-    }
-public:
-    ZRMapCreator(std::ostream& output): output(output) {
-    }
-
-    void addFile(std::string name, const char* content, uint32_t size) {
-        writeLocalFileHeader(name, size);
-        output.write(content, size);
-    }
-};
-
-void WKConverter::recCopy(fs::path const &src, fs::path const &dst, bool skip, bool force) {
+static void copyRecursive(fs::path const &src, fs::path const &dst, bool skip = false, bool force = false) {
     /*
      * Recursive copy of a folder (or file, but then this isn't necessary)
      * Parameters:
@@ -117,7 +53,7 @@ void WKConverter::recCopy(fs::path const &src, fs::path const &dst, bool skip, b
 		}
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
-			recCopy(currentPath, dst / currentPath.filename(), skip, force);
+			copyRecursive(currentPath, dst / currentPath.filename(), skip, force);
 		}
 	}
 	else {
@@ -1227,7 +1163,7 @@ void WKConverter::createZRmap(std::map<std::string,fs::path>& terrainOverrides, 
     for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
         auto file_size = fs::file_size(files->second);
         auto file_stream = std::fstream(files->second.string(), std::ios_base::in);
-        auto file_content = readFullStream(file_stream);
+        auto file_content = concat_stream(file_stream);
         map.addFile(files->first, file_content.c_str(), file_size);
     }
     fs::remove(fs::path(outputDir.string()+"\\"+mapName));
@@ -1911,7 +1847,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
             fs::path currentPath(current->path());
             if(!fs::is_directory(currentPath) || tolower(currentPath.filename().string()) != "savegame") {
-                recCopy(currentPath,newDir/currentPath.filename(),true);
+                copyRecursive(currentPath,newDir/currentPath.filename(),true);
             }
         }
     }
@@ -1928,9 +1864,9 @@ void WKConverter::retryInstall() {
         fs::create_directories(tempFolder/"Scenario");
         fs::create_directories(tempFolder/"SaveGame");
         fs::create_directories(tempFolder/"Script.RM");
-        recCopy(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
-        recCopy(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
-        recCopy(installDir/"Scenario",tempFolder/"Scenario",false,true);
+        copyRecursive(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
+        copyRecursive(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
+        copyRecursive(installDir/"Scenario",tempFolder/"Scenario",false,true);
         fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
         if(fs::exists(installDir/"player1.hki"))
             fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
@@ -1945,9 +1881,9 @@ void WKConverter::retryInstall() {
     fs::remove_all(installDir.parent_path()/"WololoKingdoms FE");
 
     run(true);
-    recCopy(tempFolder/"SaveGame",installDir/"SaveGame",true);
-    recCopy(tempFolder/"Script.RM",installDir/"Script.RM",true);
-    recCopy(tempFolder/"Scenario",installDir/"Scenario",true);
+    copyRecursive(tempFolder/"SaveGame",installDir/"SaveGame",true);
+    copyRecursive(tempFolder/"Script.RM",installDir/"Script.RM",true);
+    copyRecursive(tempFolder/"Scenario",installDir/"Scenario",true);
     std::error_code ec;
     fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
     if(fs::exists(tempFolder/"player1.hki"))
@@ -1968,9 +1904,9 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
         fs::create_directories(tempFolder/"Scenario");
         fs::create_directories(tempFolder/"SaveGame");
         fs::create_directories(tempFolder/"Script.RM");
-        recCopy(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
-        recCopy(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
-        recCopy(installDir/"Scenario",tempFolder/"Scenario",false,true);
+        copyRecursive(installDir/"SaveGame",tempFolder/"SaveGame",false,true);
+        copyRecursive(installDir/"Script.RM",tempFolder/"Script.RM",false,true);
+        copyRecursive(installDir/"Scenario",tempFolder/"Scenario",false,true);
         fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
         if(fs::exists(installDir/"player1.hki"))
             fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
@@ -1978,9 +1914,9 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
         fs::create_directories(installDir/"SaveGame");
         fs::create_directories(installDir/"SaveGame");
         fs::create_directories(installDir/"Script.RM");
-        recCopy(tempFolder/"SaveGame",installDir/"SaveGame",true);
-        recCopy(tempFolder/"Script.RM",installDir/"Script.RM",true);
-        recCopy(tempFolder/"Scenario",installDir/"Scenario",true);
+        copyRecursive(tempFolder/"SaveGame",installDir/"SaveGame",true);
+        copyRecursive(tempFolder/"Script.RM",installDir/"Script.RM",true);
+        copyRecursive(tempFolder/"Scenario",installDir/"Scenario",true);
         std::error_code ec;
         fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
         if(fs::exists(tempFolder/"player1.hki"))
@@ -2238,7 +2174,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Taunts");
             try {
 
-                recCopy(tauntInputPath, tauntOutputPath, true);
+                copyRecursive(tauntInputPath, tauntOutputPath, true);
             } catch (std::exception const & e) {
                 std::string message = "tauntError$";
                 message += e.what();
@@ -2252,7 +2188,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Scenario Sounds");
             try {
 
-                recCopy(scenarioSoundsInputPath, scenarioSoundsOutputPath, true);
+                copyRecursive(scenarioSoundsInputPath, scenarioSoundsOutputPath, true);
             } catch (std::exception const & e) {
                 std::string message = "scenarioSoundError$";
                 message += e.what();
@@ -2275,7 +2211,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Voobly Map folder");
             if (fs::exists(settings->outPath/"Random")) {
                 try {
-                    recCopy(settings->outPath/"Random", installMapDir, true);
+                    copyRecursive(settings->outPath/"Random", installMapDir, true);
                 } catch (std::exception const & e) {
                     std::string message = "vooblyMapError$";
                     message += e.what();
@@ -2327,7 +2263,7 @@ int WKConverter::run(bool retry)
             }
             listener->increaseProgress(1); //23
             try {
-                recCopy(scenarioInputDir,installDir/"Scenario",false,true);
+                copyRecursive(scenarioInputDir,installDir/"Scenario",false,true);
 
             } catch (std::exception const & e) {
                 std::string message = "scenarioError$";
@@ -2341,7 +2277,7 @@ int WKConverter::run(bool retry)
             }
             listener->log("Copying AI");
             try {
-                recCopy(aiInputPath, installDir/"Script.Ai", false, true);
+                copyRecursive(aiInputPath, installDir/"Script.Ai", false, true);
 
             } catch (std::exception const & e) {
                 std::string message = "aiError$";
@@ -2551,7 +2487,7 @@ int WKConverter::run(bool retry)
                      */
                     listener->log("Create Hash");
                     auto fileStream = std::fstream(outputDatPath.string(), std::ios_base::in);
-                    std::string fileData = readFullStream(fileStream);
+                    std::string fileData = concat_stream(fileStream);
 
                     std::string hash = MD5(fileData).b64digest();
                     std::ofstream versionOut(versionIniPath);

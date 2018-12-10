@@ -1,4 +1,4 @@
-SOURCES = wkconverter.cpp md5.cpp
+SOURCES = $(shell echo *.cpp)
 CFLAGS = -std=c++17 -fPIC -I./include -I./third_party/genieutils/include
 W_CFLAGS = $(CFLAGS) -I./third_party/genieutils/extern/win-iconv -DUNICODE
 L_OBJECTS = $(addprefix bin/linux/intermediate/, $(SOURCES:.cpp=.o))
