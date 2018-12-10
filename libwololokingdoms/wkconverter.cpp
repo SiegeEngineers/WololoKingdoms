@@ -33,8 +33,6 @@
 #include "fixes/smallfixes.h"
 #include "fixes/tricklebuildingfix.h"
 
-#include "sdk/public/steam/steam_api.h"
-
 #include "platform.h"
 #include "wkconverter.h"
 
