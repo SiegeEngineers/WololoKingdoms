@@ -3,12 +3,16 @@
 
 #include <string>
 
+/**
+ * This contains platform specific functions; things that are different between Linux and Windows
+ */
+
 #define MKLINK_HARD 'H'
 #define MKLINK_DIR 'd'
 #define MKLINK_JUNCTION 'J'
 
 #ifdef _WIN32
-/** 
+/**
  * Windows
  */
 #include <windows.h>

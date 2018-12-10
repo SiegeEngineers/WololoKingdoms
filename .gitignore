@@ -65,9 +65,9 @@ prelog.txt
 object_script.WololoKingdoms.Release
 object_script.WololoKingdoms.Debug
 WololoKingdoms_resource.rc
-Makefile.Release
-Makefile.Debug
-Makefile
+/Makefile.Release
+/Makefile.Debug
+/Makefile
 .qmake.stash
 Setup.iss
 release/
