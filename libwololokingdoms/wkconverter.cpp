@@ -10,7 +10,6 @@
 
 #include <chrono>
 #include <thread>
-#include <boost/algorithm/string/replace.hpp>
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 #include "md5.h"
@@ -35,6 +34,14 @@
 
 #include "platform.h"
 #include "wkconverter.h"
+
+static void replace_all(std::string& str, const std::string& from, const std::string& to) {
+  size_t start_pos = 0;
+  while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+    str.replace(start_pos, from.length(), to);
+    start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+  }
+}
 
 static std::wstring strtowstr(std::string narrow) {
   std::wstring wide;
@@ -129,7 +136,7 @@ void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
          * so replace \\n -> \n with a linebreak
          */
         if(line.find("\\\\n") == std::string::npos)
-            boost::replace_all(line, "\\n", "\n");
+            replace_all(line, "\\n", "\n");
         unsigned int index = line.find('=');
         std::string key = line.substr(0, index);
         try {
@@ -277,11 +284,11 @@ std::pair<int,std::string> WKConverter::getTextLine(std::string line) {
     if (nb >= 120150 && nb <= 120180) { // descriptions of the civs in the expansion
         //These civ descriptions can be too long for the tech tree, we'll take out some newlines
         if (nb == 120156 || nb == 120155) {
-            boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
+            replace_all(line, "civilization \\n\\n", "civilization \\n");
         }
         if (nb == 120167) {
-            boost::replace_all(line, "civilization \\n\\n", "civilization \\n");
-            boost::replace_all(line, "\\n\\n<b>Unique Tech", "\\n<b>Unique Tech");
+            replace_all(line, "civilization \\n\\n", "civilization \\n");
+            replace_all(line, "\\n\\n<b>Unique Tech", "\\n<b>Unique Tech");
         }
         // replace the old descriptions of the civs in the base game
         nb -= 100000;
@@ -500,28 +507,28 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
         *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
-            boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
-            boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+            replace_all(line, "·", "\xb7"); // Dll can't handle that character.
+            replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
                 dllOut->setString(nb, line);
 			}
 			catch (std::string const & e) {
-                boost::replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
-                boost::replace_all(line, "\xc5\xab", "u");
-                boost::replace_all(line, "\xc4\x81", "a");
-                boost::replace_all(line, "\xe1\xbb\x87", "ê");
-                boost::replace_all(line, "\xe1\xbb\x8b", "i");
-                boost::replace_all(line, "\xe1\xbb\xa3", "o");
-                boost::replace_all(line, "\xe1\xbb\x85", "e");
-                boost::replace_all(line, "\xe1\xbb\x87", "e");
-                boost::replace_all(line, "\xe1\xba\xa2", "A");
-                boost::replace_all(line, "\xc4\x90\xe1", "D");
-                boost::replace_all(line, "\xba\xa1", "a");
-                boost::replace_all(line, "\xc4\x90", "D");
-                boost::replace_all(line, "\xc3\xaa", "e");
-                boost::replace_all(line, "\xc3\xb9", "u");
-                boost::replace_all(line, "\xc6\xb0", "u");
-                boost::replace_all(line, "\xbb\x99", "o");
+                replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
+                replace_all(line, "\xc5\xab", "u");
+                replace_all(line, "\xc4\x81", "a");
+                replace_all(line, "\xe1\xbb\x87", "ê");
+                replace_all(line, "\xe1\xbb\x8b", "i");
+                replace_all(line, "\xe1\xbb\xa3", "o");
+                replace_all(line, "\xe1\xbb\x85", "e");
+                replace_all(line, "\xe1\xbb\x87", "e");
+                replace_all(line, "\xe1\xba\xa2", "A");
+                replace_all(line, "\xc4\x90\xe1", "D");
+                replace_all(line, "\xba\xa1", "a");
+                replace_all(line, "\xc4\x90", "D");
+                replace_all(line, "\xc3\xaa", "e");
+                replace_all(line, "\xc3\xb9", "u");
+                replace_all(line, "\xc6\xb0", "u");
+                replace_all(line, "\xbb\x99", "o");
                 try {
                     dllOut->setString(nb, line);
                 }
@@ -546,14 +553,14 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 		*iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
-            boost::replace_all(it->second, "·", "\xb7"); // Dll can't handle that character.
-            boost::replace_all(it->second, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+            replace_all(it->second, "·", "\xb7"); // Dll can't handle that character.
+            replace_all(it->second, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
                 dllOut->setString(it->first, it->second);
 			}
 			catch (std::string const & e) {
-                boost::replace_all(it->second, "\xb7", "-"); // non-english dll files don't seem to like that character
-                boost::replace_all(it->second, "\xae", "R");
+                replace_all(it->second, "\xb7", "-"); // non-english dll files don't seem to like that character
+                replace_all(it->second, "\xae", "R");
                 dllOut->setString(it->first, it->second);
 			}
 		}
@@ -2633,7 +2640,7 @@ int WKConverter::run(bool retry)
                 std::ifstream input(resourceDir.string()+("WK"+std::to_string(settings->dlcLevel)+".xml"));
                 std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
                 std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
-                boost::replace_all(str,baseModName+dlcExtension,settings->modName);
+                replace_all(str,baseModName+dlcExtension,settings->modName);
                 std::ofstream out(xmlIn.string());
                 out << str;
                 input.close();
