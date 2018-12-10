@@ -29,11 +29,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public slots:
-    void log(QString logMessage);
-    void setInfo(QString info);
-    void createDialog(QString info);
-    void createDialog(QString info, QString title);
-    void createDialog(QString info, QString toReplace, QString replaceWith);
+    void log(std::string logMessage);
+    void setInfo(std::string info);
+    void createDialog(std::string info);
+    void createDialog(std::string info, std::string title);
+    void createDialog(std::string info, std::string toReplace, std::string replaceWith);
     void setProgress(int i);
     void increaseProgress(int i);
     QString translate(QString line);

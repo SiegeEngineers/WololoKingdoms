@@ -10,8 +10,7 @@
 
 #include <chrono>
 #include <thread>
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string/replace.hpp>
+/* #include <boost/algorithm/string/replace.hpp> */
 #include "paths.h"
 #include "conversions.h"
 
@@ -226,8 +225,8 @@ void MainWindow::runConverter() {
     logFile.close();
 }
 
-void MainWindow::log(QString logMessage) {
-    logFile << logMessage.toStdString() << std::endl;
+void MainWindow::log(std::string logMessage) {
+    logFile << logMessage << std::endl;
 }
 
 void MainWindow::setInfo(std::string info){
@@ -244,7 +243,7 @@ void MainWindow::createDialog(std::string info){
 }
 void MainWindow::createDialog(std::string info, std::string title){
     QString qinfo = QString::fromStdString(info);
-    QString qtitle = QString::fromStdString(qtitle);
+    QString qtitle = QString::fromStdString(title);
     qinfo = translate(qinfo);
     QDialog* dialog = new Dialog(this,qinfo,qtitle);
     dialog->exec();

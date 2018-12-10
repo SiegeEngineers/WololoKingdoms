@@ -1,6 +1,7 @@
 QT += core gui
 
 QMAKE_CXXFLAGS += -std=c++17
+win32: QMAKE_CXXFLAGS += -DUNICODE
 
 TARGET = WololoKingdoms
 CONFIG -= console
