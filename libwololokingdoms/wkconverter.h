@@ -19,6 +19,14 @@
 #define rt_getNewId() std::get<4>(*repIt)
 #define rt_getTerrainType() std::get<5>(*repIt)
 
+#ifndef ALLOW_UNUSED
+#  ifdef __GNUC__
+#    define ALLOW_UNUSED __attribute__ ((unused))
+#  else
+#    define ALLOW_UNUSED
+#  endif
+#endif
+
 namespace fs = std::filesystem;
 
 /**
@@ -36,49 +44,52 @@ public:
     /**
      * Log a message.
      */
-    virtual void log(std::string logMessage) {}
+    virtual void log(ALLOW_UNUSED std::string logMessage) {}
 
     /**
      * Set the information line, usually describing what the converter is currently working on.
      */
-    virtual void setInfo(std::string info) {}
+    virtual void setInfo(ALLOW_UNUSED std::string info) {}
 
     /**
      * Report an error.
      */
-    virtual void error(std::exception const & err) {}
+    virtual void error(ALLOW_UNUSED std::exception const & err) {}
 
     /**
      * Report an error (message only).
      */
-    virtual void error(std::string message) {
+    virtual void error(ALLOW_UNUSED std::string message) {
       error(std::runtime_error(message));
     }
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(std::string info) {}
+    virtual void createDialog(ALLOW_UNUSED std::string info) {}
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(std::string info, std::string title) {}
+    virtual void createDialog(ALLOW_UNUSED std::string info, ALLOW_UNUSED std::string title) {}
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(std::string info, std::string toReplace, std::string replaceWith) {}
+    virtual void createDialog(
+        ALLOW_UNUSED std::string info,
+        ALLOW_UNUSED std::string toReplace,
+        ALLOW_UNUSED std::string replaceWith) {}
 
     /**
      * Set the current progress (0-100).
      */
-    virtual void setProgress(int i) {}
+    virtual void setProgress(ALLOW_UNUSED int i) {}
 
     /**
      * Increase the current progress.
      */
-    virtual void increaseProgress(int i) {
+    virtual void increaseProgress(ALLOW_UNUSED int i) {
       m_cachedProgress += i;
       setProgress(m_cachedProgress);
     }
@@ -88,7 +99,9 @@ public:
      * userPatchExe is the path to the UserPatch SetupAoC.exe file.
      * cliFlags are strings that should be passed to the installer as command-line flags
      */
-    virtual void installUserPatch(fs::path userPatchExe, std::vector<std::string> cliFlags) {}
+    virtual void installUserPatch(
+        ALLOW_UNUSED fs::path userPatchExe,
+        ALLOW_UNUSED std::vector<std::string> cliFlags) {}
 };
 
 class WKConverter {
