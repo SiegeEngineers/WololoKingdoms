@@ -9,6 +9,7 @@
  */
 
 #define MKLINK_HARD 'H'
+#define MKLINK_SOFT 's'
 #define MKLINK_DIR 'd'
 #define MKLINK_JUNCTION 'J'
 
@@ -61,6 +62,10 @@ static void mklink(char type, std::string link, std::string dest) {
 
   if (type == MKLINK_HARD) {
     CreateHardLink(wlink.c_str(), wdest.c_str(), NULL);
+  } else if (type == MKLINK_SOFT) {
+    std::wstringstream line;
+    line << L"/C mklink " << wlink << L" " << wdest;
+    callWaitExe(line.str().c_str());
   } else if (type == MKLINK_DIR) {
 #ifdef CreateSymbolicLink
     CreateSymbolicLink(wlink.c_str(), wdest.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY);

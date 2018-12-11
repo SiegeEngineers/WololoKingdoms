@@ -1784,35 +1784,35 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         fs::path currentPath = current->path();
         std::string extension = currentPath.extension().string();
         if (extension == ".hki") {
-          mklink(MKLINK_HARD, newDirString + currentPath.filename().string(), currentPath.string());
+          mklink(MKLINK_SOFT, newDirString + currentPath.filename().string(), currentPath.string());
         }
     }
     if (datalink) {
-      mklink(MKLINK_JUNCTION, newDirString+"Data", oldDirString + "Data");
+      mklink(MKLINK_DIR, newDirString+"Data", oldDirString + "Data");
     } else {
-      mklink(MKLINK_JUNCTION, newDirString+"Data/gamedata_x1_p1.drs", oldDirString + "Data/gamedata_x1_p1.drs");
-      mklink(MKLINK_JUNCTION, newDirString+"Data/gamedata_x1.drs", oldDirString + "Data/gamedata_x1.drs");
+      mklink(MKLINK_DIR, newDirString+"Data/gamedata_x1_p1.drs", oldDirString + "Data/gamedata_x1_p1.drs");
+      mklink(MKLINK_DIR, newDirString+"Data/gamedata_x1.drs", oldDirString + "Data/gamedata_x1.drs");
     }
     std::string languageString = "";
 
     if(!dataMod) {
         if(vooblyDst) {
             fs::remove(newDir/"language.ini");
-            mklink(MKLINK_HARD, newDirString + "language.ini", oldDirString + "language.ini");
+            mklink(MKLINK_SOFT, newDirString + "language.ini", oldDirString + "language.ini");
         } else if (!vooblySrc) {
             fs::remove(newDir/"Data\\language_x1_p1.dll");
-            mklink(MKLINK_HARD, newDirString + "Data/language_x1_p1.dll", oldDirString + "Data/language_x1_p1.dll");
+            mklink(MKLINK_SOFT, newDirString + "Data/language_x1_p1.dll", oldDirString + "Data/language_x1_p1.dll");
         }
     }
 
-    mklink(MKLINK_JUNCTION, newDirString + "Taunt", oldDirString + "Taunt");
-    mklink(MKLINK_JUNCTION, newDirString + "Script.Rm", oldDirString + "Script.Rm");
-    mklink(MKLINK_JUNCTION, newDirString + "Script.Ai", oldDirString + "Script.Ai");
-    mklink(MKLINK_JUNCTION, newDirString + "Sound", oldDirString + "Sound");
-    mklink(MKLINK_JUNCTION, newDirString + "History", oldDirString + "History");
-    mklink(MKLINK_JUNCTION, newDirString + "Screenshots", oldDirString + "Screenshots");
-    mklink(MKLINK_JUNCTION, newDirString + "Scenario", oldDirString + "Scenario");
-    mklink(MKLINK_HARD, newDirString + "player.nfz", oldDirString + "player.nfz");
+    mklink(MKLINK_DIR, newDirString + "Taunt", oldDirString + "Taunt");
+    mklink(MKLINK_DIR, newDirString + "Script.Rm", oldDirString + "Script.Rm");
+    mklink(MKLINK_DIR, newDirString + "Script.Ai", oldDirString + "Script.Ai");
+    mklink(MKLINK_DIR, newDirString + "Sound", oldDirString + "Sound");
+    mklink(MKLINK_DIR, newDirString + "History", oldDirString + "History");
+    mklink(MKLINK_DIR, newDirString + "Screenshots", oldDirString + "Screenshots");
+    mklink(MKLINK_DIR, newDirString + "Scenario", oldDirString + "Scenario");
+    mklink(MKLINK_SOFT, newDirString + "player.nfz", oldDirString + "player.nfz");
     if(!fs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
         for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
             fs::path currentPath(current->path());
