@@ -37,6 +37,13 @@
 #include "zr_map_creator.h"
 #include "wkconverter.h"
 
+#define rt_getSLPName(it) std::get<0>(*it)
+#define rt_getPattern(it) std::get<1>(*it)
+#define rt_getReplaceName(it) std::get<2>(*it)
+#define rt_getOldId(it) std::get<3>(*it)
+#define rt_getNewId(it) std::get<4>(*it)
+#define rt_getTerrainType(it) std::get<5>(*it)
+
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
     std::ifstream translationFile("resources\\"+settings->language+"_game.txt");
@@ -988,29 +995,29 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
         };
 
         for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {         
-            std::regex terrainName = std::regex(rt_getPattern());
+            std::regex terrainName = std::regex(rt_getPattern(repIt));
             if(std::regex_search(map,terrainName)) {
-                if(rt_getNewId() < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
-                    terrainsUsed.at(rt_getNewId()) = true;
-                terrainsUsed.at(rt_getOldId()) = true;
+                if(rt_getNewId(repIt) < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
+                    terrainsUsed.at(rt_getNewId(repIt)) = true;
+                terrainsUsed.at(rt_getOldId(repIt)) = true;
             }
         }
 
         for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
-            if(!terrainsUsed.at(rt_getOldId()))
+            if(!terrainsUsed.at(rt_getOldId(repIt)))
                 continue;
             // Check if replacement candidate is already used
-            std::regex terrainConstDef = std::regex("#const\\s+" +rt_getPattern()+ "\\s+" +std::to_string(rt_getOldId()));
-            int usedTerrain = rt_getNewId();
+            std::regex terrainConstDef = std::regex("#const\\s+" +rt_getPattern(repIt)+ "\\s+" +std::to_string(rt_getOldId(repIt)));
+            int usedTerrain = rt_getNewId(repIt);
             //If it's one of the terrains with a shared slp, we need to search the map for these other terrains too, else just the usedTerrain
-            if(rt_getTerrainType() > TerrainType::FixedTerrain
-                   && isTerrainUsed(usedTerrain, terrainsUsed, map, terrainsPerType[rt_getTerrainType()])) {
+            if(rt_getTerrainType(repIt) > TerrainType::FixedTerrain
+                   && isTerrainUsed(usedTerrain, terrainsUsed, map, terrainsPerType[rt_getTerrainType(repIt)])) {
                 bool success = false;
-                for(std::map<int,std::regex>::iterator tIt = terrainsPerType[rt_getTerrainType()].begin();
-                    tIt != terrainsPerType[rt_getTerrainType()].end(); tIt++) {
+                for(std::map<int,std::regex>::iterator tIt = terrainsPerType[rt_getTerrainType(repIt)].begin();
+                    tIt != terrainsPerType[rt_getTerrainType(repIt)].end(); tIt++) {
                     if(terrainsUsed.at(tIt->first))
                         continue;
-                    else if(isTerrainUsed(tIt->first,terrainsUsed,map, terrainsPerType[rt_getTerrainType()])) {
+                    else if(isTerrainUsed(tIt->first,terrainsUsed,map, terrainsPerType[rt_getTerrainType(repIt)])) {
                         continue;
                     }
                     success = true;
@@ -1018,35 +1025,35 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
                     terrainsUsed.at(tIt->first) = true;
                     break;
                 }
-                if(!success && rt_getTerrainType() == TerrainType::LandTerrain && !isTerrainUsed(5, terrainsUsed, map, terrainsPerType[rt_getTerrainType()])) {
+                if(!success && rt_getTerrainType(repIt) == TerrainType::LandTerrain && !isTerrainUsed(5, terrainsUsed, map, terrainsPerType[rt_getTerrainType(repIt)])) {
                     usedTerrain = 5; //Leaves is a last effort, usually likely to be used already
                     terrainsUsed[5] = true;
                 }
             }
 
-            if(usedTerrain != rt_getNewId()) {
-                std::regex terrainName = std::regex(rt_getPattern());
-                map = std::regex_replace(map,terrainName, "MY"+rt_getReplaceName());
-                terrainConstDef = std::regex("#const\\sMY+" +rt_getPattern()+ "\\s+" +std::to_string(rt_getOldId()));
-                std::string temp = std::regex_replace(map,terrainConstDef, "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain));
+            if(usedTerrain != rt_getNewId(repIt)) {
+                std::regex terrainName = std::regex(rt_getPattern(repIt));
+                map = std::regex_replace(map,terrainName, "MY"+rt_getReplaceName(repIt));
+                terrainConstDef = std::regex("#const\\sMY+" +rt_getPattern(repIt)+ "\\s+" +std::to_string(rt_getOldId(repIt)));
+                std::string temp = std::regex_replace(map,terrainConstDef, "#const MY"+rt_getReplaceName(repIt)+" "+std::to_string(usedTerrain));
                 if (temp != map)
                     map = temp;
                 else  {
-                    map = "#const MY"+rt_getReplaceName()+" "+std::to_string(usedTerrain)+"\n"+map;
+                    map = "#const MY"+rt_getReplaceName(repIt)+" "+std::to_string(usedTerrain)+"\n"+map;
                 }
             } else {
-                map = std::regex_replace(map,terrainConstDef, "#const "+rt_getReplaceName()+" "+std::to_string(usedTerrain));
+                map = std::regex_replace(map,terrainConstDef, "#const "+rt_getReplaceName(repIt)+" "+std::to_string(usedTerrain));
             }
 
 
-            if(rt_getTerrainType() == TerrainType::None ||
-                    (rt_getTerrainType() == TerrainType::WaterTerrain && usesMultipleWaterTerrains(map,terrainsUsed)) )
+            if(rt_getTerrainType(repIt) == TerrainType::None ||
+                    (rt_getTerrainType(repIt) == TerrainType::WaterTerrain && usesMultipleWaterTerrains(map,terrainsUsed)) )
                 continue;
 
-            terrainOverrides[slpNumbers.at(usedTerrain)] = newTerrainFiles.at(rt_getSLPName());
+            terrainOverrides[slpNumbers.at(usedTerrain)] = newTerrainFiles.at(rt_getSLPName(repIt));
 
-            if(rt_getTerrainType() == TerrainType::ForestTerrain) {
-                upgradeTrees(usedTerrain, rt_getOldId(), map);
+            if(rt_getTerrainType(repIt) == TerrainType::ForestTerrain) {
+                upgradeTrees(usedTerrain, rt_getOldId(repIt), map);
             }
 
 
