@@ -21,9 +21,9 @@ bin/win32/libwololokingdoms.dll: bin/win32 $(W_OBJECTS)
 bin/linux/intermediate/%.o: %.cpp
 	g++ -c $(CFLAGS) -o $@ $<
 bin/win32/intermediate/iconv.o: third_party/win-iconv/iconv.c
-	i686-w64-mingw32-gcc $(W_CFLAGS) -o $@ $<
+	i686-w64-mingw32-gcc -c $(W_CFLAGS) -o $@ $<
 bin/win32/intermediate/%.o: %.cpp
-	i686-w64-mingw32-g++ $(W_CFLAGS) -o $@ $<
+	i686-w64-mingw32-g++ -c $(W_CFLAGS) -o $@ $<
 
 bin/linux:
 	mkdir -p bin/linux/intermediate
