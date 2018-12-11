@@ -93,16 +93,56 @@ The Forgotten team has made a fantastic work with their expansions and, while th
 If you want to share this with other people so you can play together, send them this page, everyone needs to generate their files by themselves using this program and the files from their copy of AOE2HD with the expansions. If there are problems with this, report the issue and I will try to fix it.
 
 ## How to build
-The process for building it is kinda messy for now, you will need a compiled version of the Apre's DAT library :
-https://github.com/Tails8521/genieutils (I didn't change anything, just forked it, thanks a lot Apre and Tapsa for this library)
-I used Qt Creator for editing and building it, you will also need Boost installed.
+
+The project is made of two parts: a library `libwololokingdoms` and the installer application. The library creates a `libwololokingdoms.dll` that contains the conversion logic and is used by the installer application.
+
+You need a C++17 capable compiler because this project uses the new `<filesystem>` API.
+
+Some dependencies are added as git submodules. To get them, do:
+
+```bash
+git submodule init
+git submodule update --recursive
+```
+
+### libwololokingdoms
+
+libwololokingdoms can be built with Make. It depends on genieutils which requires CMake as well. When building the installer application, libwololokingdoms is built automatically.
+
+If you want to build libwololokingdoms without the installer application, do this in the root of this repository:
+
+```bash
+# Build a .so file for linux:
+make -C libwololokingdoms linux
+# Build a .dll file for Windows:
+make -C libwololokingdoms win32
+```
+
+The Makefile will build libwololokingdoms, and genieutils and its dependencies. It outputs two files into `libwololokingdoms/bin/PLATFORM`: `libwololokingdoms` and `libgenieutils`.
+
+**TODO add build instructions for Windows host**
+
+### Installer Application
+
+The installer application is a Qt app. You can use Qt Creator to build it, or use the Qt command line tools and Make.
+
+The installer requires the Steamworks SDK, which it uses to check if and where HD Edition is installed. Get it from [Steam](https://partner.steamgames.com/doc/gettingstarted).
+
+To build the project on the command line:
+
+```bash
+qmake WololoKingdoms.pro
+make
+```
+
+libwololokingdoms will be built automatically if it wasn't already.
 
 ## Special thanks
 - Tails8521 for the African Kingdoms version of this installer. Without him this would never have happened.
 - Jineapple for reviving this program when Rise of Rajas came out, for all the countless hours he spent programming and fixing bugs for the WK experience to be as good (if not better) as HD.
 - The UserPatch team for making the new bonuses possible to use and all other great improvements that Userpatch brings.
 - The folks at Voobly for the support offered and a great platform to play the mod on.
-- Apre for the genieutils library
+- Apre, Tapsa and sandsmark for the genieutils library
 - Tapsa for Advanced Genie Editor
 - Alqualunte for advices and testing
 - CheeseOnToast for making his [A.I](http://aok.heavengames.com/blacksmith/showfile.php?fileid=12236&f=&st=10&ci=) compatible with this project
@@ -110,3 +150,7 @@ I used Qt Creator for editing and building it, you will also need Boost installe
 - Saint_Michaels for creating the Independent Architecture mod on Steam which served as a template for this function on WololoKingdoms.
 - Shulker for creating an in-game logo for WololoKingdoms
 - The Forgotten Empires team for three great expansions!
+
+## License
+
+[GPL-3.0](./COPYING)
