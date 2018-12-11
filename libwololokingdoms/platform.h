@@ -20,20 +20,7 @@
 #include <windows.h>
 #include <shellapi.h>
 
-static void callExternalExe(std::wstring exe) {
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
-    ZeroMemory( &si, sizeof(si) );
-    si.cb = sizeof(si);
-    ZeroMemory( &pi, sizeof(pi) );
-    wchar_t cmdLineString[exe.length()+1];
-    wcscpy(cmdLineString, exe.c_str());
-    CreateProcess( nullptr, cmdLineString, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi );
-    CloseHandle( pi.hProcess );
-    CloseHandle( pi.hThread );
-}
-
-static void callWaitExe(std::wstring exe) {
+static void runCmd(std::wstring exe) {
     SHELLEXECUTEINFO ShExecInfo = {0};
     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
     ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -65,19 +52,19 @@ static void mklink(char type, std::string link, std::string dest) {
   } else if (type == MKLINK_SOFT) {
     std::wstringstream line;
     line << L"/C mklink " << wlink << L" " << wdest;
-    callWaitExe(line.str().c_str());
+    runCmd(line.str().c_str());
   } else if (type == MKLINK_DIR) {
 #ifdef CreateSymbolicLink
     CreateSymbolicLink(wlink.c_str(), wdest.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY);
 #else
     std::wstringstream line;
     line << L"/C mklink /d " << wlink << L" " << wdest;
-    callWaitExe(line.str().c_str());
+    runCmd(line.str().c_str());
 #endif
   } else if (type == MKLINK_JUNCTION) {
     std::wstringstream line;
     line << L"/C mklink /J " << wlink << L" " << wdest;
-    callWaitExe(line.str().c_str());
+    runCmd(line.str().c_str());
   }
 }
 
