@@ -1,10 +1,15 @@
 QT += core gui
 
 win32 {
+  libwololokingdoms.target = lib/libwololokingdoms.dll
+  libwololokingdoms.commands = make -C $$PWD/libwololokingdoms win32 && \
+    cp $$PWD/libwololokingdoms/bin/win32/libwololokingdoms.dll lib && \
+    cp $$PWD/libwololokingdoms/bin/win32/libgenieutils.dll lib
 } else {
   libwololokingdoms.target = lib/libwololokingdoms.so
   libwololokingdoms.commands = make -C $$PWD/libwololokingdoms linux && \
-    cp $$PWD/libwololokingdoms/bin/linux/lib*.so lib
+    cp $$PWD/libwololokingdoms/bin/linux/libwololokingdoms.so lib && \
+    cp $$PWD/libwololokingdoms/bin/linux/libgenieutils.so lib
 }
 
 QMAKE_EXTRA_TARGETS += libwololokingdoms
@@ -28,12 +33,9 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     dialog.cpp
 
-win32 {
-  LIBS += -L$$PWD/lib/ -L$$PWD/libwololokingdoms/bin/win32 -llibgenieutils.dll -llibwololokingdoms.dll
-} else {
-  LIBS += -L$$PWD/libwololokingdoms/bin/linux -lgenieutils -lwololokingdoms
-}
-LIBS += -L$$PWD/lib/ -lsteam_api
+LIBS += -L$$PWD/lib/
+LIBS += -lgenieutils -lwololokingdoms
+LIBS += -lsteam_api
 LIBS += -lstdc++fs
 
 win32:RC_ICONS += WololoKingdoms.ico
