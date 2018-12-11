@@ -19,11 +19,11 @@ class MainWindow;
 }
 
 class WKQConverter: public QObject, WKConvertListener {
-  Q_OBJECT
+    Q_OBJECT
 private:
-  WKConverter* converter;
+    WKConverter* converter;
 public slots:
-  void process();
+    void process();
 signals:
     void finished();
     void log(std::string logMessage);
@@ -36,8 +36,9 @@ signals:
     void setProgress(int i);
     void increaseProgress(int i);
 public:
-  WKQConverter(WKSettings* settings);
-  ~WKQConverter();
+    WKQConverter(WKSettings* settings);
+    ~WKQConverter();
+    void installUserPatch(fs::path exePath, std::vector<std::string> cliFlags);
 };
 
 class MainWindow : public QMainWindow
@@ -104,7 +105,6 @@ private:
     void readSettings();
     void writeSettings();
 	void changeModPatch();
-    void callExternalExe(std::wstring exe);
     void updateUI();
 };
 

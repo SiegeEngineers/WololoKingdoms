@@ -5,6 +5,7 @@
 #include <cctype>
 #include <string>
 #include <sstream>
+#include <filesystem>
 #ifdef _WIN32
 #include <windows.h>
 #include <shellapi.h>
@@ -27,11 +28,10 @@
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 #include <QThreadPool>
+#include <QProcess>
 #include "sdk/public/steam/steam_api.h"
 
-void WKQConverter::process() {
-    converter->run();
-}
+namespace fs = std::filesystem;
 
 WKQConverter::WKQConverter(WKSettings* settings) {
     converter = new WKConverter(settings, this);
@@ -39,6 +39,29 @@ WKQConverter::WKQConverter(WKSettings* settings) {
 
 WKQConverter::~WKQConverter() {
     delete converter;
+}
+
+void WKQConverter::process() {
+    converter->run();
+}
+
+void WKQConverter::installUserPatch(fs::path exePath, std::vector<std::string> cliFlags) {
+  QProcess process;
+  QStringList args;
+  QString name = QString::fromStdString(exePath.string());
+
+#ifndef _WIN32
+  // Use wine on non-windows
+  args << name;
+  name = QString("wine");
+#endif
+
+  for (auto arg : cliFlags) {
+    args << QString::fromStdString(arg);
+  }
+
+  process.start(name, args);
+  process.waitForStarted();
 }
 
 #ifdef _WIN32
@@ -117,7 +140,9 @@ int MainWindow::initialize() {
     } );
 
     if(QCoreApplication::arguments().back() != "-s" && fs::exists("WKUpdater.exe")) {
-        callExternalExe(std::wstring(L"WKUpdater.exe"));
+        QProcess process;
+        process.start(QString("WKUpdater.exe"), QStringList() << "");
+        process.waitForStarted();
         exit(EXIT_FAILURE);
     }
 
@@ -342,24 +367,6 @@ void MainWindow::setButtonWhatsThis(QPushButton* button, QString title) {
 
 }
 
-void MainWindow::callExternalExe(std::wstring exe) {
-#ifdef _WIN32
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
-    ZeroMemory( &si, sizeof(si) );
-    si.cb = sizeof(si);
-    ZeroMemory( &pi, sizeof(pi) );
-    wchar_t cmdLineString[exe.length()+1];
-    wcscpy(cmdLineString, exe.c_str());
-    CreateProcess( nullptr, cmdLineString, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi );
-    CloseHandle( pi.hProcess );
-    CloseHandle( pi.hThread );
-#else
-    std::cerr << "Tried to call process but we're on Linux" << std::endl;
-    exit(1);
-#endif
-}
-
 void MainWindow::readDataModList() {
     /*
      * Read the info which Data Mods are included from a file
@@ -398,7 +405,10 @@ bool MainWindow::checkSteamApi() {
     SteamAPI_Init();
     if(!SteamApps()) {
         // open steam
-        callExternalExe(strtowstr(steamPath) + L"\\Steam.exe");
+        QProcess process;
+        process.start(QString::fromStdString(
+              (fs::path(steamPath) / "Steam.exe").string()));
+        process.waitForStarted();
         SteamAPI_Init();
     }
     int tries = 0;
