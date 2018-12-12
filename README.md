@@ -105,23 +105,6 @@ git submodule init
 git submodule update --recursive
 ```
 
-### libwololokingdoms
-
-libwololokingdoms can be built with Make. It depends on genieutils which requires CMake as well. When building the installer application, libwololokingdoms is built automatically.
-
-If you want to build libwololokingdoms without the installer application, do this in the root of this repository:
-
-```bash
-# Build a .so file for linux:
-make -C libwololokingdoms linux
-# Build a .dll file for Windows:
-make -C libwololokingdoms win32
-```
-
-The Makefile will build libwololokingdoms, and genieutils and its dependencies. It outputs two files into `libwololokingdoms/bin/PLATFORM`: `libwololokingdoms` and `libgenieutils`.
-
-**TODO add build instructions for Windows host**
-
 ### Installer Application
 
 The installer application is a Qt app. You can use Qt Creator to build it, or use the Qt command line tools and Make.
@@ -135,7 +118,9 @@ qmake WololoKingdoms.pro
 make
 ```
 
-libwololokingdoms will be built automatically if it wasn't already.
+### libwololokingdoms
+
+libwololokingdoms is built automatically when building the installer application. To build it standalone, see the [libwololokingdoms readme](./libwololokingdoms/README.md).
 
 ## Special thanks
 - Tails8521 for the African Kingdoms version of this installer. Without him this would never have happened.

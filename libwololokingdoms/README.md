@@ -1,12 +1,18 @@
 # WololoKingdoms Converter Library
 
-This is the library code for the WololoKingdoms conversion mod. See [WololoKingdoms](https://github.com/aoe2communitygithub/wololokingdoms) for the installer application code.
+This is the library code for the WololoKingdoms conversion mod. See [WololoKingdoms](https://github.com/aoe2communitygithub/wololokingdoms) for more information and for the installer application code.
 
 ## Building
 
-The build is currently only made for linux. It's based on a Makefile right now but may be moved to CMake.
+The build script is currently only made for linux.
 
-You need to have CMake installed to build genieutils.
+### On Linux
+
+It's based on a Makefile right now but may be moved to CMake.
+
+libwololokingdoms requires a C++ compiler that supports C++17 and its `<filesystem>` API.
+
+You need to have CMake installed to build genieutils. Your package manager likely contains a `cmake` package.
 
 First get the dependencies:
 
@@ -15,7 +21,7 @@ git submodule init
 git submodule update
 ```
 
-Then run `make $platform`:
+Then run `make $target_platform`:
 
 ```bash
 make linux
@@ -23,4 +29,4 @@ make linux
 make win32
 ```
 
-`make win32` doesn't work yet. It needs a brand new version of MinGW that contains `std::filesystem`, which hasn't been released yet.
+The Makefile will build libwololokingdoms, and genieutils and its dependencies. It outputs two files into `libwololokingdoms/bin/PLATFORM`: `libwololokingdoms` and `libgenieutils`.
