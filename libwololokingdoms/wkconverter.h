@@ -151,7 +151,7 @@ private:
 	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
     bool createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
     void loadGameStrings(std::map<int,std::string>& langReplacement);
-    void loadModdedStrings(std::string moddedStringsFile, std::map<int, std::string>& langReplacement);
+    void loadModdedStrings(fs::path moddedStringsFile, std::map<int, std::string>& langReplacement);
     bool openLanguageDll(genie::LangFile *langDll, fs::path langDllPath, fs::path langDllFile);
     bool saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile);
 	void makeDrs(std::ofstream *out);
@@ -159,9 +159,9 @@ private:
     void uglyHudHack(fs::path);
     void copyCivIntroSounds(fs::path inputDir, fs::path outputDir);
     void copyWallFiles(fs::path inputDir);
-	void createMusicPlaylist(std::string inputDir, std::string const outputDir);
+	void createMusicPlaylist(fs::path inputDir, fs::path const outputDir);
 	void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat);
-    void adjustArchitectureFlags(genie::DatFile *aocDat, std::string flagFilename);
+    void adjustArchitectureFlags(genie::DatFile *aocDat, fs::path flagFilename);
 	void patchArchitectures(genie::DatFile *aocDat);
     bool checkGraphics(genie::DatFile *aocDat, short graphicID, std::vector<int> checkedGraphics);
     void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, bool civGroups = false);

@@ -112,8 +112,8 @@ void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
                                 "portuguese-utf8.txt", "ethiopians-utf8.txt", "malians-utf8.txt", "berbers-utf8.txt",
                                 "burmese-utf8.txt", "malay-utf8.txt", "vietnamese-utf8.txt", "khmer-utf8.txt"};
     for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
-        std::ifstream langIn(inputDir.string()+"/"+civs[i]);
-        std::ofstream langOut(outputDir.string()+"/"+civs[i].substr(0,civs[i].length()-9)+".txt");
+        std::ifstream langIn(inputDir/civs[i]);
+        std::ofstream langOut(outputDir/(civs[i].substr(0,civs[i].length()-9)+".txt"));
         std::string contents;
         langIn.seekg(0, std::ios::end);
         contents.resize(langIn.tellg());
@@ -287,8 +287,8 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     }
 
 
-    std::ifstream langIn(keyValuesStringsPath.string());
-    std::ofstream langOut(languageIniPath.string());
+    std::ifstream langIn(keyValuesStringsPath);
+    std::ofstream langOut(languageIniPath);
     genie::LangFile langDll;
 
     bool patchLangDll;
@@ -327,7 +327,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     return dllPatched;
 }
 
-void WKConverter::loadModdedStrings(std::string moddedStringsFile, std::map<int, std::string>& langReplacement) {
+void WKConverter::loadModdedStrings(fs::path moddedStringsFile, std::map<int, std::string>& langReplacement) {
     std::ifstream modLang(moddedStringsFile);
     std::string line;
     while (std::getline(modLang, line)) {
@@ -639,7 +639,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 
 	// now write the actual files
 	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
-			std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
+			std::ifstream srcStream = std::ifstream(it->second, std::ios::binary);
 			*out << srcStream.rdbuf();
             srcStream.close();
 
@@ -647,7 +647,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
     listener->increaseProgress(1); //73
 
 	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
-		std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
+		std::ifstream srcStream = std::ifstream(it->second, std::ios::binary);
 		*out << srcStream.rdbuf();
         srcStream.close();
 
@@ -811,7 +811,7 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
     listener->log("new slp files");
     for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
-            std::ifstream srcStream = std::ifstream(it->second.string(), std::ios::binary);
+            std::ifstream srcStream = std::ifstream(it->second, std::ios::binary);
             *out << srcStream.rdbuf();
             srcStream.close();
 
@@ -890,7 +890,7 @@ void WKConverter::copyWallFiles(fs::path inputDir) {
 	}
 }
 
-void WKConverter::createMusicPlaylist(std::string inputDir, std::string const outputDir) {
+void WKConverter::createMusicPlaylist(fs::path inputDir, fs::path const outputDir) {
 	std::ofstream outputFile(outputDir);
 	for (int i = 1; i <= 23; i++ ) {
 		outputFile << inputDir << "xmusic" << std::to_string(i) << ".mp3" <<  std::endl;
@@ -965,7 +965,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
                 continue;
         }
         cfs::remove(outputDir/("ZR@"+it->filename().string()));
-		std::ifstream input(inputDir.string()+it->filename().string());
+		std::ifstream input(inputDir/it->filename());
         std::string map(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
         input.close();
         /*
@@ -1206,7 +1206,7 @@ void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *a
     aocDat->TerrainBlock.Terrains[15].TerrainToDraw = -1;
 }
 
-void WKConverter::adjustArchitectureFlags(genie::DatFile *aocDat, std::string flagFilename) {
+void WKConverter::adjustArchitectureFlags(genie::DatFile *aocDat, fs::path flagFilename) {
     std::string line;
     std::ifstream flagFile(flagFilename);
     while (std::getline(flagFile, line)) {
@@ -1753,10 +1753,8 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
      * xmlOut: The connected xml of the destination folder
      * dataMod: If true, the symlink is for wk-based datamod
      */
-    std::string newDirString = newDir.string();
-    std::string oldDirString = oldDir.string();
-    bool vooblySrc = tolower(oldDirString).find("\\voobly mods\\aoc") != std::string::npos;
-    bool vooblyDst = tolower(newDirString).find("\\voobly mods\\aoc") != std::string::npos;
+    bool vooblySrc = tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
+    bool vooblyDst = tolower(newDir).find("\\voobly mods\\aoc") != std::string::npos;
 
 	cfs::create_directory(newDir);
 	cfs::copy_file(xmlIn, xmlOut, fs::copy_options::overwrite_existing);
@@ -2395,7 +2393,7 @@ int WKConverter::run(bool retry)
              */
 
 
-            std::ifstream versionFile((resourceDir/"version.txt").string());
+            std::ifstream versionFile(resourceDir/"version.txt");
             std::string patchNumber;
             std::getline(versionFile, patchNumber);
             std::string dataVersion;
@@ -2549,7 +2547,7 @@ int WKConverter::run(bool retry)
             try {
                 listener->log("Patch setup");
                 fs::path xmlIn = resourceDir/"WKtemp.xml";
-                std::ifstream input(resourceDir.string()+("WK"+std::to_string(settings->dlcLevel)+".xml"));
+                std::ifstream input(resourceDir/("WK"+std::to_string(settings->dlcLevel)+".xml"));
                 std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
                 std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
                 replace_all(str,baseModName+dlcExtension,settings->modName);
