@@ -98,14 +98,13 @@ int MainWindow::initialize() {
 
     logFile = std::ofstream("prelog.txt");
     QDialog* dialog;
-    resourceDir = fs::path("resources\\");
+    resourceDir = fs::path("resources");
     readSettings();
     ui->label->setWordWrap(true);    
     changeLanguage();
     this->setWindowTitle(translation["version"]);
 
     steamPath = getSteamPath();
-    replace_all(steamPath,"/","\\");
     HDPath = getHDPath(steamPath);
     HDPath.make_preferred();
     if(HDPath == fs::path()) {
@@ -318,14 +317,14 @@ void MainWindow::setInstallDirectory(std::string directory) {
     outPath.make_preferred();
 
     switch (dlcLevel) {
-        case 3: vooblyDir = outPath / ("Voobly Mods\\AOC\\Data Mods\\"+baseModName);
-                upDir = outPath / ("Games\\"+baseModName);
+        case 3: vooblyDir = outPath/"Voobly Mods"/"AOC"/"Data Mods"/baseModName;
+                upDir = outPath/"Games"/baseModName;
                 break;
-        case 2: vooblyDir = outPath / ("Voobly Mods\\AOC\\Data Mods\\"+baseModName+" AK");
-                upDir = outPath / ("Games\\"+baseModName+" AK");
+        case 2: vooblyDir = outPath/"Voobly Mods"/"AOC"/"Data Mods"/(baseModName+" AK");
+                upDir = outPath/"Games"/(baseModName+" AK");
                 break;
-        case 1: vooblyDir = outPath / ("Voobly Mods\\AOC\\Data Mods\\"+baseModName+" FE");
-                upDir = outPath / ("Games\\"+baseModName+" FE");
+        case 1: vooblyDir = outPath/"Voobly Mods"/"AOC"/"Data Mods"/(baseModName+" FE");
+                upDir = outPath/"Games"/(baseModName+" FE");
                 break;
     }
 
@@ -355,9 +354,9 @@ void MainWindow::setInstallDirectory(std::string directory) {
 }
 
 void MainWindow::setButtonWhatsThis(QPushButton* button, QString title) {
-    const char * questionIcon = "resources\\question.png";
+    auto questionIcon = resourceDir/"question.png";
     //WhatsThis for the special maps option
-    button->setIcon(QIcon(questionIcon));
+    button->setIcon(QIcon(questionIcon.string().c_str()));
     button->setIconSize(QSize(16,16));
     button->setWhatsThis(translation[title]);
     button->disconnect();
@@ -371,7 +370,7 @@ void MainWindow::readDataModList() {
     /*
      * Read the info which Data Mods are included from a file
      */
-    std::ifstream dataModFile("resources\\patches\\dataModList.txt");
+    std::ifstream dataModFile(resourceDir/"patches"/"dataModList.txt");
     int id = 0;
     std::string line;
     while(std::getline(dataModFile, line)) {
@@ -549,7 +548,7 @@ void MainWindow::changeLanguage() {
      */
 	std::string line;
     std::string langBackup;
-    if(!fs::exists("resources\\"+language+".txt")) {
+    if(!fs::exists(resourceDir/(language+".txt"))) {
         if(translation["runButton"].isEmpty()) {
             langBackup = language;
             language = "en";
@@ -560,7 +559,7 @@ void MainWindow::changeLanguage() {
     } else {
         langBackup = language;
     }
-    std::ifstream translationFile("resources\\"+language+".txt");
+    std::ifstream translationFile(resourceDir/(language+".txt"));
 	while (std::getline(translationFile, line)) {
         /*
          *  \\\\n -> \\n, means we want a \n in the text files for aoc
@@ -642,7 +641,7 @@ void MainWindow::updateUI() {
     /*
     fs::path patchFolder;
     if(std::get<3>(dataModList[patch]) & 2)
-        patchFolder = resourceDir/("patches\\"+std::get<0>(dataModList[patch])+"\\");
+        patchFolder = resourceDir/("patches/"+std::get<0>(dataModList[patch])+"/");
     else
         patchFolder = resourceDir;
     */

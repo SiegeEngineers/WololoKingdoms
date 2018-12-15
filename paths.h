@@ -5,8 +5,8 @@
 
 namespace fs = std::filesystem;
 
-std::string getSteamPath();
-fs::path getHDPath(std::string steamPath);
+fs::path getSteamPath();
+fs::path getHDPath(fs::path steamPath);
 fs::path getOutPath(fs::path HDPath);
 
 #endif // PATHS_H
