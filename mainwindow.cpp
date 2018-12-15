@@ -45,6 +45,10 @@ void WKQConverter::process() {
     converter->run();
 }
 
+void WKQConverter::error(std::exception const & err) {
+    emit log(err.what());
+}
+
 void WKQConverter::installUserPatch(fs::path exePath, std::vector<std::string> cliFlags) {
   QProcess process;
   QStringList args;
@@ -94,7 +98,7 @@ MainWindow::~MainWindow()
 }
 
 int MainWindow::initialize() {
-
+    qRegisterMetaType<std::string>("std::string");
 
     logFile = std::ofstream("prelog.txt");
     QDialog* dialog;

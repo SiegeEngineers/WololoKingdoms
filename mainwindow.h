@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QMetaType>
 
 #include <set>
 #include <regex>
@@ -18,6 +19,8 @@ namespace Ui {
 class MainWindow;
 }
 
+Q_DECLARE_METATYPE(std::string);
+
 class WKQConverter: public QObject, WKConvertListener {
     Q_OBJECT
 private:
@@ -28,8 +31,6 @@ signals:
     void finished();
     void log(std::string logMessage);
     void setInfo(std::string info);
-    void error(std::exception const & err);
-    void error(std::string message);
     void createDialog(std::string info);
     void createDialog(std::string info, std::string title);
     void createDialog(std::string info, std::string toReplace, std::string replaceWith);
@@ -38,6 +39,7 @@ signals:
 public:
     WKQConverter(WKSettings* settings);
     ~WKQConverter();
+    void error(std::exception const & err);
     void installUserPatch(fs::path exePath, std::vector<std::string> cliFlags);
 };
 
