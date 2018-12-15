@@ -583,14 +583,12 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	// table infos
 
 	DrsTableInfo const slpTableInfo = {
-		0x20, // file_type, MAGIC
-		{ 'p', 'l', 's' }, // file_extension, "slp" in reverse
+		{ ' ', 'p', 'l', 's' }, // file_extension, "slp" in reverse
 		sizeof (DrsHeader) + sizeof (DrsFileInfo) * numberOfTables, // file_info_offset
 		(int) slpFileInfos.size() // num_files
 	};
 	DrsTableInfo const wavTableInfo = {
-		0x20, // file_type, MAGIC
-		{ 'v', 'a', 'w' }, // file_extension, "wav" in reverse
+		{ ' ', 'v', 'a', 'w' }, // file_extension, "wav" in reverse
 		(int) (sizeof (DrsHeader) +  sizeof (DrsFileInfo) * numberOfTables + sizeof (DrsFileInfo) * slpFileInfos.size()), // file_info_offset
 		(int) wavFileInfos.size() // num_files
 	};
@@ -610,13 +608,11 @@ void WKConverter::makeDrs(std::ofstream *out) {
 
 
 	// table infos
-	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_type), sizeof (DrsTableInfo::file_type));
 	out->write(slpTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
 	out->write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (DrsTableInfo::num_files));
 
 
-	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_type), sizeof (DrsTableInfo::file_type));
 	out->write(wavTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
 	out->write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (DrsTableInfo::num_files));
@@ -697,7 +693,7 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
     listener->log("slp table info");
     //slp table info
-    length = sizeof (DrsTableInfo::file_type) + sizeof (DrsTableInfo::file_extension) + sizeof (DrsTableInfo::file_info_offset);
+    length = sizeof (DrsTableInfo::file_extension) + sizeof (DrsTableInfo::file_info_offset);
     buffer = new char[length];
     in->read(buffer,length);
     out->write(buffer, length);
@@ -710,7 +706,7 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     listener->increaseProgress(1); //25
 
     listener->log("wav table info");
-    length = sizeof (DrsTableInfo::file_type) + sizeof (DrsTableInfo::file_extension);
+    length = sizeof (DrsTableInfo::file_extension);
     buffer = new char[length];
     in->read(buffer,length);
     out->write(buffer, length);

@@ -12,8 +12,7 @@ struct DrsHeader {
 };
 
 struct DrsTableInfo {
-	uint8_t file_type;
-	char file_extension[3];
+	char file_extension[4];
 	int32_t file_info_offset;
 	int32_t num_files;
 };
