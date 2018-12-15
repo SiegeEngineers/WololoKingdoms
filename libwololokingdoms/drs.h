@@ -1,11 +1,7 @@
-// https://github.com/SFTtech/openage/blob/master/doc/media/drs-files.md
-
-#ifndef DRS_H
-#define DRS_H
-
+#pragma once
 #include <stdint.h>
 
-namespace wololo {
+// https://github.com/SFTtech/openage/blob/master/doc/media/drs-files.md
 
 struct DrsHeader {
 	char copyright[40];
@@ -27,7 +23,3 @@ struct DrsFileInfo {
 	int32_t file_data_offset;
 	int32_t file_size;
 };
-
-#endif // DRS_H
-
-}

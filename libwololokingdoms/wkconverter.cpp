@@ -14,7 +14,6 @@
 #include "genie/lang/LangFile.h"
 #include "md5.h"
 #include "wololo/datPatch.h"
-#include "wololo/Drs.h"
 #include "fixes/berbersutfix.h"
 #include "fixes/vietfix.h"
 #include "fixes/demoshipfix.h"
@@ -35,6 +34,7 @@
 #include "string_helpers.h"
 #include "platform.h"
 #include "zr_map_creator.h"
+#include "drs.h"
 #include "wkconverter.h"
 
 #define rt_getSLPName(it) std::get<0>(*it)
@@ -526,19 +526,19 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	const int numberOfTables = 2; // slp and wav
 	int numberOfSlpFiles = slpFiles.size();
 	int numberOfWavFiles = wavFiles.size();
-	int offsetOfFirstFile = sizeof (wololo::DrsHeader) +
-			sizeof (wololo::DrsTableInfo) * numberOfTables +
-			sizeof (wololo::DrsFileInfo) * (numberOfSlpFiles + numberOfWavFiles);
+	int offsetOfFirstFile = sizeof (DrsHeader) +
+			sizeof (DrsTableInfo) * numberOfTables +
+			sizeof (DrsFileInfo) * (numberOfSlpFiles + numberOfWavFiles);
 	int offset = offsetOfFirstFile;
 
 
 	// file infos
 
-	std::vector<wololo::DrsFileInfo> slpFileInfos;
-	std::vector<wololo::DrsFileInfo> wavFileInfos;
+	std::vector<DrsFileInfo> slpFileInfos;
+	std::vector<DrsFileInfo> wavFileInfos;
 
 	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
-		wololo::DrsFileInfo slp;
+		DrsFileInfo slp;
 		size_t size;
 		size = fs::file_size(it->second);
 		slp.file_id = it->first;
@@ -551,7 +551,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
     listener->increaseProgress(1); //67
 
 	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
-		wololo::DrsFileInfo wav;
+		DrsFileInfo wav;
 		size_t size;
 		size = fs::file_size(it->second);
 		wav.file_id = it->first;
@@ -565,7 +565,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 
 	// header infos
 
-	wololo::DrsHeader const header = {
+	DrsHeader const header = {
 		{ 'C', 'o', 'p', 'y', 'r',
 		  'i', 'g', 'h', 't', ' ',
 		  '(', 'c', ')', ' ', '1',
@@ -582,16 +582,16 @@ void WKConverter::makeDrs(std::ofstream *out) {
 
 	// table infos
 
-	wololo::DrsTableInfo const slpTableInfo = {
+	DrsTableInfo const slpTableInfo = {
 		0x20, // file_type, MAGIC
 		{ 'p', 'l', 's' }, // file_extension, "slp" in reverse
-		sizeof (wololo::DrsHeader) + sizeof (wololo::DrsFileInfo) * numberOfTables, // file_info_offset
+		sizeof (DrsHeader) + sizeof (DrsFileInfo) * numberOfTables, // file_info_offset
 		(int) slpFileInfos.size() // num_files
 	};
-	wololo::DrsTableInfo const wavTableInfo = {
+	DrsTableInfo const wavTableInfo = {
 		0x20, // file_type, MAGIC
 		{ 'v', 'a', 'w' }, // file_extension, "wav" in reverse
-		(int) (sizeof (wololo::DrsHeader) +  sizeof (wololo::DrsFileInfo) * numberOfTables + sizeof (wololo::DrsFileInfo) * slpFileInfos.size()), // file_info_offset
+		(int) (sizeof (DrsHeader) +  sizeof (DrsFileInfo) * numberOfTables + sizeof (DrsFileInfo) * slpFileInfos.size()), // file_info_offset
 		(int) wavFileInfos.size() // num_files
 	};
     listener->increaseProgress(1); //69
@@ -602,38 +602,38 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	// now write the actual drs file
 
 	// header
-	out->write(header.copyright, sizeof (wololo::DrsHeader::copyright));
-	out->write(header.version, sizeof (wololo::DrsHeader::version));
-	out->write(header.ftype, sizeof (wololo::DrsHeader::ftype));
-	out->write(reinterpret_cast<const char *>(&header.table_count), sizeof (wololo::DrsHeader::table_count));
-	out->write(reinterpret_cast<const char *>(&header.file_offset), sizeof (wololo::DrsHeader::file_offset));
+	out->write(header.copyright, sizeof (DrsHeader::copyright));
+	out->write(header.version, sizeof (DrsHeader::version));
+	out->write(header.ftype, sizeof (DrsHeader::ftype));
+	out->write(reinterpret_cast<const char *>(&header.table_count), sizeof (DrsHeader::table_count));
+	out->write(reinterpret_cast<const char *>(&header.file_offset), sizeof (DrsHeader::file_offset));
 
 
 	// table infos
-	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_type), sizeof (wololo::DrsTableInfo::file_type));
-	out->write(slpTableInfo.file_extension, sizeof (wololo::DrsTableInfo::file_extension));
-	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (wololo::DrsTableInfo::file_info_offset));
-	out->write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (wololo::DrsTableInfo::num_files));
+	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_type), sizeof (DrsTableInfo::file_type));
+	out->write(slpTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
+	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
+	out->write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (DrsTableInfo::num_files));
 
 
-	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_type), sizeof (wololo::DrsTableInfo::file_type));
-	out->write(wavTableInfo.file_extension, sizeof (wololo::DrsTableInfo::file_extension));
-	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (wololo::DrsTableInfo::file_info_offset));
-	out->write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (wololo::DrsTableInfo::num_files));
+	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_type), sizeof (DrsTableInfo::file_type));
+	out->write(wavTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
+	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
+	out->write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (DrsTableInfo::num_files));
 
     listener->increaseProgress(1); //70
 	// file infos
-	for (std::vector<wololo::DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
-		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
-		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
-		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
+	for (std::vector<DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
+		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (DrsFileInfo::file_id));
+		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (DrsFileInfo::file_size));
 
 	}
     listener->increaseProgress(1); //71
-	for (std::vector<wololo::DrsFileInfo>::iterator it = wavFileInfos.begin(); it != wavFileInfos.end(); it++) {
-		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
-		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
-		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
+	for (std::vector<DrsFileInfo>::iterator it = wavFileInfos.begin(); it != wavFileInfos.end(); it++) {
+		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (DrsFileInfo::file_id));
+		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (DrsFileInfo::file_size));
 
 	}
     listener->increaseProgress(1); //72
@@ -679,8 +679,8 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
     listener->log("write header");
     // header, no changes here
-    int length = sizeof (wololo::DrsHeader::copyright) + sizeof (wololo::DrsHeader::version) + sizeof (wololo::DrsHeader::ftype)
-            +sizeof (wololo::DrsHeader::table_count);
+    int length = sizeof (DrsHeader::copyright) + sizeof (DrsHeader::version) + sizeof (DrsHeader::ftype)
+            +sizeof (DrsHeader::table_count);
     buffer = new char[length];
     in->read(buffer,length);
     listener->log(buffer);
@@ -688,16 +688,16 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     listener->increaseProgress(1); //23
 
     //There are extra file infos added, so the offset of the first file changes
-    int extraOffset = sizeof (wololo::DrsFileInfo) * (numberOfSlpFiles);
+    int extraOffset = sizeof (DrsFileInfo) * (numberOfSlpFiles);
     in->read(intBuffer,4);
     int offsetOfFirstFile = *(reinterpret_cast<int *>(intBuffer));
     offsetOfFirstFile += extraOffset;
-    out->write(reinterpret_cast<const char *>(&offsetOfFirstFile), sizeof (wololo::DrsHeader::file_offset));
+    out->write(reinterpret_cast<const char *>(&offsetOfFirstFile), sizeof (DrsHeader::file_offset));
     listener->increaseProgress(1); //24
 
     listener->log("slp table info");
     //slp table info
-    length = sizeof (wololo::DrsTableInfo::file_type) + sizeof (wololo::DrsTableInfo::file_extension) + sizeof (wololo::DrsTableInfo::file_info_offset);
+    length = sizeof (DrsTableInfo::file_type) + sizeof (DrsTableInfo::file_extension) + sizeof (DrsTableInfo::file_info_offset);
     buffer = new char[length];
     in->read(buffer,length);
     out->write(buffer, length);
@@ -706,23 +706,23 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     listener->log(intBuffer);
     listener->log(std::to_string(numberOfOldSlpFiles));
     int totalSlpFiles = numberOfOldSlpFiles+numberOfSlpFiles;
-    out->write(reinterpret_cast<const char *>(&totalSlpFiles), sizeof (wololo::DrsTableInfo::num_files));
+    out->write(reinterpret_cast<const char *>(&totalSlpFiles), sizeof (DrsTableInfo::num_files));
     listener->increaseProgress(1); //25
 
     listener->log("wav table info");
-    length = sizeof (wololo::DrsTableInfo::file_type) + sizeof (wololo::DrsTableInfo::file_extension);
+    length = sizeof (DrsTableInfo::file_type) + sizeof (DrsTableInfo::file_extension);
     buffer = new char[length];
     in->read(buffer,length);
     out->write(buffer, length);
     in->read(intBuffer,4);
     listener->log(intBuffer);
     int wavInfoOffset = *(reinterpret_cast<int *>(intBuffer)) + extraOffset;
-    out->write(reinterpret_cast<const char *>(&wavInfoOffset), sizeof (wololo::DrsTableInfo::file_info_offset));
+    out->write(reinterpret_cast<const char *>(&wavInfoOffset), sizeof (DrsTableInfo::file_info_offset));
     in->read(intBuffer,4);
     listener->log(intBuffer);
     int numberOfOldWavFiles = *(reinterpret_cast<int *>(intBuffer));
     listener->log(std::to_string(numberOfOldWavFiles));
-    out->write(reinterpret_cast<const char *>(&numberOfOldWavFiles), sizeof (wololo::DrsTableInfo::num_files));
+    out->write(reinterpret_cast<const char *>(&numberOfOldWavFiles), sizeof (DrsTableInfo::num_files));
     listener->increaseProgress(1); //26
 
 
@@ -747,9 +747,9 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
         in->read(intBuffer,4);
         fileSize = *(reinterpret_cast<int *>(intBuffer));
         slpBlockSize += fileSize;
-        out->write(reinterpret_cast<const char *>(&fileId), sizeof (wololo::DrsFileInfo::file_id));
-        out->write(reinterpret_cast<const char *>(&fileOffset), sizeof (wololo::DrsFileInfo::file_data_offset));
-        out->write(reinterpret_cast<const char *>(&fileSize), sizeof (wololo::DrsFileInfo::file_size));
+        out->write(reinterpret_cast<const char *>(&fileId), sizeof (DrsFileInfo::file_id));
+        out->write(reinterpret_cast<const char *>(&fileOffset), sizeof (DrsFileInfo::file_data_offset));
+        out->write(reinterpret_cast<const char *>(&fileSize), sizeof (DrsFileInfo::file_size));
 
     }
     listener->increaseProgress(1); //27
@@ -757,10 +757,10 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
     listener->log("new slp file infos");
 
-    std::vector<wololo::DrsFileInfo> slpFileInfos;
+    std::vector<DrsFileInfo> slpFileInfos;
 
     for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
-        wololo::DrsFileInfo slp;
+        DrsFileInfo slp;
         size_t size;
         size = fs::file_size(it->second);
         slp.file_id = it->first;
@@ -772,10 +772,10 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     }
     listener->increaseProgress(1);//28
 
-    for (std::vector<wololo::DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
-        out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (wololo::DrsFileInfo::file_id));
-        out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (wololo::DrsFileInfo::file_data_offset));
-        out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (wololo::DrsFileInfo::file_size));
+    for (std::vector<DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
+        out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (DrsFileInfo::file_id));
+        out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+        out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (DrsFileInfo::file_size));
     }
     listener->increaseProgress(1);//29
 
@@ -787,9 +787,9 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
         in->read(intBuffer,4);
         fileSize = *(reinterpret_cast<int *>(intBuffer));
         wavBlockSize += fileSize;
-        out->write(reinterpret_cast<const char *>(&fileId), sizeof (wololo::DrsFileInfo::file_id));
-        out->write(reinterpret_cast<const char *>(&offset), sizeof (wololo::DrsFileInfo::file_data_offset));
-        out->write(reinterpret_cast<const char *>(&fileSize), sizeof (wololo::DrsFileInfo::file_size));
+        out->write(reinterpret_cast<const char *>(&fileId), sizeof (DrsFileInfo::file_id));
+        out->write(reinterpret_cast<const char *>(&offset), sizeof (DrsFileInfo::file_data_offset));
+        out->write(reinterpret_cast<const char *>(&fileSize), sizeof (DrsFileInfo::file_size));
         offset += fileSize;
 
     }
