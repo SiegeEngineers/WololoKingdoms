@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <stdio.h>
 #include "libwololokingdoms/platform.h"
+#include "libwololokingdoms/string_helpers.h"
 #include "paths.h"
 
 #ifdef _WIN32
@@ -14,11 +15,7 @@
 
 namespace fs = std::filesystem;
 
-#ifdef _WIN32
-typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE,PBOOL);
-#endif
-
-fs::path extractHDPath(fs::path steamPath) {
+static fs::path extractHDPath(fs::path steamPath) {
 	std::string line;
    fs::path HDPath;
 	std::ifstream manifest(steamPath/"steamapps"/"appmanifest_221380.acf");
@@ -35,29 +32,6 @@ fs::path extractHDPath(fs::path steamPath) {
     manifest.close();
 	return fs::path(HDPath);
 }
-
-#ifdef _WIN32
-fs::path getSteamPath() {
-	TCHAR temp[300];
-	unsigned long size = sizeof(temp);
-	HKEY hKey;
-
-	BOOL w64;
-	IsWow64Process(GetCurrentProcess(), &w64);
-	if(w64)
-		RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\WOW6432Node\\Valve\\Steam", 0, KEY_READ, &hKey);
-	else
-		RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Valve\\Steam", 0, KEY_READ, &hKey);
-	RegQueryValueEx(hKey, L"InstallPath", NULL, NULL, reinterpret_cast<LPBYTE>(temp), &size);
-	RegCloseKey(hKey);
-   fs::path steamPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
-	return steamPath;
-}
-#else
-fs::path getSteamPath() {
-  return "/home/goto-bus-stop/.local/share/Steam";
-}
-#endif
 
 fs::path getHDPath(fs::path steamPath) {
 	fs::path HDPath("../");
@@ -95,6 +69,23 @@ fs::path getHDPath(fs::path steamPath) {
 }
 
 #ifdef _WIN32
+fs::path getSteamPath() {
+	TCHAR temp[300];
+	unsigned long size = sizeof(temp);
+	HKEY hKey;
+
+	BOOL w64;
+	IsWow64Process(GetCurrentProcess(), &w64);
+	if(w64)
+		RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\WOW6432Node\\Valve\\Steam", 0, KEY_READ, &hKey);
+	else
+		RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Valve\\Steam", 0, KEY_READ, &hKey);
+	RegQueryValueEx(hKey, L"InstallPath", NULL, NULL, reinterpret_cast<LPBYTE>(temp), &size);
+	RegCloseKey(hKey);
+   fs::path steamPath(wstrtostr(std::wstring(std::basic_string<TCHAR>(temp))));
+	return steamPath;
+}
+
 fs::path getOutPath(fs::path HDPath) {
 
 	TCHAR temp[300];
@@ -121,9 +112,5 @@ fs::path getOutPath(fs::path HDPath) {
 		}
 	}
 	return outPath;
-}
-#else
-fs::path getOutPath(fs::path HDPath) {
-  return fs::path("wololokingdoms_out");
 }
 #endif

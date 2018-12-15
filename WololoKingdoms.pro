@@ -33,6 +33,8 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     dialog.cpp
 
+unix: SOURCES += paths_linux.cpp
+
 LIBS += -L$$PWD/lib/
 LIBS += -lgenieutils -lwololokingdoms
 LIBS += -lsteam_api
