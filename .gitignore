@@ -46,9 +46,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.user
-lib/release_libgenieutils.dll
 lib/release_libgenieutils.dll.a
-lib/libgenieutils.dll
 resources/
 mod_override/
 mainwindow_OLD.h
@@ -59,12 +57,15 @@ OLDREADME.md
 fixes/mongolnomadsfix.h
 fixes/mongolnomadsfix.cpp
 *.dll
+*.so
 steam_api.lib
 debug/
 prelog.txt
 object_script.WololoKingdoms.Release
 object_script.WololoKingdoms.Debug
 WololoKingdoms_resource.rc
+moc_predefs.h
+moc_*.cpp
 /Makefile.Release
 /Makefile.Debug
 /Makefile
