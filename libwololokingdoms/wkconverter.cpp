@@ -36,6 +36,7 @@
 #include "zr_map_creator.h"
 #include "drs.h"
 #include "wkconverter.h"
+#include "caseless.h"
 
 #define rt_getSLPName(it) std::get<0>(*it)
 #define rt_getPattern(it) std::get<1>(*it)
@@ -78,7 +79,7 @@ void WKConverter::indexDrsFiles(fs::path const &src, bool expansionFiles, bool t
      * terrainFiles: If true, these are terrain files, written to a seperate map, as we need them for
      *                  expansion map creation.
      */
-	if (fs::is_directory(src)) {
+	if (cfs::is_directory(src)) {
 		for (fs::directory_iterator current(src), end;current != end; ++current) {
 			fs::path currentPath(current->path());
             indexDrsFiles(currentPath, expansionFiles, terrainFiles);
@@ -295,11 +296,11 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
         patchLangDll = false;
     } else {
         langDllPath = settings->outPath / langDllPath;
-        patchLangDll = fs::exists(langDllPath);
+        patchLangDll = cfs::exists(langDllPath);
         if(patchLangDll)
         {
-            fs::remove(langDllFile);
-            fs::copy_file(langDllPath,langDllFile);
+            cfs::remove(langDllFile);
+            cfs::copy_file(langDllPath,langDllFile);
         }
     }
     listener->increaseProgress(1); //3
@@ -355,13 +356,13 @@ bool WKConverter::openLanguageDll(genie::LangFile *langDll, fs::path langDllPath
         langDll->setGameVersion(genie::GameVersion::GV_TC);
     } catch (const std::ifstream::failure& e) {
         //Try deleting and re-copying
-        fs::remove(langDllFile);
-        fs::copy_file(langDllPath,langDllFile);
+        cfs::remove(langDllFile);
+        cfs::copy_file(langDllPath,langDllFile);
         try {
             langDll->load((langDllFile.string()).c_str());
             langDll->setGameVersion(genie::GameVersion::GV_TC);
         } catch (const std::ifstream::failure& e) {
-            fs::remove(langDllFile);
+            cfs::remove(langDllFile);
             return false;
         }
     }
@@ -369,30 +370,30 @@ bool WKConverter::openLanguageDll(genie::LangFile *langDll, fs::path langDllPath
 }
 
 bool WKConverter::saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile) {
-    fs::create_directories(settings->upDir/"data");
+    cfs::create_directories(settings->upDir/"data");
     fs::path langDllOutput = settings->upDir/"data"/langDllFile;
     std::string line;
     try {
         line = "working$\n$workingDll";
         langDll->save();
-        fs::copy_file(langDllFile,langDllOutput,fs::copy_options::overwrite_existing);
-        fs::remove(langDllFile);
+        cfs::copy_file(langDllFile,langDllOutput,fs::copy_options::overwrite_existing);
+        cfs::remove(langDllFile);
         listener->setInfo(line);
 
     } catch (const std::ofstream::failure& e) {
         listener->setInfo("workingError");
 
-        fs::remove(langDllFile);
-        fs::remove(langDllOutput);
+        cfs::remove(langDllFile);
+        cfs::remove(langDllOutput);
         try {
             langDll->save();
-            fs::copy_file(langDllFile,langDllOutput,fs::copy_options::overwrite_existing);
-            fs::remove(langDllFile);
+            cfs::copy_file(langDllFile,langDllOutput,fs::copy_options::overwrite_existing);
+            cfs::remove(langDllFile);
             listener->setInfo(line);
 
         } catch (const std::ofstream::failure& e) {
-            fs::remove(langDllFile);
-            fs::remove(langDllOutput);
+            cfs::remove(langDllFile);
+            cfs::remove(langDllOutput);
             return false;
         }
     }
@@ -540,7 +541,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
 		DrsFileInfo slp;
 		size_t size;
-		size = fs::file_size(it->second);
+		size = cfs::file_size(it->second);
 		slp.file_id = it->first;
 		slp.file_data_offset = offset;
 		slp.file_size = size;
@@ -553,7 +554,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
 		DrsFileInfo wav;
 		size_t size;
-		size = fs::file_size(it->second);
+		size = cfs::file_size(it->second);
 		wav.file_id = it->first;
 		wav.file_data_offset = offset;
 		wav.file_size = size;
@@ -758,7 +759,7 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
         DrsFileInfo slp;
         size_t size;
-        size = fs::file_size(it->second);
+        size = cfs::file_size(it->second);
         slp.file_id = it->first;
         slp.file_data_offset = offset;
         slp.file_size = size;
@@ -839,7 +840,7 @@ void WKConverter::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
 								"portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
 	for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
 		std::error_code ec;
-		fs::copy_file(inputDir / (civs[i] + ".mp3"), outputDir / (civs[i] + ".mp3"), ec);
+		cfs::copy_file(inputDir / (civs[i] + ".mp3"), outputDir / (civs[i] + ".mp3"), ec);
 	}
 }
 
@@ -954,16 +955,16 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
 
 		std::string mapName = it->stem().string()+".rms";
         if (mapName.substr(0,3) == "ZR@") {
-			fs::copy_file(*it,outputDir/mapName,fs::copy_options::overwrite_existing);
+			cfs::copy_file(*it,outputDir/mapName,fs::copy_options::overwrite_existing);
 			continue;
 		}        
-        if(fs::exists(outputDir/it->filename()) || fs::exists(outputDir/("ZR@"+it->filename().string()))) {
+        if(cfs::exists(outputDir/it->filename()) || cfs::exists(outputDir/("ZR@"+it->filename().string()))) {
             if(replace)
-                fs::remove(outputDir/it->filename());
+                cfs::remove(outputDir/it->filename());
             else
                 continue;
         }
-        fs::remove(outputDir/("ZR@"+it->filename().string()));
+        cfs::remove(outputDir/("ZR@"+it->filename().string()));
 		std::ifstream input(inputDir.string()+it->filename().string());
         std::string map(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
         input.close();
@@ -1135,12 +1136,12 @@ void WKConverter::createZRmap(std::map<std::string,fs::path>& terrainOverrides, 
     ZRMapCreator map(outstream);
     terrainOverrides[mapName] = fs::path(outputDir.string()+"/"+mapName);
     for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
-        auto file_size = fs::file_size(files->second);
+        auto file_size = cfs::file_size(files->second);
         auto file_stream = std::fstream(files->second.string(), std::ios_base::in);
         auto file_content = concat_stream(file_stream);
         map.addFile(files->first, file_content.c_str(), file_size);
     }
-    fs::remove(fs::path(outputDir.string()+"/"+mapName));
+    cfs::remove(fs::path(outputDir.string()+"/"+mapName));
 }
 
 void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
@@ -1485,11 +1486,11 @@ short WKConverter::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short
     if(newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && newSLP != aocDat->Graphics[compareID].SLP) {
         // This is a graphic where we want a new SLP file (as opposed to one where the a new SLP mayb just be needed for some deltas
         fs::path src = settings->HDPath/"resources"/"_common"/"drs"/"gamedata_x2"/(std::to_string(newGraphic.SLP)+".slp");
-		if(fs::exists(src))
+		if(cfs::exists(src))
 			slpFiles[newSLP] = src;
 		else {
             src = settings->HDPath/"resources"/"_common"/"drs"/"graphics"/(std::to_string(newGraphic.SLP)+".slp");
-			if(fs::exists(src))
+			if(cfs::exists(src))
 				slpFiles[newSLP] = src;
 		}        
         newGraphic.SLP = newSLP;
@@ -1589,7 +1590,7 @@ bool WKConverter::identifyHotkeyFile(fs::path directory, fs::path& maxHki, fs::p
                 maxHki = currentPath;
             }
             std::time_t lastModified = fs::file_time_type::clock::to_time_t(
-                fs::last_write_time(currentPath));
+                cfs::last_write_time(currentPath));
             if (lastModified > lastHkiEdit) {
                 lastHkiEdit = lastModified;
                 lastEditedHki = currentPath;
@@ -1612,13 +1613,13 @@ void WKConverter::copyHotkeyFile(fs::path maxHki, fs::path lastEditedHki, fs::pa
      */
     fs::path bak1 = dst.parent_path() / (dst.stem().string() + "_bak1.hki");
     fs::path bak2 = dst.parent_path() / (dst.stem().string() + "_bak2.hki");
-    if(fs::exists(bak1))
-        fs::copy_file(bak1,bak2,fs::copy_options::overwrite_existing);
-    if(fs::exists(dst))
-        fs::copy_file(dst,bak1,fs::copy_options::overwrite_existing);
-    fs::copy_file(maxHki,dst,fs::copy_options::overwrite_existing);
-    if(!fs::equivalent(lastEditedHki,maxHki)) {
-        fs::copy_file(lastEditedHki,dst.parent_path() / (dst.stem().string() + "_alt.hki"),fs::copy_options::overwrite_existing);
+    if(cfs::exists(bak1))
+        cfs::copy_file(bak1,bak2,fs::copy_options::overwrite_existing);
+    if(cfs::exists(dst))
+        cfs::copy_file(dst,bak1,fs::copy_options::overwrite_existing);
+    cfs::copy_file(maxHki,dst,fs::copy_options::overwrite_existing);
+    if(!cfs::equivalent(lastEditedHki,maxHki)) {
+        cfs::copy_file(lastEditedHki,dst.parent_path() / (dst.stem().string() + "_alt.hki"),fs::copy_options::overwrite_existing);
     }
 }
 
@@ -1635,18 +1636,18 @@ void WKConverter::removeWkHotkeys() {
     if(settings->useExe) {
         if(identifyHotkeyFile(settings->upDir,maxDstHki,lastDstHki)) {
             copyHotkeyFile(aocHkiPath,aocHkiPath,maxDstHki);
-            fs::remove(maxDstHki);
-            if(!fs::equivalent(maxDstHki,lastDstHki)) {
+            cfs::remove(maxDstHki);
+            if(!cfs::equivalent(maxDstHki,lastDstHki)) {
                 copyHotkeyFile(aocHkiPath,aocHkiPath,lastDstHki);
-                fs::remove(lastDstHki);
+                cfs::remove(lastDstHki);
             }
         }
     } else if(identifyHotkeyFile(settings->vooblyDir,maxDstHki,lastDstHki)) {
         copyHotkeyFile(aocHkiPath,aocHkiPath,maxDstHki);
-        fs::remove(maxDstHki);
-        if(!fs::exists(lastDstHki)) {
+        cfs::remove(maxDstHki);
+        if(!cfs::exists(lastDstHki)) {
             copyHotkeyFile(aocHkiPath,aocHkiPath,lastDstHki);
-            fs::remove(lastDstHki);
+            cfs::remove(lastDstHki);
         }
     }
 }
@@ -1674,8 +1675,8 @@ void WKConverter::hotkeySetup() {
     fs::path nfzOutPath = settings->useExe ? settings->nfzUpOutPath : settings->nfzVooblyOutPath;
 
     /*
-	if(!fs::exists(hkiPath)) { //If player0.hki doesn't exist, look for player1.hki, otherwise use default HD hotkeys
-        if(fs::exists(settings->HDPath/"Profiles"/"player1.hki"))
+	if(!cfs::exists(hkiPath)) { //If player0.hki doesn't exist, look for player1.hki, otherwise use default HD hotkeys
+        if(cfs::exists(settings->HDPath/"Profiles"/"player1.hki"))
                 hkiPath = settings->HDPath/"Profiles"/"player1.hki";
 		else
 				hkiPath = resourceDir / "player1_age2hd.hki";
@@ -1683,20 +1684,20 @@ void WKConverter::hotkeySetup() {
     */
     std::error_code ec;
 
-	if(fs::exists(nfzPath)) //Copy the Aoc Profile
-        fs::copy_file(nfzPath, nfzOutPath, ec);
+	if(cfs::exists(nfzPath)) //Copy the Aoc Profile
+        cfs::copy_file(nfzPath, nfzOutPath, ec);
     else{ //otherwise copy the default profile included
-        fs::copy_file(nfz1Path, nfzOutPath, ec);
-        fs::copy_file(nfz1Path, nfzPath, ec);
+        cfs::copy_file(nfz1Path, nfzOutPath, ec);
+        cfs::copy_file(nfz1Path, nfzPath, ec);
     }
     if(settings->useBoth) { //Profiles for UP
-        fs::copy_file(nfzPath,settings->nfzUpOutPath, ec);
+        cfs::copy_file(nfzPath,settings->nfzUpOutPath, ec);
 	}
 	//Copy hotkey files
     if (settings->hotkeyChoice == 1) { //Use AoC/Voobly Hotkeys
         removeWkHotkeys();
         if(!identifyHotkeyFile(settings->outPath, maxDstHki, lastDstHki))//In case there are no voobly hotkeys, copy standard aoc hotkeys
-            fs::copy_file(aocHkiPath, settings->outPath/"player1.hki");
+            cfs::copy_file(aocHkiPath, settings->outPath/"player1.hki");
     } else {
         if(!identifyHotkeyFile(settings->HDPath/"Profiles", maxSrcHki, lastSrcHki)) {
             maxSrcHki = resourceDir / "player1_age2hd.hki";
@@ -1714,7 +1715,7 @@ void WKConverter::hotkeySetup() {
             }
         }
         copyHotkeyFile(maxSrcHki,lastSrcHki,maxDstHki);
-        if(!fs::equivalent(maxDstHki,lastDstHki))
+        if(!cfs::equivalent(maxDstHki,lastDstHki))
             copyHotkeyFile(maxSrcHki,lastSrcHki,lastDstHki);
         if(settings->useBoth) {
             fs::path maxUpDstHki;
@@ -1724,7 +1725,7 @@ void WKConverter::hotkeySetup() {
                 lastUpDstHki = settings->upDir / lastDstHki.filename();
             }
             copyHotkeyFile(maxSrcHki,lastSrcHki,maxUpDstHki);
-            if(!fs::equivalent(maxUpDstHki,lastUpDstHki))
+            if(!cfs::equivalent(maxUpDstHki,lastUpDstHki))
                 copyHotkeyFile(maxSrcHki,lastSrcHki,lastUpDstHki);
         }
 	}
@@ -1736,7 +1737,7 @@ void WKConverter::hotkeySetup() {
             lastDstHki = maxDstHki;
         }
         copyHotkeyFile(maxSrcHki,lastSrcHki,maxDstHki);
-        if(!fs::equivalent(maxDstHki,lastDstHki))
+        if(!cfs::equivalent(maxDstHki,lastDstHki))
             copyHotkeyFile(maxSrcHki,lastSrcHki,lastDstHki);
 	}
 }
@@ -1757,30 +1758,30 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
     bool vooblySrc = tolower(oldDirString).find("\\voobly mods\\aoc") != std::string::npos;
     bool vooblyDst = tolower(newDirString).find("\\voobly mods\\aoc") != std::string::npos;
 
-	fs::create_directory(newDir);
-	fs::copy_file(xmlIn, xmlOut, fs::copy_options::overwrite_existing);
+	cfs::create_directory(newDir);
+	cfs::copy_file(xmlIn, xmlOut, fs::copy_options::overwrite_existing);
     bool datalink = vooblySrc == vooblyDst && !dataMod;
 
     if(datalink) {
-        fs::remove_all(newDir/"Data");
+        cfs::remove_all(newDir/"Data");
     } else {
-        fs::create_directory(newDir/"Data");
-        fs::remove(newDir/"Data"/"gamedata_x1.drs");
-        fs::remove(newDir/"Data"/"gamedata_x1_p1.drs");
+        cfs::create_directory(newDir/"Data");
+        cfs::remove(newDir/"Data"/"gamedata_x1.drs");
+        cfs::remove(newDir/"Data"/"gamedata_x1_p1.drs");
     }
 
-	fs::remove_all(newDir/"Taunt");
-	fs::remove_all(newDir/"Sound");
-    fs::remove_all(newDir/"History");
-	fs::remove_all(newDir/"Script.Rm");
-	fs::remove_all(newDir/"Script.Ai");
-	fs::remove_all(newDir/"Screenshots");
-	fs::remove_all(newDir/"Scenario");
-    fs::remove(newDir/"player.nfz");
+	cfs::remove_all(newDir/"Taunt");
+	cfs::remove_all(newDir/"Sound");
+    cfs::remove_all(newDir/"History");
+	cfs::remove_all(newDir/"Script.Rm");
+	cfs::remove_all(newDir/"Script.Ai");
+	cfs::remove_all(newDir/"Screenshots");
+	cfs::remove_all(newDir/"Scenario");
+    cfs::remove(newDir/"player.nfz");
     for (fs::directory_iterator current(newDir), end;current != end; ++current) {
         std::string extension = current->path().extension().string();
         if (extension == ".hki") {
-           fs::remove(current->path());
+           cfs::remove(current->path());
         }
     }
     std::string hotkeyString = "";
@@ -1801,10 +1802,10 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
 
     if(!dataMod) {
         if(vooblyDst) {
-            fs::remove(newDir/"language.ini");
+            cfs::remove(newDir/"language.ini");
             mklink(MKLINK_SOFT, newDir/"language.ini", oldDir/"language.ini");
         } else if (!vooblySrc) {
-            fs::remove(newDir/"Data"/"language_x1_p1.dll");
+            cfs::remove(newDir/"Data"/"language_x1_p1.dll");
             mklink(MKLINK_SOFT, newDir/"Data/language_x1_p1.dll", oldDir/"Data/language_x1_p1.dll");
         }
     }
@@ -1817,17 +1818,17 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
     mklink(MKLINK_DIR, newDir/"Screenshots", oldDir/"Screenshots");
     mklink(MKLINK_DIR, newDir/"Scenario", oldDir/"Scenario");
     mklink(MKLINK_SOFT, newDir/"player.nfz", oldDir/"player.nfz");
-    if(!fs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
+    if(!cfs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
         for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
             fs::path currentPath(current->path());
-            if(!fs::is_directory(currentPath) || tolower(currentPath.filename().string()) != "savegame") {
-              fs::copy(currentPath,newDir/currentPath.filename(), fs::copy_options::recursive | fs::copy_options::skip_existing);
+            if(!cfs::is_directory(currentPath) || tolower(currentPath.filename().string()) != "savegame") {
+              cfs::copy(currentPath,newDir/currentPath.filename(), fs::copy_options::recursive | fs::copy_options::skip_existing);
             }
         }
     }
-    fs::create_directories(newDir/"Savegame"/"Multi");
+    cfs::create_directories(newDir/"Savegame"/"Multi");
     if(vooblyDst && !dataMod)
-        fs::copy_file(oldDir/"version.ini", newDir/"version.ini", fs::copy_options::overwrite_existing);
+        cfs::copy_file(oldDir/"version.ini", newDir/"version.ini", fs::copy_options::overwrite_existing);
 }
 
 void WKConverter::retryInstall() {
@@ -1835,34 +1836,34 @@ void WKConverter::retryInstall() {
     listener->log("Retry installation with removing folders first");
     fs::path tempFolder = "retryTemp";
     try {
-        fs::create_directories(tempFolder/"Scenario");
-        fs::create_directories(tempFolder/"SaveGame");
-        fs::create_directories(tempFolder/"Script.RM");
-        fs::copy(installDir/"SaveGame",tempFolder/"SaveGame", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-        fs::copy(installDir/"Script.RM",tempFolder/"Script.RM", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-        fs::copy(installDir/"Scenario",tempFolder/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-        fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
-        if(fs::exists(installDir/"player1.hki"))
-            fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
+        cfs::create_directories(tempFolder/"Scenario");
+        cfs::create_directories(tempFolder/"SaveGame");
+        cfs::create_directories(tempFolder/"Script.RM");
+        cfs::copy(installDir/"SaveGame",tempFolder/"SaveGame", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        cfs::copy(installDir/"Script.RM",tempFolder/"Script.RM", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        cfs::copy(installDir/"Scenario",tempFolder/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        cfs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
+        if(cfs::exists(installDir/"player1.hki"))
+            cfs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
     } catch (std::exception const & e) {
         listener->error(e);
         listener->log(e.what());
         return;
     }
 
-    fs::remove_all(installDir);
-    fs::remove_all(installDir.parent_path()/"WololoKingdoms AK");
-    fs::remove_all(installDir.parent_path()/"WololoKingdoms FE");
+    cfs::remove_all(installDir);
+    cfs::remove_all(installDir.parent_path()/"WololoKingdoms AK");
+    cfs::remove_all(installDir.parent_path()/"WololoKingdoms FE");
 
     run(true);
-    fs::copy(tempFolder/"SaveGame",installDir/"SaveGame", fs::copy_options::recursive | fs::copy_options::skip_existing);
-    fs::copy(tempFolder/"Script.RM",installDir/"Script.RM", fs::copy_options::recursive | fs::copy_options::skip_existing);
-    fs::copy(tempFolder/"Scenario",installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::skip_existing);
+    cfs::copy(tempFolder/"SaveGame",installDir/"SaveGame", fs::copy_options::recursive | fs::copy_options::skip_existing);
+    cfs::copy(tempFolder/"Script.RM",installDir/"Script.RM", fs::copy_options::recursive | fs::copy_options::skip_existing);
+    cfs::copy(tempFolder/"Scenario",installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::skip_existing);
     std::error_code ec;
-    fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
-    if(fs::exists(tempFolder/"player1.hki"))
-        fs::copy_file(tempFolder/"player1.hki", installDir/"player1.hki", ec);
-    fs::remove_all(tempFolder);
+    cfs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
+    if(cfs::exists(tempFolder/"player1.hki"))
+        cfs::copy_file(tempFolder/"player1.hki", installDir/"player1.hki", ec);
+    cfs::remove_all(tempFolder);
 }
 
 
@@ -1872,66 +1873,66 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     fs::path versionIniPath = settings->vooblyDir/"version.ini";
 
     listener->log("Check for symlink");
-    if(fs::is_symlink(installDir/"Taunt")) {
+    if(cfs::is_symlink(installDir/"Taunt")) {
         listener->log("Removing all but SaveGame and profile");
         fs::path tempFolder = "temp";
-        fs::create_directories(tempFolder/"Scenario");
-        fs::create_directories(tempFolder/"SaveGame");
-        fs::create_directories(tempFolder/"Script.RM");
-        fs::copy(installDir/"SaveGame",tempFolder/"SaveGame", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-        fs::copy(installDir/"Script.RM",tempFolder/"Script.RM", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-        fs::copy(installDir/"Scenario",tempFolder/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-        fs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
-        if(fs::exists(installDir/"player1.hki"))
-            fs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
-        fs::remove_all(installDir);
-        fs::create_directories(installDir/"SaveGame");
-        fs::create_directories(installDir/"SaveGame");
-        fs::create_directories(installDir/"Script.RM");
-        fs::copy(tempFolder/"SaveGame",installDir/"SaveGame", fs::copy_options::recursive | fs::copy_options::skip_existing);
-        fs::copy(tempFolder/"Script.RM",installDir/"Script.RM", fs::copy_options::recursive | fs::copy_options::skip_existing);
-        fs::copy(tempFolder/"Scenario",installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::skip_existing);
+        cfs::create_directories(tempFolder/"Scenario");
+        cfs::create_directories(tempFolder/"SaveGame");
+        cfs::create_directories(tempFolder/"Script.RM");
+        cfs::copy(installDir/"SaveGame",tempFolder/"SaveGame", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        cfs::copy(installDir/"Script.RM",tempFolder/"Script.RM", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        cfs::copy(installDir/"Scenario",tempFolder/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        cfs::copy_file(installDir/"player.nfz",tempFolder/"player.nfz",fs::copy_options::overwrite_existing);
+        if(cfs::exists(installDir/"player1.hki"))
+            cfs::copy_file(installDir/"player1.hki",tempFolder/"player1.hki",fs::copy_options::overwrite_existing);
+        cfs::remove_all(installDir);
+        cfs::create_directories(installDir/"SaveGame");
+        cfs::create_directories(installDir/"SaveGame");
+        cfs::create_directories(installDir/"Script.RM");
+        cfs::copy(tempFolder/"SaveGame",installDir/"SaveGame", fs::copy_options::recursive | fs::copy_options::skip_existing);
+        cfs::copy(tempFolder/"Script.RM",installDir/"Script.RM", fs::copy_options::recursive | fs::copy_options::skip_existing);
+        cfs::copy(tempFolder/"Scenario",installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::skip_existing);
         std::error_code ec;
-        fs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
-        if(fs::exists(tempFolder/"player1.hki"))
-            fs::copy_file(tempFolder/"player1.hki", installDir/"player1.hki", ec);
-        fs::remove_all(tempFolder);
+        cfs::copy_file(tempFolder/"player.nfz", installDir/"player.nfz", ec);
+        if(cfs::exists(tempFolder/"player1.hki"))
+            cfs::copy_file(tempFolder/"player1.hki", installDir/"player1.hki", ec);
+        cfs::remove_all(tempFolder);
     }
 
     listener->log("Removing base folders");
-    fs::remove_all(installDir/"Data");
+    cfs::remove_all(installDir/"Data");
     /*
-    fs::remove_all(installDir/"Script.Ai"/"Brutal2");
-    fs::remove(installDir/"Script.Ai"/"BruteForce3.1.ai");
-    fs::remove(installDir/"Script.Ai"/"BruteForce3.1.per");
+    cfs::remove_all(installDir/"Script.Ai"/"Brutal2");
+    cfs::remove(installDir/"Script.Ai"/"BruteForce3.1.ai");
+    cfs::remove(installDir/"Script.Ai"/"BruteForce3.1.per");
     */
 
     listener->log("Creating base folders");
-    fs::create_directories(installDir/"SaveGame"/"Multi");
-    fs::create_directories(installDir/"Sound"/"stream");
-    fs::create_directory(installDir/"Data");
-    fs::create_directory(installDir/"Taunt");
-    fs::create_directory(installDir/"History");
-    fs::create_directory(installDir/"Screenshots");
-    fs::create_directory(installDir/"Scenario");
+    cfs::create_directories(installDir/"SaveGame"/"Multi");
+    cfs::create_directories(installDir/"Sound"/"stream");
+    cfs::create_directory(installDir/"Data");
+    cfs::create_directory(installDir/"Taunt");
+    cfs::create_directory(installDir/"History");
+    cfs::create_directory(installDir/"Screenshots");
+    cfs::create_directory(installDir/"Scenario");
 
     if(!settings->useExe) {
-        fs::remove(settings->vooblyDir/"age2_x1.xml");
-        fs::remove(versionIniPath);
+        cfs::remove(settings->vooblyDir/"age2_x1.xml");
+        cfs::remove(versionIniPath);
         listener->log("Removing language.ini");
-        fs::remove(languageIniPath);
+        cfs::remove(languageIniPath);
     } else {
         listener->log("Removing UP base folders");
-        fs::remove(xmlOutPathUP);
-        fs::remove(settings->upDir/"Data"/"empires2_x1_p1.dat");
-        fs::remove(settings->upDir/"Data"/"gamedata_x1.drs");
-        fs::remove(settings->upDir/"Data"/"gamedata_x1_p1.drs");
+        cfs::remove(xmlOutPathUP);
+        cfs::remove(settings->upDir/"Data"/"empires2_x1_p1.dat");
+        cfs::remove(settings->upDir/"Data"/"gamedata_x1.drs");
+        cfs::remove(settings->upDir/"Data"/"gamedata_x1_p1.drs");
         /*
-        fs::remove_all(settings->upDir/"Script.Ai"/"Brutal2");
-        fs::remove(settings->upDir/"Script.Ai"/"BruteForce3.1.ai");
-        fs::remove(settings->upDir/"Script.Ai"/"BruteForce3.1.per");
+        cfs::remove_all(settings->upDir/"Script.Ai"/"Brutal2");
+        cfs::remove(settings->upDir/"Script.Ai"/"BruteForce3.1.ai");
+        cfs::remove(settings->upDir/"Script.Ai"/"BruteForce3.1.per");
         */
-        fs::create_directories(settings->upDir/"Data");
+        cfs::create_directories(settings->upDir/"Data");
     }
 }
 
@@ -2047,7 +2048,7 @@ int WKConverter::run(bool retry)
         if (settings->patch < 0) {
             setupFolders(xmlOutPathUP);
         } else {
-            fs::create_directories(outputDatPath.parent_path());
+            cfs::create_directories(outputDatPath.parent_path());
             patchFolder = resourceDir/"patches"/std::get<0>(settings->dataModList[settings->patch]);
             hdDatPath = patchFolder/"empires2_x1_p1.dat";
             UPModdedExe = std::get<1>(settings->dataModList[settings->patch]);
@@ -2063,7 +2064,7 @@ int WKConverter::run(bool retry)
             }
             else {
                 fs::path langDllOutput = settings->upDir/"data"/"language_x1_p1.dll";
-                fs::copy_file(backupLangDll,langDllOutput,fs::copy_options::overwrite_existing);
+                cfs::copy_file(backupLangDll,langDllOutput,fs::copy_options::overwrite_existing);
             }
         }
 
@@ -2094,7 +2095,7 @@ int WKConverter::run(bool retry)
                 if(settings->useNoSnow)
                     indexDrsFiles(noSnowInputDir);
 			}
-			if(fs::exists(terrainOverrideDir) && !fs::is_empty(terrainOverrideDir)) {
+			if(cfs::exists(terrainOverrideDir) && !cfs::is_empty(terrainOverrideDir)) {
                 indexDrsFiles(terrainOverrideDir, true, true);
 			}
             listener->increaseProgress(1); //11
@@ -2149,7 +2150,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Taunts");
             try {
 
-              fs::copy(tauntInputPath, tauntOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
+              cfs::copy(tauntInputPath, tauntOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
             } catch (std::exception const & e) {
                 std::string message = "tauntError$";
                 message += e.what();
@@ -2163,7 +2164,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Scenario Sounds");
             try {
 
-              fs::copy(scenarioSoundsInputPath, scenarioSoundsOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
+              cfs::copy(scenarioSoundsInputPath, scenarioSoundsOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
             } catch (std::exception const & e) {
                 std::string message = "scenarioSoundError$";
                 message += e.what();
@@ -2177,16 +2178,16 @@ int WKConverter::run(bool retry)
             listener->increaseProgress(1); //14
             listener->log("Copy XML");
             if(settings->useExe) {
-                fs::copy_file(xmlPath, xmlOutPathUP, fs::copy_options::overwrite_existing);
+                cfs::copy_file(xmlPath, xmlOutPathUP, fs::copy_options::overwrite_existing);
             } else {
-                fs::copy_file(xmlPath, xmlOutPath, fs::copy_options::overwrite_existing);
+                cfs::copy_file(xmlPath, xmlOutPath, fs::copy_options::overwrite_existing);
             }
 
             fs::path installMapDir = installDir/"Script.Rm";
             listener->log("Copy Voobly Map folder");
-            if (fs::exists(settings->outPath/"Random")) {
+            if (cfs::exists(settings->outPath/"Random")) {
                 try {
-                  fs::copy(settings->outPath/"Random", installMapDir, fs::copy_options::recursive | fs::copy_options::skip_existing);
+                  cfs::copy(settings->outPath/"Random", installMapDir, fs::copy_options::recursive | fs::copy_options::skip_existing);
                 } catch (std::exception const & e) {
                     std::string message = "vooblyMapError$";
                     message += e.what();
@@ -2198,7 +2199,7 @@ int WKConverter::run(bool retry)
                     }
                 }
 			} else {
-                fs::create_directory(installMapDir);
+                cfs::create_directory(installMapDir);
 			}
             listener->increaseProgress(1); //15
             if(settings->copyCustomMaps) {
@@ -2238,7 +2239,7 @@ int WKConverter::run(bool retry)
             }
             listener->increaseProgress(1); //23
             try {
-              fs::copy(scenarioInputDir,installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+              cfs::copy(scenarioInputDir,installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
 
             } catch (std::exception const & e) {
                 std::string message = "scenarioError$";
@@ -2252,7 +2253,7 @@ int WKConverter::run(bool retry)
             }
             listener->log("Copying AI");
             try {
-              fs::copy(aiInputPath, installDir/"Script.Ai", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+              cfs::copy(aiInputPath, installDir/"Script.Ai", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
 
             } catch (std::exception const & e) {
                 std::string message = "aiError$";
@@ -2267,7 +2268,7 @@ int WKConverter::run(bool retry)
             listener->increaseProgress(1); //24
             listener->log("Hotkey Setup");
             try {
-                if(settings->hotkeyChoice != 0 || fs::exists("player1.hki"))
+                if(settings->hotkeyChoice != 0 || cfs::exists("player1.hki"))
                     hotkeySetup();
             } catch (std::exception const & e) {
                 std::string message = "hotkeyError$";
@@ -2363,7 +2364,7 @@ int WKConverter::run(bool retry)
 
                 indexDrsFiles(architectureFixDir);
                 listener->log("Mod Override Dir");
-                if(!fs::is_empty(modOverrideDir))
+                if(!cfs::is_empty(modOverrideDir))
                     indexDrsFiles(modOverrideDir);
                 listener->increaseProgress(1); //66
                 listener->log("Opening DRS");
@@ -2374,7 +2375,7 @@ int WKConverter::run(bool retry)
 
 
                 listener->log("copy gamedata_x1.drs");
-                fs::copy_file(gamedata_x1, installDir/"Data"/"gamedata_x1.drs", fs::copy_options::overwrite_existing);
+                cfs::copy_file(gamedata_x1, installDir/"Data"/"gamedata_x1.drs", fs::copy_options::overwrite_existing);
                 listener->increaseProgress(1); //76
             } catch (std::exception const & e) {
                 std::string message = "indexingError$";
@@ -2508,7 +2509,7 @@ int WKConverter::run(bool retry)
         } else { //If we use a balance mod or old patch, just copy the supplied dat fil
             try {
                 listener->log("Copy DAT file");
-                fs::remove(outputDatPath);
+                cfs::remove(outputDatPath);
                 genie::DatFile dat;
                 dat.setGameVersion(genie::GameVersion::GV_TC);
                 dat.load(hdDatPath.string().c_str());
@@ -2573,7 +2574,7 @@ int WKConverter::run(bool retry)
                         editDrs(&oldDrs, &newDrs);
                     }
                 }
-                fs::remove(xmlIn);
+                cfs::remove(xmlIn);
             } catch (std::exception const & e) {
                 std::string message = "patchError$";
                 message += e.what();
@@ -2621,7 +2622,7 @@ int WKConverter::run(bool retry)
          */
         if(settings->useBoth) {
             try {
-                fs::copy_file(settings->vooblyDir / "Data"/"empires2_x1_p1.dat", settings->upDir / "Data"/"empires2_x1_p1.dat", fs::copy_options::overwrite_existing);
+                cfs::copy_file(settings->vooblyDir / "Data"/"empires2_x1_p1.dat", settings->upDir / "Data"/"empires2_x1_p1.dat", fs::copy_options::overwrite_existing);
             } catch (std::exception const & e) {
                 std::string message = e.what();
                 listener->log(message);
@@ -2645,7 +2646,7 @@ int WKConverter::run(bool retry)
                 listener->createDialog("dialogNoDll");
 
             try {
-                fs::copy_file(UPExe, UPExeOut, fs::copy_options::overwrite_existing);
+                cfs::copy_file(UPExe, UPExeOut, fs::copy_options::overwrite_existing);
 
                 listener->increaseProgress(1); //96
 
@@ -2655,11 +2656,11 @@ int WKConverter::run(bool retry)
 
                 std::string newExeName;
                 if(settings->patch >= 0 && (newExeName = std::get<4>(settings->dataModList[settings->patch])) != "") {
-                    if(fs::exists(settings->outPath / "age2_x1"/(newExeName+".exe"))) {
-                        fs::rename(settings->outPath / "age2_x1"/(newExeName+".exe"),
+                    if(cfs::exists(settings->outPath / "age2_x1"/(newExeName+".exe"))) {
+                        cfs::rename(settings->outPath / "age2_x1"/(newExeName+".exe"),
                                    settings->outPath / "age2_x1"/(newExeName+".exe.bak"));
                     }
-                    fs::rename(settings->outPath / "age2_x1"/(UPModdedExe+".exe"),
+                    cfs::rename(settings->outPath / "age2_x1"/(UPModdedExe+".exe"),
                                settings->outPath / "age2_x1"/(newExeName+".exe"));
                     UPModdedExe = newExeName;
                 }
@@ -2683,7 +2684,7 @@ int WKConverter::run(bool retry)
         }
         listener->setInfo("workingDone");
 
-        if (settings->patch < 0 && fs::equivalent(settings->outPath,settings->HDPath)) {
+        if (settings->patch < 0 && cfs::equivalent(settings->outPath,settings->HDPath)) {
 
             listener->log("Fix Compat Patch");
 			/*
@@ -2691,15 +2692,15 @@ int WKConverter::run(bool retry)
 			 * An update to the compatibility patch would make this unnecessary most likely.
 			 */
 
-            fs::remove_all(settings->outPath/"compatslp");
+            cfs::remove_all(settings->outPath/"compatslp");
 
-            fs::create_directory(settings->outPath/"data"/"Load");
+            cfs::create_directory(settings->outPath/"data"/"Load");
             if(settings->useExe) { //this causes a crash with UP 1.5 otherwise
                 listener->setInfo("workingDone");
 
-                if(fs::file_size(settings->outPath/"data"/"blendomatic.dat") < 400000) {
-                    fs::rename(settings->outPath/"data"/"blendomatic.dat",settings->outPath/"data"/"blendomatic.dat.bak");
-                    fs::rename(settings->outPath/"data"/"blendomatic_x1.dat",settings->outPath/"data"/"blendomatic.dat");
+                if(cfs::file_size(settings->outPath/"data"/"blendomatic.dat") < 400000) {
+                    cfs::rename(settings->outPath/"data"/"blendomatic.dat",settings->outPath/"data"/"blendomatic.dat.bak");
+                    cfs::rename(settings->outPath/"data"/"blendomatic_x1.dat",settings->outPath/"data"/"blendomatic.dat");
                 }
                 listener->increaseProgress(1); //98
             }

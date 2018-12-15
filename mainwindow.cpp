@@ -16,6 +16,7 @@
 #include "paths.h"
 #include "libwololokingdoms/string_helpers.h"
 #include "libwololokingdoms/platform.h"
+#include "libwololokingdoms/caseless.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -142,7 +143,7 @@ int MainWindow::initialize() {
         updateUI();
     } );
 
-    if(QCoreApplication::arguments().back() != "-s" && fs::exists("WKUpdater.exe")) {
+    if(QCoreApplication::arguments().back() != "-s" && cfs::exists("WKUpdater.exe")) {
         QProcess process;
         process.start(QString("WKUpdater.exe"), QStringList() << "");
         process.waitForStarted();
@@ -161,7 +162,7 @@ int MainWindow::initialize() {
         changeModPatch();
     } );
 
-    if(fs::exists("player1.hki")) {
+    if(cfs::exists("player1.hki")) {
         this->ui->hotkeyChoice->setDisabled(true);
         this->ui->hotkeyChoice->setItemText(0,translation["customHotkeys"]);
         this->ui->hotkeyTip->setDisabled(true);
@@ -314,7 +315,7 @@ QString MainWindow::translate(QString line) {
 }
 
 void MainWindow::setInstallDirectory(std::string directory) {
-    if(!fs::exists(directory)) {
+    if(!cfs::exists(directory)) {
         directory = getOutPath(HDPath).make_preferred().string();
     }
     outPath = fs::path(directory);
@@ -336,7 +337,7 @@ void MainWindow::setInstallDirectory(std::string directory) {
     nfzUpOutPath = upDir / "Player.nfz";
     nfzVooblyOutPath = vooblyDir / "Player.nfz";
 
-    if(!fs::exists(outPath/"age2_x1")) {
+    if(!cfs::exists(outPath/"age2_x1")) {
         this->ui->label->setText(translation["noAoC"]);
         QDialog* dialog = new Dialog(this,translation["noAoC"],translation["errorTitle"]);
         log("No Aoc. Path: "+(outPath/"age2_x1").string());
@@ -348,7 +349,7 @@ void MainWindow::setInstallDirectory(std::string directory) {
     }
     updateUI();
 
-    if(!fs::exists(vooblyDir)) {
+    if(!cfs::exists(vooblyDir)) {
         this->ui->usePatch->setDisabled(true);
         this->ui->usePatch->setChecked(false);
     } else {
@@ -552,7 +553,7 @@ void MainWindow::changeLanguage() {
      */
 	std::string line;
     std::string langBackup;
-    if(!fs::exists(resourceDir/(language+".txt"))) {
+    if(!cfs::exists(resourceDir/(language+".txt"))) {
         if(translation["runButton"].isEmpty()) {
             langBackup = language;
             language = "en";
@@ -614,7 +615,7 @@ void MainWindow::updateUI() {
      * In either case, we also check if the user has the appropriate dlcLevel. That's >0 for regular WK and
      * 3 for any data mod based on WK (to avoid further fragmentation)
      */
-    if ((this->ui->useExe->isChecked() && fs::exists(nfzUpOutPath)) || fs::exists(nfzVooblyOutPath)) {
+    if ((this->ui->useExe->isChecked() && cfs::exists(nfzUpOutPath)) || cfs::exists(nfzVooblyOutPath)) {
         this->ui->hotkeyChoice->setItemText(0,translation["hotkeys0"]);
         this->ui->hotkeyChoice->setStyleSheet("");
         if(allowRun)
@@ -649,7 +650,7 @@ void MainWindow::updateUI() {
     else
         patchFolder = resourceDir;
     */
-    if(!fs::exists(resourceDir/(language+".ini"))) {
+    if(!cfs::exists(resourceDir/(language+".ini"))) {
 		this->ui->replaceTooltips->setEnabled(false);
 		this->ui->replaceTooltips->setChecked(false);
 	} else {

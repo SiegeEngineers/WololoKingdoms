@@ -73,8 +73,13 @@ HEADERS += \
     libwololokingdoms/fixes/smallfixes.h \
     libwololokingdoms/fixes/tricklebuildingfix.h \
     libwololokingdoms/fixes/vietfix.h \
-    libwololokingdoms/include/wololo/Drs.h \
     libwololokingdoms/include/wololo/datPatch.h \
+    libwololokingdoms/base64.h \
+    libwololokingdoms/caseless.h \
+    libwololokingdoms/drs.h \
+    libwololokingdoms/md5.h \
+    libwololokingdoms/platform.h \
+    libwololokingdoms/string_helpers.h \
     libwololokingdoms/wkconverter.h \
     libwololokingdoms/wksettings.h \
     dialog.h \
