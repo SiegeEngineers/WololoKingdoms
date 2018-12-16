@@ -79,14 +79,13 @@ void WKConverter::indexDrsFiles(fs::path const &src, bool expansionFiles, bool t
      * terrainFiles: If true, these are terrain files, written to a seperate map, as we need them for
      *                  expansion map creation.
      */
-	if (cfs::is_directory(src)) {
-		for (fs::directory_iterator current(src), end;current != end; ++current) {
-			fs::path currentPath(current->path());
-            indexDrsFiles(currentPath, expansionFiles, terrainFiles);
-		}
-	}
-	else {
-		std::string extension = src.extension().string();
+    if (cfs::is_directory(src)) {
+        for (fs::directory_iterator current(src), end;current != end; ++current) {
+            indexDrsFiles(current->path(), expansionFiles, terrainFiles);
+        }
+    }
+    else {
+        std::string extension = src.extension().string();
         if(terrainFiles) {
             if (extension == ".slp") {
                 newTerrainFiles[src.filename().string()] = src;
@@ -104,7 +103,7 @@ void WKConverter::indexDrsFiles(fs::path const &src, bool expansionFiles, bool t
                 wavFiles[id] = src;
             }
         }
-	}
+    }
 }
 
 void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
@@ -1804,7 +1803,7 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
             mklink(MKLINK_SOFT, newDir/"language.ini", oldDir/"language.ini");
         } else if (!vooblySrc) {
             cfs::remove(newDir/"Data"/"language_x1_p1.dll");
-            mklink(MKLINK_SOFT, newDir/"Data/language_x1_p1.dll", oldDir/"Data/language_x1_p1.dll");
+            mklink(MKLINK_SOFT, newDir/"Data"/"language_x1_p1.dll", oldDir/"Data"/"language_x1_p1.dll");
         }
     }
 

@@ -19,7 +19,7 @@ static std::map<fs::path, fs::path> caseless_cache = {};
 /**
  * Case-insensitively find a file path.
  */
-static fs::path caseless(fs::path input) {
+static fs::path caseless(fs::path const& input) {
   std::string inputs = input.string();
   fs::path linput = tolower(inputs);
   if (caseless_cache.find(linput) != caseless_cache.end()) {
