@@ -38,12 +38,12 @@
 #include "wkconverter.h"
 #include "caseless.h"
 
-#define rt_getSLPName(it) std::get<0>(*it)
-#define rt_getPattern(it) std::get<1>(*it)
-#define rt_getReplaceName(it) std::get<2>(*it)
-#define rt_getOldId(it) std::get<3>(*it)
-#define rt_getNewId(it) std::get<4>(*it)
-#define rt_getTerrainType(it) std::get<5>(*it)
+#define rt_getSLPName(it) std::get<0>(it)
+#define rt_getPattern(it) std::get<1>(it)
+#define rt_getReplaceName(it) std::get<2>(it)
+#define rt_getOldId(it) std::get<3>(it)
+#define rt_getNewId(it) std::get<4>(it)
+#define rt_getTerrainType(it) std::get<5>(it)
 
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
@@ -461,26 +461,26 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 	/*
      * Stuff that's in lang replacement but not in the HD files (in this case extended language height box)
 	 */
-	for(std::map<int,std::string>::iterator it = langReplacement->begin(); it != langReplacement->end(); it++) {
+   for (auto& it : *langReplacement) {
 		//convert UTF-8 into ANSI
 
-		std::wstring wideLine = strtowstr(it->second);
+		std::wstring wideLine = strtowstr(it.second);
 		std::string outputLine;
 
         ConvertUnicode2CP(wideLine.c_str(), outputLine);
 
-		*iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
+		*iniOut << std::to_string(it.first) << '=' << outputLine <<  std::endl;
 
 		if (generateLangDll) {
-            replace_all(it->second, "·", "\xb7"); // Dll can't handle that character.
-            replace_all(it->second, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
+            replace_all(it.second, "·", "\xb7"); // Dll can't handle that character.
+            replace_all(it.second, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
 			try {
-                dllOut->setString(it->first, it->second);
+                dllOut->setString(it.first, it.second);
 			}
 			catch (std::string const & e) {
-                replace_all(it->second, "\xb7", "-"); // non-english dll files don't seem to like that character
-                replace_all(it->second, "\xae", "R");
-                dllOut->setString(it->first, it->second);
+                replace_all(it.second, "\xb7", "-"); // non-english dll files don't seem to like that character
+                replace_all(it.second, "\xae", "R");
+                dllOut->setString(it.first, it.second);
 			}
 		}
 
@@ -491,8 +491,8 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 	 * Would possibly be fixed by a comp patch update.
 	 */
 	if (generateLangDll) {
-		for(std::vector<std::pair<int,std::string>>::iterator it = rmsCodeStrings.begin(); it != rmsCodeStrings.end(); it++) {
-			dllOut->setString(it->first, it->second);
+		for (auto& it : rmsCodeStrings) {
+			dllOut->setString(it.first, it.second);
 		}
 	}
     in->close();
@@ -537,11 +537,11 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	std::vector<DrsFileInfo> slpFileInfos;
 	std::vector<DrsFileInfo> wavFileInfos;
 
-	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
+	for (auto& it : slpFiles) {
 		DrsFileInfo slp;
 		size_t size;
-		size = cfs::file_size(it->second);
-		slp.file_id = it->first;
+		size = cfs::file_size(it.second);
+		slp.file_id = it.first;
 		slp.file_data_offset = offset;
 		slp.file_size = size;
 		offset += size;
@@ -550,11 +550,11 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	}
     listener->increaseProgress(1); //67
 
-	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
+	for (auto& it : wavFiles) {
 		DrsFileInfo wav;
 		size_t size;
-		size = cfs::file_size(it->second);
-		wav.file_id = it->first;
+		size = cfs::file_size(it.second);
+		wav.file_id = it.first;
 		wav.file_data_offset = offset;
 		wav.file_size = size;
 		offset += size;
@@ -619,17 +619,17 @@ void WKConverter::makeDrs(std::ofstream *out) {
 
     listener->increaseProgress(1); //70
 	// file infos
-	for (std::vector<DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
-		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (DrsFileInfo::file_id));
-		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (DrsFileInfo::file_data_offset));
-		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (DrsFileInfo::file_size));
+	for (auto& it : slpFileInfos) {
+		out->write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
+		out->write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+		out->write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
 
 	}
     listener->increaseProgress(1); //71
-	for (std::vector<DrsFileInfo>::iterator it = wavFileInfos.begin(); it != wavFileInfos.end(); it++) {
-		out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (DrsFileInfo::file_id));
-		out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (DrsFileInfo::file_data_offset));
-		out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (DrsFileInfo::file_size));
+	for (auto& it : wavFileInfos) {
+		out->write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
+		out->write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+		out->write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
 
 	}
     listener->increaseProgress(1); //72
@@ -637,16 +637,16 @@ void WKConverter::makeDrs(std::ofstream *out) {
     listener->setInfo("working$\n$workingDrs3");
 
 	// now write the actual files
-	for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
-			std::ifstream srcStream = std::ifstream(it->second, std::ios::binary);
+	for (auto& it : slpFiles) {
+			std::ifstream srcStream (it.second, std::ios::binary);
 			*out << srcStream.rdbuf();
             srcStream.close();
 
 	}
     listener->increaseProgress(1); //73
 
-	for (std::map<int,fs::path>::iterator it = wavFiles.begin(); it != wavFiles.end(); it++) {
-		std::ifstream srcStream = std::ifstream(it->second, std::ios::binary);
+	for (auto& it : wavFiles) {
+		std::ifstream srcStream (it.second, std::ios::binary);
 		*out << srcStream.rdbuf();
         srcStream.close();
 
@@ -755,11 +755,11 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
     std::vector<DrsFileInfo> slpFileInfos;
 
-    for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end(); it++) {
+    for (auto& it : slpFiles) {
         DrsFileInfo slp;
         size_t size;
-        size = cfs::file_size(it->second);
-        slp.file_id = it->first;
+        size = cfs::file_size(it.second);
+        slp.file_id = it.first;
         slp.file_data_offset = offset;
         slp.file_size = size;
         offset += size;
@@ -768,10 +768,10 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     }
     listener->increaseProgress(1);//28
 
-    for (std::vector<DrsFileInfo>::iterator it = slpFileInfos.begin(); it != slpFileInfos.end(); it++) {
-        out->write(reinterpret_cast<const char *>(&it->file_id), sizeof (DrsFileInfo::file_id));
-        out->write(reinterpret_cast<const char *>(&it->file_data_offset), sizeof (DrsFileInfo::file_data_offset));
-        out->write(reinterpret_cast<const char *>(&it->file_size), sizeof (DrsFileInfo::file_size));
+    for (auto& it : slpFileInfos) {
+        out->write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
+        out->write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+        out->write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
     }
     listener->increaseProgress(1);//29
 
@@ -809,8 +809,8 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
 
     listener->log("new slp files");
-    for (std::map<int,fs::path>::iterator it = slpFiles.begin(); it != slpFiles.end();it++) {
-            std::ifstream srcStream = std::ifstream(it->second, std::ios::binary);
+    for (auto& it : slpFiles) {
+            std::ifstream srcStream (it.second, std::ios::binary);
             *out << srcStream.rdbuf();
             srcStream.close();
 
@@ -948,23 +948,21 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
         {13,"15010.slp"}, {14,"15010.slp"}, {21,"15029.slp"},  {22,"15015.slp"}, {23,"15016.slp"},
         {24,"15018.slp"},  {25,"15019.slp"}, {35,"15024.slp"}, {39,"15031.slp"}, {40,"15033.slp"}
     };
-    std::vector<std::tuple<std::string,std::string,std::string,int,int,int>>::iterator repIt;
 
-	for (std::vector<fs::path>::iterator it = mapNames.begin(); it != mapNames.end(); it++) {
-
-		std::string mapName = it->stem().string()+".rms";
+	for (auto& it : mapNames) {
+		std::string mapName = it.stem().string()+".rms";
         if (mapName.substr(0,3) == "ZR@") {
-			cfs::copy_file(*it,outputDir/mapName,fs::copy_options::overwrite_existing);
+			cfs::copy_file(it,outputDir/mapName,fs::copy_options::overwrite_existing);
 			continue;
 		}        
-        if(cfs::exists(outputDir/it->filename()) || cfs::exists(outputDir/("ZR@"+it->filename().string()))) {
+        if(cfs::exists(outputDir/it.filename()) || cfs::exists(outputDir/("ZR@"+it.filename().string()))) {
             if(replace)
-                cfs::remove(outputDir/it->filename());
+                cfs::remove(outputDir/it.filename());
             else
                 continue;
         }
-        cfs::remove(outputDir/("ZR@"+it->filename().string()));
-		std::ifstream input(inputDir/it->filename());
+        cfs::remove(outputDir/("ZR@"+it.filename().string()));
+		std::ifstream input(inputDir/it.filename());
         std::string map(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
         input.close();
         /*
@@ -991,7 +989,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
             {61,false}, {62,false}
         };
 
-        for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {         
+        for (auto& repIt : replacements) {         
             std::regex terrainName = std::regex(rt_getPattern(repIt));
             if(std::regex_search(map,terrainName)) {
                 if(rt_getNewId(repIt) < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
@@ -1000,7 +998,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
             }
         }
 
-        for (repIt = replacements.begin(); repIt != replacements.end(); repIt++) {
+        for (auto& repIt : replacements) {
             if(!terrainsUsed.at(rt_getOldId(repIt)))
                 continue;
             // Check if replacement candidate is already used
@@ -1010,16 +1008,15 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
             if(rt_getTerrainType(repIt) > TerrainType::FixedTerrain
                    && isTerrainUsed(usedTerrain, terrainsUsed, map, terrainsPerType[rt_getTerrainType(repIt)])) {
                 bool success = false;
-                for(std::map<int,std::regex>::iterator tIt = terrainsPerType[rt_getTerrainType(repIt)].begin();
-                    tIt != terrainsPerType[rt_getTerrainType(repIt)].end(); tIt++) {
-                    if(terrainsUsed.at(tIt->first))
+                for(auto& tIt : terrainsPerType[rt_getTerrainType(repIt)]) {
+                    if(terrainsUsed.at(tIt.first))
                         continue;
-                    else if(isTerrainUsed(tIt->first,terrainsUsed,map, terrainsPerType[rt_getTerrainType(repIt)])) {
+                    else if(isTerrainUsed(tIt.first,terrainsUsed,map, terrainsPerType[rt_getTerrainType(repIt)])) {
                         continue;
                     }
                     success = true;
-                    usedTerrain = tIt->first;
-                    terrainsUsed.at(tIt->first) = true;
+                    usedTerrain = tIt.first;
+                    terrainsUsed.at(tIt.first) = true;
                     break;
                 }
                 if(!success && rt_getTerrainType(repIt) == TerrainType::LandTerrain && !isTerrainUsed(5, terrainsUsed, map, terrainsPerType[rt_getTerrainType(repIt)])) {
@@ -1066,7 +1063,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
         out << map;
 		out.close();
 		if (mapName.substr(0,3) == "rw_" || mapName.substr(0,3) == "sm_") {
-			std::string scenarioFile = it->stem().string()+".scx";
+			std::string scenarioFile = it.stem().string()+".scx";
             terrainOverrides[scenarioFile] = fs::path(inputDir.string()+"/"+scenarioFile);
 		}
 		if (terrainOverrides.size() != 0) {
@@ -1134,11 +1131,11 @@ void WKConverter::createZRmap(std::map<std::string,fs::path>& terrainOverrides, 
     std::fstream outstream(outname, std::ios_base::out);
     ZRMapCreator map(outstream);
     terrainOverrides[mapName] = fs::path(outputDir.string()+"/"+mapName);
-    for(std::map<std::string,fs::path>::iterator files = terrainOverrides.begin(); files != terrainOverrides.end(); files++) {
-        auto file_size = cfs::file_size(files->second);
-        auto file_stream = std::fstream(files->second.string(), std::ios_base::in);
+    for(auto& files : terrainOverrides) {
+        auto file_size = cfs::file_size(files.second);
+        auto file_stream = std::fstream(files.second.string(), std::ios_base::in);
         auto file_content = concat_stream(file_stream);
-        map.addFile(files->first, file_content.c_str(), file_size);
+        map.addFile(files.first, file_content.c_str(), file_size);
     }
     cfs::remove(fs::path(outputDir.string()+"/"+mapName));
 }
@@ -1157,9 +1154,8 @@ void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *a
     aocDat->TerrainRestrictions.push_back(aocDat->TerrainRestrictions[14]);
     aocDat->FloatPtrTerrainTables.push_back(1);
     aocDat->TerrainPassGraphicPointers.push_back(1);
-    for(std::vector<genie::TerrainPassGraphic>::iterator it = aocDat->TerrainRestrictions[22].TerrainPassGraphics.begin();
-        it !=  aocDat->TerrainRestrictions[22].TerrainPassGraphics.end(); it++) {
-        it->EnterTileSpriteID = 11164;
+    for(auto& it : aocDat->TerrainRestrictions[22].TerrainPassGraphics) {
+        it.EnterTileSpriteID = 11164;
     }
 
 	//Copy Terrains
@@ -1184,9 +1180,9 @@ void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *a
         {15020,"ICE_BEACH.slp"}
     };
 
-    for(std::map<int,std::string>::iterator iter = newTerrainSlps.begin(); iter != newTerrainSlps.end(); iter++) {
-        if(slpFiles[iter->first].empty())
-            slpFiles[iter->first] = newTerrainFiles[iter->second];
+    for(auto& iter : newTerrainSlps) {
+        if(slpFiles[iter.first].empty())
+            slpFiles[iter.first] = newTerrainFiles[iter.second];
     }
 
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
@@ -1273,9 +1269,8 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 							   aocDat->Civs[burmese].Units[buildingIDs[b]].Building.ConstructionGraphicID, c, replacedGraphics);
 			}
 			std::vector<genie::unit::DamageGraphic>::iterator compIt = aocDat->Civs[burmese].Units[buildingIDs[b]].DamageGraphics.begin();
-			for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].DamageGraphics.begin();
-				it != aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].DamageGraphics.end(); it++) {
-				replaceGraphic(aocDat, &(it->GraphicID), compIt->GraphicID, c, replacedGraphics);
+			for(auto& it : aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].DamageGraphics) {
+				replaceGraphic(aocDat, &it.GraphicID, compIt->GraphicID, c, replacedGraphics);
 				compIt++;
 			}
             oldGraphicID = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Creatable.GarrisonGraphic;
@@ -1426,9 +1421,9 @@ bool WKConverter::checkGraphics(genie::DatFile *aocDat, short graphicID, std::ve
 	checkedGraphics.push_back(graphicID);
 	genie::Graphic newGraphic = aocDat->Graphics[graphicID];
 	if (aocDat->Graphics[graphicID].SLP < 18000 || aocDat->Graphics[graphicID].SLP >= 19000) {
-		for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
-			if(it->GraphicID != -1 && std::find(checkedGraphics.begin(), checkedGraphics.end(), it->GraphicID) == checkedGraphics.end()
-					&& checkGraphics(aocDat, it->GraphicID, checkedGraphics))
+		for(auto& it : newGraphic.Deltas) {
+			if(it.GraphicID != -1 && std::find(checkedGraphics.begin(), checkedGraphics.end(), it.GraphicID) == checkedGraphics.end()
+					&& checkGraphics(aocDat, it.GraphicID, checkedGraphics))
 				return true;
 		}
 		return false;
@@ -1540,9 +1535,9 @@ short WKConverter::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short
 		 * this is usually with damage graphics and different amount of Flames.
 		*/
 		std::vector<genie::GraphicDelta>::iterator compIt = aocDat->Graphics[compareID].Deltas.begin();
-		for(std::vector<genie::GraphicDelta>::iterator it = newGraphic.Deltas.begin(); it != newGraphic.Deltas.end(); it++) {
-            if(it->GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it->GraphicID) == duplicatedGraphics.end())
-                it->GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, it->GraphicID, compIt->GraphicID, offset);
+		for(auto& it : newGraphic.Deltas) {
+            if(it.GraphicID != -1 && std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(), it.GraphicID) == duplicatedGraphics.end())
+                it.GraphicID = duplicateGraphic(aocDat, replacedGraphics, duplicatedGraphics, it.GraphicID, compIt->GraphicID, offset);
 			compIt++;
 		}
 		aocDat->Graphics.at(newGraphicID) = newGraphic;
