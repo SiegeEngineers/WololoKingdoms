@@ -61,7 +61,7 @@ void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
         try {
             int keyNo = std::stoi(key);
             langReplacement[keyNo] = line.substr(index+1, std::string::npos);
-        } catch (std::invalid_argument e) {
+        } catch (std::invalid_argument& e) {
             continue;
         }
     }
@@ -1255,7 +1255,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
     short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
     short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
     short burmese = 30; //These are used for ID reference
-    for(short c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
+    for(size_t c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
 
         std::map<short,short> replacedGraphics;
         std::map<short,short> replacedFlags;
@@ -1309,7 +1309,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
     // short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620}; // There's no IA dark age building mod, but regular ones that get broken by enabling this, so we won't do it.
     short cgUnitIDs[] = {125,134,286,4,3,5,98,6,100,7,238,24,26,37,113,38,111,39,34,74,152,75,154,77,180,93,140,283,139,329,330,495,358,501,
                         359,502,440,441,480,448,449,473,500,474,631,492,496,546,547,567,568,569,570};
-    for(int cg = 0; cg < civGroups.size(); cg++) {
+    for(size_t cg = 0; cg < civGroups.size(); cg++) {
         if(cg == 3) {
             /* We'll temporarily give the monk 10 frames so this value is the one used for the new
              * Asian and African/Middle Eastern civs.
@@ -2314,7 +2314,7 @@ int WKConverter::run(bool retry)
                  */
 
                 short buildingIDs[] = { 47, 51, 116, 137, 234, 235, 236};
-                for(short i = 0; i < sizeof(buildingIDs)/sizeof(short); i++) {
+                for(size_t i = 0; i < sizeof(buildingIDs)/sizeof(short); i++) {
                     short oldGraphicID = aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic;
                     genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
                     newFlag.ID = aocDat.Graphics.size();
@@ -2549,7 +2549,7 @@ int WKConverter::run(bool retry)
                 out << str;
                 input.close();
                 out.close();
-                if(settings->useBoth || settings->useVoobly)
+                if(settings->useBoth || settings->useVoobly) {
                     symlinkSetup(settings->vooblyDir.parent_path() / (baseModName+dlcExtension), settings->vooblyDir,xmlIn,settings->vooblyDir/"age2_x1.xml",true);
                     if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
@@ -2557,6 +2557,7 @@ int WKConverter::run(bool retry)
                         std::ofstream newDrs (settings->vooblyDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
                         editDrs(&oldDrs, &newDrs);
                     }
+                }
                 if(settings->useBoth || settings->useExe) {
                     symlinkSetup(settings->upDir.parent_path() / (baseModName+dlcExtension), settings->upDir, xmlIn, settings->upDir.parent_path()/(UPModdedExe+".xml"), true);
                     if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
