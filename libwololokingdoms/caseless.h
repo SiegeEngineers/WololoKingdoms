@@ -96,10 +96,10 @@ namespace cfs {
     fs::rename(caseless(a), caseless(b));
   }
   size_t file_size(fs::path p) {
-    return fs::file_size(p);
+    return fs::file_size(caseless(p));
   }
   fs::file_time_type last_write_time(fs::path p) {
-    return fs::last_write_time(p);
+    return fs::last_write_time(caseless(p));
   }
 }
 #endif
