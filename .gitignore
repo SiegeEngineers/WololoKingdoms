@@ -69,8 +69,8 @@ moc_*.cpp
 /Makefile.Release
 /Makefile.Debug
 /Makefile
+/build
 .qmake.stash
 Setup.iss
 release/
-libwololokingdoms/bin
 *.o
