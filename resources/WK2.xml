@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration game="wk">
-	<name>Age of Empires II: Rise of the Rajas</name>
+	<name>Age of Empires II: African Kingdoms</name>
 	<path>WololoKingdoms AK</path>
 	<civilizations langId="10270" descId="20150" aiNameOffset="6840" uiBaseId="51100" uiStride="40" uiOffset="0">
 		<civilization id="0" name="gaia" soundFile="stream\random.mp3" scoutUnit="448" uniqueUnit="0" eliteUniqueUnit="0" uniqueUnitLine="0" uniqueUnitUpgrade="0" uniqueResearch="0" />
