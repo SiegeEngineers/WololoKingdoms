@@ -88,9 +88,6 @@ Generally, if you encounter problems: Make sure you run the installer as adminis
 If you don't need to use an offline installation though, make sure that checkbox is unchecked, to avoid potential issues.
 - **Q**: Why is my interface is messed up? It looks like this: https://imgur.com/a/xouXF
 **A**: This happens if you reinstalled an older version of the compatibility patch after installing WololoKingdoms. To fix it, you can go into the Age2HD folder and delete the "compatslp" subfolder.
-- **Q**: This doesn't work with Linux/Wine
-**A**: I made a shell script that should create missing symlinks that don't get created under wine: https://1drv.ms/u/s!Ark-SUz3-qr5qUcUahqd95ULA_sa
-Put this into your aoc folder (so next to the Voobly Mods directory) and run it. 
 
 ## New maps
 
