@@ -52,8 +52,7 @@ HEADERS += \
     libwololokingdoms/wksettings.h \
     dialog.h \
     mainwindow.h \
-    paths.h\
-    wkgui.h
+    paths.h
 
 DISTFILES += \
     WololoKingdoms.ico
@@ -102,4 +101,3 @@ unix: QMAKE_PRE_LINK += $$quote(cp $$PWD/third_party/steam_sdk/redistributable_b
 LIBS += -lsteam_api
 
 INCLUDEPATH += $$PWD/include
-
