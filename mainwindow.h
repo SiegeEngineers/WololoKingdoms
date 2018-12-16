@@ -9,7 +9,6 @@
 #include <set>
 #include <regex>
 #include <filesystem>
-#include "wkgui.h"
 #include "libwololokingdoms/wksettings.h"
 #include "libwololokingdoms/wkconverter.h"
 
