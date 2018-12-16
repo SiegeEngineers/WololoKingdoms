@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
-#include <sstream>
 #include <fstream>
 #include <filesystem>
 
@@ -963,7 +962,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
         }
         cfs::remove(outputDir/("ZR@"+it.filename().string()));
 		std::ifstream input(inputDir/it.filename());
-        std::string map(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
+        std::string map = concat_stream(input);
         input.close();
         /*
 		if(str.find("DLC_MANGROVESHALLOW")!=std::string::npos) {
@@ -2542,7 +2541,7 @@ int WKConverter::run(bool retry)
                 listener->log("Patch setup");
                 fs::path xmlIn = resourceDir/"WKtemp.xml";
                 std::ifstream input(resourceDir/("WK"+std::to_string(settings->dlcLevel)+".xml"));
-                std::string str(static_cast<std::stringstream const&>(std::stringstream() << input.rdbuf()).str());
+                std::string str = concat_stream(input);
                 std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
                 replace_all(str,baseModName+dlcExtension,settings->modName);
                 std::ofstream out(xmlIn.string());
