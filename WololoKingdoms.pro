@@ -1,65 +1,29 @@
-QT += core gui
-
-win32 {
-  libwololokingdoms.target = lib/libwololokingdoms.dll
-  libwololokingdoms.commands = cmake -B $$PWD/build/libwololokingdoms $$PWD/libwololokingdoms && \
-    make -C $$PWD/build/libwololokingdoms && \
-    cp $$PWD/build/libwololokingdoms/libwololokingdoms.dll lib && \
-    cp $$PWD/build/libwololokingdoms/third_party/genieutils/libgenieutils.dll lib
-} else {
-  libwololokingdoms.target = lib/libwololokingdoms.so
-  libwololokingdoms.commands = cmake -B $$PWD/build/libwololokingdoms $$PWD/libwololokingdoms && \
-    make -C $$PWD/build/libwololokingdoms && \
-    cp $$PWD/build/libwololokingdoms/libwololokingdoms.so lib && \
-    cp $$PWD/build/libwololokingdoms/third_party/genieutils/libgenieutils.so lib
-}
-libwololokingdoms.depends = libwololokingdoms/* \
-  libwololokingdoms/fixes/*
-
-QMAKE_EXTRA_TARGETS += libwololokingdoms
-PRE_TARGETDEPS += lib/libwololokingdoms.so
-
-QMAKE_CXXFLAGS += -std=c++17
-win32: QMAKE_CXXFLAGS += -DUNICODE
-
 TARGET = WololoKingdoms
+DESTDIR = .
 CONFIG -= console
 CONFIG -= app_bundle
 
+QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
 TEMPLATE = app
 
+# ---------------------------------------------------------
+# Main project Config
+# ---------------------------------------------------------
+QMAKE_CXXFLAGS += -std=c++17
+win32: QMAKE_CXXFLAGS += -DUNICODE
 SOURCES += main.cpp \
-    paths.cpp \
+    dialog.cpp \
     mainwindow.cpp \
-    dialog.cpp
-
+    paths.cpp
 unix: SOURCES += paths_linux.cpp
 
-LIBS += -L$$PWD/lib/
-LIBS += -lgenieutils -lwololokingdoms
-LIBS += -lsteam_api
-LIBS += -lstdc++fs
-
-win32:RC_ICONS += WololoKingdoms.ico
-
-INCLUDEPATH += $$PWD/.
-DEPENDPATH += $$PWD/.
-
-INCLUDEPATH += $$PWD/../.
-DEPENDPATH += $$PWD/../.
-
-INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/include
-INCLUDEPATH += $$PWD/libwololokingdoms/third_party/pcrio/include
-INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv
-
-INCLUDEPATH += include/
+win32: RC_ICONS += WololoKingdoms.ico
 
 HEADERS += \
-    include/sdk/public/steam/steam_api.h \
     libwololokingdoms/fixes/ai900unitidfix.h \
     libwololokingdoms/fixes/berbersutfix.h \
     libwololokingdoms/fixes/burmesefix.h \
@@ -97,3 +61,45 @@ DISTFILES += \
 FORMS += \
     mainwindow.ui \
     dialog.ui
+
+LIBS += -lstdc++fs
+LIBS += -L$$DESTDIR
+
+# ---------------------------------------------------------
+# Dependency: libwololokingdoms
+# ---------------------------------------------------------
+WK_DEST = libwololokingdoms
+win32 {
+  libwololokingdoms.target = $$WK_DEST/libwololokingdoms.dll
+  PRE_TARGETDEPS += $$WK_DEST/libwololokingdoms.dll
+  QMAKE_PRE_LINK += $$quote(cp $$WK_DEST/third_party/genieutils/libgenieutils.dll $$WK_DEST/libwololokingdoms.dll $$DESTDIR);
+} else {
+  libwololokingdoms.target = $$WK_DEST/libwololokingdoms.so
+  PRE_TARGETDEPS += $$WK_DEST/libwololokingdoms.so
+  QMAKE_PRE_LINK += $$quote(cp $$WK_DEST/third_party/genieutils/libgenieutils.so $$WK_DEST/libwololokingdoms.so $$DESTDIR);
+}
+libwololokingdoms.commands = cmake -B $$WK_DEST $$PWD/libwololokingdoms && \
+  make -C $$WK_DEST
+libwololokingdoms.depends = $$PWD/libwololokingdoms/* \
+  $$PWD/libwololokingdoms/fixes/*
+
+QMAKE_EXTRA_TARGETS += libwololokingdoms
+
+LIBS += -lgenieutils
+LIBS += -lwololokingdoms
+
+INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/include
+INCLUDEPATH += $$PWD/libwololokingdoms/third_party/pcrio/include
+INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv
+
+# ---------------------------------------------------------
+# Dependency: Steamworks SDK
+# ---------------------------------------------------------
+
+win32: QMAKE_PRE_LINK += $$quote(cp $$PWD/third_party/steam_sdk/redistributable_bin/win64/steam_api.dll $$DESTDIR);
+unix: QMAKE_PRE_LINK += $$quote(cp $$PWD/third_party/steam_sdk/redistributable_bin/linux64/libsteam_api.so $$DESTDIR);
+
+LIBS += -lsteam_api
+
+INCLUDEPATH += $$PWD/include
+

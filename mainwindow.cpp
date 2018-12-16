@@ -30,7 +30,7 @@
 #include <QtConcurrent/QtConcurrent>
 #include <QThreadPool>
 #include <QProcess>
-#include "sdk/public/steam/steam_api.h"
+#include <steam/steam_api.h>
 
 namespace fs = std::filesystem;
 
