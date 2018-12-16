@@ -68,8 +68,10 @@ moc_predefs.h
 moc_*.cpp
 /Makefile.Release
 /Makefile.Debug
-/Makefile
-/build
+Makefile
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
 .qmake.stash
 Setup.iss
 release/
