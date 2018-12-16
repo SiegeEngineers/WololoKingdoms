@@ -2,14 +2,16 @@ QT += core gui
 
 win32 {
   libwololokingdoms.target = lib/libwololokingdoms.dll
-  libwololokingdoms.commands = make -C $$PWD/libwololokingdoms win32 && \
-    cp $$PWD/libwololokingdoms/bin/win32/libwololokingdoms.dll lib && \
-    cp $$PWD/libwololokingdoms/bin/win32/libgenieutils.dll lib
+  libwololokingdoms.commands = cmake -B $$PWD/build/libwololokingdoms $$PWD/libwololokingdoms && \
+    make -C $$PWD/build/libwololokingdoms && \
+    cp $$PWD/build/libwololokingdoms/libwololokingdoms.dll lib && \
+    cp $$PWD/build/libwololokingdoms/third_party/genieutils/libgenieutils.dll lib
 } else {
   libwololokingdoms.target = lib/libwololokingdoms.so
-  libwololokingdoms.commands = make -C $$PWD/libwololokingdoms linux && \
-    cp $$PWD/libwololokingdoms/bin/linux/libwololokingdoms.so lib && \
-    cp $$PWD/libwololokingdoms/bin/linux/libgenieutils.so lib
+  libwololokingdoms.commands = cmake -B $$PWD/build/libwololokingdoms $$PWD/libwololokingdoms && \
+    make -C $$PWD/build/libwololokingdoms && \
+    cp $$PWD/build/libwololokingdoms/libwololokingdoms.so lib && \
+    cp $$PWD/build/libwololokingdoms/third_party/genieutils/libgenieutils.so lib
 }
 libwololokingdoms.depends = libwololokingdoms/* \
   libwololokingdoms/fixes/*

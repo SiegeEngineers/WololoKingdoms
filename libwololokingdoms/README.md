@@ -4,15 +4,9 @@ This is the library code for the WololoKingdoms conversion mod. See [WololoKingd
 
 ## Building
 
-The build script is currently only made for linux.
-
-### On Linux
-
-It's based on a Makefile right now but may be moved to CMake.
+You need to have CMake installed to build libwololokingdoms and genieutils. Your package manager likely contains a `cmake` package.
 
 libwololokingdoms requires a C++ compiler that supports C++17 and its `<filesystem>` API.
-
-You need to have CMake installed to build genieutils. Your package manager likely contains a `cmake` package.
 
 First get the dependencies:
 
@@ -21,12 +15,12 @@ git submodule init
 git submodule update
 ```
 
-Then run `make $target_platform`:
+Then do:
 
 ```bash
-make linux
-# or
-make win32
+cd build
+cmake ..
+make
 ```
 
-The Makefile will build libwololokingdoms, and genieutils and its dependencies. It outputs two files into `libwololokingdoms/bin/PLATFORM`: `libwololokingdoms` and `libgenieutils`.
+CMake will build libwololokingdoms, and genieutils and its dependencies. You can find the `libwololokingdoms` dynamic library in `build/` and the genieutils dynamic library in `build/third_party/genieutils`.
