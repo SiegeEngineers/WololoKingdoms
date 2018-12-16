@@ -11,6 +11,8 @@ win32 {
     cp $$PWD/libwololokingdoms/bin/linux/libwololokingdoms.so lib && \
     cp $$PWD/libwololokingdoms/bin/linux/libgenieutils.so lib
 }
+libwololokingdoms.depends = libwololokingdoms/* \
+  libwololokingdoms/fixes/*
 
 QMAKE_EXTRA_TARGETS += libwololokingdoms
 PRE_TARGETDEPS += lib/libwololokingdoms.so
