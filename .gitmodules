@@ -1,6 +1,6 @@
 [submodule "libwololokingdoms/third_party/genieutils"]
 	path = libwololokingdoms/third_party/genieutils
-	url = git@github.com:sandsmark/genieutils
+	url = https://github.com/sandsmark/genieutils
 [submodule "libwololokingdoms/third_party/pcrio"]
 	path = libwololokingdoms/third_party/pcrio
-	url = git@github.com:sandsmark/pcrio
+	url = https://github.com/sandsmark/pcrio
