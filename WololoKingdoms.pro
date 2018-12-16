@@ -1,5 +1,6 @@
 TARGET = WololoKingdoms
 DESTDIR = .
+CONFIG += debug_and_release
 CONFIG -= console
 CONFIG -= app_bundle
 
@@ -68,6 +69,9 @@ LIBS += -L$$DESTDIR
 # Dependency: libwololokingdoms
 # ---------------------------------------------------------
 WK_DEST = libwololokingdoms
+release: CMAKE_BUILD_TYPE = Release
+debug: CMAKE_BUILD_TYPE = Debug
+
 win32 {
   libwololokingdoms.target = $$WK_DEST/libwololokingdoms.dll
   PRE_TARGETDEPS += $$WK_DEST/libwololokingdoms.dll
@@ -77,7 +81,7 @@ win32 {
   PRE_TARGETDEPS += $$WK_DEST/libwololokingdoms.so
   QMAKE_PRE_LINK += $$quote(cp $$WK_DEST/third_party/genieutils/libgenieutils.so $$WK_DEST/libwololokingdoms.so $$DESTDIR);
 }
-libwololokingdoms.commands = cmake -B $$WK_DEST $$PWD/libwololokingdoms && \
+libwololokingdoms.commands = cmake -B $$WK_DEST -DCMAKE_BUILD_TYPE=$$CMAKE_BUILD_TYPE $$PWD/libwololokingdoms && \
   make -C $$WK_DEST
 libwololokingdoms.depends = $$PWD/libwololokingdoms/* \
   $$PWD/libwololokingdoms/fixes/*
