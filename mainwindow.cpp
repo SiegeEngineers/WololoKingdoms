@@ -109,6 +109,10 @@ int MainWindow::initialize() {
     changeLanguage();
     this->setWindowTitle(translation["version"]);
 
+    if(!checkSteamApi()) {
+        updateUI();
+        return -2;
+    }
     steamPath = getSteamPath();
     HDPath = getHDPath(steamPath);
     HDPath.make_preferred();
@@ -120,10 +124,6 @@ int MainWindow::initialize() {
         log("NoSteam. Path: "+steamPath);
         allowRun = false;
         return -1;
-    }
-    if(!checkSteamApi()) {
-        updateUI();
-        return -2;
     }
     setInstallDirectory(getOutPath(HDPath).string());
     this->ui->installDirectory->setText(QString::fromStdString(outPath.string()));

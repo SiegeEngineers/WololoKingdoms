@@ -51,6 +51,9 @@ static fs::path resolveWinePath(std::string winepath) {
   QProcess process;
   process.start("winepath", QStringList() << QString::fromStdString(winepath));
   process.waitForFinished();
+  if (process.exitCode() != 0) {
+    return fs::path();
+  }
   QString result(process.readAllStandardOutput());
   return fs::path(result.trimmed().toStdString());
 }
@@ -65,6 +68,11 @@ static std::string dumpWineRegistry(std::string regkey) {
       << QString::fromStdString(tempFile.string())
       << QString::fromStdString(regkey));
   wine.waitForFinished();
+
+  if (wine.exitCode() != 0) {
+    return std::string();
+  }
+
   std::ifstream stream(tempFile);
   auto result = concat_stream(stream);
   fs::remove(tempFile);
