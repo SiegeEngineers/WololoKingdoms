@@ -14,7 +14,7 @@
 
 namespace fs = std::filesystem;
 
-static fs::path getHomeDir() {
+static fs::path getHomeDirectory() {
   const char *homedir = getenv("HOME");
   if (homedir == NULL) {
     homedir = getpwuid(getuid())->pw_dir;
@@ -24,10 +24,10 @@ static fs::path getHomeDir() {
 }
 
 fs::path getSteamPath() {
-  return getHomeDir()/".steam"/"steam";
+  return getHomeDirectory()/".steam"/"steam";
 }
 
-static std::string iconv_utf16_to_utf8 (std::string input) {
+static std::string iconvUtf16ToUtf8 (std::string input) {
   const char* in_str = input.c_str();
   auto in_size = input.length();
   size_t out_size = in_size * 2;
@@ -55,10 +55,10 @@ static fs::path resolveWinePath(std::string winepath) {
     return fs::path();
   }
   QString result(process.readAllStandardOutput());
-  return fs::path(result.trimmed().toStdString());
+  return fs::canonical(result.trimmed().toStdString());
 }
 
-static std::string dumpWineRegistry(std::string regkey) {
+static std::string dump_wine_registry(std::string regkey) {
   fs::path tempFile("wk_tmp.reg");
 
   QProcess wine;
@@ -76,13 +76,13 @@ static std::string dumpWineRegistry(std::string regkey) {
   std::ifstream stream(tempFile);
   auto result = concat_stream(stream);
   fs::remove(tempFile);
-  return iconv_utf16_to_utf8(result);
+  return iconvUtf16ToUtf8(result);
 }
 
 // On linux, we can still read the Wine registry
 // by first dumping the Age of Empires key to a file
 fs::path getOutPath(fs::path HDPath) {
-  std::stringstream registry (dumpWineRegistry("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\DirectPlay\\Applications\\Age of Empires II - The Conquerors Expansion\\"));
+  std::stringstream registry (dump_wine_registry("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\DirectPlay\\Applications\\Age of Empires II - The Conquerors Expansion\\"));
   std::string winepath;
   std::string prefix = "\"CurrentDirectory\"=";
   std::string line;

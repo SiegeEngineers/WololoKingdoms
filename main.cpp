@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
 #ifndef _WIN32
   // Make sure that Wine exists on Linux
-  int exitcode = system("xwine hostname");
+  int exitcode = system("wine hostname");
   if (exitcode != 0) {
     QMessageBox::warning(&w, "Wine not found", "Wine could not be found. You will have to pick the path to your Age of Empires 2 directory manually.", QMessageBox::Ok);
   }
