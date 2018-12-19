@@ -114,9 +114,9 @@ int MainWindow::initialize() {
         return -2;
     }
     steamPath = getSteamPath();
-    HDPath = getHDPath(steamPath);
-    HDPath.make_preferred();
-    if(HDPath == fs::path()) {
+    hdPath = getHDPath(steamPath);
+    hdPath.make_preferred();
+    if(hdPath == fs::path()) {
         updateUI();
         this->ui->label->setText(translation["noSteamInstallation"]);
         dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
@@ -125,7 +125,7 @@ int MainWindow::initialize() {
         allowRun = false;
         return -1;
     }
-    setInstallDirectory(getOutPath(HDPath).string());
+    setInstallDirectory(getOutPath(hdPath).string());
     this->ui->installDirectory->setText(QString::fromStdString(outPath.string()));
     QObject::connect( this->ui->directoryDialogButton, &QPushButton::clicked, this, [this]() {
         this->ui->installDirectory->setText(QFileDialog::getExistingDirectory(this, "Select Install Directory"));
@@ -226,7 +226,7 @@ void MainWindow::runConverter() {
         this->ui->restrictedCivMods->isChecked(),this->ui->useNoSnow->isChecked(), this->ui->fixFlags->isChecked(),
         this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), installDir, language, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
-        HDPath, outPath, vooblyDir, upDir, dataModList, modName);
+        hdPath, outPath, vooblyDir, upDir, dataModList, modName);
     QThread* thread = new QThread;
     WKQConverter* converter = new WKQConverter(settings);
     converter->moveToThread(thread);
@@ -316,7 +316,7 @@ QString MainWindow::translate(QString line) {
 
 void MainWindow::setInstallDirectory(std::string directory) {
     if(!cfs::exists(directory)) {
-        directory = getOutPath(HDPath).make_preferred().string();
+        directory = getOutPath(hdPath).make_preferred().string();
     }
     outPath = fs::path(directory);
     outPath.make_preferred();
@@ -425,11 +425,11 @@ bool MainWindow::checkSteamApi() {
     }
     if(!SteamApps()) {
         if(!SteamAPI_Init()) {
-            log(("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath).c_str());
+            log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath).c_str());
             this->ui->label->setText(translation["noSteamApi"]);
             dialog = new Dialog(this,translation["noSteamApi"],translation["errorTitle"]);
         } else {
-            log(("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath).c_str());
+            log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath).c_str());
             this->ui->label->setText(translation["noSteam"]);
             dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
         }
@@ -452,7 +452,7 @@ bool MainWindow::checkSteamApi() {
         SteamAPI_Shutdown();
         return true;
     } else {
-        log(("noSteamApi. Path: "+HDPath.string()+" Steam Path: "+steamPath).c_str());
+        log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath).c_str());
         this->ui->label->setText(translation["noFE"]);
         dialog = new Dialog(this,translation["noFE"],translation["errorTitle"]);
         dialog->exec();

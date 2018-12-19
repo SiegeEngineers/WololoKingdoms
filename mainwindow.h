@@ -63,7 +63,7 @@ public:
 private:
 
     std::string steamPath;
-    fs::path HDPath;
+    fs::path hdPath;
     fs::path outPath;
     std::map<int, std::tuple<std::string,std::string, std::string, int, std::string>> dataModList;
     std::string language = "en";

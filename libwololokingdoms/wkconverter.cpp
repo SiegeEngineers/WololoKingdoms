@@ -231,7 +231,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     std::map<int, std::string> langReplacement;
     fs::path keyValuesStringsPath = settings->language == "zht"
       ? resourceDir/"zht"/"key-value-strings-utf8.txt"
-      : settings->HDPath/"resources"/settings->language/"strings"/"key-value"/"key-value-strings-utf8.txt";
+      : settings->hdPath/"resources"/settings->language/"strings"/"key-value"/"key-value-strings-utf8.txt";
     fs::path modLangIni = resourceDir/(settings->language+".ini");
     fs::path langDllFile("language_x1_p1.dll");
     fs::path langDllPath = langDllFile;
@@ -1326,7 +1326,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 			newGraphic.SLP = newSLP;
 			aocDat->Graphics.push_back(newGraphic);
 			aocDat->GraphicPointers.push_back(1);
-            slpFiles[newSLP] = settings->HDPath/"resources"/"_common"/"drs"/"graphics"/"776.slp";
+            slpFiles[newSLP] = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/"776.slp";
 		} else {
 			monkHealingGraphic = 7340; //meso healing graphic
 		}
@@ -1389,8 +1389,8 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
     //Fix the missionary converting frames while we're at it
     aocDat->Graphics[6616].FrameCount = 14;
     //Manual fix for missing portugese flags
-    slpFiles[41178] = settings->HDPath/"resources"/"_common"/"drs"/"graphics"/"4522.slp";
-    slpFiles[41181] = settings->HDPath/"resources"/"_common"/"drs"/"graphics"/"4523.slp";
+    slpFiles[41178] = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/"4522.slp";
+    slpFiles[41181] = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/"4523.slp";
 
 }
 
@@ -1478,11 +1478,11 @@ short WKConverter::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short
     newGraphic.ID = newGraphicID;
     if(newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && newSLP != aocDat->Graphics[compareID].SLP) {
         // This is a graphic where we want a new SLP file (as opposed to one where the a new SLP mayb just be needed for some deltas
-        fs::path src = settings->HDPath/"resources"/"_common"/"drs"/"gamedata_x2"/(std::to_string(newGraphic.SLP)+".slp");
+        fs::path src = settings->hdPath/"resources"/"_common"/"drs"/"gamedata_x2"/(std::to_string(newGraphic.SLP)+".slp");
 		if(cfs::exists(src))
 			slpFiles[newSLP] = src;
 		else {
-            src = settings->HDPath/"resources"/"_common"/"drs"/"graphics"/(std::to_string(newGraphic.SLP)+".slp");
+            src = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/(std::to_string(newGraphic.SLP)+".slp");
 			if(cfs::exists(src))
 				slpFiles[newSLP] = src;
 		}        
@@ -1669,8 +1669,8 @@ void WKConverter::hotkeySetup() {
 
     /*
 	if(!cfs::exists(hkiPath)) { //If player0.hki doesn't exist, look for player1.hki, otherwise use default HD hotkeys
-        if(cfs::exists(settings->HDPath/"Profiles"/"player1.hki"))
-                hkiPath = settings->HDPath/"Profiles"/"player1.hki";
+        if(cfs::exists(settings->hdPath/"Profiles"/"player1.hki"))
+                hkiPath = settings->hdPath/"Profiles"/"player1.hki";
 		else
 				hkiPath = resourceDir / "player1_age2hd.hki";
 	}
@@ -1692,7 +1692,7 @@ void WKConverter::hotkeySetup() {
         if(!identifyHotkeyFile(settings->outPath, maxDstHki, lastDstHki))//In case there are no voobly hotkeys, copy standard aoc hotkeys
             cfs::copy_file(aocHkiPath, settings->outPath/"player1.hki");
     } else {
-        if(!identifyHotkeyFile(settings->HDPath/"Profiles", maxSrcHki, lastSrcHki)) {
+        if(!identifyHotkeyFile(settings->hdPath/"Profiles", maxSrcHki, lastSrcHki)) {
             maxSrcHki = resourceDir / "player1_age2hd.hki";
             lastSrcHki = maxSrcHki;
         }
@@ -1968,14 +1968,14 @@ int WKConverter::run(bool retry)
         //HD Resources
         fs::path historyInputPath = settings->language == "zht"
           ? (resourceDir/"zht"/"history")
-          : (settings->HDPath/"resources"/settings->language/"strings"/"history");
-        fs::path soundsInputPath = settings->HDPath / "resources"/"_common"/"sound";
-        fs::path tauntInputPath = settings->HDPath / "resources"/"en"/"sound"/"taunt";
-        fs::path scenarioSoundsInputPath = settings->HDPath / "resources"/"en"/"sound"/"scenario";
-        fs::path assetsPath = settings->HDPath / "resources"/"_common"/"drs"/"gamedata_x2";
-        fs::path aocAssetsPath = settings->HDPath / "resources"/"_common"/"drs"/"graphics";
-        fs::path aocDatPath = settings->HDPath/"resources"/"_common"/"dat"/"empires2_x1_p1.dat";
-        fs::path hdDatPath = settings->HDPath/"resources"/"_common"/"dat"/"empires2_x2_p1.dat";
+          : (settings->hdPath/"resources"/settings->language/"strings"/"history");
+        fs::path soundsInputPath = settings->hdPath / "resources"/"_common"/"sound";
+        fs::path tauntInputPath = settings->hdPath / "resources"/"en"/"sound"/"taunt";
+        fs::path scenarioSoundsInputPath = settings->hdPath / "resources"/"en"/"sound"/"scenario";
+        fs::path assetsPath = settings->hdPath / "resources"/"_common"/"drs"/"gamedata_x2";
+        fs::path aocAssetsPath = settings->hdPath / "resources"/"_common"/"drs"/"graphics";
+        fs::path aocDatPath = settings->hdPath/"resources"/"_common"/"dat"/"empires2_x1_p1.dat";
+        fs::path hdDatPath = settings->hdPath/"resources"/"_common"/"dat"/"empires2_x2_p1.dat";
 
         installDir  = settings->useExe ? settings->upDir : settings->vooblyDir;
 
@@ -2024,7 +2024,7 @@ int WKConverter::run(bool retry)
             listener->log("\n");
         }      
         listener->log("\nHD Path:");
-        listener->log(settings->HDPath.string() + "\n" + "AoC Path:");
+        listener->log(settings->hdPath.string() + "\n" + "AoC Path:");
         listener->log(installDir.string() + "\n");
 
         listener->log("Patch mode: ");
@@ -2196,7 +2196,7 @@ int WKConverter::run(bool retry)
             if(settings->copyCustomMaps) {
                 listener->log("Copy HD Maps");
                 try {
-                    copyHDMaps(settings->HDPath/"resources"/"_common"/"random-map-scripts", installMapDir);
+                    copyHDMaps(settings->hdPath/"resources"/"_common"/"random-map-scripts", installMapDir);
                 } catch (std::exception const & e) {
                     std::string message = "hdMapError$";
                     message += e.what();
@@ -2676,7 +2676,7 @@ int WKConverter::run(bool retry)
         }
         listener->setInfo("workingDone");
 
-        if (settings->patch < 0 && cfs::equivalent(settings->outPath,settings->HDPath)) {
+        if (settings->patch < 0 && cfs::equivalent(settings->outPath,settings->hdPath)) {
 
             listener->log("Fix Compat Patch");
 			/*

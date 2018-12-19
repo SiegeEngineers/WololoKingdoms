@@ -17,7 +17,7 @@ namespace fs = std::filesystem;
 
 static fs::path extractHDPath(fs::path steamPath) {
 	std::string line;
-   fs::path HDPath;
+   fs::path hdPath;
 	std::ifstream manifest(steamPath/"steamapps"/"appmanifest_221380.acf");
 	while (std::getline(manifest,line)) {
 		u_int i;
@@ -25,19 +25,19 @@ static fs::path extractHDPath(fs::path steamPath) {
 			i = line.find("\"", i+11);
 			int j = line.find("\"", i+1);
 			line = line.substr(i+1,j-i-1);
-			HDPath = steamPath/"steamapps"/"common"/line;
+			hdPath = steamPath/"steamapps"/"common"/line;
 			break;
         }
 	}
     manifest.close();
-	return fs::path(HDPath);
+	return fs::path(hdPath);
 }
 
 fs::path getHDPath(fs::path steamPath) {
-	fs::path HDPath("../");
+	fs::path hdPath("../");
 	std::string line;
 	if(fs::exists(steamPath/"steamapps"/"appmanifest_221380.acf")) {
-		HDPath = extractHDPath(steamPath);
+		hdPath = extractHDPath(steamPath);
 	} else if (fs::exists(steamPath/"steamapps"/"libraryfolders.vdf")) {
 		std::ifstream libraryFolders((steamPath/"steamapps"/"libraryfolders.vdf").c_str());
 		while (std::getline(libraryFolders,line)) {
@@ -48,7 +48,7 @@ fs::path getHDPath(fs::path steamPath) {
 				line = line.substr(i+1,j-i-1);
 				steamPath = line;
 				if(fs::exists(steamPath/"steamapps"/"appmanifest_221380.acf")) {
-					HDPath = extractHDPath(steamPath);
+					hdPath = extractHDPath(steamPath);
 					break;
 				}
 			}
@@ -56,16 +56,16 @@ fs::path getHDPath(fs::path steamPath) {
         libraryFolders.close();
 	}
 
-	if(!fs::exists(HDPath/"Launcher.exe")) {
+	if(!fs::exists(hdPath/"Launcher.exe")) {
 		if(fs::exists("../../Launcher.exe")) {
-			HDPath = fs::path("../../");
+			hdPath = fs::path("../../");
         } else if (fs::exists(steamPath/"steamapps"/"common"/"Age2HD")) {
-            HDPath = fs::path(steamPath/"steamapps"/"common"/"Age2HD");
+            hdPath = fs::path(steamPath/"steamapps"/"common"/"Age2HD");
         } else { //Error Case
-            HDPath = fs::path();
+            hdPath = fs::path();
 		}
 	}
-	return HDPath;
+	return hdPath;
 }
 
 #ifdef _WIN32
@@ -86,7 +86,7 @@ fs::path getSteamPath() {
 	return steamPath;
 }
 
-fs::path getOutPath(fs::path HDPath) {
+fs::path getOutPath(fs::path hdPath) {
 
 	TCHAR temp[300];
 	unsigned long size = sizeof(temp);
@@ -105,8 +105,8 @@ fs::path getOutPath(fs::path HDPath) {
         outPathString += "\\";
     fs::path outPath(outPathString);
     if(!fs::exists(outPath/"age2_x1")) {
-		if(fs::exists(HDPath/"age2_x1")) {
-			outPath = HDPath;
+		if(fs::exists(hdPath/"age2_x1")) {
+			outPath = hdPath;
 		} else {
 			outPath = fs::path();
 		}
