@@ -416,12 +416,10 @@ bool MainWindow::checkSteamApi() {
         SteamAPI_Init();
     }
     int tries = 0;
-    while(!SteamApps()) {
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+    while(!SteamApps() && tries < 40) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         SteamAPI_Init();
         tries++;
-        if(tries>4)
-            break;
     }
     if(!SteamApps()) {
         if(!SteamAPI_Init()) {

@@ -128,7 +128,7 @@ private:
     fs::path upDir;
     fs::path installDir;
     std::string baseModName = "WololoKingdoms";
-    fs::path resourceDir = fs::path("resources");
+    fs::path resourceDir = "resources";
 
     enum TerrainType {
         None,
