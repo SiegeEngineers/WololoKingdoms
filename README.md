@@ -22,15 +22,24 @@ In multiplayer, there will be three different Data Mods available, WololoKingdom
 It's heavily recommended to get all 3 DLCs though to be able to join all games.
 
 ## How to use (with Voobly)
-[Download the latest release](https://github.com/Jineapple/AoE2CommunityGitHub/releases), extract the Zip, make sure Steam is running and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
+[Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract the Zip, make sure Steam is running and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
 You can then use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms". Make sure to select Userpatch 1.5 as the patch. You can then launch as normal).  
 
 ## How to use (without Voobly)
-[Download the latest release](https://github.com/Jineapple/AoE2CommunityGitHub/releases), extract it, make sure Steam is running and launch as usual.
+[Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch as usual.
 Select the "Create an offline installation" checkbox and let the program run.
 You can launch the game using the "WK.exe" in the "age2_x1/" folder.
 Rarely there can be issues with creating the language_x1_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
 If this error happens every time, your original language file may be corrupt.
+
+## How to use (on Linux)
+You can install Age of Empires 2 HD on Linux by enabling Steam Play for unsupported games. Open Steam, and in the top left menu select Steam » Settings » Steam Play. There is a checkbox under "Advanced" to enable Steam Play for all titles. Restart Steam and install AoE2:HD.
+You must also install AoC in Wine first.
+[Download the latest WololoKingdoms release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch `WololoKingdoms.sh`. It will attempt to find your Wine-based AoC installation.
+
+> Linux is not a primary supported platform for WololoKingdoms. The latest releases may not always work.
+
+> The Linux version of WololoKingdoms is currently not being tested with Voobly. If you're lucky it _may_ work.
 
 ## Options
 
