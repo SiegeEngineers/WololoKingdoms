@@ -69,8 +69,8 @@ LIBS += -L$$DESTDIR
 # Dependency: libwololokingdoms
 # ---------------------------------------------------------
 WK_DEST = libwololokingdoms
-release: CMAKE_BUILD_TYPE = Release
-debug: CMAKE_BUILD_TYPE = Debug
+Release: CMAKE_BUILD_TYPE = Release
+Debug: CMAKE_BUILD_TYPE = Debug
 
 win32 {
   libwololokingdoms.target = $$WK_DEST/libwololokingdoms.dll
