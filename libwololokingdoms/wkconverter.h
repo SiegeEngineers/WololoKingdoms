@@ -154,7 +154,7 @@ private:
     void loadModdedStrings(fs::path moddedStringsFile, std::map<int, std::string>& langReplacement);
     bool openLanguageDll(genie::LangFile *langDll, fs::path langDllPath, fs::path langDllFile);
     bool saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile);
-	void makeDrs(std::ofstream *out);
+	void makeDrs(std::ofstream& out);
     void editDrs(std::ifstream *in, std::ofstream *out);
     void uglyHudHack(fs::path);
     void copyCivIntroSounds(fs::path inputDir, fs::path outputDir);

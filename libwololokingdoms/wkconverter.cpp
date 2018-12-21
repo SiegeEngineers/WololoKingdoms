@@ -489,7 +489,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
     iniOut->close();
 }
 
-void WKConverter::makeDrs(std::ofstream *out) {
+void WKConverter::makeDrs(std::ofstream& out) {
 
     listener->setInfo("working$\n$workingDrs");
 
@@ -590,36 +590,36 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	// now write the actual drs file
 
 	// header
-	out->write(header.copyright, sizeof (DrsHeader::copyright));
-	out->write(header.version, sizeof (DrsHeader::version));
-	out->write(header.ftype, sizeof (DrsHeader::ftype));
-	out->write(reinterpret_cast<const char *>(&header.table_count), sizeof (DrsHeader::table_count));
-	out->write(reinterpret_cast<const char *>(&header.file_offset), sizeof (DrsHeader::file_offset));
+	out.write(header.copyright, sizeof (DrsHeader::copyright));
+	out.write(header.version, sizeof (DrsHeader::version));
+	out.write(header.ftype, sizeof (DrsHeader::ftype));
+	out.write(reinterpret_cast<const char *>(&header.table_count), sizeof (DrsHeader::table_count));
+	out.write(reinterpret_cast<const char *>(&header.file_offset), sizeof (DrsHeader::file_offset));
 
 
 	// table infos
-	out->write(slpTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
-	out->write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
-	out->write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (DrsTableInfo::num_files));
+	out.write(slpTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
+	out.write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
+	out.write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (DrsTableInfo::num_files));
 
 
-	out->write(wavTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
-	out->write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
-	out->write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (DrsTableInfo::num_files));
+	out.write(wavTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
+	out.write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
+	out.write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (DrsTableInfo::num_files));
 
     listener->increaseProgress(1); //70
 	// file infos
 	for (auto& it : slpFileInfos) {
-		out->write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
-		out->write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
-		out->write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
+		out.write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
+		out.write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+		out.write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
 
 	}
     listener->increaseProgress(1); //71
 	for (auto& it : wavFileInfos) {
-		out->write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
-		out->write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
-		out->write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
+		out.write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
+		out.write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
+		out.write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
 
 	}
     listener->increaseProgress(1); //72
@@ -629,7 +629,7 @@ void WKConverter::makeDrs(std::ofstream *out) {
 	// now write the actual files
 	for (auto& it : slpFiles) {
 			std::ifstream srcStream (it.second, std::ios::binary);
-			*out << srcStream.rdbuf();
+			out << srcStream.rdbuf();
             srcStream.close();
 
 	}
@@ -637,12 +637,12 @@ void WKConverter::makeDrs(std::ofstream *out) {
 
 	for (auto& it : wavFiles) {
 		std::ifstream srcStream (it.second, std::ios::binary);
-		*out << srcStream.rdbuf();
+		out << srcStream.rdbuf();
         srcStream.close();
 
 	}
     listener->increaseProgress(1); //74
-    out->close();
+    out.close();
 }
 
 /** A method to add extra (slp) files to an already existing drs file.
@@ -2350,8 +2350,8 @@ int WKConverter::run(bool retry)
                 listener->increaseProgress(1); //66
                 listener->log("Opening DRS");
                 std::ofstream drsOut(drsOutPath, std::ios::binary);
-                listener->log("Make DRS");
-                makeDrs(&drsOut);
+                listener->log("Make DRS " + drsOutPath.string());
+                makeDrs(drsOut);
                 listener->increaseProgress(1); //75
 
 
