@@ -380,7 +380,7 @@ void MainWindow::readDataModList() {
     std::string line;
     while(std::getline(dataModFile, line)) {
         std::tuple<std::string,std::string,std::string,int,std::string> info;
-        unsigned int index = line.find(',');
+        size_t index = line.find(',');
         std::get<0>(info) = line.substr(0,index);
         line = line.substr(index+1, std::string::npos);
         index = line.find(',');

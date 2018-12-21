@@ -35,7 +35,7 @@ void khmerPatch(genie::DatFile *aocDat) {
     //We create a seperate Castle Age Ballista Elephant that can't cut trees, for use in CtR maps
     aocDat->UnitHeaders[newElephantId] = aocDat->UnitHeaders[ballistaElephantId];
     aocDat->UnitHeaders[newElephantId].TaskList.pop_back();
-    for(int i = 0; i<aocDat->Civs.size(); i++) {
+    for(size_t i = 0; i<aocDat->Civs.size(); i++) {
         aocDat->Civs[i].Units[newElephantId] = aocDat->Civs[i].Units[ballistaElephantId];
         aocDat->Civs[i].Units[newElephantId].Combat.Attacks.erase(aocDat->Civs[i].Units[newElephantId].Combat.Attacks.begin()+4);
         aocDat->Civs[i].Units[newElephantId].Combat.BlastAttackLevel = 2;
@@ -51,7 +51,7 @@ void khmerPatch(genie::DatFile *aocDat) {
     aocDat->Effects[eliteBallistaTechId].EffectCommands.push_back(aocDat->Effects[eliteBallistaTechId].EffectCommands[0]);
     aocDat->Effects[eliteBallistaTechId].EffectCommands[1].TargetUnit = newElephantId;
 
-    for(int i = 24; i < 28; i++) {
+    for(size_t i = 24; i < 28; i++) {
         aocDat->Effects[siegeEngineersId].EffectCommands.push_back(aocDat->Effects[siegeEngineersId].EffectCommands[i]);
         aocDat->Effects[siegeEngineersId].EffectCommands[i+4].TargetUnit = newElephantId;
     }
@@ -62,7 +62,7 @@ void khmerPatch(genie::DatFile *aocDat) {
     aocDat->Techs[khmerBuildingResearchId].RequiredTechs[0] = -1;
     aocDat->Techs[khmerBuildingResearchId].RequiredTechs[1] = -1;
 
-    for(int i = 0; i < sizeof(buildingResearchs)/sizeof(buildingResearchs[0]); i++) {
+    for(size_t i = 0; i < sizeof(buildingResearchs)/sizeof(buildingResearchs[0]); i++) {
         aocDat->Techs[buildingResearchs[i]].RequiredTechs[1] = khmerBuildingResearchId;
     }
 

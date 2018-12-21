@@ -36,7 +36,7 @@ void cuttingPatch(genie::DatFile *aocDat) {
     //aocDat->UnitHeaders[newMangonelID] = aocDat->UnitHeaders[mangonelID];
     //aocDat->UnitHeaders[newMangonelID].TaskList.push_back(aocDat->UnitHeaders[onagerID].TaskList[4]);
     aocDat->UnitHeaders[onagerID].TaskList.erase(aocDat->UnitHeaders[onagerID].TaskList.begin()+4);
-    for(int i = 0; i< (int) aocDat->Civs.size(); i++) {
+    for(size_t i = 0; i< aocDat->Civs.size(); i++) {
         aocDat->Civs[i].Units[newOnagerID] = aocDat->Civs[i].Units[onagerID];
         //aocDat->Civs[i].Units[newMangonelID] = aocDat->Civs[i].Units[mangonelID];
         aocDat->Civs[i].Units[onagerID].Combat.BlastAttackLevel = 2;

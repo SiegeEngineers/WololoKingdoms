@@ -154,7 +154,7 @@ void smallPatches(genie::DatFile *aocDat) {
     // Have an x-patch upgrade to trade carts that's disabled by default
 
     aocDat->UnitHeaders[xtradeCartId] = aocDat->UnitHeaders[tradeCartId];
-    for(int i = 0; i< (int) aocDat->Civs.size(); i++) {
+    for(size_t i = 0; i< aocDat->Civs.size(); i++) {
         aocDat->Civs[i].Units[xtradeCartId] = aocDat->Civs[i].Units[tradeCartId];
         aocDat->Civs[i].Units[xtradeCartId].HitPoints = 115;
         aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[0].Amount *= 2;

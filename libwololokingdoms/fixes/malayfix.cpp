@@ -13,7 +13,7 @@ void malayPatch(genie::DatFile *aocDat) {
     size_t const malayEffectTechId = 674;
     size_t const fishtrapTechId = 677;
 
-    for(int i = 0; i < aocDat->Effects[malayEffectTechId].EffectCommands.size() ; i++) {
+    for(size_t i = 0; i < aocDat->Effects[malayEffectTechId].EffectCommands.size() ; i++) {
         aocDat->Effects[malayTechTreeId].EffectCommands.push_back(aocDat->Effects[malayEffectTechId].EffectCommands[i]);
     }
     if(aocDat->Effects[fishtrapTechId].EffectCommands.size() == 0 || aocDat->Effects[fishtrapTechId].EffectCommands[0].TargetUnit != 88) {

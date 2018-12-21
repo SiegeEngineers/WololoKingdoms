@@ -11,7 +11,7 @@ void trickleBuildingPatch(genie::DatFile *aocDat) {
     size_t const newStringStartID = 5045;
 
     aocDat->UnitHeaders[newUnitsStartID+8].TaskList.push_back(aocDat->UnitHeaders[sheepID].TaskList[0]);
-    for(int i = 0; i < 4; i++) {
+    for(size_t i = 0; i < 4; i++) {
         aocDat->UnitHeaders[newUnitsStartID+i].TaskList.push_back(aocDat->UnitHeaders[sheepID].TaskList[0]);
         aocDat->UnitHeaders[newUnitsStartID+i].TaskList.push_back(aocDat->UnitHeaders[feitoriaID].TaskList[i]);
         aocDat->UnitHeaders[newUnitsStartID+i].TaskList[1].WorkValue1 = 1;
@@ -23,7 +23,7 @@ void trickleBuildingPatch(genie::DatFile *aocDat) {
         aocDat->UnitHeaders[newUnitsStartID+9].TaskList[0+i].WorkValue1 = 1;
         int graphic1 = getNewGraphicId(aocDat, i);
         int graphic2 = getNewGraphicId(aocDat, 4+i);
-        for(int j = 0; j < aocDat->Civs.size(); j++) {
+        for(size_t j = 0; j < aocDat->Civs.size(); j++) {
             aocDat->Civs[j].Units[newUnitsStartID+i] = aocDat->Civs[j].Units[tradeWorkshopID];
             aocDat->Civs[j].Units[newUnitsStartID+i].StandingGraphic.first = graphic1;
             aocDat->Civs[j].Units[newUnitsStartID+i].Action.DefaultTaskID = 0;
@@ -44,7 +44,7 @@ void trickleBuildingPatch(genie::DatFile *aocDat) {
 
     int graphic1 = getNewGraphicId(aocDat, 8);
     int graphic2 = getNewGraphicId(aocDat, 9);
-    for(int j = 0; j < aocDat->Civs.size(); j++) {
+    for(size_t j = 0; j < aocDat->Civs.size(); j++) {
         aocDat->Civs[j].Units[newUnitsStartID+8] = aocDat->Civs[j].Units[tradeWorkshopID];
         aocDat->Civs[j].Units[newUnitsStartID+8].StandingGraphic.first = graphic1;
         aocDat->Civs[j].Units[newUnitsStartID+8].Action.DefaultTaskID = 0;
