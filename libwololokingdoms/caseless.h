@@ -19,7 +19,7 @@ static std::map<fs::path, fs::path> caseless_cache = {};
 /**
  * Case-insensitively find a file path.
  */
-static fs::path caseless(fs::path const& input) {
+static const fs::path& caseless(fs::path const& input) {
   std::string inputs = input.string();
   fs::path linput = tolower(inputs);
   if (caseless_cache.find(linput) != caseless_cache.end()) {
@@ -27,12 +27,15 @@ static fs::path caseless(fs::path const& input) {
   }
 
   auto parent_path = linput.parent_path();
+  // If the parent is the same as the current path
+  // we can't go up more levels; just return and hope
+  // for the best
   if (parent_path == linput) {
     return input;
   }
 
   auto parent = caseless(parent_path);
-  // Failed already!
+  // Invalid path, trying to use a nonexistent directory
   if (!fs::is_directory(parent)) {
     return input;
   }
@@ -43,16 +46,22 @@ static fs::path caseless(fs::path const& input) {
     if (tolower(str) == filename) {
       filename = str;
       caseless_cache[linput] = parent/filename;
-      return parent/filename;
+      return caseless_cache[linput];
     }
   }
-  return input;
+
+  // Creates a new file, use the casing used in the fs call
+  caseless_cache[linput] = parent/input.filename();
+  return caseless_cache[linput];
 }
 
 /**
  * Case-insensitive wrappers around fs methods, for use on case sensitive file systems.
  */
 namespace cfs {
+  fs::path resolve(fs::path p) {
+    return caseless(p);
+  }
   bool exists(fs::path p) {
     return fs::exists(caseless(p));
   }
