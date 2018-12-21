@@ -118,7 +118,7 @@ void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
         langIn.seekg(0, std::ios::beg);
         langIn.read(&contents[0], contents.size());
         langIn.close();
-        std::string outputContent = ConvertUnicode2CP(contents);
+        std::string outputContent = iconvert(contents, "UTF8", "WINDOWS-1252");
         langOut << outputContent;
         langOut.close();
     }
@@ -338,7 +338,7 @@ void WKConverter::loadModdedStrings(fs::path moddedStringsFile, std::map<int, st
         }
         line = line.substr(spaceIdx + 1, std::string::npos);
 
-        line = ConvertCP2Unicode(line);
+        line = iconvert(line, "WINDOWS-1252", "UTF8");
         langReplacement[nb] = line;
     }
     modLang.close();
@@ -414,7 +414,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
         }
 
 		//convert UTF-8 into ANSI
-		std::string outputLine = ConvertUnicode2CP(line);
+		std::string outputLine = iconvert(line, "UTF8", "WINDOWS-1252");
 
         *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
 
@@ -457,7 +457,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
    for (auto& it : *langReplacement) {
 		//convert UTF-8 into ANSI
 
-		std::string outputLine = ConvertUnicode2CP(it.second);
+		std::string outputLine = iconvert(it.second, "UTF8", "WINDOWS-1252");
 
 		*iniOut << std::to_string(it.first) << '=' << outputLine <<  std::endl;
 

@@ -1,7 +1,5 @@
 #pragma once
 #include <string>
-#include <cstring>
-#include <iconv.h>
 
 /**
  * This contains platform specific functions; things that are different between Linux and Windows
@@ -11,42 +9,6 @@
 #define MKLINK_SOFT 's'
 #define MKLINK_DIR 'd'
 #define MKLINK_JUNCTION 'J'
-
-#ifdef __GNUC__
-#define ALLOW_UNUSED __attribute__ ((unused))
-#else
-#define ALLOW_UNUSED
-#endif
-
-static std::string iconvert (const std::string& input, const std::string& from, const std::string& to) {
-  char* in_str = const_cast<char*>(input.c_str());
-  auto in_size = input.length();
-  size_t out_size = in_size * 2;
-  char* result = new char[out_size];
-  char* out = result; // separate value because iconv advances the pointer
-
-  iconv_t convert = iconv_open(to.c_str(), from.c_str());
-  if (convert == (iconv_t) -1) {
-    return "";
-  }
-  if (iconv(convert, &in_str, &in_size, &out, &out_size) == (size_t) -1) {
-    return "";
-  }
-
-  iconv_close(convert);
-
-  return result;
-}
-
-static std::string ALLOW_UNUSED ConvertUnicode2CP(const std::string& source)
-{
-  return iconvert(source, "UTF8", "WINDOWS-1252");
-}
-
-static std::string ALLOW_UNUSED ConvertCP2Unicode(const std::string& source)
-{
-  return iconvert(source, "WINDOWS-1252", "UTF8");
-}
 
 #ifdef _WIN32
 /**
@@ -109,6 +71,12 @@ static void mklink(char type, std::string link, std::string dest) {
  */
 
 #include <unistd.h>
+
+#ifdef __GNUC__
+#define ALLOW_UNUSED __attribute__ ((unused))
+#else
+#define ALLOW_UNUSED
+#endif
 
 static void ALLOW_UNUSED mklink(ALLOW_UNUSED char type, std::string link, std::string dest)
 {

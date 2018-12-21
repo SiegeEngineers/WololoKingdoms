@@ -1,6 +1,7 @@
 #include <string>
 #include <istream>
 #include <algorithm>
+#include <iconv.h>
 #include "string_helpers.h"
 
 void replace_all(std::string& str, const std::string& from, const std::string& to) {
@@ -38,4 +39,24 @@ std::string concat_stream(std::istream& stream) {
     std::stringstream strstr;
     strstr << stream.rdbuf();
     return strstr.str();
+}
+
+std::string iconvert (const std::string& input, const std::string& from, const std::string& to) {
+  char* in_str = const_cast<char*>(input.c_str());
+  auto in_size = input.length();
+  size_t out_size = in_size * 2;
+  char* result = new char[out_size];
+  char* out = result; // separate value because iconv advances the pointer
+
+  iconv_t convert = iconv_open(to.c_str(), from.c_str());
+  if (convert == (iconv_t) -1) {
+    return "";
+  }
+  if (iconv(convert, &in_str, &in_size, &out, &out_size) == (size_t) -1) {
+    return "";
+  }
+
+  iconv_close(convert);
+
+  return result;
 }
