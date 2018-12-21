@@ -2345,7 +2345,7 @@ int WKConverter::run(bool retry)
 
                 indexDrsFiles(architectureFixDir);
                 listener->log("Mod Override Dir");
-                if(!cfs::is_empty(modOverrideDir))
+                if(cfs::exists(modOverrideDir) && !cfs::is_empty(modOverrideDir))
                     indexDrsFiles(modOverrideDir);
                 listener->increaseProgress(1); //66
                 listener->log("Opening DRS");
