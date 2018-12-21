@@ -27,26 +27,6 @@ fs::path getSteamPath() {
   return getHomeDirectory()/".steam"/"steam";
 }
 
-static std::string iconvUtf16ToUtf8 (std::string input) {
-  const char* in_str = input.c_str();
-  auto in_size = input.length();
-  size_t out_size = in_size * 2;
-  char* result = new char[out_size];
-  char* out = result; // separate value because iconv advances the pointer
-
-  iconv_t convert = iconv_open("UTF8", "UTF16//IGNORE");
-  if (convert == (iconv_t) -1) {
-    return "";
-  }
-  if (iconv(convert, &in_str, &in_size, &out, &out_size) == (size_t) -1) {
-    return "";
-  }
-
-  iconv_close(convert);
-
-  return result;
-}
-
 static fs::path resolveWinePath(std::string winepath) {
   QProcess process;
   process.start("winepath", QStringList() << QString::fromStdString(winepath));
@@ -76,7 +56,7 @@ static std::string dump_wine_registry(std::string regkey) {
   std::ifstream stream(tempFile);
   auto result = concat_stream(stream);
   fs::remove(tempFile);
-  return iconvUtf16ToUtf8(result);
+  return iconvert(result, "UTF16//IGNORE", "UTF8");
 }
 
 // On linux, we can still read the Wine registry

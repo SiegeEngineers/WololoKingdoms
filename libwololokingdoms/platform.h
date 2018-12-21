@@ -1,8 +1,7 @@
-#ifndef _WK_PLATFORM_H
-#define _WK_PLATFORM_H
-
+#pragma once
 #include <string>
 #include <cstring>
+#include <iconv.h>
 
 /**
  * This contains platform specific functions; things that are different between Linux and Windows
@@ -12,6 +11,42 @@
 #define MKLINK_SOFT 's'
 #define MKLINK_DIR 'd'
 #define MKLINK_JUNCTION 'J'
+
+#ifdef __GNUC__
+#define ALLOW_UNUSED __attribute__ ((unused))
+#else
+#define ALLOW_UNUSED
+#endif
+
+static std::string iconvert (const std::string& input, const std::string& from, const std::string& to) {
+  char* in_str = const_cast<char*>(input.c_str());
+  auto in_size = input.length();
+  size_t out_size = in_size * 2;
+  char* result = new char[out_size];
+  char* out = result; // separate value because iconv advances the pointer
+
+  iconv_t convert = iconv_open(to.c_str(), from.c_str());
+  if (convert == (iconv_t) -1) {
+    return "";
+  }
+  if (iconv(convert, &in_str, &in_size, &out, &out_size) == (size_t) -1) {
+    return "";
+  }
+
+  iconv_close(convert);
+
+  return result;
+}
+
+static std::string ALLOW_UNUSED ConvertUnicode2CP(const std::string& source)
+{
+  return iconvert(source, "UTF8", "WINDOWS-1252");
+}
+
+static std::string ALLOW_UNUSED ConvertCP2Unicode(const std::string& source)
+{
+  return iconvert(source, "WINDOWS-1252", "UTF8");
+}
 
 #ifdef _WIN32
 /**
@@ -68,86 +103,16 @@ static void mklink(char type, std::string link, std::string dest) {
   }
 }
 
-static int ConvertUnicode2CP(const wchar_t *source, std::string &resultString)
-{
-  resultString.clear();
-  if (wcslen(source) <= 0)
-	return ERROR_SUCCESS;
-  int iRes = WideCharToMultiByte(CP_ACP, 0, source, -1, NULL, 0, NULL, NULL);
-  if (iRes <= 0)
-	return GetLastError();
-  char *szTemp = new char[iRes];
-
-  iRes = WideCharToMultiByte(CP_ACP, 0, source, -1, szTemp, iRes, NULL, NULL);
-  if (iRes <= 0)
-  {
-	delete [] szTemp;
-	return GetLastError();
-  }
-
-  resultString = szTemp;
-  delete [] szTemp;
-  return ERROR_SUCCESS;
-}
-
-static int ConvertCP2Unicode(const char *source, std::wstring &resultString)
-{
-  resultString.clear();
-  if (strlen(source) <= 0)
-	return ERROR_SUCCESS;
-  int iRes = MultiByteToWideChar(CP_ACP, 0, source, -1, NULL, 0);
-  if (iRes <= 0)
-	return GetLastError();
-  wchar_t *szTemp = new wchar_t[iRes];
-
-  iRes = MultiByteToWideChar(CP_ACP, 0, source, -1, szTemp, iRes);
-  if (iRes <= 0)
-  {
-	delete [] szTemp;
-	return GetLastError();
-  }
-
-  resultString = szTemp;
-  delete [] szTemp;
-  return ERROR_SUCCESS;
-}
-
 #else
 /**
  * Linux
  */
 
 #include <unistd.h>
-#define ERROR_SUCCESS 0
-
-#ifdef __GNUC__
-#define ALLOW_UNUSED __attribute__ ((unused))
-#else
-#define ALLOW_UNUSED
-#endif
-
-
-static int ALLOW_UNUSED ConvertUnicode2CP(const wchar_t *source, std::string &resultString)
-{
-  resultString.clear();
-  if (wcslen(source) <= 0)
-	return ERROR_SUCCESS;
-  return ERROR_SUCCESS;
-}
-
-static int ALLOW_UNUSED ConvertCP2Unicode(const char *source, std::wstring &resultString)
-{
-  resultString.clear();
-  if (strlen(source) <= 0)
-	return ERROR_SUCCESS;
-  return ERROR_SUCCESS;
-}
 
 static void ALLOW_UNUSED mklink(ALLOW_UNUSED char type, std::string link, std::string dest)
 {
   symlink(dest.c_str(), link.c_str());
 }
-
-#endif
 
 #endif

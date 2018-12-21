@@ -118,9 +118,7 @@ void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
         langIn.seekg(0, std::ios::beg);
         langIn.read(&contents[0], contents.size());
         langIn.close();
-        std::wstring wideContent = strtowstr(contents);
-        std::string outputContent;
-        ConvertUnicode2CP(wideContent.c_str(), outputContent);
+        std::string outputContent = ConvertUnicode2CP(contents);
         langOut << outputContent;
         langOut.close();
     }
@@ -340,9 +338,7 @@ void WKConverter::loadModdedStrings(fs::path moddedStringsFile, std::map<int, st
         }
         line = line.substr(spaceIdx + 1, std::string::npos);
 
-        std::wstring outputLine;
-        ConvertCP2Unicode(line.c_str(), outputLine);
-        line = wstrtostr(outputLine);
+        line = ConvertCP2Unicode(line);
         langReplacement[nb] = line;
     }
     modLang.close();
@@ -418,9 +414,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
         }
 
 		//convert UTF-8 into ANSI
-		std::wstring wideLine = strtowstr(line);
-		std::string outputLine;
-        ConvertUnicode2CP(wideLine.c_str(), outputLine);
+		std::string outputLine = ConvertUnicode2CP(line);
 
         *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
 
@@ -463,10 +457,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
    for (auto& it : *langReplacement) {
 		//convert UTF-8 into ANSI
 
-		std::wstring wideLine = strtowstr(it.second);
-		std::string outputLine;
-
-        ConvertUnicode2CP(wideLine.c_str(), outputLine);
+		std::string outputLine = ConvertUnicode2CP(it.second);
 
 		*iniOut << std::to_string(it.first) << '=' << outputLine <<  std::endl;
 
@@ -1780,35 +1771,34 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         fs::path currentPath = current->path();
         std::string extension = currentPath.extension().string();
         if (extension == ".hki") {
-          mklink(MKLINK_SOFT, newDir/currentPath.filename(), currentPath);
+          mklink(MKLINK_SOFT, cfs::resolve(newDir/currentPath.filename()), cfs::resolve(currentPath));
         }
     }
     if (datalink) {
-      mklink(MKLINK_DIR, newDir/"Data", oldDir/"Data");
+      mklink(MKLINK_DIR, cfs::resolve(newDir/"Data"), cfs::resolve(oldDir/"Data"));
     } else {
-      mklink(MKLINK_DIR, newDir/"Data"/"gamedata_x1_p1.drs", oldDir/"Data"/"gamedata_x1_p1.drs");
-      mklink(MKLINK_DIR, newDir/"Data"/"gamedata_x1.drs", oldDir/"Data"/"gamedata_x1.drs");
+      mklink(MKLINK_DIR, cfs::resolve(newDir/"Data"/"gamedata_x1_p1.drs"), cfs::resolve(oldDir/"Data"/"gamedata_x1_p1.drs"));
+      mklink(MKLINK_DIR, cfs::resolve(newDir/"Data"/"gamedata_x1.drs"), cfs::resolve(oldDir/"Data"/"gamedata_x1.drs"));
     }
     std::string languageString = "";
 
     if(!dataMod) {
         if(vooblyDst) {
             cfs::remove(newDir/"language.ini");
-            mklink(MKLINK_SOFT, newDir/"language.ini", oldDir/"language.ini");
+            mklink(MKLINK_SOFT, cfs::resolve(newDir/"language.ini"), cfs::resolve(oldDir/"language.ini"));
         } else if (!vooblySrc) {
             cfs::remove(newDir/"Data"/"language_x1_p1.dll");
-            mklink(MKLINK_SOFT, newDir/"Data"/"language_x1_p1.dll", oldDir/"Data"/"language_x1_p1.dll");
+            mklink(MKLINK_SOFT, cfs::resolve(newDir/"Data"/"language_x1_p1.dll"), cfs::resolve(oldDir/"Data"/"language_x1_p1.dll"));
         }
     }
 
-    mklink(MKLINK_DIR, newDir/"Taunt", oldDir/"Taunt");
-    mklink(MKLINK_DIR, newDir/"Script.Rm", oldDir/"Script.Rm");
-    mklink(MKLINK_DIR, newDir/"Script.Ai", oldDir/"Script.Ai");
-    mklink(MKLINK_DIR, newDir/"Sound", oldDir/"Sound");
-    mklink(MKLINK_DIR, newDir/"History", oldDir/"History");
-    mklink(MKLINK_DIR, newDir/"Screenshots", oldDir/"Screenshots");
-    mklink(MKLINK_DIR, newDir/"Scenario", oldDir/"Scenario");
-    mklink(MKLINK_SOFT, newDir/"player.nfz", oldDir/"player.nfz");
+    mklink(MKLINK_DIR, cfs::resolve(newDir/"Taunt"), cfs::resolve(oldDir/"Taunt"));
+    mklink(MKLINK_DIR, cfs::resolve(newDir/"Script.Rm"), cfs::resolve(oldDir/"Script.Rm"));
+    mklink(MKLINK_DIR, cfs::resolve(newDir/"Sound"), cfs::resolve(oldDir/"Sound"));
+    mklink(MKLINK_DIR, cfs::resolve(newDir/"History"), cfs::resolve(oldDir/"History"));
+    mklink(MKLINK_DIR, cfs::resolve(newDir/"Screenshots"), cfs::resolve(oldDir/"Screenshots"));
+    mklink(MKLINK_DIR, cfs::resolve(newDir/"Scenario"), cfs::resolve(oldDir/"Scenario"));
+    mklink(MKLINK_SOFT, cfs::resolve(newDir/"player.nfz"), cfs::resolve(oldDir/"player.nfz"));
     if(!cfs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
         for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
             fs::path currentPath(current->path());

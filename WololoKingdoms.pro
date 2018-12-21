@@ -93,7 +93,7 @@ LIBS += -lwololokingdoms
 
 INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/include
 INCLUDEPATH += $$PWD/libwololokingdoms/third_party/pcrio/include
-INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv
+win32: INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv
 
 # ---------------------------------------------------------
 # Dependency: Steamworks SDK
