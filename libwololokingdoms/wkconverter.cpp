@@ -889,6 +889,7 @@ void WKConverter::createMusicPlaylist(fs::path inputDir, fs::path const outputDi
 
 void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace) {
 
+    inputDir = cfs::resolve(inputDir);
 	std::vector<fs::path> mapNames;
 	for (fs::directory_iterator end, it(inputDir); it != end; it++) {
 		std::string extension = it->path().extension().string();
