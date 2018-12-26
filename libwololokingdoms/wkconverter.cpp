@@ -241,7 +241,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
 
     listener->log("Open Missing strings");
     std::string line;
-    std::ifstream missingStrings(resourceDir/"missing_strings.txt");
+    std::ifstream missingStrings(cfs::resolve(resourceDir/"missing_strings.txt"));
     while (std::getline(missingStrings, line)) {
         int spaceIdx = line.find('=');
         std::string number = line.substr(0, spaceIdx);
