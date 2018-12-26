@@ -66,7 +66,7 @@ void WKQConverter::installUserPatch(fs::path exePath, std::vector<std::string> c
   }
 
   process.start(name, args);
-  process.waitForStarted();
+  process.waitForFinished();
 }
 
 #ifdef _WIN32
