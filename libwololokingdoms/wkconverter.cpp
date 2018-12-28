@@ -1,14 +1,9 @@
-#include <iostream>
-#include <set>
 #include <map>
-#include <algorithm>
 #include <cctype>
 #include <string>
 #include <fstream>
 #include <filesystem>
 
-#include <chrono>
-#include <thread>
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 #include "md5.h"
