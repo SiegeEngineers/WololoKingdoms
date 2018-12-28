@@ -53,6 +53,7 @@ set(ALL_SRC
   string_helpers.cpp
   wkconverter.cpp
   zr_map_creator.cpp
+  missing_strings.cpp
   fixes/ai900unitidfix.cpp
   fixes/berbersutfix.cpp
   fixes/burmesefix.cpp

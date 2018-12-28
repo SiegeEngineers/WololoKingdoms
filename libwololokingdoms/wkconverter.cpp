@@ -31,6 +31,7 @@
 #include "drs.h"
 #include "wkconverter.h"
 #include "caseless.h"
+#include "missing_strings.h"
 
 #define rt_getSLPName(it) std::get<0>(it)
 #define rt_getPattern(it) std::get<1>(it)
@@ -234,28 +235,6 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
 
     loadGameStrings(langReplacement);
 
-    listener->log("Open Missing strings");
-    std::string line;
-    std::ifstream missingStrings(cfs::resolve(resourceDir/"missing_strings.txt"));
-    while (std::getline(missingStrings, line)) {
-        int spaceIdx = line.find('=');
-        std::string number = line.substr(0, spaceIdx);
-        int nb;
-        try {
-            nb = stoi(number);
-        }
-        catch (std::invalid_argument const & e){
-            continue;
-        }
-        auto sliceLen = std::string::npos;
-        if (line[line.length() - 1] == '\r') {
-          sliceLen = line.length() - (spaceIdx + 1) - 1;
-        }
-        line = line.substr(spaceIdx + 1, sliceLen);
-        rmsCodeStrings.push_back(std::make_pair(nb,line));
-    }
-    missingStrings.close();
-
     listener->log("Replace tooltips");
     if(settings->replaceTooltips) {
         loadModdedStrings(modLangIni, langReplacement);
@@ -267,6 +246,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
          * A data mod might need slightly changed strings.
          */
         std::ifstream modLang(patchFolder/(settings->language+".txt"));
+        std::string line;
         while (std::getline(modLang, line)) {
             try {
                 std::pair<int,std::string> tmp = getTextLine(line);
@@ -305,7 +285,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     if (patchLangDll && !openLanguageDll(&langDll, langDllPath, langDllFile)) {
         dllPatched = false;
         patchLangDll = false;
-        line = "working$\n$workingNoDll";
+        std::string line = "working$\n$workingNoDll";
         listener->setInfo(line);
 
     }
@@ -480,7 +460,7 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 	 * Would possibly be fixed by a comp patch update.
 	 */
 	if (generateLangDll) {
-		for (auto& it : rmsCodeStrings) {
+		for (auto& it : missing_strings) {
 			dllOut->setString(it.first, it.second);
 		}
 	}
