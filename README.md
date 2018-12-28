@@ -190,8 +190,7 @@ You need a C++17 capable compiler because this project uses the new `<filesystem
 Some dependencies are added as git submodules. To get them, do:
 
 ```bash
-git submodule init
-git submodule update --recursive
+git submodule update --init --recursive
 ```
 
 ### Installer Application

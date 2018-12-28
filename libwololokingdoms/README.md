@@ -11,8 +11,7 @@ libwololokingdoms requires a C++ compiler that supports C++17 and its `<filesyst
 First get the dependencies:
 
 ```bash
-git submodule init
-git submodule update
+git submodule update --init --recursive
 ```
 
 Then do:
