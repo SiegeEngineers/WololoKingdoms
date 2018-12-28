@@ -247,7 +247,11 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
         catch (std::invalid_argument const & e){
             continue;
         }
-        line = line.substr(spaceIdx + 1, std::string::npos);
+        auto sliceLen = std::string::npos;
+        if (line[line.length() - 1] == '\r') {
+          sliceLen = line.length() - (spaceIdx + 1) - 1;
+        }
+        line = line.substr(spaceIdx + 1, sliceLen);
         rmsCodeStrings.push_back(std::make_pair(nb,line));
     }
     missingStrings.close();
