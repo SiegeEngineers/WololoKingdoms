@@ -69,6 +69,12 @@ fs::path getHDPath(fs::path steamPath) {
 }
 
 #ifdef _WIN32
+fs::path getExePath() {
+    TCHAR pszPathToSelf[MAX_PATH];
+    DWORD dwPathLength = GetModuleFileName(nullptr, pszPathToSelf, MAX_PATH);
+    return dwPathLength > 0 ? fs::path(pszPathToSelf) : fs::path();
+}
+
 fs::path getSteamPath() {
 	TCHAR temp[300];
 	unsigned long size = sizeof(temp);

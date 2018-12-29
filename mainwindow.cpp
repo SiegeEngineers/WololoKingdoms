@@ -69,23 +69,11 @@ void WKQConverter::installUserPatch(fs::path exePath, std::vector<std::string> c
   process.waitForFinished();
 }
 
-#ifdef _WIN32
-fs::path get_exe_path() {
-    TCHAR pszPathToSelf[MAX_PATH];
-    DWORD dwPathLength = GetModuleFileName(nullptr, pszPathToSelf, MAX_PATH);
-    return dwPathLength > 0 ? fs::path(pszPathToSelf) : fs::path();
-}
-#else
-fs::path get_exe_path() {
-    return fs::read_symlink("/proc/self/exe");
-}
-#endif
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    fs::path exePath = get_exe_path();
+    fs::path exePath = getExePath();
     if (exePath != fs::path()) {
         fs::current_path(exePath.parent_path());
     }

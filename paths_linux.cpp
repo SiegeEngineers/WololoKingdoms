@@ -14,6 +14,10 @@
 
 namespace fs = std::filesystem;
 
+fs::path getExePath() {
+    return fs::read_symlink("/proc/self/exe");
+}
+
 static fs::path getHomeDirectory() {
   const char *homedir = getenv("HOME");
   if (homedir == NULL) {
