@@ -109,7 +109,7 @@ int MainWindow::initialize() {
         this->ui->label->setText(translation["noSteamInstallation"]);
         dialog = new Dialog(this,translation["noSteamInstallation"],translation["errorTitle"]);
         dialog->exec();
-        log("NoSteam. Path: "+steamPath);
+        log("NoSteam. Path: "+steamPath.string());
         allowRun = false;
         return -1;
     }
@@ -398,8 +398,7 @@ bool MainWindow::checkSteamApi() {
     if(!SteamApps()) {
         // open steam
         QProcess process;
-        process.start(QString::fromStdString(
-              (fs::path(steamPath) / "Steam.exe").string()));
+        process.start(QString::fromStdString((steamPath/"Steam.exe").string()));
         process.waitForStarted();
         SteamAPI_Init();
     }
@@ -411,11 +410,11 @@ bool MainWindow::checkSteamApi() {
     }
     if(!SteamApps()) {
         if(!SteamAPI_Init()) {
-            log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath).c_str());
+            log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath.string()).c_str());
             this->ui->label->setText(translation["noSteamApi"]);
             dialog = new Dialog(this,translation["noSteamApi"],translation["errorTitle"]);
         } else {
-            log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath).c_str());
+            log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath.string()).c_str());
             this->ui->label->setText(translation["noSteam"]);
             dialog = new Dialog(this,translation["noSteam"],translation["errorTitle"]);
         }
@@ -438,7 +437,7 @@ bool MainWindow::checkSteamApi() {
         SteamAPI_Shutdown();
         return true;
     } else {
-        log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath).c_str());
+        log(("noSteamApi. Path: "+hdPath.string()+" Steam Path: "+steamPath.string()).c_str());
         this->ui->label->setText(translation["noFE"]);
         dialog = new Dialog(this,translation["noFE"],translation["errorTitle"]);
         dialog->exec();
