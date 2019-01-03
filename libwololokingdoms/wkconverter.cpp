@@ -1097,17 +1097,21 @@ bool WKConverter::isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, s
 }
 
 void WKConverter::createZRmap(std::map<std::string,fs::path>& terrainOverrides, fs::path outputDir, std::string mapName) {
-    std::string outname = (outputDir / mapName).string();
-    std::fstream outstream(outname, std::ios_base::out);
+    fs::path outname = outputDir/("ZR@"+mapName);
+    std::ofstream outstream(outname);
     ZRMapCreator map(outstream);
-    terrainOverrides[mapName] = fs::path(outputDir.string()+"/"+mapName);
+    listener->log("createZRmap(" + outname.string() + ")");
+    terrainOverrides[mapName] = outname;
     for(auto& files : terrainOverrides) {
         auto file_size = cfs::file_size(files.second);
-        auto file_stream = std::fstream(files.second.string(), std::ios_base::in);
+        auto file_stream = std::ifstream(files.second);
         auto file_content = concat_stream(file_stream);
+        listener->log("     addFile(" + files.first + ", " + std::to_string(file_size) + ")");
         map.addFile(files.first, file_content.c_str(), file_size);
     }
-    cfs::remove(fs::path(outputDir.string()+"/"+mapName));
+    map.end();
+    outstream.close();
+    cfs::remove(outputDir/mapName);
 }
 
 void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat) {
