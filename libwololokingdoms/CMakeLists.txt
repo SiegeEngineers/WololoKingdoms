@@ -23,20 +23,13 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/genieutils/)
 
 # include directories:
 
-set(GU_INCLUDE_DIRS
-  include/
-  third_party/genieutils/include/
-)
-
-if(WIN32)
-  set(GU_INCLUDE_DIRS ${GU_INCLUDE_DIRS})
-endif()
+include_directories(include/)
+include_directories(third_party/genieutils/include/)
+include_directories(third_party/miniz)
 
 if (${ICONV_FOUND})
-  set(GU_INCLUDE_DIRS ${GU_INCLUDE_DIRS} ${ICONV_INCLUDE_DIR})
+  include(${ICONV_INCLUDE_DIR})
 endif (${ICONV_FOUND})
-
-include_directories(${GU_INCLUDE_DIRS})
 
 if(NOT MSVC)
     add_definitions(-Wall -Wsign-compare)
@@ -71,6 +64,7 @@ set(ALL_SRC
   fixes/smallfixes.cpp
   fixes/tricklebuildingfix.cpp
   fixes/vietfix.cpp
+  third_party/miniz/miniz.c
 )
 
 #------------------------------------------------------------------------------#
@@ -78,8 +72,8 @@ set(ALL_SRC
 #------------------------------------------------------------------------------#
 
 if (WK_STATIC_BUILD)
-    message(STATUS "Building libwololokingdoms as static library")
-    add_library(${Wololokingdoms_LIBRARY} STATIC ${ALL_SRC})
+  message(STATUS "Building libwololokingdoms as static library")
+  add_library(${Wololokingdoms_LIBRARY} STATIC ${ALL_SRC})
 else()
   add_library(${Wololokingdoms_LIBRARY} SHARED ${ALL_SRC})
   target_link_libraries(${Wololokingdoms_LIBRARY} genieutils)
@@ -94,6 +88,5 @@ else()
     FILES_MATCHING PATTERN "*.h*"
   )
 endif()
-
 
 target_link_libraries(${Wololokingdoms_LIBRARY})

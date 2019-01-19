@@ -4,3 +4,6 @@
 [submodule "libwololokingdoms/third_party/pcrio"]
 	path = libwololokingdoms/third_party/pcrio
 	url = https://github.com/sandsmark/pcrio
+[submodule "libwololokingdoms/third_party/miniz"]
+	path = libwololokingdoms/third_party/miniz
+	url = https://github.com/richgel999/miniz
