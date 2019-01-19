@@ -26,13 +26,18 @@ ZRMapCreator::~ZRMapCreator () {
 
 void ZRMapCreator::addFile(const std::string& name, std::istream& content) {
     auto str = concat_stream(content);
-    std::cout<<"ZRMapCreator::addFile(" <<name<<", "<<str.length()<<")"<<std::endl;
-    mz_zip_writer_add_mem(
+    auto size = str.length();
+    std::cout<<"ZRMapCreator::addFile(" <<name<<", "<<size<<")"<<std::endl;
+    mz_zip_writer_add_mem_ex(
         &mz_handle,
-        name.c_str(),
-        str.c_str(),
-        str.length(),
-        MZ_NO_COMPRESSION);
+        name.c_str(), // name
+        str.c_str(), size, // content
+        NULL, 0, // comment
+        // MZ_ZIP_FLAG_WOLOLOKINGDOMS is a custom flag to force
+        // output of uncompressed size header members where normally,
+        // miniz would omit them
+        MZ_NO_COMPRESSION | MZ_ZIP_FLAG_WOLOLOKINGDOMS,
+        str.length(), 0);
 }
 
 void ZRMapCreator::end() {
