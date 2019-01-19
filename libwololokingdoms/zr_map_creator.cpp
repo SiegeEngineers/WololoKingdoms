@@ -3,7 +3,6 @@
 #include <miniz.h>
 
 size_t ZRMapCreator::zipWriteCallback(void* context, mz_uint64 offset, const void* buffer, size_t size) {
-    std::cout<<"ZRMapCreator::zipWriteCallback("<<offset<<","<<size<<")"<<std::endl;
     const char* char_buffer = reinterpret_cast<const char*>(buffer);
     ZRMapCreator* map_creator = reinterpret_cast<ZRMapCreator*>(context);
 
@@ -16,18 +15,15 @@ ZRMapCreator::ZRMapCreator(std::ostream& output): output(output) {
     mz_handle.m_pWrite = ZRMapCreator::zipWriteCallback;
     mz_handle.m_pIO_opaque = this;
     mz_zip_writer_init(&mz_handle, 0);
-    std::cout<<"ZRMapCreator::ZRMapCreator()"<<std::endl;
 }
 
 ZRMapCreator::~ZRMapCreator () {
     mz_zip_writer_end(&mz_handle);
-    std::cout<<"ZRMapCreator::~ZRMapCreator()"<<std::endl;
 }
 
 void ZRMapCreator::addFile(const std::string& name, std::istream& content) {
     auto str = concat_stream(content);
     auto size = str.length();
-    std::cout<<"ZRMapCreator::addFile(" <<name<<", "<<size<<")"<<std::endl;
     mz_zip_writer_add_mem_ex(
         &mz_handle,
         name.c_str(), // name
@@ -41,6 +37,5 @@ void ZRMapCreator::addFile(const std::string& name, std::istream& content) {
 }
 
 void ZRMapCreator::end() {
-    std::cout<<"ZRMapCreator::end()"<<std::endl;
     mz_zip_writer_finalize_archive(&mz_handle);
 }
