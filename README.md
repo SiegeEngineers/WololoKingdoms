@@ -22,11 +22,11 @@ In multiplayer, there will be three different Data Mods available, WololoKingdom
 It's heavily recommended to get all 3 DLCs though to be able to join all games.
 
 ## How to use (with Voobly)
-[Download the latest release](https://github.com/AoE2CommunityGitHub/releases), extract the Zip, make sure Steam is running and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
+[Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract the Zip, make sure Steam is running and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
 You can then use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms". Make sure to select Userpatch 1.5 as the patch. You can then launch as normal).  
 
 ## How to use (without Voobly)
-[Download the latest release](https://github.com/AoE2CommunityGitHub/releases), extract it, make sure Steam is running and launch as usual.
+[Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch as usual.
 Select the "Create an offline installation" checkbox and let the program run.
 You can launch the game using the "WK.exe" in the "age2_x1/" folder.
 Rarely there can be issues with creating the language_x1_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
