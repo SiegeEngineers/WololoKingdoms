@@ -522,12 +522,8 @@ void MainWindow::changeLanguage() {
         langBackup = language;
     }
     std::ifstream translationFile("resources\\"+language+".txt");
-	while (std::getline(translationFile, line)) {
-        /*
-         *  \\\\n -> \\n, means we want a \n in the text files for aoc
-         */
-        if(line.find("\\\\n") == std::string::npos)
-            boost::replace_all(line, "\\n", "\n");
+    while (std::getline(translationFile, line)) {
+        boost::replace_all(line, "\\n", "\n");
 		int index = line.find('=');
         QString key = QString::fromStdString(line.substr(0, index));
         translation[key] = QString::fromStdString(line.substr(index+1, std::string::npos));

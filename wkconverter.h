@@ -85,7 +85,7 @@ private:
     void indexDrsFiles(fs::path const &src, bool expansionFiles = true, bool terrainFiles = false);
     void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
     std::pair<int,std::string> getTextLine(std::string line);
-	void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement);
+    void convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, std::map<int, std::string> *langReplacement);
     bool createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
     void loadGameStrings(std::map<int,std::string>& langReplacement);
     void loadModdedStrings(std::string moddedStringsFile, std::map<int, std::string>& langReplacement);
