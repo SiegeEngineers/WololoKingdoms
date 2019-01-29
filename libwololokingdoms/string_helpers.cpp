@@ -55,6 +55,7 @@ std::string iconvert (const std::string& input, const std::string& from, const s
   if (iconv(convert, &in_str, &in_size, &out, &out_size) == (size_t) -1) {
     return "";
   }
+  *out = '\0';
 
   iconv_close(convert);
 
