@@ -105,15 +105,14 @@ void WKConverter::recCopy(fs::path const &src, fs::path const &dst, bool skip, b
 
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
-    std::ifstream translationFile("resources\\"+settings->language+"_game.txt");
+    std::ifstream translationFile;
+    if(fs::exists("resources\\"+settings->language+"_game.txt")) {
+        translationFile = std::ifstream("resources\\"+settings->language+"_game.txt");
+    } else {
+        translationFile = std::ifstream("resources\\en_game.txt");
+    }
+
     while (std::getline(translationFile, line)) {
-        /*
-         *  \\\\n -> \\n, means we want a \n in the text files for aoc
-         *  If no such line is found, it might be a line for the installer itself, where we want actual linebreaks,
-         * so replace \\n -> \n with a linebreak
-         */
-        if(line.find("\\\\n") == std::string::npos)
-            boost::replace_all(line, "\\n", "\n");
         unsigned int index = line.find('=');
         std::string key = line.substr(0, index);
         try {
@@ -292,8 +291,6 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     fs::path keyValuesStringsPath = settings->language == "zht"?resourceDir/"zht\\key-value-strings-utf8.txt":
                                                       settings->HDPath / "resources" / settings->language / "strings\\key-value\\key-value-strings-utf8.txt";
     std::string modLangIni = resourceDir.string()+settings->language+".ini";
-    fs::path langDllFile("language_x1_p1.dll");
-    fs::path langDllPath = langDllFile;
     /*
      * Create the language files (.ini for Voobly, .dll for offline)
      */
@@ -346,42 +343,23 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
 
     std::ifstream langIn(keyValuesStringsPath.string());
     std::ofstream langOut(languageIniPath.string());
-    genie::LangFile langDll;
 
-    bool patchLangDll;
-    if(settings->useVoobly) {
-        patchLangDll = false;
-    } else {
-        langDllPath = settings->outPath / langDllPath;
-        patchLangDll = fs::exists(langDllPath);
-        if(patchLangDll)
-        {
-            fs::remove(langDllFile);
-            fs::copy_file(langDllPath,langDllFile);
-        }
-    }
     emit increaseProgress(1); //3
-    bool dllPatched = true;
-
-    emit log("Open Lang Dll");
-    if (patchLangDll && !openLanguageDll(&langDll, langDllPath, langDllFile)) {
-        dllPatched = false;
-        patchLangDll = false;
-        line = "working$\n$workingNoDll";
-        emit setInfo(QString::fromStdString(line));
-
-    }
-    emit increaseProgress(1); //4
-
     emit log("convert language file");
-    convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
-    emit increaseProgress(1); //5
-    emit log("save lang dll file");
-    if (patchLangDll && !saveLanguageDll(&langDll, langDllFile)) {
-        dllPatched = false;
-        patchLangDll = false;
+    convertLanguageFile(&langIn, &langOut, &langReplacement);
+
+    emit increaseProgress(1); //4
+    if(!settings->useVoobly) {
+        fs::path langDllFile(resourceDir/"language_x1_p1.dll");
+        fs::create_directories(settings->upDir / "data");
+        fs::path langDllPath = settings->upDir / "data\\language_x1_p1.dll";
+        fs::copy_file(langDllFile, langDllPath, fs::copy_option::overwrite_if_exists);
     }
-    return dllPatched;
+    if(settings->useBoth) {
+        fs::copy_file(languageIniPath, settings->upDir / languageIniPath.filename(), fs::copy_option::overwrite_if_exists);
+    }
+    emit increaseProgress(1); //5
+    return true;
 }
 
 void WKConverter::loadModdedStrings(std::string moddedStringsFile, std::map<int, std::string>& langReplacement) {
@@ -457,7 +435,7 @@ bool WKConverter::saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile
     return true;
 }
 
-void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
+void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, std::map<int, std::string> *langReplacement) {
 	std::string line;
     int nb;
 	while (std::getline(*in, line)) {
@@ -483,38 +461,6 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 
         *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
 
-		if (generateLangDll) {
-            boost::replace_all(line, "·", "\xb7"); // Dll can't handle that character.
-            boost::replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
-			try {
-                dllOut->setString(nb, line);
-			}
-			catch (std::string const & e) {
-                boost::replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
-                boost::replace_all(line, "\xc5\xab", "u");
-                boost::replace_all(line, "\xc4\x81", "a");
-                boost::replace_all(line, "\xe1\xbb\x87", "ê");
-                boost::replace_all(line, "\xe1\xbb\x8b", "i");
-                boost::replace_all(line, "\xe1\xbb\xa3", "o");
-                boost::replace_all(line, "\xe1\xbb\x85", "e");
-                boost::replace_all(line, "\xe1\xbb\x87", "e");
-                boost::replace_all(line, "\xe1\xba\xa2", "A");
-                boost::replace_all(line, "\xc4\x90\xe1", "D");
-                boost::replace_all(line, "\xba\xa1", "a");
-                boost::replace_all(line, "\xc4\x90", "D");
-                boost::replace_all(line, "\xc3\xaa", "e");
-                boost::replace_all(line, "\xc3\xb9", "u");
-                boost::replace_all(line, "\xc6\xb0", "u");
-                boost::replace_all(line, "\xbb\x99", "o");
-                try {
-                    dllOut->setString(nb, line);
-                }
-                catch (std::string const & e) {
-                    dllOut->setString(nb, line);
-                }
-			}
-		}
-
 	}
 	/*
      * Stuff that's in lang replacement but not in the HD files (in this case extended language height box)
@@ -529,30 +475,20 @@ void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, 
 
 		*iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
 
-		if (generateLangDll) {
-            boost::replace_all(it->second, "·", "\xb7"); // Dll can't handle that character.
-            boost::replace_all(it->second, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
-			try {
-                dllOut->setString(it->first, it->second);
-			}
-			catch (std::string const & e) {
-                boost::replace_all(it->second, "\xb7", "-"); // non-english dll files don't seem to like that character
-                boost::replace_all(it->second, "\xae", "R");
-                dllOut->setString(it->first, it->second);
-			}
-		}
-
 	}
 	/*
 	 * Strings needed for code generation that are not in the regular hd text file
      * Only needed offline since regular aoc has this in the normal language dlls.
 	 * Would possibly be fixed by a comp patch update.
-	 */
-	if (generateLangDll) {
-		for(std::vector<std::pair<int,std::string>>::iterator it = rmsCodeStrings.begin(); it != rmsCodeStrings.end(); it++) {
-			dllOut->setString(it->first, it->second);
-		}
-	}
+     */
+    for(std::vector<std::pair<int,std::string>>::iterator it = rmsCodeStrings.begin(); it != rmsCodeStrings.end(); it++) {
+        std::wstring wideLine = strtowstr(it->second);
+        std::string outputLine;
+
+        ConvertUnicode2CP(wideLine.c_str(), outputLine, CP_ACP);
+
+        *iniOut << std::to_string(it->first) << '=' << outputLine <<  std::endl;
+    }
     in->close();
     iniOut->close();
 }
@@ -1872,9 +1808,14 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
         if(vooblyDst) {
             fs::remove(newDir/"language.ini");
             languageString = "mklink \""+newDirString+"language.ini\" \""+ oldDirString+"language.ini\" & ";
-        } else if (!vooblySrc) {
+        } else if (!vooblySrc) {            
+            fs::remove(newDir/"language.ini");
             fs::remove(newDir/"Data\\language_x1_p1.dll");
-            languageString = "mklink \""+newDirString+"Data\\language_x1_p1.dll\" \""+ oldDirString+"Data\\language_x1_p1.dll\" & ";
+            languageString = "mklink \""+newDirString+"language.ini\" \""+ oldDirString+"language.ini\" & "
+                    "mklink \""+newDirString+"Data\\language_x1_p1.dll\" \""+ oldDirString+"Data\\language_x1_p1.dll\" & ";
+        } else {
+            languageString = "mklink /D \""+newDirString+"Savegame\" \""+ oldDirString+"Savegame\" & ";
+            //Link Savegame folder between Voobly&UP installation. Probably should rename the variable, but oh well
         }
     }
 
@@ -1890,7 +1831,6 @@ void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn,
             + languageString +
             "mklink \""+newDirString+"player.nfz\" \""+ oldDirString+"player.nfz\"";
     std::wstring wcmd = strtowstr(cmd);
-    //ShellExecute(nullptr,L"open",L"cmd.exe",wcmd.c_str(),nullptr,SW_HIDE);
     callWaitExe(wcmd);
     if(!fs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
         for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
@@ -1943,7 +1883,7 @@ void WKConverter::retryInstall() {
 
 void WKConverter::setupFolders(fs::path xmlOutPathUP) {
 
-    fs::path languageIniPath = settings->vooblyDir / "language.ini";
+    fs::path languageIniPath = settings->useExe?settings->upDir / "language.ini" : settings->vooblyDir / "language.ini";
     std::string versionIniPath = settings->vooblyDir.string() + "\\version.ini";
 
     emit log("Check for symlink");
@@ -1990,11 +1930,11 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     fs::create_directory(installDir/"Screenshots");
     fs::create_directory(installDir/"Scenario");
 
+    fs::remove(languageIniPath);
     if(!settings->useExe) {
         fs::remove(settings->vooblyDir/"age2_x1.xml");
         fs::remove(versionIniPath);
         emit log("Removing language.ini");
-        fs::remove(languageIniPath);
     } else {
         emit log("Removing UP base folders");
         fs::remove(xmlOutPathUP);
@@ -2062,7 +2002,7 @@ int WKConverter::run(bool retry)
         installDir  = settings->useExe ? settings->upDir : settings->vooblyDir;
 
         //Voobly Target
-        fs::path languageIniPath = settings->vooblyDir / "language.ini";
+        fs::path languageIniPath = settings->useExe ? settings-> upDir / "language.ini" : settings->vooblyDir / "language.ini";
         std::string versionIniPath = settings->vooblyDir.string() + "\\version.ini";
         fs::path xmlOutPath = settings->vooblyDir / "age2_x1.xml";
         fs::path xmlPath;
@@ -2618,22 +2558,35 @@ int WKConverter::run(bool retry)
                 out << str;
                 input.close();
                 out.close();
-                if(settings->useBoth || settings->useVoobly)
+                if(settings->useBoth || settings->useVoobly) {
                     symlinkSetup(settings->vooblyDir.parent_path() / (baseModName+dlcExtension), settings->vooblyDir,xmlIn,settings->vooblyDir/"age2_x1.xml",true);
                     if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
                         std::ifstream oldDrs (settings->vooblyDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
-                        std::ofstream newDrs (settings->vooblyDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        fs::path newDrsFile(settings->vooblyDir / "data\\gamedata_x1_p1.drs");
+                        fs::remove(newDrsFile); //Need to remove it first in case it's a symlink, otherwise we're writing to the source file!
+                        std::ofstream newDrs (newDrsFile.string(), std::ios::binary);
                         editDrs(&oldDrs, &newDrs);
                     }
-                if(settings->useBoth || settings->useExe) {
+                    if(settings->useBoth) {
+                        symlinkSetup(settings->vooblyDir, settings->upDir,xmlIn,settings->upDir.parent_path()/(UPModdedExe+".xml"));
+                    }
+                } else {
                     symlinkSetup(settings->upDir.parent_path() / (baseModName+dlcExtension), settings->upDir, xmlIn, settings->upDir.parent_path()/(UPModdedExe+".xml"), true);
                     if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
-                        std::ifstream oldDrs (settings->upDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
-                        std::ofstream newDrs (settings->upDir.string()+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        std::ifstream oldDrs;
+                        if(fs::exists(settings->vooblyDir.parent_path() / (baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs"))) {
+                            oldDrs = std::ifstream(settings->vooblyDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        } else {
+                            oldDrs = std::ifstream(settings->upDir.parent_path().string() + "\\" + baseModName+dlcExtension+"\\data\\gamedata_x1_p1.drs", std::ios::binary);
+                        }
+                        fs::path newDrsFile(settings->upDir / "data\\gamedata_x1_p1.drs");
+                        fs::remove(newDrsFile); //Need to remove it first in case it's a symlink, otherwise we're writing to the source file!
+                        std::ofstream newDrs (newDrsFile.string(), std::ios::binary);
                         editDrs(&oldDrs, &newDrs);
                     }
+
                 }
                 fs::remove(xmlIn);
             } catch (std::exception const & e) {
