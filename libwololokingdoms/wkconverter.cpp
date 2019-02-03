@@ -1101,12 +1101,10 @@ void WKConverter::createZRmap(std::map<std::string,fs::path>& terrainOverrides, 
     std::ofstream outstream(outname);
     outstream.exceptions(std::ofstream::failbit | std::ofstream::badbit);
     ZRMapCreator map(outstream);
-    listener->log("createZRmap(" + outname.string() + ")");
     terrainOverrides[mapName] = outputDir/mapName;
     for(auto& files : terrainOverrides) {
         auto file_size = cfs::file_size(files.second);
         std::ifstream file_stream (files.second);
-        listener->log("     addFile(" + files.first + ", " + std::to_string(file_size) + ")");
         map.addFile(files.first, file_stream);
     }
     map.end();
