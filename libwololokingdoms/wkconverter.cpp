@@ -42,7 +42,7 @@
 
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
-    std::ifstream translationFile(fs::path("resources")/(settings->language+"_game.txt"));
+    std::ifstream translationFile(resourceDir/(settings->language+"_game.txt"));
     while (std::getline(translationFile, line)) {
         /*
          *  \\\\n -> \\n, means we want a \n in the text files for aoc
