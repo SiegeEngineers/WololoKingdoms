@@ -120,7 +120,7 @@ void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
     }
 }
 
-std::pair<int,std::string> WKConverter::getTextLine(std::string line) {
+std::pair<int,std::string> WKConverter::parseHDTextLine(std::string line) {
     int spaceIdx = line.find(' ');
     std::string number = line.substr(0, spaceIdx);
     int nb = stoi(number);
@@ -220,15 +220,12 @@ std::pair<int,std::string> WKConverter::getTextLine(std::string line) {
     return std::make_pair(nb,line);
 }
 
-bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFolder) {
-
+void WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFolder) {
     std::map<int, std::string> langReplacement;
     fs::path keyValuesStringsPath = settings->language == "zht"
       ? resourceDir/"zht"/"key-value-strings-utf8.txt"
       : settings->hdPath/"resources"/settings->language/"strings"/"key-value"/"key-value-strings-utf8.txt";
     fs::path modLangIni = resourceDir/(settings->language+".ini");
-    fs::path langDllFile("language_x1_p1.dll");
-    fs::path langDllPath = langDllFile;
     /*
      * Create the language files (.ini for Voobly, .dll for offline)
      */
@@ -249,7 +246,7 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
         std::string line;
         while (std::getline(modLang, line)) {
             try {
-                std::pair<int,std::string> tmp = getTextLine(line);
+                std::pair<int,std::string> tmp = parseHDTextLine(line);
                 langReplacement[tmp.first] = tmp.second;
             } catch (std::invalid_argument const & e) {
                 continue;
@@ -261,45 +258,15 @@ bool WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
         }
     }
 
-
     std::ifstream langIn(keyValuesStringsPath);
     std::ofstream langOut(languageIniPath);
-    genie::LangFile langDll;
 
-    bool patchLangDll;
-    if(settings->useVoobly) {
-        patchLangDll = false;
-    } else {
-        langDllPath = settings->outPath / langDllPath;
-        patchLangDll = cfs::exists(langDllPath);
-        if(patchLangDll)
-        {
-            cfs::remove(langDllFile);
-            cfs::copy_file(langDllPath,langDllFile);
-        }
-    }
     listener->increaseProgress(1); //3
-    bool dllPatched = true;
-
-    listener->log("Open Lang Dll");
-    if (patchLangDll && !openLanguageDll(&langDll, langDllPath, langDllFile)) {
-        dllPatched = false;
-        patchLangDll = false;
-        std::string line = "working$\n$workingNoDll";
-        listener->setInfo(line);
-
-    }
-    listener->increaseProgress(1); //4
 
     listener->log("convert language file");
-    convertLanguageFile(&langIn, &langOut, &langDll, patchLangDll, &langReplacement);
+    listener->increaseProgress(1); //4
+    convertLanguageFile(langIn, langOut, langReplacement);
     listener->increaseProgress(1); //5
-    listener->log("save lang dll file");
-    if (patchLangDll && !saveLanguageDll(&langDll, langDllFile)) {
-        dllPatched = false;
-        patchLangDll = false;
-    }
-    return dllPatched;
 }
 
 void WKConverter::loadModdedStrings(fs::path moddedStringsFile, std::map<int, std::string>& langReplacement) {
@@ -323,149 +290,40 @@ void WKConverter::loadModdedStrings(fs::path moddedStringsFile, std::map<int, st
     modLang.close();
 }
 
-bool WKConverter::openLanguageDll(genie::LangFile *langDll, fs::path langDllPath, fs::path langDllFile) {
-    try {
-        langDll->load((langDllFile.string()).c_str());
-        langDll->setGameVersion(genie::GameVersion::GV_TC);
-    } catch (const std::ifstream::failure& e) {
-        //Try deleting and re-copying
-        cfs::remove(langDllFile);
-        cfs::copy_file(langDllPath,langDllFile);
-        try {
-            langDll->load((langDllFile.string()).c_str());
-            langDll->setGameVersion(genie::GameVersion::GV_TC);
-        } catch (const std::ifstream::failure& e) {
-            cfs::remove(langDllFile);
-            return false;
-        }
-    }
-    return true;
-}
-
-bool WKConverter::saveLanguageDll(genie::LangFile *langDll, fs::path langDllFile) {
-    cfs::create_directories(settings->upDir/"data");
-    fs::path langDllOutput = settings->upDir/"data"/langDllFile;
+void WKConverter::convertLanguageFile(std::ifstream& in, std::ofstream& iniOut, std::map<int, std::string>& langReplacement) {
     std::string line;
-    try {
-        line = "working$\n$workingDll";
-        langDll->save();
-        cfs::copy_file(langDllFile,langDllOutput,fs::copy_options::overwrite_existing);
-        cfs::remove(langDllFile);
-        listener->setInfo(line);
-
-    } catch (const std::ofstream::failure& e) {
-        listener->setInfo("workingError");
-
-        cfs::remove(langDllFile);
-        cfs::remove(langDllOutput);
-        try {
-            langDll->save();
-            cfs::copy_file(langDllFile,langDllOutput,fs::copy_options::overwrite_existing);
-            cfs::remove(langDllFile);
-            listener->setInfo(line);
-
-        } catch (const std::ofstream::failure& e) {
-            cfs::remove(langDllFile);
-            cfs::remove(langDllOutput);
-            return false;
-        }
-    }
-    return true;
-}
-
-void WKConverter::convertLanguageFile(std::ifstream *in, std::ofstream *iniOut, genie::LangFile *dllOut, bool generateLangDll, std::map<int, std::string> *langReplacement) {
-	std::string line;
     int nb;
-	while (std::getline(*in, line)) {
-
+    while (std::getline(in, line)) {
         try {
-            std::pair<int,std::string> tmp = getTextLine(line);
+            std::pair<int,std::string> tmp = parseHDTextLine(line);
             nb = tmp.first;
             line = tmp.second;
         } catch (std::invalid_argument const & e) {
             continue;
         }
-
-		if (langReplacement->count(nb)) {
-			// this string has been changed by one of our patches (modified attributes etc.)
-			line = (*langReplacement)[nb];
-			langReplacement->erase(nb);
+        if (langReplacement.count(nb)) {
+            // this string has been changed by one of our patches (modified attributes etc.)
+            line = langReplacement[nb];
+            langReplacement.erase(nb);
         }
+        // convert UTF-8 into ANSI
+        std::string outputLine = iconvert(line, "UTF8", "WINDOWS-1252");
+        iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
+    }
 
-		//convert UTF-8 into ANSI
-		std::string outputLine = iconvert(line, "UTF8", "WINDOWS-1252");
-
-        *iniOut << std::to_string(nb) << '=' << outputLine <<  std::endl;
-
-		if (generateLangDll) {
-            replace_all(line, "·", "\xb7"); // Dll can't handle that character.
-            replace_all(line, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
-			try {
-                dllOut->setString(nb, line);
-			}
-			catch (std::string const & e) {
-                replace_all(line, "\xb7", "-"); // non-english dll files don't seem to like that character
-                replace_all(line, "\xc5\xab", "u");
-                replace_all(line, "\xc4\x81", "a");
-                replace_all(line, "\xe1\xbb\x87", "ê");
-                replace_all(line, "\xe1\xbb\x8b", "i");
-                replace_all(line, "\xe1\xbb\xa3", "o");
-                replace_all(line, "\xe1\xbb\x85", "e");
-                replace_all(line, "\xe1\xbb\x87", "e");
-                replace_all(line, "\xe1\xba\xa2", "A");
-                replace_all(line, "\xc4\x90\xe1", "D");
-                replace_all(line, "\xba\xa1", "a");
-                replace_all(line, "\xc4\x90", "D");
-                replace_all(line, "\xc3\xaa", "e");
-                replace_all(line, "\xc3\xb9", "u");
-                replace_all(line, "\xc6\xb0", "u");
-                replace_all(line, "\xbb\x99", "o");
-                try {
-                    dllOut->setString(nb, line);
-                }
-                catch (std::string const & e) {
-                    dllOut->setString(nb, line);
-                }
-			}
-		}
-
-	}
-	/*
+    /*
      * Stuff that's in lang replacement but not in the HD files (in this case extended language height box)
-	 */
-   for (auto& it : *langReplacement) {
-		//convert UTF-8 into ANSI
-
-		std::string outputLine = iconvert(it.second, "UTF8", "WINDOWS-1252");
-
-		*iniOut << std::to_string(it.first) << '=' << outputLine <<  std::endl;
-
-		if (generateLangDll) {
-            replace_all(it.second, "·", "\xb7"); // Dll can't handle that character.
-            replace_all(it.second, "\\n", "\n"); // the dll file requires actual line feed, not escape sequences
-			try {
-                dllOut->setString(it.first, it.second);
-			}
-			catch (std::string const & e) {
-                replace_all(it.second, "\xb7", "-"); // non-english dll files don't seem to like that character
-                replace_all(it.second, "\xae", "R");
-                dllOut->setString(it.first, it.second);
-			}
-		}
-
-	}
-	/*
-	 * Strings needed for code generation that are not in the regular hd text file
-     * Only needed offline since regular aoc has this in the normal language dlls.
-	 * Would possibly be fixed by a comp patch update.
-	 */
-	if (generateLangDll) {
-		for (auto& it : missing_strings) {
-			dllOut->setString(it.first, it.second);
-		}
-	}
-    in->close();
-    iniOut->close();
+     */
+    for (auto& it : langReplacement) {
+        //convert UTF-8 into ANSI
+        std::string outputLine = iconvert(it.second, "UTF8", "WINDOWS-1252");
+        iniOut << std::to_string(it.first) << '=' << outputLine <<  std::endl;
+    }
+    for (auto& it : missing_strings) {
+        iniOut << std::to_string(it.first) << '=' << it.second << std::endl;
+    }
+    in.close();
+    iniOut.close();
 }
 
 void WKConverter::makeDrs(std::ofstream& out) {
@@ -1896,6 +1754,8 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
         cfs::remove(settings->upDir/"Script.Ai"/"BruteForce3.1.per");
         */
         cfs::create_directories(settings->upDir/"Data");
+        listener->log("Removing language.ini");
+        cfs::remove(settings->upDir/"language.ini");
     }
 }
 
@@ -1934,7 +1794,7 @@ int WKConverter::run(bool retry)
         fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
         fs::path aiInputPath = resourceDir/"Script.Ai";
         fs::path UPExe = resourceDir/"SetupAoc.exe";
-        fs::path backupLangDll = resourceDir/"language_x1_p1.dll";
+        fs::path aocLanguageIniModDll = resourceDir/"language_x1_p1.dll";
         fs::path patchFolder;
 
         //HD Resources
@@ -1952,7 +1812,6 @@ int WKConverter::run(bool retry)
         installDir  = settings->useExe ? settings->upDir : settings->vooblyDir;
 
         //Voobly Target
-        fs::path languageIniPath = settings->vooblyDir / "language.ini";
         fs::path versionIniPath = settings->vooblyDir / "version.ini";
         fs::path xmlOutPath = settings->vooblyDir / "age2_x1.xml";
         fs::path xmlPath;
@@ -1963,12 +1822,13 @@ int WKConverter::run(bool retry)
         fs::path UPExeOut = settings->outPath / "SetupAoc.exe";
 
         //Any Target
-        fs::path soundsOutputPath = installDir / "Sound";
-        fs::path scenarioSoundsOutputPath = installDir / "Sound"/"Scenario";
-        fs::path historyOutputPath = installDir / "History";
-        fs::path tauntOutputPath = installDir / "Taunt";
-        fs::path drsOutPath = installDir / "Data"/"gamedata_x1_p1.drs";
-        fs::path outputDatPath = installDir / "Data"/"empires2_x1_p1.dat";
+        fs::path languageIniPath = installDir/"language.ini";
+        fs::path soundsOutputPath = installDir/"Sound";
+        fs::path scenarioSoundsOutputPath = installDir/"Sound"/"Scenario";
+        fs::path historyOutputPath = installDir/"History";
+        fs::path tauntOutputPath = installDir/"Taunt";
+        fs::path drsOutPath = installDir/"Data"/"gamedata_x1_p1.drs";
+        fs::path outputDatPath = installDir/"Data"/"empires2_x1_p1.dat";
 
         switch(settings->dlcLevel) {
         case 1:
@@ -2017,18 +1877,9 @@ int WKConverter::run(bool retry)
             UPModdedExe = std::get<1>(settings->dataModList[settings->patch]);
         }
 
-        bool dllPatched = createLanguageFile(languageIniPath, patchFolder);
-
-        if(!dllPatched) {
-            if (!secondAttempt) {
-                secondAttempt = true;
-                ret = run();
-                return ret;
-            }
-            else {
-                fs::path langDllOutput = settings->upDir/"data"/"language_x1_p1.dll";
-                cfs::copy_file(backupLangDll,langDllOutput,fs::copy_options::overwrite_existing);
-            }
+        createLanguageFile(languageIniPath, patchFolder);
+        if (settings->useExe) {
+            cfs::copy_file(aocLanguageIniModDll, installDir/"Data"/"language_x1_p1.dll", fs::copy_options::overwrite_existing);
         }
 
         listener->increaseProgress(1); //6
@@ -2606,9 +2457,6 @@ int WKConverter::run(bool retry)
             listener->log("Create Offline Exe");
             listener->setInfo("working$\n$workingUP");
             listener->increaseProgress(1); //95
-            if (!dllPatched)
-                listener->createDialog("dialogNoDll");
-
             try {
                 cfs::copy_file(UPExe, UPExeOut, fs::copy_options::overwrite_existing);
 
