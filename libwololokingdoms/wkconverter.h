@@ -177,7 +177,7 @@ private:
     void copyHotkeyFile(const fs::path& maxHki, const fs::path& lastEditedHki, fs::path dst);
     void removeWkHotkeys();
     void hotkeySetup();
-    void symlinkSetup(const fs::path& oldDir, const fs::path& newDir, const fs::path& xmlIn, const fs::path& xmlOut, bool dataMod = false);
+    void symlinkSetup(const fs::path& oldDir, const fs::path& newDir, bool dataMod = false);
     void setupFolders(fs::path xmlOutPathUP);
     void retryInstall();
 };

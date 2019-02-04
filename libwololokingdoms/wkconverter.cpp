@@ -33,6 +33,7 @@
 #include "wkconverter.h"
 #include "caseless.h"
 #include "missing_strings.h"
+#include "wk_xml.h"
 
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
@@ -1455,22 +1456,19 @@ void WKConverter::hotkeySetup() {
 	}
 }
 
-void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir, const fs::path& xmlIn, const fs::path& xmlOut, bool dataMod) {
+void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir, bool dataMod) {
 
     /* Sets up symlinks between the different mod versions (offline/AK/FE), so as much as possible is shared
      * and as little space is needed as possible
      * Parameters:
      * oldDir: The directory the symlink references.
      * newDir: The directory the symlink should be created in
-     * xmlIn: The connected xml of the source folder
-     * xmlOut: The connected xml of the destination folder
      * dataMod: If true, the symlink is for wk-based datamod
      */
     bool vooblySrc = tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
     bool vooblyDst = tolower(newDir).find("\\voobly mods\\aoc") != std::string::npos;
 
 	cfs::create_directory(newDir);
-	cfs::copy_file(xmlIn, xmlOut, fs::copy_options::overwrite_existing);
     bool datalink = vooblySrc == vooblyDst && !dataMod;
 
     if(datalink) {
@@ -1879,11 +1877,14 @@ int WKConverter::run(bool retry)
                 }
             }
             listener->increaseProgress(1); //14
-            listener->log("Copy XML");
+            listener->log("Write expansion XML");
             if(settings->useExe) {
-                cfs::copy_file(xmlPath, xmlOutPathUP, fs::copy_options::overwrite_existing);
-            } else {
-                cfs::copy_file(xmlPath, xmlOutPath, fs::copy_options::overwrite_existing);
+                std::ofstream xml_output(xmlOutPathUP);
+                write_wk_xml(xml_output, settings->dlcLevel);
+            }
+            if (settings->useVoobly) {
+                std::ofstream xml_output(xmlOutPath);
+                write_wk_xml(xml_output, settings->dlcLevel);
             }
 
             fs::path installMapDir = installDir/"Script.Rm";
@@ -2194,7 +2195,7 @@ int WKConverter::run(bool retry)
             if (settings->useBoth) {
                 listener->log("Offline installation symlink");
                 try {
-                    symlinkSetup(settings->vooblyDir, settings->upDir, xmlPath, xmlOutPathUP);
+                    symlinkSetup(settings->vooblyDir, settings->upDir);
                 } catch (std::exception const & e) {
                     std::string message = "symlinkError$";
                     message += e.what();
@@ -2251,34 +2252,38 @@ int WKConverter::run(bool retry)
         if (settings->patch >= 0) {
             try {
                 listener->log("Patch setup");
-                fs::path xmlIn = resourceDir/"WKtemp.xml";
-                std::ifstream input(resourceDir/("WK"+std::to_string(settings->dlcLevel)+".xml"));
-                std::string str = concat_stream(input);
-                std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
-                replace_all(str,baseModName+dlcExtension,settings->modName);
-                std::ofstream out(xmlIn.string());
-                out << str;
-                input.close();
-                out.close();
+                std::string mod_name = baseModName + (
+                    settings->dlcLevel == 3 ? ""
+                  : settings->dlcLevel == 2 ? " AK"
+                  : " FE");
+                std::stringstream sstream;
+                write_wk_xml(sstream, settings->dlcLevel);
+                auto str = sstream.str();
+                replace_all(str, mod_name, settings->modName);
                 if(settings->useBoth || settings->useVoobly) {
-                    symlinkSetup(settings->vooblyDir.parent_path() / (baseModName+dlcExtension), settings->vooblyDir,xmlIn,settings->vooblyDir/"age2_x1.xml",true);
+                    std::ofstream outstream (settings->vooblyDir/"age2_x1.xml");
+                    outstream << str;
+                    outstream.close();
+                    symlinkSetup(settings->vooblyDir.parent_path()/mod_name, settings->vooblyDir, true);
                     if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
-                        std::ifstream oldDrs (settings->vooblyDir.parent_path()/(baseModName+dlcExtension)/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                        std::ifstream oldDrs (settings->vooblyDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
                         std::ofstream newDrs (settings->vooblyDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
                         editDrs(&oldDrs, &newDrs);
                     }
                 }
                 if(settings->useBoth || settings->useExe) {
-                    symlinkSetup(settings->upDir.parent_path() / (baseModName+dlcExtension), settings->upDir, xmlIn, settings->upDir.parent_path()/(UPModdedExe+".xml"), true);
+                    std::ofstream outstream (settings->upDir.parent_path()/(UPModdedExe + ".xml"));
+                    outstream << str;
+                    outstream.close();
+                    symlinkSetup(settings->upDir.parent_path()/mod_name, settings->upDir, true);
                     if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
-                        std::ifstream oldDrs (settings->upDir.parent_path()/(baseModName+dlcExtension)/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                        std::ifstream oldDrs (settings->upDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
                         std::ofstream newDrs (settings->upDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
                         editDrs(&oldDrs, &newDrs);
                     }
                 }
-                cfs::remove(xmlIn);
             } catch (std::exception const & e) {
                 std::string message = "patchError$";
                 message += e.what();
@@ -2295,17 +2300,21 @@ int WKConverter::run(bool retry)
             try {
                 if (settings->dlcLevel > 1) {
                     listener->log("FE Setup");
-                    fs::path xmlIn = resourceDir/"WK1.xml";
-                    fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" FE");
-                    if(settings->useBoth || settings->useVoobly)
-                        symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
+                    fs::path vooblyModDir = settings->vooblyDir.parent_path()/(baseModName + " FE");
+                    if(settings->useBoth || settings->useVoobly) {
+                        std::ofstream outstream (vooblyModDir/"age2_x1.xml");
+                        write_wk_xml(outstream, 1);
+                        symlinkSetup(settings->vooblyDir, vooblyModDir);
+                    }
                 }
                 if (settings->dlcLevel > 2) {
                     listener->log("AK Setup");
-                    fs::path xmlIn = resourceDir/"WK2.xml";
-                    fs::path vooblyDir2 = settings->vooblyDir.parent_path() / (baseModName+" AK");
-                    if(settings->useBoth || settings->useVoobly)
-                        symlinkSetup(settings->vooblyDir, vooblyDir2, xmlIn, vooblyDir2/"age2_x1.xml");
+                    fs::path vooblyModDir = settings->vooblyDir.parent_path()/(baseModName + " AK");
+                    if(settings->useBoth || settings->useVoobly) {
+                        std::ofstream outstream (vooblyModDir/"age2_x1.xml");
+                        write_wk_xml(outstream, 2);
+                        symlinkSetup(settings->vooblyDir, vooblyModDir);
+                    }
                 }
             } catch (std::exception const & e) {
                 std::string message = "restrictedCivError$";

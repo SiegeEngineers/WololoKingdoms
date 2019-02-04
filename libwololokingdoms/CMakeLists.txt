@@ -43,6 +43,7 @@ endif()
 set(ALL_SRC
   base64.cpp
   md5.cpp
+  wk_xml.cpp
   string_helpers.cpp
   zr_map_creator.cpp
   drs_creator.cpp
