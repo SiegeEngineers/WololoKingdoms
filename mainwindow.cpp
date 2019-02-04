@@ -234,8 +234,11 @@ void MainWindow::runConverter() {
     logFile.close();
 }
 
+static QTime log_timer;
 void MainWindow::log(std::string logMessage) {
     logFile << logMessage << std::endl;
+    std::cout << log_timer.elapsed() << "ms - " << logMessage << std::endl;
+  log_timer.restart();
 }
 
 void MainWindow::setInfo(std::string info){
