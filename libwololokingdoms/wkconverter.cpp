@@ -97,19 +97,17 @@ void WKConverter::indexDrsFiles(fs::path const &src, bool expansionFiles, bool t
 }
 
 void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
-    std::string const civs[] = {"italians-utf8.txt", "indians-utf8.txt", "incas-utf8.txt", "magyars-utf8.txt", "slavs-utf8.txt",
-                                "portuguese-utf8.txt", "ethiopians-utf8.txt", "malians-utf8.txt", "berbers-utf8.txt",
-                                "burmese-utf8.txt", "malay-utf8.txt", "vietnamese-utf8.txt", "khmer-utf8.txt"};
-    for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
-        std::ifstream langIn(inputDir/civs[i]);
-        std::ofstream langOut(outputDir/(civs[i].substr(0,civs[i].length()-9)+".txt"));
-        std::string contents;
-        langIn.seekg(0, std::ios::end);
-        contents.resize(langIn.tellg());
-        langIn.seekg(0, std::ios::beg);
-        langIn.read(&contents[0], contents.size());
-        langIn.close();
+    std::vector<std::string> civs = {
+        "italians-utf8.txt", "indians-utf8.txt", "incas-utf8.txt", "magyars-utf8.txt", "slavs-utf8.txt",
+        "portuguese-utf8.txt", "ethiopians-utf8.txt", "malians-utf8.txt", "berbers-utf8.txt",
+        "burmese-utf8.txt", "malay-utf8.txt", "vietnamese-utf8.txt", "khmer-utf8.txt" };
+    for (auto& hd_name : civs) {
+        auto aoc_name = hd_name.substr(0, hd_name.length() - 9) + ".txt";
+        std::ifstream langIn(inputDir/hd_name);
+        std::string contents = concat_stream(langIn);
         std::string outputContent = iconvert(contents, "UTF8", "WINDOWS-1252");
+
+        std::ofstream langOut(outputDir/aoc_name);
         langOut << outputContent;
         langOut.close();
     }
