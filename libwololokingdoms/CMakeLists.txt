@@ -44,8 +44,8 @@ set(ALL_SRC
   base64.cpp
   md5.cpp
   string_helpers.cpp
-  wkconverter.cpp
   zr_map_creator.cpp
+  drs_creator.cpp
   missing_strings.cpp
   fixes/ai900unitidfix.cpp
   fixes/berbersutfix.cpp
@@ -64,6 +64,7 @@ set(ALL_SRC
   fixes/smallfixes.cpp
   fixes/tricklebuildingfix.cpp
   fixes/vietfix.cpp
+  wkconverter.cpp
   third_party/miniz/miniz.c
 )
 

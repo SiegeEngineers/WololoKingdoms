@@ -28,6 +28,7 @@
 #include "string_helpers.h"
 #include "platform.h"
 #include "zr_map_creator.h"
+#include "drs_creator.h"
 #include "drs.h"
 #include "wkconverter.h"
 #include "caseless.h"
@@ -327,6 +328,7 @@ void WKConverter::convertLanguageFile(std::ifstream& in, std::ofstream& iniOut, 
 }
 
 void WKConverter::makeDrs(std::ofstream& out) {
+    DRSCreator drs (out);
 
     listener->setInfo("working$\n$workingDrs");
 
@@ -350,135 +352,25 @@ void WKConverter::makeDrs(std::ofstream& out) {
 	end = std::next(start,8);
 	slpFiles.erase(start,end);
 
-	const int numberOfTables = 2; // slp and wav
-	int numberOfSlpFiles = slpFiles.size();
-	int numberOfWavFiles = wavFiles.size();
-	int offsetOfFirstFile = sizeof (DrsHeader) +
-			sizeof (DrsTableInfo) * numberOfTables +
-			sizeof (DrsFileInfo) * (numberOfSlpFiles + numberOfWavFiles);
-	int offset = offsetOfFirstFile;
+   for (auto& it : slpFiles) {
+     drs.addFile(Slp, it.first, it.second);
+   }
+   for (auto& it : wavFiles) {
+     drs.addFile(Wav, it.first, it.second);
+   }
 
-
-	// file infos
-
-	std::vector<DrsFileInfo> slpFileInfos;
-	std::vector<DrsFileInfo> wavFileInfos;
-
-	for (auto& it : slpFiles) {
-		DrsFileInfo slp;
-		size_t size;
-		size = cfs::file_size(it.second);
-		slp.file_id = it.first;
-		slp.file_data_offset = offset;
-		slp.file_size = size;
-		offset += size;
-		slpFileInfos.push_back(slp);
-
-	}
     listener->increaseProgress(1); //67
-
-	for (auto& it : wavFiles) {
-		DrsFileInfo wav;
-		size_t size;
-		size = cfs::file_size(it.second);
-		wav.file_id = it.first;
-		wav.file_data_offset = offset;
-		wav.file_size = size;
-		offset += size;
-		wavFileInfos.push_back(wav);
-
-	}
     listener->increaseProgress(1); //68
-
-	// header infos
-
-	DrsHeader const header = {
-		{ 'C', 'o', 'p', 'y', 'r',
-		  'i', 'g', 'h', 't', ' ',
-		  '(', 'c', ')', ' ', '1',
-		  '9', '9', '7', ' ', 'E',
-		  'n', 's', 'e', 'm', 'b',
-		  'l', 'e', ' ', 'S', 't',
-		  'u', 'd', 'i', 'o', 's',
-		  '.', '\x1a' }, // copyright
-		{ '1', '.', '0', '0' }, // version
-		{ 't', 'r', 'i', 'b', 'e' }, // ftype
-		numberOfTables, // table_count
-		offsetOfFirstFile // file_offset
-	};
-
-	// table infos
-
-	DrsTableInfo const slpTableInfo = {
-		{ ' ', 'p', 'l', 's' }, // file_extension, "slp" in reverse
-		sizeof (DrsHeader) + sizeof (DrsFileInfo) * numberOfTables, // file_info_offset
-		(int) slpFileInfos.size() // num_files
-	};
-	DrsTableInfo const wavTableInfo = {
-		{ ' ', 'v', 'a', 'w' }, // file_extension, "wav" in reverse
-		(int) (sizeof (DrsHeader) +  sizeof (DrsFileInfo) * numberOfTables + sizeof (DrsFileInfo) * slpFileInfos.size()), // file_info_offset
-		(int) wavFileInfos.size() // num_files
-	};
     listener->increaseProgress(1); //69
-
-
     listener->setInfo("working$\n$workingDrs2");
-
 	// now write the actual drs file
-
-	// header
-	out.write(header.copyright, sizeof (DrsHeader::copyright));
-	out.write(header.version, sizeof (DrsHeader::version));
-	out.write(header.ftype, sizeof (DrsHeader::ftype));
-	out.write(reinterpret_cast<const char *>(&header.table_count), sizeof (DrsHeader::table_count));
-	out.write(reinterpret_cast<const char *>(&header.file_offset), sizeof (DrsHeader::file_offset));
-
-
-	// table infos
-	out.write(slpTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
-	out.write(reinterpret_cast<const char *>(&slpTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
-	out.write(reinterpret_cast<const char *>(&slpTableInfo.num_files), sizeof (DrsTableInfo::num_files));
-
-
-	out.write(wavTableInfo.file_extension, sizeof (DrsTableInfo::file_extension));
-	out.write(reinterpret_cast<const char *>(&wavTableInfo.file_info_offset), sizeof (DrsTableInfo::file_info_offset));
-	out.write(reinterpret_cast<const char *>(&wavTableInfo.num_files), sizeof (DrsTableInfo::num_files));
-
     listener->increaseProgress(1); //70
-	// file infos
-	for (auto& it : slpFileInfos) {
-		out.write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
-		out.write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
-		out.write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
-
-	}
     listener->increaseProgress(1); //71
-	for (auto& it : wavFileInfos) {
-		out.write(reinterpret_cast<const char *>(&it.file_id), sizeof (DrsFileInfo::file_id));
-		out.write(reinterpret_cast<const char *>(&it.file_data_offset), sizeof (DrsFileInfo::file_data_offset));
-		out.write(reinterpret_cast<const char *>(&it.file_size), sizeof (DrsFileInfo::file_size));
-
-	}
     listener->increaseProgress(1); //72
-
     listener->setInfo("working$\n$workingDrs3");
-
-	// now write the actual files
-	for (auto& it : slpFiles) {
-			std::ifstream srcStream (it.second, std::ios::binary);
-			out << srcStream.rdbuf();
-            srcStream.close();
-
-	}
     listener->increaseProgress(1); //73
-
-	for (auto& it : wavFiles) {
-		std::ifstream srcStream (it.second, std::ios::binary);
-		out << srcStream.rdbuf();
-        srcStream.close();
-
-	}
     listener->increaseProgress(1); //74
+    drs.commit();
     out.close();
 }
 
