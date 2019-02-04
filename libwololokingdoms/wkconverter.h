@@ -148,7 +148,7 @@ private:
         TerrainType terrain_type;
     };
 
-    void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
+    void copyHDMaps(const fs::path& inputDir, const fs::path& outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
     bool isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns);
     void upgradeTrees(int usedTerrain, int oldTerrain, std::string& map);
@@ -163,21 +163,21 @@ private:
     void loadModdedStrings(fs::path moddedStringsFile, std::map<int, std::string>& langReplacement);
     void makeDrs(std::ofstream& out);
     void editDrs(std::ifstream *in, std::ofstream *out);
-    void uglyHudHack(fs::path);
-    void copyCivIntroSounds(fs::path inputDir, fs::path outputDir);
-    void copyWallFiles(fs::path inputDir);
-    void createMusicPlaylist(fs::path inputDir, fs::path const outputDir);
+    void uglyHudHack(const fs::path&);
+    void copyCivIntroSounds(const fs::path& inputDir, const fs::path& outputDir);
+    void copyWallFiles(const fs::path& inputDir);
+    void createMusicPlaylist(const fs::path& inputDir, const fs::path& outputDir);
     void transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *aocDat);
     void adjustArchitectureFlags(genie::DatFile *aocDat, fs::path flagFilename);
     void patchArchitectures(genie::DatFile *aocDat);
     bool checkGraphics(genie::DatFile *aocDat, short graphicID, std::vector<int> checkedGraphics);
     void replaceGraphic(genie::DatFile *aocDat, short* graphicID, short compareID, short c, std::map<short,short>& replacedGraphics, bool civGroups = false);
     short duplicateGraphic(genie::DatFile *aocDat, std::map<short,short>& replacedGraphics, std::vector<short> duplicatedGraphics, short graphicID, short compareID, short offset, bool civGroups = false);
-    bool identifyHotkeyFile(fs::path directory, fs::path& maxHki, fs::path& lastEditedHki);
-    void copyHotkeyFile(fs::path maxHki, fs::path lastEditedHki, fs::path dst);
+    bool identifyHotkeyFile(const fs::path& directory, fs::path& maxHki, fs::path& lastEditedHki);
+    void copyHotkeyFile(const fs::path& maxHki, const fs::path& lastEditedHki, fs::path dst);
     void removeWkHotkeys();
     void hotkeySetup();
-    void symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool dataMod = false);
+    void symlinkSetup(const fs::path& oldDir, const fs::path& newDir, const fs::path& xmlIn, const fs::path& xmlOut, bool dataMod = false);
     void setupFolders(fs::path xmlOutPathUP);
     void retryInstall();
 };

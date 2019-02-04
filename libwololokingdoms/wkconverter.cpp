@@ -534,30 +534,35 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     out->close();
 }
 
-void WKConverter::copyCivIntroSounds(fs::path inputDir, fs::path outputDir) {
-	std::string const civs[] = {"italians", "indians", "incas", "magyars", "slavs",
-								"portuguese", "ethiopians", "malians", "berbers", "burmese", "malay", "vietnamese", "khmer"};
-	for (size_t i = 0; i < sizeof civs / sizeof (std::string); i++) {
-		std::error_code ec;
-		cfs::copy_file(inputDir / (civs[i] + ".mp3"), outputDir / (civs[i] + ".mp3"), ec);
-	}
+void WKConverter::copyCivIntroSounds(const fs::path& inputDir, const fs::path& outputDir) {
+    std::vector<std::string> civs = {
+        "italians", "indians", "incas", "magyars", "slavs",
+        "portuguese", "ethiopians", "malians", "berbers",
+        "burmese", "malay", "vietnamese", "khmer" };
+    for (auto& civ_name : civs) {
+        std::error_code ec;
+        cfs::copy_file(inputDir/(civ_name + ".mp3"), outputDir/(civ_name + ".mp3"), ec);
+    }
 }
 
-void WKConverter::uglyHudHack(fs::path assetsPath) {
-	/*
-	 * Shifts the offset between interface files by 10 so there's space for the new civs
-	 */
-	int const hudFiles[] = {51130, 51160};
-	for (size_t baseIndex = 0; baseIndex < sizeof hudFiles / sizeof (int); baseIndex++) {
-		for (size_t i = 1; i <= 23; i++) {
-			slpFiles[hudFiles[baseIndex]+i+(baseIndex+1)*10] = assetsPath / (std::to_string(hudFiles[baseIndex]+i) + ".slp");
-		}
-	}
+/*
+ * Shifts the offset between interface files by 10 so there's space for the new civs
+ */
+void WKConverter::uglyHudHack(const fs::path& assetsPath) {
+    std::vector<int> hudFiles = { 51130, 51160 };
+    int base_index = 0;
+    for (auto hud_file_id : hudFiles) {
+        for (size_t i = 1; i <= 23; i++) {
+            slpFiles[hud_file_id + i + (base_index + 1) * 10] =
+                assetsPath/(std::to_string(hud_file_id + i) + ".slp");
+        }
+        base_index++;
+    }
 
     indexDrsFiles(resourceDir/"expansion interfaces fix");
 }
 
-void WKConverter::copyWallFiles(fs::path inputDir) {
+void WKConverter::copyWallFiles(const fs::path& inputDir) {
 	/*
 	 * Base IDS 2098 Stone 2110 Fortified 4169 Damaged 4173 Damaged Fortified
 	 * Central European +0, Asian +1, Middle Eastern +2, West European +3
@@ -589,7 +594,7 @@ void WKConverter::copyWallFiles(fs::path inputDir) {
 	}
 }
 
-void WKConverter::createMusicPlaylist(fs::path inputDir, fs::path const outputDir) {
+void WKConverter::createMusicPlaylist(const fs::path& inputDir, const fs::path& outputDir) {
 	std::ofstream outputFile(outputDir);
 	for (int i = 1; i <= 23; i++ ) {
 		outputFile << inputDir << "xmusic" << std::to_string(i) << ".mp3" <<  std::endl;
@@ -597,10 +602,9 @@ void WKConverter::createMusicPlaylist(fs::path inputDir, fs::path const outputDi
     outputFile.close();
 }
 
-void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace) {
-    inputDir = cfs::resolve(inputDir);
+void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir, bool replace) {
     std::vector<fs::path> mapNames;
-    for (auto& it : fs::directory_iterator(inputDir)) {
+    for (auto& it : fs::directory_iterator(cfs::resolve(inputDir))) {
         auto extension = it.path().extension();
         if (extension == ".rms") {
             mapNames.push_back(it.path());
@@ -676,7 +680,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
                 continue;
         }
         cfs::remove(outputDir/("ZR@"+it.filename().string()));
-        std::ifstream input(inputDir/it.filename());
+        std::ifstream input(cfs::resolve(inputDir/it.filename()));
         std::string map = concat_stream(input);
         input.close();
         /*
@@ -778,7 +782,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
         out.close();
         if (mapName.substr(0,3) == "rw_" || mapName.substr(0,3) == "sm_") {
             std::string scenarioFile = it.stem().string()+".scx";
-            terrainOverrides[scenarioFile] = fs::path(inputDir.string()+"/"+scenarioFile);
+            terrainOverrides[scenarioFile] = cfs::resolve(inputDir/scenarioFile);
         }
         if (terrainOverrides.size() != 0) {
             createZRmap(terrainOverrides, outputDir, mapName);
@@ -1277,7 +1281,7 @@ void WKConverter::terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int
 	}
 }
 
-bool WKConverter::identifyHotkeyFile(fs::path directory, fs::path& maxHki, fs::path& lastEditedHki) {
+bool WKConverter::identifyHotkeyFile(const fs::path& directory, fs::path& maxHki, fs::path& lastEditedHki) {
     /*
      * Checks all .hki file in directory. The hotkey file with the highest number is saved in maxHki,
      * the hotkey file that was last edited in lastEditedHki. These are the two most likely candidates for the hotkey file
@@ -1314,7 +1318,7 @@ bool WKConverter::identifyHotkeyFile(fs::path directory, fs::path& maxHki, fs::p
         return false;
 }
 
-void WKConverter::copyHotkeyFile(fs::path maxHki, fs::path lastEditedHki, fs::path dst) {
+void WKConverter::copyHotkeyFile(const fs::path& maxHki, const fs::path& lastEditedHki, fs::path dst) {
     /*
      * See identifyHotkeyFile for extra info on maxHki, lastEditedHki
      * copies the .hki file maxHki into the directory dst. If maxHki already exists, the last 2 versions are kept as backup
@@ -1452,7 +1456,7 @@ void WKConverter::hotkeySetup() {
 	}
 }
 
-void WKConverter::symlinkSetup(fs::path oldDir, fs::path newDir, fs::path xmlIn, fs::path xmlOut, bool dataMod) {
+void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir, const fs::path& xmlIn, const fs::path& xmlOut, bool dataMod) {
 
     /* Sets up symlinks between the different mod versions (offline/AK/FE), so as much as possible is shared
      * and as little space is needed as possible
