@@ -143,8 +143,8 @@ private:
         std::string slp_name;
         std::string const_name_pattern;
         std::string replaced_name_pattern;
+        int old_terrain_id;
         int new_terrain_id;
-        int old_slp_index;
         TerrainType terrain_type;
     };
 

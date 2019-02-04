@@ -631,29 +631,29 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
     } };
 
     std::vector<MapConvertData> replacements = {
-        //<SLP Name,Regex Pattern,replace name,terrain ID, replace terrain ID,slp to replace,terrainType>
-        { "DRAGONFOREST.slp", "DRAGONFORES(T?)", "DRAGONFORES$1",48,21, ForestTerrain },
-        { "ACACIA_FOREST.slp", "AC(C?)ACIA(_?)FORES(T?)", "AC$1ACIA$2FORES$3",50,41, None },
-        { "DLC_RAINFOREST.slp", "DLC_RAINFOREST", "DLC_RAINFOREST",56,10, ForestTerrain },
-        { "BAOBAB.slp", "BAOBAB(S|_FOREST)?", "BAOBAB$1",49,16, None },
-        { "DLC_MANGROVESHALLOW.slp", "DLC_MANGROVESHALLOW", "DLC_MANGROVESHALLOW",54,11, None },
-        { "DLC_MANGROVEFOREST.slp", "DLC_MANGROVEFOREST", "DLC_MANGROVEFOREST",55,20, None },
-        { "DLC_NEWSHALLOW.slp", "DLC_NEWSHALLOW", "DLC_NEWSHALLOW",59,4, FixedTerrain },
-        { "SAVANNAH.slp", "(DLC_)?SAVANNAH", "$1SAVANNAH",41,14, LandTerrain },
-        { "DIRT4.slp", "(DLC_)?DIRT4", "$1DIRT4",42,3, LandTerrain },
-        { "MOORLAND.slp", "(DLC_)?MOORLAND", "$1MOORLAND",44,9, LandTerrain },
-        { "CRACKEDIT.slp", "CRACKEDIT", "CRACKEDIT",45,38, None },
-        { "QUICKSAND.slp", "(DLC_)?QUICKSAND", "$1QUICKSAND",46,40, FixedTerrain },
-        { "BLACK.slp", "(DLC_)?BLACK(?!_)", "$1BLACK",47,40, FixedTerrain },
-        { "DLC_BEACH2.slp", "DLC_BEACH2", "DLC_BEACH2",51,2, FixedTerrain },
-        { "DLC_BEACH3.slp", "DLC_BEACH3", "DLC_BEACH3",52,2, FixedTerrain },
-        { "DLC_BEACH4.slp", "DLC_BEACH4", "DLC_BEACH4",53,2, FixedTerrain },
-        { "DLC_DRYROAD.slp", "DLC_DRYROAD", "DLC_DRYROAD",43,25, LandTerrain },
-        { "DLC_WATER4.slp", "DLC_WATER4", "DLC_WATER4",57,22, WaterTerrain },
-        { "DLC_WATER5.slp", "DLC_WATER5", "DLC_WATER5",58,1, WaterTerrain },
-        { "DLC_JUNGLELEAVES.slp", "DLC_JUNGLELEAVES", "DLC_JUNGLELEAVES",62,5, LandTerrain },
-        { "DLC_JUNGLEROAD.slp", "DLC_JUNGLEROAD", "DLC_JUNGLEROAD",61,39, LandTerrain },
-        { "DLC_JUNGLEGRASS.slp", "DLC_JUNGLEGRASS", "DLC_JUNGLEGRASS",60,12, LandTerrain }
+        // slp_name, const_name_pattern, replaced_name_pattern, old_terrain_id, new_terrain_id, terrain_type
+        { "DRAGONFOREST.slp", "DRAGONFORES(T?)", "DRAGONFORES$1", 48, 21, ForestTerrain },
+        { "ACACIA_FOREST.slp", "AC(C?)ACIA(_?)FORES(T?)", "AC$1ACIA$2FORES$3", 50, 41, None },
+        { "DLC_RAINFOREST.slp", "DLC_RAINFOREST", "DLC_RAINFOREST", 56, 10, ForestTerrain },
+        { "BAOBAB.slp", "BAOBAB(S|_FOREST)?", "BAOBAB$1", 49, 16, None },
+        { "DLC_MANGROVESHALLOW.slp", "DLC_MANGROVESHALLOW", "DLC_MANGROVESHALLOW", 54, 11, None },
+        { "DLC_MANGROVEFOREST.slp", "DLC_MANGROVEFOREST", "DLC_MANGROVEFOREST", 55, 20, None },
+        { "DLC_NEWSHALLOW.slp", "DLC_NEWSHALLOW", "DLC_NEWSHALLOW", 59, 4, FixedTerrain },
+        { "SAVANNAH.slp", "(DLC_)?SAVANNAH", "$1SAVANNAH", 41, 14, LandTerrain },
+        { "DIRT4.slp", "(DLC_)?DIRT4", "$1DIRT4", 42, 3, LandTerrain },
+        { "MOORLAND.slp", "(DLC_)?MOORLAND", "$1MOORLAND", 44, 9, LandTerrain },
+        { "CRACKEDIT.slp", "CRACKEDIT", "CRACKEDIT", 45, 38, None },
+        { "QUICKSAND.slp", "(DLC_)?QUICKSAND", "$1QUICKSAND", 46, 40, FixedTerrain },
+        { "BLACK.slp", "(DLC_)?BLACK(?!_)", "$1BLACK", 47, 40, FixedTerrain },
+        { "DLC_BEACH2.slp", "DLC_BEACH2", "DLC_BEACH2", 51, 2, FixedTerrain },
+        { "DLC_BEACH3.slp", "DLC_BEACH3", "DLC_BEACH3", 52, 2, FixedTerrain },
+        { "DLC_BEACH4.slp", "DLC_BEACH4", "DLC_BEACH4", 53, 2, FixedTerrain },
+        { "DLC_DRYROAD.slp", "DLC_DRYROAD", "DLC_DRYROAD", 43, 25, LandTerrain },
+        { "DLC_WATER4.slp", "DLC_WATER4", "DLC_WATER4", 57, 22, WaterTerrain },
+        { "DLC_WATER5.slp", "DLC_WATER5", "DLC_WATER5", 58, 1, WaterTerrain },
+        { "DLC_JUNGLELEAVES.slp", "DLC_JUNGLELEAVES", "DLC_JUNGLELEAVES", 62, 5, LandTerrain },
+        { "DLC_JUNGLEROAD.slp", "DLC_JUNGLEROAD", "DLC_JUNGLEROAD", 61, 39, LandTerrain },
+        { "DLC_JUNGLEGRASS.slp", "DLC_JUNGLEGRASS", "DLC_JUNGLEGRASS", 60, 12, LandTerrain }
     };
 
     std::map<int,std::string> slpNumbers = {
@@ -708,15 +708,15 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
             if(std::regex_search(map,terrainName)) {
                 if(repIt.new_terrain_id < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
                     terrainsUsed.at(repIt.new_terrain_id) = true;
-                terrainsUsed.at(repIt.old_slp_index) = true;
+                terrainsUsed.at(repIt.old_terrain_id) = true;
             }
         }
 
         for (auto& repIt : replacements) {
-            if(!terrainsUsed.at(repIt.old_slp_index))
+            if(!terrainsUsed.at(repIt.old_terrain_id))
                 continue;
             // Check if replacement candidate is already used
-            std::regex terrainConstDef = std::regex("#const\\s+" +repIt.const_name_pattern+ "\\s+" +std::to_string(repIt.old_slp_index));
+            std::regex terrainConstDef = std::regex("#const\\s+" +repIt.const_name_pattern+ "\\s+" +std::to_string(repIt.old_terrain_id));
             int usedTerrain = repIt.new_terrain_id;
             //If it's one of the terrains with a shared slp, we need to search the map for these other terrains too, else just the usedTerrain
             if(repIt.terrain_type > FixedTerrain
@@ -742,7 +742,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
             if(usedTerrain != repIt.new_terrain_id) {
                 std::regex terrainName = std::regex(repIt.const_name_pattern);
                 map = std::regex_replace(map,terrainName, "MY"+repIt.replaced_name_pattern);
-                terrainConstDef = std::regex("#const\\sMY+" +repIt.const_name_pattern+ "\\s+" +std::to_string(repIt.old_slp_index));
+                terrainConstDef = std::regex("#const\\sMY+" +repIt.const_name_pattern+ "\\s+" +std::to_string(repIt.old_terrain_id));
                 std::string temp = std::regex_replace(map,terrainConstDef, "#const MY"+repIt.replaced_name_pattern+" "+std::to_string(usedTerrain));
                 if (temp != map)
                     map = temp;
@@ -761,7 +761,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
             terrainOverrides[slpNumbers.at(usedTerrain)] = newTerrainFiles.at(repIt.slp_name);
 
             if(repIt.terrain_type == ForestTerrain) {
-                upgradeTrees(usedTerrain, repIt.old_slp_index, map);
+                upgradeTrees(usedTerrain, repIt.old_terrain_id, map);
             }
 
 
