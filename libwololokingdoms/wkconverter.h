@@ -139,6 +139,15 @@ private:
         UnbuildableTerrain
     };
 
+    struct MapConvertData {
+        std::string slp_name;
+        std::string const_name_pattern;
+        std::string replaced_name_pattern;
+        int new_terrain_id;
+        int old_slp_index;
+        TerrainType terrain_type;
+    };
+
     void copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace = false);
     bool usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed);
     bool isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns);
