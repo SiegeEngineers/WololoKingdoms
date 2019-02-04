@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'dialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.11.0
+** Created by: Qt User Interface Compiler version 5.12.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -26,13 +26,13 @@ public:
     void setupUi(QDialog *Dialog)
     {
         if (Dialog->objectName().isEmpty())
-            Dialog->setObjectName(QStringLiteral("Dialog"));
+            Dialog->setObjectName(QString::fromUtf8("Dialog"));
         Dialog->resize(266, 191);
         button = new QPushButton(Dialog);
-        button->setObjectName(QStringLiteral("button"));
+        button->setObjectName(QString::fromUtf8("button"));
         button->setGeometry(QRect(90, 140, 75, 23));
         label = new QTextBrowser(Dialog);
-        label->setObjectName(QStringLiteral("label"));
+        label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(30, 20, 191, 81));
 
         retranslateUi(Dialog);

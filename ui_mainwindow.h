@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.11.0
+** Created by: Qt User Interface Compiler version 5.12.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -86,42 +86,42 @@ public:
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
-            MainWindow->setObjectName(QStringLiteral("MainWindow"));
+            MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(404, 589);
         centralWidget = new QWidget(MainWindow);
-        centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
-        gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
+        gridLayoutWidget->setObjectName(QString::fromUtf8("gridLayoutWidget"));
         gridLayoutWidget->setGeometry(QRect(30, 10, 341, 399));
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         gridLayout->setContentsMargins(0, 0, 0, 0);
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setSpacing(6);
-        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
         useVoobly = new QRadioButton(gridLayoutWidget);
-        useVoobly->setObjectName(QStringLiteral("useVoobly"));
+        useVoobly->setObjectName(QString::fromUtf8("useVoobly"));
         useVoobly->setMaximumSize(QSize(16777215, 16777215));
         useVoobly->setChecked(true);
 
         horizontalLayout_2->addWidget(useVoobly);
 
         useExe = new QRadioButton(gridLayoutWidget);
-        useExe->setObjectName(QStringLiteral("useExe"));
+        useExe->setObjectName(QString::fromUtf8("useExe"));
         useExe->setMaximumSize(QSize(16777215, 16777215));
 
         horizontalLayout_2->addWidget(useExe);
 
         useBoth = new QRadioButton(gridLayoutWidget);
-        useBoth->setObjectName(QStringLiteral("useBoth"));
+        useBoth->setObjectName(QString::fromUtf8("useBoth"));
         useBoth->setMaximumSize(QSize(16777215, 16777215));
 
         horizontalLayout_2->addWidget(useBoth);
 
         installTypeTip = new QPushButton(gridLayoutWidget);
-        installTypeTip->setObjectName(QStringLiteral("installTypeTip"));
+        installTypeTip->setObjectName(QString::fromUtf8("installTypeTip"));
         installTypeTip->setMaximumSize(QSize(25, 16777215));
         installTypeTip->setLayoutDirection(Qt::LeftToRight);
 
@@ -132,15 +132,15 @@ public:
 
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setSpacing(6);
-        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
         replaceTooltips = new QCheckBox(gridLayoutWidget);
-        replaceTooltips->setObjectName(QStringLiteral("replaceTooltips"));
+        replaceTooltips->setObjectName(QString::fromUtf8("replaceTooltips"));
         replaceTooltips->setChecked(true);
 
         horizontalLayout_3->addWidget(replaceTooltips);
 
         tooltipTip = new QPushButton(gridLayoutWidget);
-        tooltipTip->setObjectName(QStringLiteral("tooltipTip"));
+        tooltipTip->setObjectName(QString::fromUtf8("tooltipTip"));
         tooltipTip->setMaximumSize(QSize(25, 16777215));
         tooltipTip->setToolTipDuration(0);
 
@@ -151,27 +151,27 @@ public:
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
+        verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
         horizontalLayout_11 = new QHBoxLayout();
         horizontalLayout_11->setSpacing(6);
-        horizontalLayout_11->setObjectName(QStringLiteral("horizontalLayout_11"));
+        horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
         useNoSnow = new QCheckBox(gridLayoutWidget);
-        useNoSnow->setObjectName(QStringLiteral("useNoSnow"));
+        useNoSnow->setObjectName(QString::fromUtf8("useNoSnow"));
         useNoSnow->setChecked(true);
 
         horizontalLayout_11->addWidget(useNoSnow);
 
         usePw = new QCheckBox(gridLayoutWidget);
-        usePw->setObjectName(QStringLiteral("usePw"));
+        usePw->setObjectName(QString::fromUtf8("usePw"));
         usePw->setChecked(true);
 
         horizontalLayout_11->addWidget(usePw);
 
         useGrid = new QCheckBox(gridLayoutWidget);
-        useGrid->setObjectName(QStringLiteral("useGrid"));
+        useGrid->setObjectName(QString::fromUtf8("useGrid"));
         useGrid->setChecked(true);
 
         horizontalLayout_11->addWidget(useGrid);
@@ -181,15 +181,15 @@ public:
 
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setSpacing(6);
-        horizontalLayout_13->setObjectName(QStringLiteral("horizontalLayout_13"));
+        horizontalLayout_13->setObjectName(QString::fromUtf8("horizontalLayout_13"));
         useMonks = new QCheckBox(gridLayoutWidget);
-        useMonks->setObjectName(QStringLiteral("useMonks"));
+        useMonks->setObjectName(QString::fromUtf8("useMonks"));
         useMonks->setChecked(true);
 
         horizontalLayout_13->addWidget(useMonks);
 
         useWalls = new QCheckBox(gridLayoutWidget);
-        useWalls->setObjectName(QStringLiteral("useWalls"));
+        useWalls->setObjectName(QString::fromUtf8("useWalls"));
 
         horizontalLayout_13->addWidget(useWalls);
 
@@ -200,7 +200,7 @@ public:
         horizontalLayout->addLayout(verticalLayout_5);
 
         modsTip = new QPushButton(gridLayoutWidget);
-        modsTip->setObjectName(QStringLiteral("modsTip"));
+        modsTip->setObjectName(QString::fromUtf8("modsTip"));
         modsTip->setMaximumSize(QSize(25, 16777215));
         modsTip->setToolTipDuration(0);
 
@@ -211,16 +211,16 @@ public:
 
         horizontalLayout_10 = new QHBoxLayout();
         horizontalLayout_10->setSpacing(6);
-        horizontalLayout_10->setObjectName(QStringLiteral("horizontalLayout_10"));
+        horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
         copyCustomMaps = new QCheckBox(gridLayoutWidget);
-        copyCustomMaps->setObjectName(QStringLiteral("copyCustomMaps"));
+        copyCustomMaps->setObjectName(QString::fromUtf8("copyCustomMaps"));
         copyCustomMaps->setEnabled(true);
         copyCustomMaps->setChecked(false);
 
         horizontalLayout_10->addWidget(copyCustomMaps);
 
         customMapsTip = new QPushButton(gridLayoutWidget);
-        customMapsTip->setObjectName(QStringLiteral("customMapsTip"));
+        customMapsTip->setObjectName(QString::fromUtf8("customMapsTip"));
         customMapsTip->setMaximumSize(QSize(25, 16777215));
         customMapsTip->setToolTipDuration(0);
 
@@ -231,19 +231,19 @@ public:
 
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setSpacing(6);
-        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
         horizontalLayout_4->setContentsMargins(-1, -1, -1, 0);
         hotkeyChoice = new QComboBox(gridLayoutWidget);
         hotkeyChoice->addItem(QString());
         hotkeyChoice->addItem(QString());
         hotkeyChoice->addItem(QString());
         hotkeyChoice->addItem(QString());
-        hotkeyChoice->setObjectName(QStringLiteral("hotkeyChoice"));
+        hotkeyChoice->setObjectName(QString::fromUtf8("hotkeyChoice"));
 
         horizontalLayout_4->addWidget(hotkeyChoice);
 
         hotkeyTip = new QPushButton(gridLayoutWidget);
-        hotkeyTip->setObjectName(QStringLiteral("hotkeyTip"));
+        hotkeyTip->setObjectName(QString::fromUtf8("hotkeyTip"));
         hotkeyTip->setMaximumSize(QSize(25, 16777215));
         hotkeyTip->setToolTipDuration(0);
 
@@ -254,15 +254,15 @@ public:
 
         horizontalLayout_7 = new QHBoxLayout();
         horizontalLayout_7->setSpacing(6);
-        horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
+        horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         fixFlags = new QCheckBox(gridLayoutWidget);
-        fixFlags->setObjectName(QStringLiteral("fixFlags"));
+        fixFlags->setObjectName(QString::fromUtf8("fixFlags"));
         fixFlags->setChecked(false);
 
         horizontalLayout_7->addWidget(fixFlags);
 
         flagsTip = new QPushButton(gridLayoutWidget);
-        flagsTip->setObjectName(QStringLiteral("flagsTip"));
+        flagsTip->setObjectName(QString::fromUtf8("flagsTip"));
         flagsTip->setMaximumSize(QSize(25, 16777215));
         flagsTip->setToolTipDuration(0);
 
@@ -273,15 +273,15 @@ public:
 
         horizontalLayout_5 = new QHBoxLayout();
         horizontalLayout_5->setSpacing(6);
-        horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
+        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
         copyMaps = new QCheckBox(gridLayoutWidget);
-        copyMaps->setObjectName(QStringLiteral("copyMaps"));
+        copyMaps->setObjectName(QString::fromUtf8("copyMaps"));
         copyMaps->setChecked(true);
 
         horizontalLayout_5->addWidget(copyMaps);
 
         mapsTip = new QPushButton(gridLayoutWidget);
-        mapsTip->setObjectName(QStringLiteral("mapsTip"));
+        mapsTip->setObjectName(QString::fromUtf8("mapsTip"));
         mapsTip->setMaximumSize(QSize(25, 16777215));
         mapsTip->setToolTipDuration(0);
 
@@ -303,27 +303,27 @@ public:
         languageChoice->addItem(QString());
         languageChoice->addItem(QString());
         languageChoice->addItem(QString());
-        languageChoice->setObjectName(QStringLiteral("languageChoice"));
+        languageChoice->setObjectName(QString::fromUtf8("languageChoice"));
 
         gridLayout->addWidget(languageChoice, 6, 0, 1, 1);
 
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setSpacing(6);
-        horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
+        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
         usePatch = new QCheckBox(gridLayoutWidget);
-        usePatch->setObjectName(QStringLiteral("usePatch"));
+        usePatch->setObjectName(QString::fromUtf8("usePatch"));
         usePatch->setEnabled(true);
 
         horizontalLayout_6->addWidget(usePatch);
 
         patchSelection = new QComboBox(gridLayoutWidget);
-        patchSelection->setObjectName(QStringLiteral("patchSelection"));
+        patchSelection->setObjectName(QString::fromUtf8("patchSelection"));
         patchSelection->setEnabled(false);
 
         horizontalLayout_6->addWidget(patchSelection);
 
         patchSelectionTip = new QPushButton(gridLayoutWidget);
-        patchSelectionTip->setObjectName(QStringLiteral("patchSelectionTip"));
+        patchSelectionTip->setObjectName(QString::fromUtf8("patchSelectionTip"));
         patchSelectionTip->setMaximumSize(QSize(25, 16777215));
 
         horizontalLayout_6->addWidget(patchSelectionTip);
@@ -333,25 +333,25 @@ public:
 
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setSpacing(6);
-        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
+        horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
         installLabel = new QLabel(gridLayoutWidget);
-        installLabel->setObjectName(QStringLiteral("installLabel"));
+        installLabel->setObjectName(QString::fromUtf8("installLabel"));
 
         horizontalLayout_8->addWidget(installLabel);
 
         installDirectory = new QLineEdit(gridLayoutWidget);
-        installDirectory->setObjectName(QStringLiteral("installDirectory"));
+        installDirectory->setObjectName(QString::fromUtf8("installDirectory"));
 
         horizontalLayout_8->addWidget(installDirectory);
 
         directoryDialogButton = new QPushButton(gridLayoutWidget);
-        directoryDialogButton->setObjectName(QStringLiteral("directoryDialogButton"));
+        directoryDialogButton->setObjectName(QString::fromUtf8("directoryDialogButton"));
         directoryDialogButton->setMaximumSize(QSize(25, 16777215));
 
         horizontalLayout_8->addWidget(directoryDialogButton);
 
         directoryTip = new QPushButton(gridLayoutWidget);
-        directoryTip->setObjectName(QStringLiteral("directoryTip"));
+        directoryTip->setObjectName(QString::fromUtf8("directoryTip"));
         directoryTip->setMaximumSize(QSize(25, 16777215));
         directoryTip->setToolTipDuration(0);
 
@@ -362,15 +362,15 @@ public:
 
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setSpacing(6);
-        horizontalLayout_9->setObjectName(QStringLiteral("horizontalLayout_9"));
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
         restrictedCivMods = new QCheckBox(gridLayoutWidget);
-        restrictedCivMods->setObjectName(QStringLiteral("restrictedCivMods"));
+        restrictedCivMods->setObjectName(QString::fromUtf8("restrictedCivMods"));
         restrictedCivMods->setChecked(true);
 
         horizontalLayout_9->addWidget(restrictedCivMods);
 
         restrictedCivTip = new QPushButton(gridLayoutWidget);
-        restrictedCivTip->setObjectName(QStringLiteral("restrictedCivTip"));
+        restrictedCivTip->setObjectName(QString::fromUtf8("restrictedCivTip"));
         restrictedCivTip->setMaximumSize(QSize(25, 16777215));
         restrictedCivTip->setToolTipDuration(0);
 
@@ -380,27 +380,27 @@ public:
         gridLayout->addLayout(horizontalLayout_9, 11, 0, 1, 1);
 
         runButton = new QPushButton(centralWidget);
-        runButton->setObjectName(QStringLiteral("runButton"));
+        runButton->setObjectName(QString::fromUtf8("runButton"));
         runButton->setEnabled(false);
         runButton->setGeometry(QRect(160, 520, 75, 23));
         verticalLayoutWidget = new QWidget(centralWidget);
-        verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
+        verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
         verticalLayoutWidget->setGeometry(QRect(30, 480, 341, 31));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
         label = new QLabel(centralWidget);
-        label->setObjectName(QStringLiteral("label"));
+        label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(30, 410, 339, 61));
         label->setAlignment(Qt::AlignCenter);
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
-        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
+        mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
         MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
         statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
+        statusBar->setObjectName(QString::fromUtf8("statusBar"));
         MainWindow->setStatusBar(statusBar);
 
         retranslateUi(MainWindow);
