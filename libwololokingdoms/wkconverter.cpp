@@ -322,48 +322,36 @@ void WKConverter::convertLanguageFile(std::ifstream& in, std::ofstream& iniOut, 
 
 void WKConverter::makeDrs(std::ofstream& out) {
     DRSCreator drs (out);
-
     listener->setInfo("working$\n$workingDrs");
 
-
-	// Exclude Forgotten Empires leftovers
+    // Exclude Forgotten Empires leftovers
     //slpFiles.erase(50163); // Forgotten Empires loading screen
     slpFiles.erase(50189); // Forgotten Empires main menu
     //slpFiles.erase(53207); // Forgotten Empires in-game logo
-	slpFiles.erase(53208); // Forgotten Empires objective window
-	slpFiles.erase(53209); // ???
-	/*
-	 * Some of the interface files are duplicates because of the shifting,
-	 * get rid of those
-	 */
-	std::map<int,fs::path>::iterator start;
-	std::map<int,fs::path>::iterator end;
-	start = slpFiles.find(51132);
-	end = std::next(start,8);
-	slpFiles.erase(start,end);
-	start = slpFiles.find(51172);
-	end = std::next(start,8);
-	slpFiles.erase(start,end);
+    slpFiles.erase(53208); // Forgotten Empires objective window
+    slpFiles.erase(53209); // ???
 
-   for (auto& it : slpFiles) {
-     drs.addFile(Slp, it.first, it.second);
-   }
-   for (auto& it : wavFiles) {
-     drs.addFile(Wav, it.first, it.second);
-   }
+    /*
+     * Some of the interface files are duplicates because of the shifting,
+     * get rid of those
+     */
+    auto start = slpFiles.find(51132);
+    slpFiles.erase(start, std::next(start, 8));
+    start = slpFiles.find(51172);
+    slpFiles.erase(start, std::next(start, 8));
 
-    listener->increaseProgress(1); //67
-    listener->increaseProgress(1); //68
-    listener->increaseProgress(1); //69
+    for (auto& it : slpFiles) {
+        drs.addFile(Slp, it.first, it.second);
+    }
+    listener->increaseProgress(2);
+    for (auto& it : wavFiles) {
+        drs.addFile(Wav, it.first, it.second);
+    }
+    listener->increaseProgress(2);
+
     listener->setInfo("working$\n$workingDrs2");
-	// now write the actual drs file
-    listener->increaseProgress(1); //70
-    listener->increaseProgress(1); //71
-    listener->increaseProgress(1); //72
-    listener->setInfo("working$\n$workingDrs3");
-    listener->increaseProgress(1); //73
-    listener->increaseProgress(1); //74
     drs.commit();
+    listener->increaseProgress(4);
     out.close();
 }
 
@@ -641,6 +629,7 @@ void WKConverter::copyHDMaps(fs::path inputDir, fs::path outputDir, bool replace
         { { 40, std::regex("\\WDLC_ROCK\\W") },
           { 35, std::regex("\\WICE\\W") } }
     } };
+
     std::vector<MapConvertData> replacements = {
         //<SLP Name,Regex Pattern,replace name,terrain ID, replace terrain ID,slp to replace,terrainType>
         { "DRAGONFOREST.slp", "DRAGONFORES(T?)", "DRAGONFORES$1",48,21, ForestTerrain },
