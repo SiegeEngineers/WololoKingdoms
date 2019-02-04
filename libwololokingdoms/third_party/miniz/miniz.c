@@ -6089,7 +6089,15 @@ mz_bool mz_zip_writer_add_mem_ex_v2(mz_zip_archive *pZip, const char *pArchive_n
     }
 #endif /* #ifndef MINIZ_NO_TIME */
 
-	if (!(level_and_flags & MZ_ZIP_FLAG_COMPRESSED_DATA))
+    // WololoKingdoms mod: output uncompressed size
+    if (level_and_flags & MZ_ZIP_FLAG_WOLOLOKINGDOMS)
+    {
+        write_uncomp_crc32 = 0;
+        write_uncomp_size = buf_size;
+        level = 0;
+        store_data_uncompressed = MZ_TRUE;
+    }
+    else if (!(level_and_flags & MZ_ZIP_FLAG_COMPRESSED_DATA))
 	{
 		uncomp_crc32 = (mz_uint32)mz_crc32(MZ_CRC32_INIT, (const mz_uint8 *)pBuf, buf_size);
 		uncomp_size = buf_size;
@@ -6099,13 +6107,6 @@ mz_bool mz_zip_writer_add_mem_ex_v2(mz_zip_archive *pZip, const char *pArchive_n
 			store_data_uncompressed = MZ_TRUE;
 		}
 	}
-
-    // WololoKingdoms mod: output uncompressed size
-    if (level_and_flags & MZ_ZIP_FLAG_WOLOLOKINGDOMS)
-    {
-        write_uncomp_crc32 = uncomp_crc32;
-        write_uncomp_size = uncomp_size;
-    }
 
     archive_name_size = strlen(pArchive_name);
     if (archive_name_size > MZ_UINT16_MAX)
