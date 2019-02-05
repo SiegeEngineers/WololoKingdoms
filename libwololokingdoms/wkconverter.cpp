@@ -1678,7 +1678,7 @@ int WKConverter::run(bool retry)
         fs::path wallsInputDir = resourceDir/"short_walls";
         fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
         fs::path aiInputPath = resourceDir/"Script.Ai";
-        fs::path UPExe = resourceDir/"SetupAoc.exe";
+        fs::path upSetupAoCSource = resourceDir/"SetupAoc.exe";
         fs::path aocLanguageIniModDll = resourceDir/"language_x1_p1.dll";
         fs::path patchFolder;
 
@@ -1694,7 +1694,7 @@ int WKConverter::run(bool retry)
         fs::path aocDatPath = settings->hdPath/"resources"/"_common"/"dat"/"empires2_x1_p1.dat";
         fs::path hdDatPath = settings->hdPath/"resources"/"_common"/"dat"/"empires2_x2_p1.dat";
 
-        installDir  = settings->useExe ? settings->upDir : settings->vooblyDir;
+        installDir = settings->useExe ? settings->upDir : settings->vooblyDir;
 
         //Voobly Target
         fs::path versionIniPath = settings->vooblyDir / "version.ini";
@@ -1703,8 +1703,8 @@ int WKConverter::run(bool retry)
 
         //Offline Target
         fs::path xmlOutPathUP;
-        std::string UPModdedExe;
-        fs::path UPExeOut = settings->outPath / "SetupAoc.exe";
+        std::string upModdedExeName;
+        fs::path upSetupAoCPath = settings->outPath / "SetupAoc.exe";
 
         //Any Target
         fs::path languageIniPath = installDir/"language.ini";
@@ -1719,17 +1719,17 @@ int WKConverter::run(bool retry)
         case 1:
             xmlOutPathUP = settings->outPath / "Games"/"WKFE.xml";
             xmlPath = resourceDir/"WK1.xml";
-            UPModdedExe = "WKFE";
+            upModdedExeName = "WKFE";
             break;
         case 2:
             xmlOutPathUP = settings->outPath / "Games"/"WKAK.xml";
             xmlPath = resourceDir/"WK2.xml";
-            UPModdedExe = "WKAK";
+            upModdedExeName = "WKAK";
             break;
         case 3:
             xmlOutPathUP = settings->outPath / "Games"/"WK.xml";
             xmlPath = resourceDir/"WK3.xml";
-            UPModdedExe = "WK";
+            upModdedExeName = "WK";
             break;
         }
 
@@ -1739,7 +1739,7 @@ int WKConverter::run(bool retry)
         } else {
             listener->log("New Run");
             listener->log("\n");
-        }      
+        }
         listener->log("\nHD Path:");
         listener->log(settings->hdPath.string() + "\n" + "AoC Path:");
         listener->log(installDir.string() + "\n");
@@ -1759,7 +1759,7 @@ int WKConverter::run(bool retry)
             cfs::create_directories(outputDatPath.parent_path());
             patchFolder = resourceDir/"patches"/std::get<0>(settings->dataModList[settings->patch]);
             hdDatPath = patchFolder/"empires2_x1_p1.dat";
-            UPModdedExe = std::get<1>(settings->dataModList[settings->patch]);
+            upModdedExeName = std::get<1>(settings->dataModList[settings->patch]);
         }
 
         createLanguageFile(languageIniPath, patchFolder);
@@ -2271,7 +2271,7 @@ int WKConverter::run(bool retry)
                     }
                 }
                 if(settings->useBoth || settings->useExe) {
-                    std::ofstream outstream (settings->upDir.parent_path()/(UPModdedExe + ".xml"));
+                    std::ofstream outstream (settings->upDir.parent_path()/(upModdedExeName + ".xml"));
                     outstream << str;
                     outstream.close();
                     symlinkSetup(settings->upDir.parent_path()/mod_name, settings->upDir, true);
@@ -2354,13 +2354,12 @@ int WKConverter::run(bool retry)
             listener->setInfo("working$\n$workingUP");
             listener->increaseProgress(1); //95
             try {
-                cfs::copy_file(UPExe, UPExeOut, fs::copy_options::overwrite_existing);
+                cfs::copy_file(upSetupAoCSource, upSetupAoCPath, fs::copy_options::overwrite_existing);
 
                 listener->increaseProgress(1); //96
 
-                std::vector<std::string> flags;
-                flags.push_back("-g:" + UPModdedExe);
-                listener->installUserPatch(UPExeOut, flags);
+                std::vector<std::string> flags = { "-g:" + upModdedExeName };
+                listener->installUserPatch(upSetupAoCPath, flags);
 
                 std::string newExeName;
                 if(settings->patch >= 0 && (newExeName = std::get<4>(settings->dataModList[settings->patch])) != "") {
@@ -2368,9 +2367,9 @@ int WKConverter::run(bool retry)
                         cfs::rename(settings->outPath / "age2_x1"/(newExeName+".exe"),
                                    settings->outPath / "age2_x1"/(newExeName+".exe.bak"));
                     }
-                    cfs::rename(settings->outPath / "age2_x1"/(UPModdedExe+".exe"),
+                    cfs::rename(settings->outPath / "age2_x1"/(upModdedExeName+".exe"),
                                settings->outPath / "age2_x1"/(newExeName+".exe"));
-                    UPModdedExe = newExeName;
+                    upModdedExeName = newExeName;
                 }
             } catch (std::exception const & e) {
                 std::string message = "exeError$";
@@ -2387,7 +2386,7 @@ int WKConverter::run(bool retry)
 
             listener->increaseProgress(1); //97
             std::string info = settings->useBoth ? "dialogBoth" : "dialogExe";
-            listener->createDialog(info, "<exe>", UPModdedExe);
+            listener->createDialog(info, "<exe>", upModdedExeName);
 
         }
         listener->setInfo("workingDone");
