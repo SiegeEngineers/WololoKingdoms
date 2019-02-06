@@ -45,7 +45,7 @@ public:
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout_11;
     QCheckBox *useNoSnow;
-    QCheckBox *usePw;
+    QCheckBox *useSmallTrees;
     QCheckBox *useGrid;
     QHBoxLayout *horizontalLayout_13;
     QCheckBox *useMonks;
@@ -164,11 +164,11 @@ public:
 
         horizontalLayout_11->addWidget(useNoSnow);
 
-        usePw = new QCheckBox(gridLayoutWidget);
-        usePw->setObjectName(QString::fromUtf8("usePw"));
-        usePw->setChecked(true);
+        useSmallTrees = new QCheckBox(gridLayoutWidget);
+        useSmallTrees->setObjectName(QString::fromUtf8("useSmallTrees"));
+        useSmallTrees->setChecked(true);
 
-        horizontalLayout_11->addWidget(usePw);
+        horizontalLayout_11->addWidget(useSmallTrees);
 
         useGrid = new QCheckBox(gridLayoutWidget);
         useGrid->setObjectName(QString::fromUtf8("useGrid"));
@@ -424,7 +424,7 @@ public:
 #endif // QT_NO_ACCESSIBILITY
         tooltipTip->setText(QString());
         useNoSnow->setText(QApplication::translate("MainWindow", "No Snow", nullptr));
-        usePw->setText(QApplication::translate("MainWindow", "Small Trees", nullptr));
+        useSmallTrees->setText(QApplication::translate("MainWindow", "Small Trees", nullptr));
         useGrid->setText(QApplication::translate("MainWindow", "Grid", nullptr));
         useMonks->setText(QApplication::translate("MainWindow", "Regional Monks", nullptr));
         useWalls->setText(QApplication::translate("MainWindow", "Short Walls", nullptr));

@@ -139,7 +139,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="usePw">
+            <widget class="QCheckBox" name="useSmallTrees">
              <property name="text">
               <string>Small Trees</string>
              </property>

@@ -17,7 +17,7 @@ public:
         bool useExe = false,
         bool useBoth = false,
         bool useMonks = true,
-        bool usePw = true,
+        bool useSmallTrees = true,
         bool useWalls = false,
         bool copyMaps = true,
         bool copyCustomMaps = false,
@@ -41,7 +41,7 @@ public:
         useExe(useExe),
         useBoth(useBoth),
         useMonks(useMonks),
-        usePw(usePw),
+        useSmallTrees(useSmallTrees),
         useWalls(useWalls),
         copyMaps(copyMaps),
         copyCustomMaps(copyCustomMaps),
@@ -70,7 +70,7 @@ public:
     bool useExe;
     bool useBoth;
     bool useMonks;
-    bool usePw;
+    bool useSmallTrees;
     bool useWalls;
     bool copyMaps;
     bool copyCustomMaps;

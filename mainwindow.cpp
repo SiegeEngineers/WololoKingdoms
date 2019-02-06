@@ -163,7 +163,7 @@ int MainWindow::initialize() {
             this->ui->hotkeyChoice->setDisabled(true);
             this->ui->useGrid->setDisabled(true);
             this->ui->useMonks->setDisabled(true);
-            this->ui->usePw->setDisabled(true);
+            this->ui->useSmallTrees->setDisabled(true);
             this->ui->useWalls->setDisabled(true);
             this->ui->useNoSnow->setDisabled(true);
             this->ui->copyMaps->setDisabled(true);
@@ -174,7 +174,7 @@ int MainWindow::initialize() {
             this->ui->hotkeyChoice->setDisabled(false);
             this->ui->useGrid->setDisabled(false);
             this->ui->useMonks->setDisabled(false);
-            this->ui->usePw->setDisabled(false);
+            this->ui->useSmallTrees->setDisabled(false);
             this->ui->useWalls->setDisabled(false);
             this->ui->useNoSnow->setDisabled(false);
             this->ui->copyMaps->setDisabled(false);
@@ -209,7 +209,7 @@ void MainWindow::runConverter() {
     logFile.close();
     logFile = std::ofstream("log.txt");
     WKSettings* settings = new WKSettings(this->ui->useVoobly->isChecked(), this->ui->useExe->isChecked(),
-        this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(), this->ui->usePw->isChecked(),
+        this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(), this->ui->useSmallTrees->isChecked(),
         this->ui->useWalls->isChecked(), this->ui->copyMaps->isChecked(), this->ui->copyCustomMaps->isChecked(),
         this->ui->restrictedCivMods->isChecked(),this->ui->useNoSnow->isChecked(), this->ui->fixFlags->isChecked(),
         this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), installDir, language, dlcLevel,
@@ -461,7 +461,7 @@ void MainWindow::writeSettings()
     settings.setValue("fixFlags", this->ui->fixFlags->isChecked());
     settings.setValue("useGrid", this->ui->useGrid->isChecked());
     settings.setValue("useNoSnow", this->ui->useNoSnow->isChecked());
-    settings.setValue("usePw", this->ui->usePw->isChecked());
+    settings.setValue("useSmallTrees", this->ui->useSmallTrees->isChecked());
     settings.setValue("useMonks", this->ui->useMonks->isChecked());
     settings.setValue("useWalls", this->ui->useWalls->isChecked());
     settings.setValue("replaceTooltips", this->ui->replaceTooltips->isChecked());
@@ -481,7 +481,7 @@ void MainWindow::readSettings()
         this->ui->useVoobly->setChecked(settings.value("useVoobly").toBool());
         this->ui->fixFlags->setChecked(settings.value("fixFlags").toBool());
         this->ui->useGrid->setChecked(settings.value("useGrid").toBool());
-        this->ui->usePw->setChecked(settings.value("usePw").toBool());
+        this->ui->useSmallTrees->setChecked(settings.value("useSmallTrees").toBool());
         this->ui->useWalls->setChecked(settings.value("useWalls").toBool());
         this->ui->useNoSnow->setChecked(settings.value("useNoSnow").toBool());
         this->ui->replaceTooltips->setChecked(settings.value("replaceTooltips").toBool());
@@ -574,7 +574,7 @@ void MainWindow::changeLanguage() {
     this->ui->fixFlags->setText(translation["fixFlags"]);
     this->ui->restrictedCivMods->setText(translation["restrictedCivMods"]);
     this->ui->useGrid->setText(translation["useGrid"]);
-    this->ui->usePw->setText(translation["usePw"]);
+    this->ui->useSmallTrees->setText(translation["useSmallTrees"]);
     this->ui->useWalls->setText(translation["useWalls"]);
     this->ui->usePatch->setText(translation["usePatch"]);
     this->ui->useMonks->setText(translation["useMonks"]);

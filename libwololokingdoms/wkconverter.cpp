@@ -1775,10 +1775,10 @@ int WKConverter::run(bool retry)
             indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
 
             listener->log("Visual Mod Stuff");
-            if(settings->usePw || settings->useGrid || settings->useWalls || settings->useNoSnow) {
+            if(settings->useSmallTrees || settings->useGrid || settings->useWalls || settings->useNoSnow) {
                 listener->setInfo("working$\n$workingMods");
 			}
-            if(settings->usePw)
+            if(settings->useSmallTrees)
 				indexDrsFiles(pwInputDir);
             listener->increaseProgress(1); //7
             if(settings->useGrid) {
