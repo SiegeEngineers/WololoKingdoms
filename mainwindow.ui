@@ -173,7 +173,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="useWalls">
+            <widget class="QCheckBox" name="useShortWalls">
              <property name="text">
               <string>Short Walls</string>
              </property>

@@ -49,7 +49,7 @@ public:
     QCheckBox *useGrid;
     QHBoxLayout *horizontalLayout_13;
     QCheckBox *useMonks;
-    QCheckBox *useWalls;
+    QCheckBox *useShortWalls;
     QPushButton *modsTip;
     QHBoxLayout *horizontalLayout_10;
     QCheckBox *copyCustomMaps;
@@ -188,10 +188,10 @@ public:
 
         horizontalLayout_13->addWidget(useMonks);
 
-        useWalls = new QCheckBox(gridLayoutWidget);
-        useWalls->setObjectName(QString::fromUtf8("useWalls"));
+        useShortWalls = new QCheckBox(gridLayoutWidget);
+        useShortWalls->setObjectName(QString::fromUtf8("useShortWalls"));
 
-        horizontalLayout_13->addWidget(useWalls);
+        horizontalLayout_13->addWidget(useShortWalls);
 
 
         verticalLayout_5->addLayout(horizontalLayout_13);
@@ -427,7 +427,7 @@ public:
         useSmallTrees->setText(QApplication::translate("MainWindow", "Small Trees", nullptr));
         useGrid->setText(QApplication::translate("MainWindow", "Grid", nullptr));
         useMonks->setText(QApplication::translate("MainWindow", "Regional Monks", nullptr));
-        useWalls->setText(QApplication::translate("MainWindow", "Short Walls", nullptr));
+        useShortWalls->setText(QApplication::translate("MainWindow", "Short Walls", nullptr));
 #ifndef QT_NO_ACCESSIBILITY
         modsTip->setAccessibleName(QApplication::translate("MainWindow", "modsTip", nullptr));
 #endif // QT_NO_ACCESSIBILITY

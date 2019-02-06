@@ -1775,7 +1775,7 @@ int WKConverter::run(bool retry)
             indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
 
             listener->log("Visual Mod Stuff");
-            if(settings->useSmallTrees || settings->useGrid || settings->useWalls || settings->useNoSnow) {
+            if(settings->useSmallTrees || settings->useGrid || settings->useShortWalls || settings->useNoSnow) {
                 listener->setInfo("working$\n$workingMods");
 			}
             if(settings->useSmallTrees)
@@ -2041,7 +2041,7 @@ int WKConverter::run(bool retry)
                 if(settings->fixFlags)
                     adjustArchitectureFlags(&aocDat,fs::path("resources")/"WKFlags.txt");
 
-                if(settings->useWalls) //This needs to be AFTER patchArchitectures
+                if(settings->useShortWalls) //This needs to be AFTER patchArchitectures
                     copyWallFiles(wallsInputDir);
             } catch (std::exception const & e) {
                 std::string message = "datError$";

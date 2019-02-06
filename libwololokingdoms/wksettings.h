@@ -18,7 +18,7 @@ public:
         bool useBoth = false,
         bool useMonks = true,
         bool useSmallTrees = true,
-        bool useWalls = false,
+        bool useShortWalls = false,
         bool copyMaps = true,
         bool copyCustomMaps = false,
         bool restrictedCivMods = true,
@@ -42,7 +42,7 @@ public:
         useBoth(useBoth),
         useMonks(useMonks),
         useSmallTrees(useSmallTrees),
-        useWalls(useWalls),
+        useShortWalls(useShortWalls),
         copyMaps(copyMaps),
         copyCustomMaps(copyCustomMaps),
         restrictedCivMods(restrictedCivMods),
@@ -71,7 +71,7 @@ public:
     bool useBoth;
     bool useMonks;
     bool useSmallTrees;
-    bool useWalls;
+    bool useShortWalls;
     bool copyMaps;
     bool copyCustomMaps;
     bool restrictedCivMods;
