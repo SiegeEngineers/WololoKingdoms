@@ -212,7 +212,7 @@ void MainWindow::runConverter() {
         this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(), this->ui->useSmallTrees->isChecked(),
         this->ui->useShortWalls->isChecked(), this->ui->copyMaps->isChecked(), this->ui->copyCustomMaps->isChecked(),
         this->ui->restrictedCivMods->isChecked(),this->ui->useNoSnow->isChecked(), this->ui->fixFlags->isChecked(),
-        this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), installDir, language, dlcLevel,
+        this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), language, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
         hdPath, outPath, vooblyDir, upDir, dataModList, modName);
     QThread* thread = new QThread;

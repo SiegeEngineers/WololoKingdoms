@@ -26,7 +26,6 @@ public:
         bool fixFlags = false,
         bool replaceTooltips = true,
         bool useGrid = true,
-        fs::path installDirectory = fs::path(),
         std::string language = "en",
         int dlcLevel = 0,
         int patch = -1,
@@ -50,7 +49,6 @@ public:
         fixFlags(fixFlags),
         replaceTooltips(replaceTooltips),
         useGrid(useGrid),
-        installDirectory(installDirectory),
         language(language),
         patch(patch),
         hotkeyChoice(hotkeyChoice),
@@ -79,7 +77,6 @@ public:
     bool fixFlags;
     bool replaceTooltips;
     bool useGrid;
-    fs::path installDirectory;
     std::string language;
     int patch;
     int hotkeyChoice;
