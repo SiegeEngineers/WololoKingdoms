@@ -35,6 +35,15 @@
 #include "missing_strings.h"
 #include "wk_xml.h"
 
+// this copy is unfortunate but cfs::resolve returns a temporary :/
+const fs::path resolve_path(const fs::path& input) {
+#ifdef _WIN32
+  return input;
+#else
+  return std::move(cfs::resolve(input));
+#endif
+}
+
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
     std::ifstream translationFile(resourceDir/(settings->language+"_game.txt"));
@@ -603,7 +612,7 @@ void WKConverter::createMusicPlaylist(const fs::path& inputDir, const fs::path& 
 
 void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir, bool replace) {
     std::vector<fs::path> mapNames;
-    for (auto& it : fs::directory_iterator(cfs::resolve(inputDir))) {
+    for (auto& it : fs::directory_iterator(resolve_path(inputDir))) {
         auto extension = it.path().extension();
         if (extension == ".rms") {
             mapNames.push_back(it.path());
@@ -679,7 +688,7 @@ void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir
                 continue;
         }
         cfs::remove(outputDir/("ZR@"+it.filename().string()));
-        std::ifstream input(cfs::resolve(inputDir/it.filename()));
+        std::ifstream input(resolve_path(inputDir/it.filename()));
         std::string map = concat_stream(input);
         input.close();
         /*
@@ -781,7 +790,7 @@ void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir
         out.close();
         if (mapName.substr(0,3) == "rw_" || mapName.substr(0,3) == "sm_") {
             std::string scenarioFile = it.stem().string()+".scx";
-            terrainOverrides[scenarioFile] = cfs::resolve(inputDir/scenarioFile);
+            terrainOverrides[scenarioFile] = resolve_path(inputDir/scenarioFile);
         }
         if (terrainOverrides.size() != 0) {
             createZRmap(terrainOverrides, outputDir, mapName);
@@ -1496,34 +1505,34 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir, b
         fs::path currentPath = current->path();
         std::string extension = currentPath.extension().string();
         if (extension == ".hki") {
-          mklink(MKLINK_SOFT, cfs::resolve(newDir/currentPath.filename()), cfs::resolve(currentPath));
+          mklink(MKLINK_SOFT, resolve_path(newDir/currentPath.filename()), resolve_path(currentPath));
         }
     }
     if (datalink) {
-      mklink(MKLINK_DIR, cfs::resolve(newDir/"Data"), cfs::resolve(oldDir/"Data"));
+      mklink(MKLINK_DIR, resolve_path(newDir/"Data"), resolve_path(oldDir/"Data"));
     } else {
-      mklink(MKLINK_DIR, cfs::resolve(newDir/"Data"/"gamedata_x1_p1.drs"), cfs::resolve(oldDir/"Data"/"gamedata_x1_p1.drs"));
-      mklink(MKLINK_DIR, cfs::resolve(newDir/"Data"/"gamedata_x1.drs"), cfs::resolve(oldDir/"Data"/"gamedata_x1.drs"));
+      mklink(MKLINK_DIR, resolve_path(newDir/"Data"/"gamedata_x1_p1.drs"), resolve_path(oldDir/"Data"/"gamedata_x1_p1.drs"));
+      mklink(MKLINK_DIR, resolve_path(newDir/"Data"/"gamedata_x1.drs"), resolve_path(oldDir/"Data"/"gamedata_x1.drs"));
     }
     std::string languageString = "";
 
     if(!dataMod) {
         if(vooblyDst) {
             cfs::remove(newDir/"language.ini");
-            mklink(MKLINK_SOFT, cfs::resolve(newDir/"language.ini"), cfs::resolve(oldDir/"language.ini"));
+            mklink(MKLINK_SOFT, resolve_path(newDir/"language.ini"), resolve_path(oldDir/"language.ini"));
         } else if (!vooblySrc) {
             cfs::remove(newDir/"Data"/"language_x1_p1.dll");
-            mklink(MKLINK_SOFT, cfs::resolve(newDir/"Data"/"language_x1_p1.dll"), cfs::resolve(oldDir/"Data"/"language_x1_p1.dll"));
+            mklink(MKLINK_SOFT, resolve_path(newDir/"Data"/"language_x1_p1.dll"), resolve_path(oldDir/"Data"/"language_x1_p1.dll"));
         }
     }
 
-    mklink(MKLINK_DIR, cfs::resolve(newDir/"Taunt"), cfs::resolve(oldDir/"Taunt"));
-    mklink(MKLINK_DIR, cfs::resolve(newDir/"Script.Rm"), cfs::resolve(oldDir/"Script.Rm"));
-    mklink(MKLINK_DIR, cfs::resolve(newDir/"Sound"), cfs::resolve(oldDir/"Sound"));
-    mklink(MKLINK_DIR, cfs::resolve(newDir/"History"), cfs::resolve(oldDir/"History"));
-    mklink(MKLINK_DIR, cfs::resolve(newDir/"Screenshots"), cfs::resolve(oldDir/"Screenshots"));
-    mklink(MKLINK_DIR, cfs::resolve(newDir/"Scenario"), cfs::resolve(oldDir/"Scenario"));
-    mklink(MKLINK_SOFT, cfs::resolve(newDir/"player.nfz"), cfs::resolve(oldDir/"player.nfz"));
+    mklink(MKLINK_DIR, resolve_path(newDir/"Taunt"), resolve_path(oldDir/"Taunt"));
+    mklink(MKLINK_DIR, resolve_path(newDir/"Script.Rm"), resolve_path(oldDir/"Script.Rm"));
+    mklink(MKLINK_DIR, resolve_path(newDir/"Sound"), resolve_path(oldDir/"Sound"));
+    mklink(MKLINK_DIR, resolve_path(newDir/"History"), resolve_path(oldDir/"History"));
+    mklink(MKLINK_DIR, resolve_path(newDir/"Screenshots"), resolve_path(oldDir/"Screenshots"));
+    mklink(MKLINK_DIR, resolve_path(newDir/"Scenario"), resolve_path(oldDir/"Scenario"));
+    mklink(MKLINK_SOFT, resolve_path(newDir/"player.nfz"), resolve_path(oldDir/"player.nfz"));
     if(!cfs::exists(newDir/"Taunt")) { //Symlink didn't work, we'll do a regular copy instead
         for (fs::directory_iterator current(oldDir), end;current != end; ++current) {
             fs::path currentPath(current->path());
