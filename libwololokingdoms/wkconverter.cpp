@@ -40,7 +40,7 @@ const fs::path resolve_path(const fs::path& input) {
 #ifdef _WIN32
   return input;
 #else
-  return std::move(cfs::resolve(input));
+  return cfs::resolve(input);
 #endif
 }
 
@@ -373,7 +373,7 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
     int numberOfSlpFiles = slpFiles.size(); //These are the new files to be added to the drs
 
 
-    listener->log("number of files" + numberOfSlpFiles);
+    listener->log(std::string("number of files") + std::to_string(numberOfSlpFiles));
     listener->setInfo("working$\n$workingDrs2");
 
     char * buffer;

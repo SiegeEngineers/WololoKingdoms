@@ -120,7 +120,6 @@ private:
     std::map<std::string,fs::path> newTerrainFiles;
     std::vector<std::pair<int,std::string>> rmsCodeStrings;
     bool secondAttempt = false;
-    bool allowRun = true;
 
     fs::path nfzUpOutPath;
     fs::path nfzVooblyOutPath;

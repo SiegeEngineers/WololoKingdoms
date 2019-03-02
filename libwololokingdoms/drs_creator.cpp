@@ -46,11 +46,11 @@ void DRSCreatorTableEntry::writeContent (std::ostream& target) {
 }
 
 void DRSCreatorTable::addFile (uint32_t id, std::istream* data) {
-  files_.push_back(std::move(DRSCreatorTableEntry(id, data)));
+  files_.push_back(DRSCreatorTableEntry(id, data));
 }
 
 void DRSCreatorTable::addFile (uint32_t id, const fs::path& filename) {
-  files_.push_back(std::move(DRSCreatorTableEntry(id, filename)));
+  files_.push_back(DRSCreatorTableEntry(id, filename));
 }
 
 void DRSCreatorTable::setOffset (uint32_t offset) {
@@ -116,7 +116,7 @@ void DRSCreator::commit () {
   // Easy to recognise if there is a bug
   memset(dummy_buffer, 'q', meta_size);
   output_.write(dummy_buffer, meta_size);
-  delete dummy_buffer;
+  delete[] dummy_buffer;
 
   for (auto& table : tables_) {
     table.second.writeFileContents(output_);
