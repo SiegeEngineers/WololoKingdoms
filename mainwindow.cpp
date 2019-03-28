@@ -5,7 +5,7 @@
 #include <cctype>
 #include <string>
 #include <sstream>
-#include <filesystem>
+#include <fs.h>
 #ifdef _WIN32
 #include <windows.h>
 #include <shellapi.h>
@@ -31,8 +31,6 @@
 #include <QThreadPool>
 #include <QProcess>
 #include <steam/steam_api.h>
-
-namespace fs = std::filesystem;
 
 WKQConverter::WKQConverter(WKSettings* settings) {
     converter = new WKConverter(settings, this);

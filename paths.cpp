@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 #include <stdexcept>
-#include <filesystem>
+#include <fs.h>
 #include <stdio.h>
 #include "libwololokingdoms/platform.h"
 #include "libwololokingdoms/string_helpers.h"
@@ -12,8 +12,6 @@
 #include <windows.h>
 #include <tchar.h>
 #endif
-
-namespace fs = std::filesystem;
 
 static fs::path extractHDPath(fs::path steamPath) {
 	std::string line;

@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <filesystem>
+#include <fs.h>
 
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
@@ -19,8 +19,6 @@
 #    define ALLOW_UNUSED
 #  endif
 #endif
-
-namespace fs = std::filesystem;
 
 /**
  * WK Conversion event listener, used to update the UI and to implement platform/app-specific

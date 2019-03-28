@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <filesystem>
+#include <fs.h>
 #include <stdio.h>
 #include "libwololokingdoms/platform.h"
 #include "libwololokingdoms/string_helpers.h"
@@ -11,8 +11,6 @@
 #include <pwd.h>
 #include <iconv.h>
 #include <errno.h>
-
-namespace fs = std::filesystem;
 
 fs::path getExePath() {
     return fs::read_symlink("/proc/self/exe");

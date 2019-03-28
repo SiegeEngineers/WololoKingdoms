@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include <filesystem>
+#include <fs.h>
 
 #ifdef _WIN32
 
@@ -10,8 +10,6 @@
 namespace cfs = std::filesystem;
 
 #else
-
-namespace fs = std::filesystem;
 
 // Remember the casing of previously used paths.
 static std::map<fs::path, fs::path> caseless_directories = {};

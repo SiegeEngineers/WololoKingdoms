@@ -42,6 +42,7 @@ HEADERS += \
     libwololokingdoms/fixes/smallfixes.h \
     libwololokingdoms/fixes/tricklebuildingfix.h \
     libwololokingdoms/fixes/vietfix.h \
+    libwololokingdoms/include/fs.h \
     libwololokingdoms/include/wololo/datPatch.h \
     libwololokingdoms/base64.h \
     libwololokingdoms/caseless.h \
@@ -62,7 +63,11 @@ FORMS += \
     mainwindow.ui \
     dialog.ui
 
-LIBS += -lstdc++fs
+win32 {
+  QMAKE_CXXFLAGS += -DUSE_USERSPACE_FS
+} else {
+  LIBS += -lstdc++fs
+}
 LIBS += -L$$DESTDIR
 
 # ---------------------------------------------------------
@@ -91,6 +96,7 @@ QMAKE_EXTRA_TARGETS += libwololokingdoms
 LIBS += -lgenieutils
 LIBS += -lwololokingdoms
 
+INCLUDEPATH += $$PWD/libwololokingdoms/include
 INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/include
 INCLUDEPATH += $$PWD/libwololokingdoms/third_party/pcrio/include
 win32: INCLUDEPATH += $$PWD/libwololokingdoms/third_party/genieutils/extern/win-iconv

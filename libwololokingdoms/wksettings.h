@@ -1,11 +1,9 @@
 #ifndef WKSETTINGS_H
 #define WKSETTINGS_H
 
-#include <filesystem>
+#include <fs.h>
 #include <string>
 #include <map>
-
-namespace fs = std::filesystem;
 
 class WKSettings
 {

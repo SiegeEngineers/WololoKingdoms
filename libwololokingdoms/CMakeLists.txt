@@ -37,10 +37,29 @@ else()
     add_definitions(/wd4244 /wd4018 /wd4267 /wd4996 /wd4800)
 endif()
 
+# check c++17 filesystem support
+# (mingw's windows header has a bug)
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles("
+#include <filesystem>
+namespace fs = std::filesystem;
+int main() {
+  fs::path aPath {\"hello\"};
+  aPath /= \"world\";
+  return 0;
+}
+" WORKING_STD_FS)
+if (NOT WORKING_STD_FS)
+  message("builtin filesystem is bad, falling back to gulrak/filesystem")
+  include_directories(third_party/filesystem/include/)
+  add_definitions(-DUSE_USERLAND_FS)
+endif()
+
 #------------------------------------------------------------------------------#
 # Source files:
 #------------------------------------------------------------------------------#
 set(ALL_SRC
+  fs.cpp
   base64.cpp
   md5.cpp
   wk_xml.cpp

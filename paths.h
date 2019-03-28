@@ -1,9 +1,7 @@
 #ifndef PATHS_H
 #define PATHS_H
 
-#include <filesystem>
-
-namespace fs = std::filesystem;
+#include <fs.h>
 
 fs::path getExePath();
 fs::path getSteamPath();

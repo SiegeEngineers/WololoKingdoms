@@ -8,11 +8,9 @@
 
 #include <set>
 #include <regex>
-#include <filesystem>
+#include <fs.h>
 #include "libwololokingdoms/wksettings.h"
 #include "libwololokingdoms/wkconverter.h"
-
-namespace fs = std::filesystem;
 
 namespace Ui {
 class MainWindow;

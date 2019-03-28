@@ -2,7 +2,7 @@
 #include <cctype>
 #include <string>
 #include <fstream>
-#include <filesystem>
+#include <fs.h>
 
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"

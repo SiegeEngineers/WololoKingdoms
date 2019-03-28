@@ -1,10 +1,8 @@
 #pragma once
 #include <iostream>
 #include <map>
-#include <filesystem>
+#include <fs.h>
 #include <vector>
-
-namespace fs = std::filesystem;
 
 enum DRSTableType {
   Bina = 0x62696e61, // 'bina'
