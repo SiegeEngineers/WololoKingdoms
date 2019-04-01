@@ -580,9 +580,9 @@ void WKConverter::copyWallFiles(const fs::path& inputDir) {
 	 * +4 per damage increase
 	 */
 	indexDrsFiles(inputDir);
-    int conversionTable[] = {3,-15,2,0,3,-18,-5,1,0,1,2,3,0,1,2,2,-5,-7};
+   std::array conversionTable = {3,-15,2,0,3,-18,-5,1,0,1,2,3,0,1,2,2,-5,-7};
 	int newBaseSLP = 24000;
-	for(size_t i = 0; i < sizeof(conversionTable)/sizeof(int); i++) {
+	for(size_t i = 0; i < conversionTable.size(); i++) {
 		int archID = conversionTable[i];
 		if (archID < 0) {
             archID *= -1;
@@ -1298,23 +1298,21 @@ bool WKConverter::identifyHotkeyFile(const fs::path& directory, fs::path& maxHki
      */
     int maxHkiNumber = -1;
     std::time_t lastHkiEdit = std::time_t(0);
-    for (fs::directory_iterator current(directory), end;current != end; ++current) {
-        fs::path currentPath(current->path());
-        std::string extension = currentPath.extension().string();
-        if (extension == ".hki") {
-            std::string numberString = currentPath.stem().string().substr(6);
+    for (auto& f : fs::directory_iterator(directory)) {
+        if (f.path().extension() == ".hki") {
+            std::string numberString = f.path().stem().string().substr(6);
             if(numberString.find_first_not_of( "0123456789" ) != std::string::npos)
                 continue;
             int hkiNumber = std::atoi(numberString.c_str());
             if (hkiNumber > maxHkiNumber) {
                 maxHkiNumber = hkiNumber;
-                maxHki = currentPath;
+                maxHki = f.path();
             }
-            std::time_t lastModified = fs::file_time_type::clock::to_time_t(
-                cfs::last_write_time(currentPath));
+            auto lastModified = fs::file_time_type::clock::to_time_t(
+                cfs::last_write_time(f.path()));
             if (lastModified > lastHkiEdit) {
                 lastHkiEdit = lastModified;
-                lastEditedHki = currentPath;
+                lastEditedHki = f.path();
             }
 
         }
