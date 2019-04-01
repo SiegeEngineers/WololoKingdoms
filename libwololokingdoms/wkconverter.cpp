@@ -248,8 +248,8 @@ void WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
         std::string line;
         while (std::getline(modLang, line)) {
             try {
-                std::pair<int,std::string> tmp = parseHDTextLine(line);
-                langReplacement[tmp.first] = tmp.second;
+                auto [id, value] = parseHDTextLine(line);
+                langReplacement[id] = value;
             } catch (std::invalid_argument const & e) {
                 continue;
             }
@@ -297,9 +297,7 @@ void WKConverter::convertLanguageFile(std::ifstream& in, std::ofstream& iniOut, 
     int nb;
     while (std::getline(in, line)) {
         try {
-            std::pair<int,std::string> tmp = parseHDTextLine(line);
-            nb = tmp.first;
-            line = tmp.second;
+          std::tie(nb, line) = parseHDTextLine(line);
         } catch (std::invalid_argument const & e) {
             continue;
         }
@@ -316,13 +314,13 @@ void WKConverter::convertLanguageFile(std::ifstream& in, std::ofstream& iniOut, 
     /*
      * Stuff that's in lang replacement but not in the HD files (in this case extended language height box)
      */
-    for (auto& it : langReplacement) {
+    for (auto& [id, value] : langReplacement) {
         //convert UTF-8 into ANSI
-        std::string outputLine = iconvert(it.second, "UTF8", "WINDOWS-1252");
-        iniOut << std::to_string(it.first) << '=' << outputLine <<  std::endl;
+        std::string outputLine = iconvert(value, "UTF8", "WINDOWS-1252");
+        iniOut << std::to_string(id) << '=' << outputLine <<  std::endl;
     }
-    for (auto& it : missing_strings) {
-        iniOut << std::to_string(it.first) << '=' << it.second << std::endl;
+    for (auto& [id, value] : missing_strings) {
+        iniOut << std::to_string(id) << '=' << value << std::endl;
     }
     in.close();
     iniOut.close();
@@ -348,12 +346,12 @@ void WKConverter::makeDrs(std::ofstream& out) {
     start = slpFiles.find(51172);
     slpFiles.erase(start, std::next(start, 8));
 
-    for (auto& it : slpFiles) {
-        drs.addFile(Slp, it.first, it.second);
+    for (auto& [id, data] : slpFiles) {
+        drs.addFile(Slp, id, data);
     }
     listener->increaseProgress(2);
-    for (auto& it : wavFiles) {
-        drs.addFile(Wav, it.first, it.second);
+    for (auto& [id, data] : wavFiles) {
+        drs.addFile(Wav, id, data);
     }
     listener->increaseProgress(2);
 
@@ -463,11 +461,11 @@ void WKConverter::editDrs(std::ifstream *in, std::ofstream *out) {
 
     std::vector<DrsFileInfo> slpFileInfos;
 
-    for (auto& it : slpFiles) {
+    for (auto& [id, path] : slpFiles) {
         DrsFileInfo slp;
         size_t size;
-        size = cfs::file_size(it.second);
-        slp.file_id = it.first;
+        size = cfs::file_size(path);
+        slp.file_id = id;
         slp.file_data_offset = offset;
         slp.file_size = size;
         offset += size;
@@ -715,65 +713,65 @@ void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir
             { 61, false }, { 62, false }
         };
 
-        for (auto& repIt : replacements) {
-            std::regex terrainName = std::regex(repIt.const_name_pattern);
+        for (auto& replacement : replacements) {
+            std::regex terrainName = std::regex(replacement.const_name_pattern);
             if(std::regex_search(map,terrainName)) {
-                if(repIt.new_terrain_id < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
-                    terrainsUsed.at(repIt.new_terrain_id) = true;
-                terrainsUsed.at(repIt.old_terrain_id) = true;
+                if(replacement.new_terrain_id < 41) //41 is also an expansion terrain, but that's okay, it's a fixed replacement
+                    terrainsUsed.at(replacement.new_terrain_id) = true;
+                terrainsUsed.at(replacement.old_terrain_id) = true;
             }
         }
 
-        for (auto& repIt : replacements) {
-            if(!terrainsUsed.at(repIt.old_terrain_id))
+        for (auto& replacement : replacements) {
+            if(!terrainsUsed.at(replacement.old_terrain_id))
                 continue;
             // Check if replacement candidate is already used
-            std::regex terrainConstDef = std::regex("#const\\s+" +repIt.const_name_pattern+ "\\s+" +std::to_string(repIt.old_terrain_id));
-            int usedTerrain = repIt.new_terrain_id;
+            std::regex terrainConstDef = std::regex("#const\\s+" +replacement.const_name_pattern+ "\\s+" +std::to_string(replacement.old_terrain_id));
+            int usedTerrain = replacement.new_terrain_id;
             //If it's one of the terrains with a shared slp, we need to search the map for these other terrains too, else just the usedTerrain
-            if(repIt.terrain_type > FixedTerrain
-                    && isTerrainUsed(usedTerrain, terrainsUsed, map, terrainsPerType[repIt.terrain_type])) {
+            if(replacement.terrain_type > FixedTerrain
+                    && isTerrainUsed(usedTerrain, terrainsUsed, map, terrainsPerType[replacement.terrain_type])) {
                 bool success = false;
-                for(auto& tIt : terrainsPerType[repIt.terrain_type]) {
-                    if(terrainsUsed.at(tIt.first))
+                for(auto& [id, rx] : terrainsPerType[replacement.terrain_type]) {
+                    if(terrainsUsed.at(id))
                         continue;
-                    else if(isTerrainUsed(tIt.first,terrainsUsed,map, terrainsPerType[repIt.terrain_type])) {
+                    else if(isTerrainUsed(id,terrainsUsed,map, terrainsPerType[replacement.terrain_type])) {
                         continue;
                     }
                     success = true;
-                    usedTerrain = tIt.first;
-                    terrainsUsed.at(tIt.first) = true;
+                    usedTerrain = id;
+                    terrainsUsed.at(id) = true;
                     break;
                 }
-                if(!success && repIt.terrain_type == LandTerrain && !isTerrainUsed(5, terrainsUsed, map, terrainsPerType[repIt.terrain_type])) {
+                if(!success && replacement.terrain_type == LandTerrain && !isTerrainUsed(5, terrainsUsed, map, terrainsPerType[replacement.terrain_type])) {
                     usedTerrain = 5; //Leaves is a last effort, usually likely to be used already
                     terrainsUsed[5] = true;
                 }
             }
 
-            if(usedTerrain != repIt.new_terrain_id) {
-                std::regex terrainName = std::regex(repIt.const_name_pattern);
-                map = std::regex_replace(map,terrainName, "MY"+repIt.replaced_name_pattern);
-                terrainConstDef = std::regex("#const\\sMY+" +repIt.const_name_pattern+ "\\s+" +std::to_string(repIt.old_terrain_id));
-                std::string temp = std::regex_replace(map,terrainConstDef, "#const MY"+repIt.replaced_name_pattern+" "+std::to_string(usedTerrain));
+            if(usedTerrain != replacement.new_terrain_id) {
+                std::regex terrainName = std::regex(replacement.const_name_pattern);
+                map = std::regex_replace(map,terrainName, "MY"+replacement.replaced_name_pattern);
+                terrainConstDef = std::regex("#const\\sMY+" +replacement.const_name_pattern+ "\\s+" +std::to_string(replacement.old_terrain_id));
+                std::string temp = std::regex_replace(map,terrainConstDef, "#const MY"+replacement.replaced_name_pattern+" "+std::to_string(usedTerrain));
                 if (temp != map)
                     map = temp;
                 else  {
-                    map = "#const MY"+repIt.replaced_name_pattern+" "+std::to_string(usedTerrain)+"\n"+map;
+                    map = "#const MY"+replacement.replaced_name_pattern+" "+std::to_string(usedTerrain)+"\n"+map;
                 }
             } else {
-                map = std::regex_replace(map,terrainConstDef, "#const "+repIt.replaced_name_pattern+" "+std::to_string(usedTerrain));
+                map = std::regex_replace(map,terrainConstDef, "#const "+replacement.replaced_name_pattern+" "+std::to_string(usedTerrain));
             }
 
 
-            if(repIt.terrain_type == None ||
-                    (repIt.terrain_type == WaterTerrain && usesMultipleWaterTerrains(map,terrainsUsed)) )
+            if(replacement.terrain_type == None ||
+                    (replacement.terrain_type == WaterTerrain && usesMultipleWaterTerrains(map,terrainsUsed)) )
                 continue;
 
-            terrainOverrides[slpNumbers.at(usedTerrain)] = newTerrainFiles.at(repIt.slp_name);
+            terrainOverrides[slpNumbers.at(usedTerrain)] = newTerrainFiles.at(replacement.slp_name);
 
-            if(repIt.terrain_type == ForestTerrain) {
-                upgradeTrees(usedTerrain, repIt.old_terrain_id, map);
+            if(replacement.terrain_type == ForestTerrain) {
+                upgradeTrees(usedTerrain, replacement.old_terrain_id, map);
             }
 
 
@@ -858,9 +856,9 @@ void WKConverter::createZRmap(std::map<std::string,fs::path>& terrainOverrides, 
     outstream.exceptions(std::ofstream::failbit | std::ofstream::badbit);
     ZRMapCreator map(outstream);
     terrainOverrides[mapName] = outputDir/mapName;
-    for(auto& files : terrainOverrides) {
-        std::ifstream file_stream (files.second);
-        map.addFile(files.first, file_stream);
+    for(auto& [name, path] : terrainOverrides) {
+        std::ifstream file_stream (path);
+        map.addFile(name, file_stream);
     }
     map.end();
     outstream.close();
@@ -907,9 +905,9 @@ void WKConverter::transferHdDatElements(genie::DatFile *hdDat, genie::DatFile *a
         {15020,"ICE_BEACH.slp"}
     };
 
-    for(auto& iter : newTerrainSlps) {
-        if(slpFiles[iter.first].empty())
-            slpFiles[iter.first] = newTerrainFiles[iter.second];
+    for(auto& [id, name] : newTerrainSlps) {
+        if(slpFiles[id].empty())
+            slpFiles[id] = newTerrainFiles[name];
     }
 
 	aocDat->TerrainBlock.Terrains[35].TerrainToDraw = -1;
@@ -974,14 +972,14 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
      * IA seperation
      */
 
-    short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
+    const short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
 						155, 179, 190, 209, 210, 234, 235, 236, 276, 463, 464, 465, 481, 482, 483, 484, 487, 488, 490, 491, 498,
                         562, 563, 564, 565, 584, 585, 586, 587, 597, 611, 612, 613, 614, 615, 616, 617, 659, 660, 661,
                         662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673, 674, 1102, 1189};
-    short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
-    short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
-    short burmese = 30; //These are used for ID reference
+    const short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
+    const short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
+    const short burmese = 30; //These are used for ID reference
     for(size_t c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
 
         std::map<short,short> replacedGraphics;

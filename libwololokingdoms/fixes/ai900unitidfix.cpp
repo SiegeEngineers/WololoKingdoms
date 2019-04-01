@@ -172,9 +172,9 @@ void swapUnits(genie::DatFile *aocDat, int id1, int id2) {
 }
 
 void ai900unitidPatch(genie::DatFile *aocDat) {
-	for (size_t i = 0; i < unitsIDtoSwap.size(); i++) {
-		swapUnits(aocDat, unitsIDtoSwap[i].first, unitsIDtoSwap[i].second);
-	}
+  for (const auto [id1, id2] : unitsIDtoSwap) {
+    swapUnits(aocDat, id1, id2);
+  }
 }
 
 DatPatch ai900UnitIdFix = {
