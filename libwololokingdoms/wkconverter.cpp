@@ -954,8 +954,6 @@ void WKConverter::adjustArchitectureFlags(genie::DatFile *aocDat, fs::path flagF
 }
 
 void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
-
-
     char const * civLetterList = "XEWMFI";
     civLetters.insert(civLetterList, civLetterList + strlen (civLetterList));
 
@@ -972,58 +970,60 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
      * IA seperation
      */
 
-    const short buildingIDs[] = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
+    const std::array buildingIDs = {10, 14, 18, 19, 20, 30, 31, 32, 47, 49, 51, 63, 64, 67, 71, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88,
 						90, 91, 92, 95, 101, 103, 104, 105, 110, 116, 117, 129, 130, 131, 132, 133, 137, 141, 142, 150, 153,
 						155, 179, 190, 209, 210, 234, 235, 236, 276, 463, 464, 465, 481, 482, 483, 484, 487, 488, 490, 491, 498,
                         562, 563, 564, 565, 584, 585, 586, 587, 597, 611, 612, 613, 614, 615, 616, 617, 659, 660, 661,
                         662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672, 673, 674, 1102, 1189};
-    const short unitIDs[] = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
-    const short civIDs[] = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
-    const short burmese = 30; //These are used for ID reference
-    for(size_t c = 0; c < sizeof(civIDs)/sizeof(short); c++) {
+    const std::array unitIDs = {17, 21, 420, 442, 527, 528, 529, 532, 539, 545, 691, 1103, 1104};
+    const std::array civIDs = {13,23,7,17,14,31,21,6,11,12,27,1,4,18,9,8,16,24};
+    const auto& burmese = aocDat->Civs[30]; // These are used for ID reference
+    for(size_t c = 0; c < civIDs.size(); c++) {
+        const auto civId = civIDs[c];
+        auto& civ = aocDat->Civs[civId];
 
-        std::map<short,short> replacedGraphics;
-        std::map<short,short> replacedFlags;
+        std::map<short, short> replacedGraphics;
+        std::map<short, short> replacedFlags;
 		//buildings
-        for(unsigned int b = 0; b < sizeof(buildingIDs)/sizeof(short); b++) {
-			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].StandingGraphic.first,
-					aocDat->Civs[burmese].Units[buildingIDs[b]].StandingGraphic.first, c, replacedGraphics);
-			short oldGraphicID = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Building.ConstructionGraphicID;
+        for(const auto buildingId : buildingIDs) {
+			replaceGraphic(aocDat, &civ.Units[buildingId].StandingGraphic.first,
+					burmese.Units[buildingId].StandingGraphic.first, c, replacedGraphics);
+			short oldGraphicID = civ.Units[buildingId].Building.ConstructionGraphicID;
 			if(oldGraphicID > 130 && oldGraphicID != 4248) { //exclude standard construction graphics for all civs
-				replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Building.ConstructionGraphicID,
-							   aocDat->Civs[burmese].Units[buildingIDs[b]].Building.ConstructionGraphicID, c, replacedGraphics);
+				replaceGraphic(aocDat, &civ.Units[buildingId].Building.ConstructionGraphicID,
+							   burmese.Units[buildingId].Building.ConstructionGraphicID, c, replacedGraphics);
 			}
-			std::vector<genie::unit::DamageGraphic>::iterator compIt = aocDat->Civs[burmese].Units[buildingIDs[b]].DamageGraphics.begin();
-			for(auto& it : aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].DamageGraphics) {
-				replaceGraphic(aocDat, &it.GraphicID, compIt->GraphicID, c, replacedGraphics);
-				compIt++;
+			auto burmeseGraphic = burmese.Units[buildingId].DamageGraphics.begin();
+			for(auto& graphic : civ.Units[buildingId].DamageGraphics) {
+				replaceGraphic(aocDat, &graphic.GraphicID, burmeseGraphic->GraphicID, c, replacedGraphics);
+				burmeseGraphic++;
 			}
-            oldGraphicID = aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Creatable.GarrisonGraphic;
+            oldGraphicID = civ.Units[buildingId].Creatable.GarrisonGraphic;
             if(oldGraphicID != -1) {
                 if(replacedFlags[oldGraphicID] > 0)
-                    aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Creatable.GarrisonGraphic = replacedFlags[oldGraphicID];
+                    civ.Units[buildingId].Creatable.GarrisonGraphic = replacedFlags[oldGraphicID];
                 else {
                     genie::Graphic newFlag = aocDat->Graphics[oldGraphicID];
                     newFlag.ID = aocDat->Graphics.size();
                     aocDat->Graphics.push_back(newFlag);
                     aocDat->GraphicPointers.push_back(1);
                     replacedFlags[oldGraphicID] = newFlag.ID;
-                    aocDat->Civs[civIDs[c]].Units[buildingIDs[b]].Creatable.GarrisonGraphic = newFlag.ID;
+                    civ.Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
                 }
             }
 		}
 		//units like ships
-		for(unsigned int u = 0; u < sizeof(unitIDs)/sizeof(short); u++) {
-			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].StandingGraphic.first, aocDat->Civs[burmese].Units[unitIDs[u]].StandingGraphic.first, c, replacedGraphics);
-			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Moving.WalkingGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Moving.WalkingGraphic, c, replacedGraphics);
-			replaceGraphic(aocDat, &aocDat->Civs[civIDs[c]].Units[unitIDs[u]].Combat.AttackGraphic, aocDat->Civs[burmese].Units[unitIDs[u]].Combat.AttackGraphic, c, replacedGraphics);
+		for(const auto unitId : unitIDs) {
+			replaceGraphic(aocDat, &civ.Units[unitId].StandingGraphic.first, burmese.Units[unitId].StandingGraphic.first, c, replacedGraphics);
+			replaceGraphic(aocDat, &civ.Units[unitId].Moving.WalkingGraphic, burmese.Units[unitId].Moving.WalkingGraphic, c, replacedGraphics);
+			replaceGraphic(aocDat, &civ.Units[unitId].Combat.AttackGraphic, burmese.Units[unitId].Combat.AttackGraphic, c, replacedGraphics);
 		}
 
         listener->increaseProgress(1); //34-51
 	}
 
     //Separate Units into 4 major regions (Europe, Asian, Southern, American)
-    std::vector<std::vector<short>> civGroups = { {3,4,11}, {7,23}, {14,19,24}, //Central Eu, Orthodox, Mediterranean
+    const std::vector<std::vector<int32_t>> civGroups = { {3,4,11}, {7,23}, {14,19,24}, //Central Eu, Orthodox, Mediterranean
                     {5},{6,18},{28,29,30,31}, //Japanese, East Asian, SE Asian
                     {8,9,10,27},{20},{25,26}, //Middle Eastern, Indian, African
                     {15,16,21}, //American
@@ -1031,8 +1031,8 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
                     };
     //std::map<int,int> slpIdConversion = {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
     //						 {4610,14},{3594,11},{3595,13},{774,131},{779,134},{433,10},{768,130},{433,10},{771,132},{775,133},{3831,138},{3827,137}};
-    // short cgBuildingIDs[] = {12, 68, 70, 109, 598, 618, 619, 620}; // There's no IA dark age building mod, but regular ones that get broken by enabling this, so we won't do it.
-    short cgUnitIDs[] = {125,134,286,4,3,5,98,6,100,7,238,24,26,37,113,38,111,39,34,74,152,75,154,77,180,93,140,283,139,329,330,495,358,501,
+    // const std::array cgBuildingIDs = {12, 68, 70, 109, 598, 618, 619, 620}; // There's no IA dark age building mod, but regular ones that get broken by enabling this, so we won't do it.
+    const std::array cgUnitIDs = {125,134,286,4,3,5,98,6,100,7,238,24,26,37,113,38,111,39,34,74,152,75,154,77,180,93,140,283,139,329,330,495,358,501,
                         359,502,440,441,480,448,449,473,500,474,631,492,496,546,547,567,568,569,570};
     for(size_t cg = 0; cg < civGroups.size(); cg++) {
         if(cg == 3) {
@@ -1043,6 +1043,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
         } else if (cg == 11) {
             aocDat->Graphics[998].FrameCount = 6; //Old Value again
         }
+        const auto civGroup = civGroups[cg];
 		short monkHealingGraphic;
         if (cg != 9) {
             int newSLP = 60000+10000*cg+776;
@@ -1057,37 +1058,38 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 			monkHealingGraphic = 7340; //meso healing graphic
 		}
         std::map<short,short> replacedGraphics;
-        for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
+        for(unsigned int civId = 0; civId < civGroup.size(); civId++) {
+          auto& civ = aocDat->Civs[civGroup[civId]];
 
             /*
 			for(unsigned int b = 0; b < sizeof(cgBuildingIDs)/sizeof(short); b++) {
-                replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
-                for(std::vector<genie::unit::DamageGraphic>::iterator it = aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].DamageGraphics.begin();
-                    it != aocDat->Civs[civGroups[cg][civ]].Units[cgBuildingIDs[b]].DamageGraphics.end(); it++) {
+                replaceGraphic(aocDat, &civ.Units[cgBuildingIDs[b]].StandingGraphic.first, -1, cg, replacedGraphics, slpIdConversion);
+                for(std::vector<genie::unit::DamageGraphic>::iterator it = civ.Units[cgBuildingIDs[b]].DamageGraphics.begin();
+                    it != civ.Units[cgBuildingIDs[b]].DamageGraphics.end(); it++) {
                     replaceGraphic(aocDat, &(it->GraphicID), -1, cg, replacedGraphics, slpIdConversion);
 				}
             }*/
             //Units
-            for(unsigned int u = 0; u < sizeof(cgUnitIDs)/sizeof(short); u++) {
-                replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].StandingGraphic.first, aocDat->Civs[0].Units[cgUnitIDs[u]].StandingGraphic.first, cg, replacedGraphics, true);
-                if (aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Moving.WalkingGraphic != -1) { //Not a Dead Unit
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Moving.WalkingGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].Moving.WalkingGraphic, cg, replacedGraphics, true);
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].Combat.AttackGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].Combat.AttackGraphic, cg, replacedGraphics, true);
-                    replaceGraphic(aocDat, &aocDat->Civs[civGroups[cg][civ]].Units[cgUnitIDs[u]].DyingGraphic, aocDat->Civs[0].Units[cgUnitIDs[u]].DyingGraphic, cg, replacedGraphics, true);
+            for(const auto unitId : cgUnitIDs) {
+                replaceGraphic(aocDat, &civ.Units[unitId].StandingGraphic.first, aocDat->Civs[0].Units[unitId].StandingGraphic.first, cg, replacedGraphics, true);
+                if (civ.Units[unitId].Moving.WalkingGraphic != -1) { //Not a Dead Unit
+                    replaceGraphic(aocDat, &civ.Units[unitId].Moving.WalkingGraphic, aocDat->Civs[0].Units[unitId].Moving.WalkingGraphic, cg, replacedGraphics, true);
+                    replaceGraphic(aocDat, &civ.Units[unitId].Combat.AttackGraphic, aocDat->Civs[0].Units[unitId].Combat.AttackGraphic, cg, replacedGraphics, true);
+                    replaceGraphic(aocDat, &civ.Units[unitId].DyingGraphic, aocDat->Civs[0].Units[unitId].DyingGraphic, cg, replacedGraphics, true);
                 }
             }
 			//special UP healing slp workaround
-            for(unsigned int civ = 0; civ < civGroups[cg].size(); civ++) {
+            for(unsigned int civId = 0; civId < civGroup.size(); civId++) {
 				size_t code = 0x811E0000+monkHealingGraphic;
 				int ccode = (int) code;
-                aocDat->Civs[civGroups[cg][civ]].Units[125].LanguageDLLHelp = ccode;
+                civ.Units[125].LanguageDLLHelp = ccode;
 
                 if ((cg >= 3 && cg <= 5) || cg == 10) { //Shaman icons, "Eastern" civs
-                    aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 218;
-                    aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 218;
-                } else if (cg >= 6 && cg <= 8) { // Imam Icons, Middle Eastern/southern civ groups
-                    aocDat->Civs[civGroups[cg][civ]].Units[125].IconID = 169;
-                    aocDat->Civs[civGroups[cg][civ]].Units[286].IconID = 169;
+                    civ.Units[125].IconID = 218;
+                    civ.Units[286].IconID = 218;
+                } else if (cg >= 6 && cg <= 8) { // Imam Icons, Middle Eastern/southern civId groups
+                    civ.Units[125].IconID = 169;
+                    civ.Units[286].IconID = 169;
 				}
 
 			}
@@ -2030,15 +2032,15 @@ int WKConverter::run(bool retry)
                  * share the same garrison flag graphics.
                  */
 
-                short buildingIDs[] = { 47, 51, 116, 137, 234, 235, 236};
-                for(size_t i = 0; i < sizeof(buildingIDs)/sizeof(short); i++) {
-                    short oldGraphicID = aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic;
+                const std::array buildingIDs = { 47, 51, 116, 137, 234, 235, 236};
+                for(const auto buildingId : buildingIDs) {
+                    short oldGraphicID = aocDat.Civs[19].Units[buildingId].Creatable.GarrisonGraphic;
                     genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
                     newFlag.ID = aocDat.Graphics.size();
                     aocDat.Graphics.push_back(newFlag);
                     aocDat.GraphicPointers.push_back(1);
-                    aocDat.Civs[19].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
-                    aocDat.Civs[24].Units[buildingIDs[i]].Creatable.GarrisonGraphic = newFlag.ID;
+                    aocDat.Civs[19].Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
+                    aocDat.Civs[24].Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
                 }
 
                 adjustArchitectureFlags(&aocDat,fs::path("resources")/"Flags.txt");
@@ -2117,8 +2119,7 @@ int WKConverter::run(bool retry)
             versionFile.close();
 
 
-            wololo::DatPatch patchTab[] = {
-
+            const std::vector<wololo::DatPatch> patchTab = {
                 wololo::berbersUTFix,
                 wololo::demoShipFix,
                 wololo::vietFix,
@@ -2141,14 +2142,14 @@ int WKConverter::run(bool retry)
 
             listener->log("DAT Patches");
             try{
-                for (size_t i = 0, nbPatches = sizeof patchTab / sizeof (wololo::DatPatch); i < nbPatches; i++) {
-                    patchTab[i].patch(&aocDat);
-                    listener->setInfo(std::string("working$\n$") + patchTab[i].name);
+                for (auto& patch : patchTab) {
+                    patch.patch(&aocDat);
+                    listener->setInfo(std::string("working$\n$") + patch.name);
                     listener->increaseProgress(1); //77-93
                 }
 
-                for (size_t civIndex = 0; civIndex < aocDat.Civs.size(); civIndex++) {
-                    aocDat.Civs[civIndex].Resources[198] = std::stoi(dataVersion); //Mod version: WK=1, last 3 digits are patch number
+                for (auto& civ : aocDat.Civs) {
+                    civ.Resources[198] = std::stoi(dataVersion); //Mod version: WK=1, last 3 digits are patch number
                 }
 
                 listener->log("Save DAT");
