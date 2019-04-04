@@ -46,26 +46,23 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.user
+
+# Built files
 lib/release_libgenieutils.dll.a
-resources/
-mod_override/
-mainwindow_OLD.h
-mainwindow_OLD.cpp
-main_OLD.cpp
-log.txt
-OLDREADME.md
-fixes/mongolnomadsfix.h
-fixes/mongolnomadsfix.cpp
 *.dll
 *.so
 steam_api.lib
-debug/
+
+# Runtime files
 prelog.txt
+
+# Temporary or generated files for build system
 object_script.WololoKingdoms.Release
 object_script.WololoKingdoms.Debug
 WololoKingdoms_resource.rc
 moc_predefs.h
 moc_*.cpp
+ui_*.h
 /Makefile.Release
 /Makefile.Debug
 Makefile
@@ -76,3 +73,10 @@ cmake_install.cmake
 Setup.iss
 release/
 *.o
+
+# Misc
+resources/
+mod_override/
+log.txt
+OLDREADME.md
+debug/
