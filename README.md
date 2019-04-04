@@ -202,9 +202,12 @@ The installer requires the Steamworks SDK, which it uses to check if and where H
 To build the project on the command line:
 
 ```bash
-qmake WololoKingdoms.pro
+cd build
+qmake ../WololoKingdoms.pro
 make
 ```
+
+On subsequent builds you can do `make -C build`.
 
 ### libwololokingdoms
 

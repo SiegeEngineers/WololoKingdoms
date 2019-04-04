@@ -89,9 +89,13 @@ int MainWindow::initialize() {
 
     logFile = std::ofstream("prelog.txt");
     QDialog* dialog;
-    resourceDir = fs::path("resources");
+    resourceDir = fs::current_path()/"resources";
+    // Handle resources/ being in a parent directory (for out of source build)
+    if (!fs::exists(resourceDir) && fs::exists(fs::current_path().parent_path()/"resources")) {
+      resourceDir = fs::current_path().parent_path()/"resources";
+    }
     readSettings();
-    ui->label->setWordWrap(true);    
+    ui->label->setWordWrap(true);
     changeLanguage();
     this->setWindowTitle(translation["version"]);
 
@@ -139,7 +143,7 @@ int MainWindow::initialize() {
     readDataModList();
 
     //Language selection dropdown
-    QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {        
+    QObject::connect( this->ui->languageChoice, static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged), this, [this]() {
         changeLanguage();
     } );
 
