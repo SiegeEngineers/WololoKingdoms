@@ -97,19 +97,17 @@ public:
 
 class WKConverter {
 public:
-    WKConverter(WKSettings* settings, WKConvertListener* listener)
+    WKConverter(WKSettings& settings, WKConvertListener* listener)
       :
       settings(settings),
       listener(listener) {
     }
 
-    ~WKConverter() {}
-
     int run(bool retry = false);
 
 private:
 
-    WKSettings* settings;
+    WKSettings settings;
     WKConvertListener* listener;
     std::set<char> civLetters;
     std::set<int> aocSlpFiles;

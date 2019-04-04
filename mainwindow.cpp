@@ -32,7 +32,7 @@
 #include <QProcess>
 #include <steam/steam_api.h>
 
-WKQConverter::WKQConverter(WKSettings* settings) {
+WKQConverter::WKQConverter(WKSettings& settings) {
     converter = new WKConverter(settings, this);
 }
 
@@ -206,7 +206,7 @@ void MainWindow::runConverter() {
     qApp->processEvents();
     logFile.close();
     logFile = std::ofstream("log.txt");
-    WKSettings* settings = new WKSettings(this->ui->useVoobly->isChecked(), this->ui->useExe->isChecked(),
+    auto settings = WKSettings(this->ui->useVoobly->isChecked(), this->ui->useExe->isChecked(),
         this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(), this->ui->useSmallTrees->isChecked(),
         this->ui->useShortWalls->isChecked(), this->ui->copyMaps->isChecked(), this->ui->copyCustomMaps->isChecked(),
         this->ui->restrictedCivMods->isChecked(),this->ui->useNoSnow->isChecked(), this->ui->fixFlags->isChecked(),

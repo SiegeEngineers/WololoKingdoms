@@ -34,7 +34,7 @@ signals:
     void setProgress(int i);
     void increaseProgress(int i);
 public:
-    WKQConverter(WKSettings* settings);
+    WKQConverter(WKSettings& settings);
     ~WKQConverter();
     void error(std::exception const & err);
     void installUserPatch(fs::path exePath, std::vector<std::string> cliFlags);

@@ -46,7 +46,7 @@ const fs::path resolve_path(const fs::path& input) {
 
 void WKConverter::loadGameStrings(std::map<int,std::string>& langReplacement) {
     std::string line;
-    std::ifstream translationFile(resourceDir/(settings->language+"_game.txt"));
+    std::ifstream translationFile(resourceDir/(settings.language+"_game.txt"));
     while (std::getline(translationFile, line)) {
         /*
          *  \\\\n -> \\n, means we want a \n in the text files for aoc
@@ -224,10 +224,10 @@ std::pair<int,std::string> WKConverter::parseHDTextLine(std::string line) {
 
 void WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFolder) {
     std::map<int, std::string> langReplacement;
-    fs::path keyValuesStringsPath = settings->language == "zht"
+    fs::path keyValuesStringsPath = settings.language == "zht"
       ? resourceDir/"zht"/"key-value-strings-utf8.txt"
-      : settings->hdPath/"resources"/settings->language/"strings"/"key-value"/"key-value-strings-utf8.txt";
-    fs::path modLangIni = resourceDir/(settings->language+".ini");
+      : settings.hdPath/"resources"/settings.language/"strings"/"key-value"/"key-value-strings-utf8.txt";
+    fs::path modLangIni = resourceDir/(settings.language+".ini");
     /*
      * Create the language files (.ini for Voobly, .dll for offline)
      */
@@ -235,16 +235,16 @@ void WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
     loadGameStrings(langReplacement);
 
     listener->log("Replace tooltips");
-    if(settings->replaceTooltips) {
+    if(settings.replaceTooltips) {
         loadModdedStrings(modLangIni, langReplacement);
     }
     listener->increaseProgress(1); //2
 
-    if(settings->patch >= 0 && std::get<3>(settings->dataModList[settings->patch]) & 2) {
+    if(settings.patch >= 0 && std::get<3>(settings.dataModList[settings.patch]) & 2) {
         /*
          * A data mod might need slightly changed strings.
          */
-        std::ifstream modLang(patchFolder/(settings->language+".txt"));
+        std::ifstream modLang(patchFolder/(settings.language+".txt"));
         std::string line;
         while (std::getline(modLang, line)) {
             try {
@@ -255,8 +255,8 @@ void WKConverter::createLanguageFile(fs::path languageIniPath, fs::path patchFol
             }
         }
         modLang.close();
-        if(settings->replaceTooltips) {
-            loadModdedStrings(patchFolder/(settings->language+".ini"), langReplacement);
+        if(settings.replaceTooltips) {
+            loadModdedStrings(patchFolder/(settings.language+".ini"), langReplacement);
         }
     }
 
@@ -1053,7 +1053,7 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
 			newGraphic.SLP = newSLP;
 			aocDat->Graphics.push_back(newGraphic);
 			aocDat->GraphicPointers.push_back(1);
-            slpFiles[newSLP] = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/"776.slp";
+            slpFiles[newSLP] = settings.hdPath/"resources"/"_common"/"drs"/"graphics"/"776.slp";
 		} else {
 			monkHealingGraphic = 7340; //meso healing graphic
 		}
@@ -1117,8 +1117,8 @@ void WKConverter::patchArchitectures(genie::DatFile *aocDat) {
     //Fix the missionary converting frames while we're at it
     aocDat->Graphics[6616].FrameCount = 14;
     //Manual fix for missing portugese flags
-    slpFiles[41178] = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/"4522.slp";
-    slpFiles[41181] = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/"4523.slp";
+    slpFiles[41178] = settings.hdPath/"resources"/"_common"/"drs"/"graphics"/"4522.slp";
+    slpFiles[41181] = settings.hdPath/"resources"/"_common"/"drs"/"graphics"/"4523.slp";
 
 }
 
@@ -1206,11 +1206,11 @@ short WKConverter::duplicateGraphic(genie::DatFile *aocDat, std::map<short,short
     newGraphic.ID = newGraphicID;
     if(newSLP > 0 && newSLP != aocDat->Graphics[graphicID].SLP && newSLP != aocDat->Graphics[compareID].SLP) {
         // This is a graphic where we want a new SLP file (as opposed to one where the a new SLP mayb just be needed for some deltas
-        fs::path src = settings->hdPath/"resources"/"_common"/"drs"/"gamedata_x2"/(std::to_string(newGraphic.SLP)+".slp");
+        fs::path src = settings.hdPath/"resources"/"_common"/"drs"/"gamedata_x2"/(std::to_string(newGraphic.SLP)+".slp");
 		if(cfs::exists(src))
 			slpFiles[newSLP] = src;
 		else {
-            src = settings->hdPath/"resources"/"_common"/"drs"/"graphics"/(std::to_string(newGraphic.SLP)+".slp");
+            src = settings.hdPath/"resources"/"_common"/"drs"/"graphics"/(std::to_string(newGraphic.SLP)+".slp");
 			if(cfs::exists(src))
 				slpFiles[newSLP] = src;
 		}        
@@ -1352,8 +1352,8 @@ void WKConverter::removeWkHotkeys() {
     fs::path lastDstHki;
     fs::path aocHkiPath = resourceDir / "player1.hki";
 
-    if(settings->useExe) {
-        if(identifyHotkeyFile(settings->upDir,maxDstHki,lastDstHki)) {
+    if(settings.useExe) {
+        if(identifyHotkeyFile(settings.upDir,maxDstHki,lastDstHki)) {
             copyHotkeyFile(aocHkiPath,aocHkiPath,maxDstHki);
             cfs::remove(maxDstHki);
             if(!cfs::equivalent(maxDstHki,lastDstHki)) {
@@ -1361,7 +1361,7 @@ void WKConverter::removeWkHotkeys() {
                 cfs::remove(lastDstHki);
             }
         }
-    } else if(identifyHotkeyFile(settings->vooblyDir,maxDstHki,lastDstHki)) {
+    } else if(identifyHotkeyFile(settings.vooblyDir,maxDstHki,lastDstHki)) {
         copyHotkeyFile(aocHkiPath,aocHkiPath,maxDstHki);
         cfs::remove(maxDstHki);
         if(!cfs::exists(lastDstHki)) {
@@ -1389,14 +1389,14 @@ void WKConverter::hotkeySetup() {
     fs::path lastSrcHki;
 
     fs::path nfz1Path = resourceDir / "player1.nfz";
-    fs::path nfzPath = settings->outPath / "player.nfz";
+    fs::path nfzPath = settings.outPath / "player.nfz";
     fs::path aocHkiPath = resourceDir / "player1.hki";
-    fs::path nfzOutPath = settings->useExe ? settings->nfzUpOutPath : settings->nfzVooblyOutPath;
+    fs::path nfzOutPath = settings.useExe ? settings.nfzUpOutPath : settings.nfzVooblyOutPath;
 
     /*
 	if(!cfs::exists(hkiPath)) { //If player0.hki doesn't exist, look for player1.hki, otherwise use default HD hotkeys
-        if(cfs::exists(settings->hdPath/"Profiles"/"player1.hki"))
-                hkiPath = settings->hdPath/"Profiles"/"player1.hki";
+        if(cfs::exists(settings.hdPath/"Profiles"/"player1.hki"))
+                hkiPath = settings.hdPath/"Profiles"/"player1.hki";
 		else
 				hkiPath = resourceDir / "player1_age2hd.hki";
 	}
@@ -1409,23 +1409,23 @@ void WKConverter::hotkeySetup() {
         cfs::copy_file(nfz1Path, nfzOutPath, ec);
         cfs::copy_file(nfz1Path, nfzPath, ec);
     }
-    if(settings->useBoth) { //Profiles for UP
-        cfs::copy_file(nfzPath,settings->nfzUpOutPath, ec);
+    if(settings.useBoth) { //Profiles for UP
+        cfs::copy_file(nfzPath,settings.nfzUpOutPath, ec);
 	}
 	//Copy hotkey files
-    if (settings->hotkeyChoice == 1) { //Use AoC/Voobly Hotkeys
+    if (settings.hotkeyChoice == 1) { //Use AoC/Voobly Hotkeys
         removeWkHotkeys();
-        if(!identifyHotkeyFile(settings->outPath, maxDstHki, lastDstHki))//In case there are no voobly hotkeys, copy standard aoc hotkeys
-            cfs::copy_file(aocHkiPath, settings->outPath/"player1.hki");
+        if(!identifyHotkeyFile(settings.outPath, maxDstHki, lastDstHki))//In case there are no voobly hotkeys, copy standard aoc hotkeys
+            cfs::copy_file(aocHkiPath, settings.outPath/"player1.hki");
     } else {
-        if(!identifyHotkeyFile(settings->hdPath/"Profiles", maxSrcHki, lastSrcHki)) {
+        if(!identifyHotkeyFile(settings.hdPath/"Profiles", maxSrcHki, lastSrcHki)) {
             maxSrcHki = resourceDir / "player1_age2hd.hki";
             lastSrcHki = maxSrcHki;
         }
     }
-    if (settings->hotkeyChoice == 2) { //Use HD hotkeys only for WK
+    if (settings.hotkeyChoice == 2) { //Use HD hotkeys only for WK
         if(!identifyHotkeyFile(installDir, maxDstHki, lastDstHki)) {
-            if(!identifyHotkeyFile(settings->outPath, maxDstHki, lastDstHki)) {
+            if(!identifyHotkeyFile(settings.outPath, maxDstHki, lastDstHki)) {
                 maxDstHki = installDir / "player1.hki";
                 lastDstHki = maxDstHki;
             } else {
@@ -1436,23 +1436,23 @@ void WKConverter::hotkeySetup() {
         copyHotkeyFile(maxSrcHki,lastSrcHki,maxDstHki);
         if(!cfs::equivalent(maxDstHki,lastDstHki))
             copyHotkeyFile(maxSrcHki,lastSrcHki,lastDstHki);
-        if(settings->useBoth) {
+        if(settings.useBoth) {
             fs::path maxUpDstHki;
             fs::path lastUpDstHki;
-            if(!identifyHotkeyFile(settings->upDir, maxUpDstHki, lastUpDstHki)) {
-                maxUpDstHki = settings->upDir / maxDstHki.filename();
-                lastUpDstHki = settings->upDir / lastDstHki.filename();
+            if(!identifyHotkeyFile(settings.upDir, maxUpDstHki, lastUpDstHki)) {
+                maxUpDstHki = settings.upDir / maxDstHki.filename();
+                lastUpDstHki = settings.upDir / lastDstHki.filename();
             }
             copyHotkeyFile(maxSrcHki,lastSrcHki,maxUpDstHki);
             if(!cfs::equivalent(maxUpDstHki,lastUpDstHki))
                 copyHotkeyFile(maxSrcHki,lastSrcHki,lastUpDstHki);
         }
 	}
-    if(settings->hotkeyChoice == 3) {
+    if(settings.hotkeyChoice == 3) {
         removeWkHotkeys();
 
-        if(!identifyHotkeyFile(settings->outPath, maxDstHki, lastDstHki)) {
-            maxDstHki = settings->outPath / "player1.hki";
+        if(!identifyHotkeyFile(settings.outPath, maxDstHki, lastDstHki)) {
+            maxDstHki = settings.outPath / "player1.hki";
             lastDstHki = maxDstHki;
         }
         copyHotkeyFile(maxSrcHki,lastSrcHki,maxDstHki);
@@ -1582,8 +1582,8 @@ void WKConverter::retryInstall() {
 
 void WKConverter::setupFolders(fs::path xmlOutPathUP) {
 
-    fs::path languageIniPath = settings->vooblyDir / "language.ini";
-    fs::path versionIniPath = settings->vooblyDir/"version.ini";
+    fs::path languageIniPath = settings.vooblyDir / "language.ini";
+    fs::path versionIniPath = settings.vooblyDir/"version.ini";
 
     listener->log("Check for symlink");
     if(cfs::is_symlink(installDir/"Taunt")) {
@@ -1629,25 +1629,25 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     cfs::create_directory(installDir/"Screenshots");
     cfs::create_directory(installDir/"Scenario");
 
-    if(!settings->useExe) {
-        cfs::remove(settings->vooblyDir/"age2_x1.xml");
+    if(!settings.useExe) {
+        cfs::remove(settings.vooblyDir/"age2_x1.xml");
         cfs::remove(versionIniPath);
         listener->log("Removing language.ini");
         cfs::remove(languageIniPath);
     } else {
         listener->log("Removing UP base folders");
         cfs::remove(xmlOutPathUP);
-        cfs::remove(settings->upDir/"Data"/"empires2_x1_p1.dat");
-        cfs::remove(settings->upDir/"Data"/"gamedata_x1.drs");
-        cfs::remove(settings->upDir/"Data"/"gamedata_x1_p1.drs");
+        cfs::remove(settings.upDir/"Data"/"empires2_x1_p1.dat");
+        cfs::remove(settings.upDir/"Data"/"gamedata_x1.drs");
+        cfs::remove(settings.upDir/"Data"/"gamedata_x1_p1.drs");
         /*
-        cfs::remove_all(settings->upDir/"Script.Ai"/"Brutal2");
-        cfs::remove(settings->upDir/"Script.Ai"/"BruteForce3.1.ai");
-        cfs::remove(settings->upDir/"Script.Ai"/"BruteForce3.1.per");
+        cfs::remove_all(settings.upDir/"Script.Ai"/"Brutal2");
+        cfs::remove(settings.upDir/"Script.Ai"/"BruteForce3.1.ai");
+        cfs::remove(settings.upDir/"Script.Ai"/"BruteForce3.1.per");
         */
-        cfs::create_directories(settings->upDir/"Data");
+        cfs::create_directories(settings.upDir/"Data");
         listener->log("Removing language.ini");
-        cfs::remove(settings->upDir/"language.ini");
+        cfs::remove(settings.upDir/"language.ini");
     }
 }
 
@@ -1655,7 +1655,7 @@ int WKConverter::run(bool retry)
 {
     listener->setInfo("working");
 
-    if (settings->dlcLevel == 0) { //This should never happen
+    if (settings.dlcLevel == 0) { //This should never happen
         listener->setInfo("noSteam");
         listener->error("You shouldn't be here! $noSteam");
 		return -1;
@@ -1690,28 +1690,28 @@ int WKConverter::run(bool retry)
         fs::path patchFolder;
 
         //HD Resources
-        fs::path historyInputPath = settings->language == "zht"
+        fs::path historyInputPath = settings.language == "zht"
           ? (resourceDir/"zht"/"history")
-          : (settings->hdPath/"resources"/settings->language/"strings"/"history");
-        fs::path soundsInputPath = settings->hdPath / "resources"/"_common"/"sound";
-        fs::path tauntInputPath = settings->hdPath / "resources"/"en"/"sound"/"taunt";
-        fs::path scenarioSoundsInputPath = settings->hdPath / "resources"/"en"/"sound"/"scenario";
-        fs::path assetsPath = settings->hdPath / "resources"/"_common"/"drs"/"gamedata_x2";
-        fs::path aocAssetsPath = settings->hdPath / "resources"/"_common"/"drs"/"graphics";
-        fs::path aocDatPath = settings->hdPath/"resources"/"_common"/"dat"/"empires2_x1_p1.dat";
-        fs::path hdDatPath = settings->hdPath/"resources"/"_common"/"dat"/"empires2_x2_p1.dat";
+          : (settings.hdPath/"resources"/settings.language/"strings"/"history");
+        fs::path soundsInputPath = settings.hdPath / "resources"/"_common"/"sound";
+        fs::path tauntInputPath = settings.hdPath / "resources"/"en"/"sound"/"taunt";
+        fs::path scenarioSoundsInputPath = settings.hdPath / "resources"/"en"/"sound"/"scenario";
+        fs::path assetsPath = settings.hdPath / "resources"/"_common"/"drs"/"gamedata_x2";
+        fs::path aocAssetsPath = settings.hdPath / "resources"/"_common"/"drs"/"graphics";
+        fs::path aocDatPath = settings.hdPath/"resources"/"_common"/"dat"/"empires2_x1_p1.dat";
+        fs::path hdDatPath = settings.hdPath/"resources"/"_common"/"dat"/"empires2_x2_p1.dat";
 
-        installDir = settings->useExe ? settings->upDir : settings->vooblyDir;
+        installDir = settings.useExe ? settings.upDir : settings.vooblyDir;
 
         //Voobly Target
-        fs::path versionIniPath = settings->vooblyDir / "version.ini";
-        fs::path xmlOutPath = settings->vooblyDir / "age2_x1.xml";
+        fs::path versionIniPath = settings.vooblyDir / "version.ini";
+        fs::path xmlOutPath = settings.vooblyDir / "age2_x1.xml";
         fs::path xmlPath;
 
         //Offline Target
         fs::path xmlOutPathUP;
         std::string upModdedExeName;
-        fs::path upSetupAoCPath = settings->outPath / "SetupAoc.exe";
+        fs::path upSetupAoCPath = settings.outPath / "SetupAoc.exe";
 
         //Any Target
         fs::path languageIniPath = installDir/"language.ini";
@@ -1722,19 +1722,19 @@ int WKConverter::run(bool retry)
         fs::path drsOutPath = installDir/"Data"/"gamedata_x1_p1.drs";
         fs::path outputDatPath = installDir/"Data"/"empires2_x1_p1.dat";
 
-        switch(settings->dlcLevel) {
+        switch(settings.dlcLevel) {
         case 1:
-            xmlOutPathUP = settings->outPath / "Games"/"WKFE.xml";
+            xmlOutPathUP = settings.outPath / "Games"/"WKFE.xml";
             xmlPath = resourceDir/"WK1.xml";
             upModdedExeName = "WKFE";
             break;
         case 2:
-            xmlOutPathUP = settings->outPath / "Games"/"WKAK.xml";
+            xmlOutPathUP = settings.outPath / "Games"/"WKAK.xml";
             xmlPath = resourceDir/"WK2.xml";
             upModdedExeName = "WKAK";
             break;
         case 3:
-            xmlOutPathUP = settings->outPath / "Games"/"WK.xml";
+            xmlOutPathUP = settings.outPath / "Games"/"WK.xml";
             xmlPath = resourceDir/"WK3.xml";
             upModdedExeName = "WK";
             break;
@@ -1748,57 +1748,57 @@ int WKConverter::run(bool retry)
             listener->log("\n");
         }
         listener->log("\nHD Path:");
-        listener->log(settings->hdPath.string() + "\n" + "AoC Path:");
+        listener->log(settings.hdPath.string() + "\n" + "AoC Path:");
         listener->log(installDir.string() + "\n");
 
         listener->log("Patch mode: ");
-        listener->log(std::to_string(settings->patch));
+        listener->log(std::to_string(settings.patch));
         listener->log("DLC level: ");
-        listener->log(std::to_string(settings->dlcLevel));
+        listener->log(std::to_string(settings.dlcLevel));
 
         std::string line;
 
         listener->setProgress(1); //1
 
-        if (settings->patch < 0) {
+        if (settings.patch < 0) {
             setupFolders(xmlOutPathUP);
         } else {
             cfs::create_directories(outputDatPath.parent_path());
-            patchFolder = resourceDir/"patches"/std::get<0>(settings->dataModList[settings->patch]);
+            patchFolder = resourceDir/"patches"/std::get<0>(settings.dataModList[settings.patch]);
             hdDatPath = patchFolder/"empires2_x1_p1.dat";
-            upModdedExeName = std::get<1>(settings->dataModList[settings->patch]);
+            upModdedExeName = std::get<1>(settings.dataModList[settings.patch]);
         }
 
         createLanguageFile(languageIniPath, patchFolder);
-        if (settings->useExe) {
+        if (settings.useExe) {
             cfs::copy_file(aocLanguageIniModDll, installDir/"Data"/"language_x1_p1.dll", fs::copy_options::overwrite_existing);
         }
 
         listener->increaseProgress(1); //6
 
-        if (settings->patch < 0) {
+        if (settings.patch < 0) {
             listener->log("index DRS files");
             indexDrsFiles(assetsPath); //Slp/wav files to be written into gamedata_x1_p1.drs
             indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
 
             listener->log("Visual Mod Stuff");
-            if(settings->useSmallTrees || settings->useGrid || settings->useShortWalls || settings->useNoSnow) {
+            if(settings.useSmallTrees || settings.useGrid || settings.useShortWalls || settings.useNoSnow) {
                 listener->setInfo("working$\n$workingMods");
 			}
-            if(settings->useSmallTrees)
+            if(settings.useSmallTrees)
 				indexDrsFiles(pwInputDir);
             listener->increaseProgress(1); //7
-            if(settings->useGrid) {
+            if(settings.useGrid) {
 				indexDrsFiles(gridInputDir);
                 listener->increaseProgress(1); //8
                 indexDrsFiles(newGridTerrainInputDir, true, true);
                 listener->increaseProgress(2); //10
-                if(settings->useNoSnow)
+                if(settings.useNoSnow)
                     indexDrsFiles(gridNoSnowInputDir);
 			} else {
                 indexDrsFiles(newTerrainInputDir, true, true);
                 listener->increaseProgress(3); //10
-                if(settings->useNoSnow)
+                if(settings.useNoSnow)
                     indexDrsFiles(noSnowInputDir);
 			}
 			if(cfs::exists(terrainOverrideDir) && !cfs::is_empty(terrainOverrideDir)) {
@@ -1883,20 +1883,20 @@ int WKConverter::run(bool retry)
             }
             listener->increaseProgress(1); //14
             listener->log("Write expansion XML");
-            if(settings->useExe) {
+            if(settings.useExe) {
                 std::ofstream xml_output(xmlOutPathUP);
-                write_wk_xml(xml_output, settings->dlcLevel);
+                write_wk_xml(xml_output, settings.dlcLevel);
             }
-            if (settings->useVoobly) {
+            if (settings.useVoobly) {
                 std::ofstream xml_output(xmlOutPath);
-                write_wk_xml(xml_output, settings->dlcLevel);
+                write_wk_xml(xml_output, settings.dlcLevel);
             }
 
             fs::path installMapDir = installDir/"Script.Rm";
             listener->log("Copy Voobly Map folder");
-            if (cfs::exists(settings->outPath/"Random")) {
+            if (cfs::exists(settings.outPath/"Random")) {
                 try {
-                  cfs::copy(settings->outPath/"Random", installMapDir, fs::copy_options::recursive | fs::copy_options::skip_existing);
+                  cfs::copy(settings.outPath/"Random", installMapDir, fs::copy_options::recursive | fs::copy_options::skip_existing);
                 } catch (std::exception const & e) {
                     std::string message = "vooblyMapError$";
                     message += e.what();
@@ -1911,10 +1911,10 @@ int WKConverter::run(bool retry)
                 cfs::create_directory(installMapDir);
 			}
             listener->increaseProgress(1); //15
-            if(settings->copyCustomMaps) {
+            if(settings.copyCustomMaps) {
                 listener->log("Copy HD Maps");
                 try {
-                    copyHDMaps(settings->hdPath/"resources"/"_common"/"random-map-scripts", installMapDir);
+                    copyHDMaps(settings.hdPath/"resources"/"_common"/"random-map-scripts", installMapDir);
                 } catch (std::exception const & e) {
                     std::string message = "hdMapError$";
                     message += e.what();
@@ -1930,7 +1930,7 @@ int WKConverter::run(bool retry)
             }
             listener->increaseProgress(1); //19
             listener->log("Copy Special Maps");
-            if(settings->copyMaps) {
+            if(settings.copyMaps) {
                 try {
                     copyHDMaps(fs::path("resources")/"Script.Rm", installMapDir, true);
                 } catch (std::exception const & e) {
@@ -1977,7 +1977,7 @@ int WKConverter::run(bool retry)
             listener->increaseProgress(1); //24
             listener->log("Hotkey Setup");
             try {
-                if(settings->hotkeyChoice != 0 || cfs::exists("player1.hki"))
+                if(settings.hotkeyChoice != 0 || cfs::exists("player1.hki"))
                     hotkeySetup();
             } catch (std::exception const & e) {
                 std::string message = "hotkeyError$";
@@ -2045,10 +2045,10 @@ int WKConverter::run(bool retry)
 
                 patchArchitectures(&aocDat);
 
-                if(settings->fixFlags)
+                if(settings.fixFlags)
                     adjustArchitectureFlags(&aocDat,fs::path("resources")/"WKFlags.txt");
 
-                if(settings->useShortWalls) //This needs to be AFTER patchArchitectures
+                if(settings.useShortWalls) //This needs to be AFTER patchArchitectures
                     copyWallFiles(wallsInputDir);
             } catch (std::exception const & e) {
                 std::string message = "datError$";
@@ -2065,7 +2065,7 @@ int WKConverter::run(bool retry)
 
             listener->increaseProgress(1); //64
             try {
-                if(settings->useMonks)
+                if(settings.useMonks)
                     indexDrsFiles(monkInputDir);
                 else
                     indexDrsFiles(oldMonkInputDir);
@@ -2164,7 +2164,7 @@ int WKConverter::run(bool retry)
                     retryInstall();
                 }
             }
-            if(!settings->useExe) {
+            if(!settings.useExe) {
                     try {
                     /*
                      * Generate version.ini based on the installer and the hash of the dat.
@@ -2196,10 +2196,10 @@ int WKConverter::run(bool retry)
                     }
                 }
             }
-            if (settings->useBoth) {
+            if (settings.useBoth) {
                 listener->log("Offline installation symlink");
                 try {
-                    symlinkSetup(settings->vooblyDir, settings->upDir);
+                    symlinkSetup(settings.vooblyDir, settings.upDir);
                 } catch (std::exception const & e) {
                     std::string message = "symlinkError$";
                     message += e.what();
@@ -2221,11 +2221,11 @@ int WKConverter::run(bool retry)
                 genie::DatFile dat;
                 dat.setGameVersion(genie::GameVersion::GV_TC);
                 dat.load(hdDatPath.string().c_str());
-                if(settings->fixFlags)
+                if(settings.fixFlags)
                     adjustArchitectureFlags(&dat,fs::path("resources")/"WKFlags.txt");
                 dat.saveAs(outputDatPath.string().c_str());
                 listener->setProgress(20);
-                std::string patchNumber = std::get<2>(settings->dataModList[settings->patch]);
+                std::string patchNumber = std::get<2>(settings.dataModList[settings.patch]);
                 std::ofstream versionOut(versionIniPath);
                 versionOut << patchNumber;
                 versionOut.close();
@@ -2253,38 +2253,38 @@ int WKConverter::run(bool retry)
 		 * For a data mod, not sure if we should generate all versions or the highest one
 		 */
 
-        if (settings->patch >= 0) {
+        if (settings.patch >= 0) {
             try {
                 listener->log("Patch setup");
                 std::string mod_name = baseModName + (
-                    settings->dlcLevel == 3 ? ""
-                  : settings->dlcLevel == 2 ? " AK"
+                    settings.dlcLevel == 3 ? ""
+                  : settings.dlcLevel == 2 ? " AK"
                   : " FE");
                 std::stringstream sstream;
-                write_wk_xml(sstream, settings->dlcLevel);
+                write_wk_xml(sstream, settings.dlcLevel);
                 auto str = sstream.str();
-                replace_all(str, mod_name, settings->modName);
-                if(settings->useBoth || settings->useVoobly) {
-                    std::ofstream outstream (settings->vooblyDir/"age2_x1.xml");
+                replace_all(str, mod_name, settings.modName);
+                if(settings.useBoth || settings.useVoobly) {
+                    std::ofstream outstream (settings.vooblyDir/"age2_x1.xml");
                     outstream << str;
                     outstream.close();
-                    symlinkSetup(settings->vooblyDir.parent_path()/mod_name, settings->vooblyDir, true);
-                    if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
+                    symlinkSetup(settings.vooblyDir.parent_path()/mod_name, settings.vooblyDir, true);
+                    if(std::get<3>(settings.dataModList[settings.patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
-                        std::ifstream oldDrs (settings->vooblyDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
-                        std::ofstream newDrs (settings->vooblyDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                        std::ifstream oldDrs (settings.vooblyDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                        std::ofstream newDrs (settings.vooblyDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
                         editDrs(&oldDrs, &newDrs);
                     }
                 }
-                if(settings->useBoth || settings->useExe) {
-                    std::ofstream outstream (settings->upDir.parent_path()/(upModdedExeName + ".xml"));
+                if(settings.useBoth || settings.useExe) {
+                    std::ofstream outstream (settings.upDir.parent_path()/(upModdedExeName + ".xml"));
                     outstream << str;
                     outstream.close();
-                    symlinkSetup(settings->upDir.parent_path()/mod_name, settings->upDir, true);
-                    if(std::get<3>(settings->dataModList[settings->patch]) & 4) {
+                    symlinkSetup(settings.upDir.parent_path()/mod_name, settings.upDir, true);
+                    if(std::get<3>(settings.dataModList[settings.patch]) & 4) {
                         indexDrsFiles(slpCompatDir);
-                        std::ifstream oldDrs (settings->upDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
-                        std::ofstream newDrs (settings->upDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                        std::ifstream oldDrs (settings.upDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                        std::ofstream newDrs (settings.upDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
                         editDrs(&oldDrs, &newDrs);
                     }
                 }
@@ -2300,24 +2300,24 @@ int WKConverter::run(bool retry)
                     retryInstall();
                 }
             }
-        } else if(settings->restrictedCivMods) {
+        } else if(settings.restrictedCivMods) {
             try {
-                if (settings->dlcLevel > 1) {
+                if (settings.dlcLevel > 1) {
                     listener->log("FE Setup");
-                    fs::path vooblyModDir = settings->vooblyDir.parent_path()/(baseModName + " FE");
-                    if(settings->useBoth || settings->useVoobly) {
+                    fs::path vooblyModDir = settings.vooblyDir.parent_path()/(baseModName + " FE");
+                    if(settings.useBoth || settings.useVoobly) {
                         std::ofstream outstream (vooblyModDir/"age2_x1.xml");
                         write_wk_xml(outstream, 1);
-                        symlinkSetup(settings->vooblyDir, vooblyModDir);
+                        symlinkSetup(settings.vooblyDir, vooblyModDir);
                     }
                 }
-                if (settings->dlcLevel > 2) {
+                if (settings.dlcLevel > 2) {
                     listener->log("AK Setup");
-                    fs::path vooblyModDir = settings->vooblyDir.parent_path()/(baseModName + " AK");
-                    if(settings->useBoth || settings->useVoobly) {
+                    fs::path vooblyModDir = settings.vooblyDir.parent_path()/(baseModName + " AK");
+                    if(settings.useBoth || settings.useVoobly) {
                         std::ofstream outstream (vooblyModDir/"age2_x1.xml");
                         write_wk_xml(outstream, 2);
-                        symlinkSetup(settings->vooblyDir, vooblyModDir);
+                        symlinkSetup(settings.vooblyDir, vooblyModDir);
                     }
                 }
             } catch (std::exception const & e) {
@@ -2337,9 +2337,9 @@ int WKConverter::run(bool retry)
          * Copy the data folder from the Voobly folder and
          * create the offline exe
          */
-        if(settings->useBoth) {
+        if(settings.useBoth) {
             try {
-                cfs::copy_file(settings->vooblyDir / "Data"/"empires2_x1_p1.dat", settings->upDir / "Data"/"empires2_x1_p1.dat", fs::copy_options::overwrite_existing);
+                cfs::copy_file(settings.vooblyDir / "Data"/"empires2_x1_p1.dat", settings.upDir / "Data"/"empires2_x1_p1.dat", fs::copy_options::overwrite_existing);
             } catch (std::exception const & e) {
                 std::string message = e.what();
                 listener->log(message);
@@ -2352,7 +2352,7 @@ int WKConverter::run(bool retry)
                 }
             }
         }
-        if(settings->useVoobly) {
+        if(settings.useVoobly) {
             listener->createDialog("dialogDone");
 
         } else {
@@ -2368,13 +2368,13 @@ int WKConverter::run(bool retry)
                 listener->installUserPatch(upSetupAoCPath, flags);
 
                 std::string newExeName;
-                if(settings->patch >= 0 && (newExeName = std::get<4>(settings->dataModList[settings->patch])) != "") {
-                    if(cfs::exists(settings->outPath / "age2_x1"/(newExeName+".exe"))) {
-                        cfs::rename(settings->outPath / "age2_x1"/(newExeName+".exe"),
-                                   settings->outPath / "age2_x1"/(newExeName+".exe.bak"));
+                if(settings.patch >= 0 && (newExeName = std::get<4>(settings.dataModList[settings.patch])) != "") {
+                    if(cfs::exists(settings.outPath / "age2_x1"/(newExeName+".exe"))) {
+                        cfs::rename(settings.outPath / "age2_x1"/(newExeName+".exe"),
+                                   settings.outPath / "age2_x1"/(newExeName+".exe.bak"));
                     }
-                    cfs::rename(settings->outPath / "age2_x1"/(upModdedExeName+".exe"),
-                               settings->outPath / "age2_x1"/(newExeName+".exe"));
+                    cfs::rename(settings.outPath / "age2_x1"/(upModdedExeName+".exe"),
+                               settings.outPath / "age2_x1"/(newExeName+".exe"));
                     upModdedExeName = newExeName;
                 }
             } catch (std::exception const & e) {
@@ -2391,13 +2391,13 @@ int WKConverter::run(bool retry)
             }
 
             listener->increaseProgress(1); //97
-            std::string info = settings->useBoth ? "dialogBoth" : "dialogExe";
+            std::string info = settings.useBoth ? "dialogBoth" : "dialogExe";
             listener->createDialog(info, "<exe>", upModdedExeName);
 
         }
         listener->setInfo("workingDone");
 
-        if (settings->patch < 0 && cfs::equivalent(settings->outPath,settings->hdPath)) {
+        if (settings.patch < 0 && cfs::equivalent(settings.outPath,settings.hdPath)) {
 
             listener->log("Fix Compat Patch");
 			/*
@@ -2405,15 +2405,15 @@ int WKConverter::run(bool retry)
 			 * An update to the compatibility patch would make this unnecessary most likely.
 			 */
 
-            cfs::remove_all(settings->outPath/"compatslp");
+            cfs::remove_all(settings.outPath/"compatslp");
 
-            cfs::create_directory(settings->outPath/"data"/"Load");
-            if(settings->useExe) { //this causes a crash with UP 1.5 otherwise
+            cfs::create_directory(settings.outPath/"data"/"Load");
+            if(settings.useExe) { //this causes a crash with UP 1.5 otherwise
                 listener->setInfo("workingDone");
 
-                if(cfs::file_size(settings->outPath/"data"/"blendomatic.dat") < 400000) {
-                    cfs::rename(settings->outPath/"data"/"blendomatic.dat",settings->outPath/"data"/"blendomatic.dat.bak");
-                    cfs::rename(settings->outPath/"data"/"blendomatic_x1.dat",settings->outPath/"data"/"blendomatic.dat");
+                if(cfs::file_size(settings.outPath/"data"/"blendomatic.dat") < 400000) {
+                    cfs::rename(settings.outPath/"data"/"blendomatic.dat",settings.outPath/"data"/"blendomatic.dat.bak");
+                    cfs::rename(settings.outPath/"data"/"blendomatic_x1.dat",settings.outPath/"data"/"blendomatic.dat");
                 }
                 listener->increaseProgress(1); //98
             }
@@ -2436,20 +2436,20 @@ int WKConverter::run(bool retry)
 	}
 
 
-    if(settings->patch < 0 && std::get<0>(settings->dataModList[0]) == "Patch 5.8 Beta") {
+    if(settings.patch < 0 && std::get<0>(settings.dataModList[0]) == "Patch 5.8 Beta") {
         listener->createDialog("The converter will install the Patch 5.8 Beta as a separate mod now");
         //Automatic Installation of Patch 5.8 Beta. Not super pretty as this duplicated code from mainwindow, but time restraints
-        settings->patch = 0;
-        settings->modName = "WK ";
-        std::string dlcExtension = settings->dlcLevel == 3?"":settings->dlcLevel==2?" AK":" FE";
-        settings->modName += std::get<0>(settings->dataModList[settings->patch]);
-        if(std::get<3>(settings->dataModList[settings->patch]) & 1) {
-            settings->modName += dlcExtension;
+        settings.patch = 0;
+        settings.modName = "WK ";
+        std::string dlcExtension = settings.dlcLevel == 3?"":settings.dlcLevel==2?" AK":" FE";
+        settings.modName += std::get<0>(settings.dataModList[settings.patch]);
+        if(std::get<3>(settings.dataModList[settings.patch]) & 1) {
+            settings.modName += dlcExtension;
         }
-        settings->vooblyDir = settings->vooblyDir.parent_path() / settings->modName;
-        settings->upDir = settings->upDir.parent_path() / settings->modName;
-        settings->nfzUpOutPath = settings->upDir / "Player.nfz";
-        settings->nfzVooblyOutPath = settings->vooblyDir / "Player.nfz";
+        settings.vooblyDir = settings.vooblyDir.parent_path() / settings.modName;
+        settings.upDir = settings.upDir.parent_path() / settings.modName;
+        settings.nfzUpOutPath = settings.upDir / "Player.nfz";
+        settings.nfzVooblyOutPath = settings.vooblyDir / "Player.nfz";
         run();
     }
 
