@@ -27,6 +27,119 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
+     <item row="6" column="0">
+      <widget class="QComboBox" name="languageChoice">
+       <property name="currentIndex">
+        <number>2</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>Português-Brasil (Portuguese-Brasil)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Deutsch (German)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>English</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Español (Spanish)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Français (French)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Italiano (Italian)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>日本語 (Japanese)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>한국어 (Korean)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Nederlands (Dutch)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>русский (Russian)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Simplified Chinese (简体中文)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Traditional Chinese (繁體中文)</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
+        <widget class="QLabel" name="installLabel">
+         <property name="text">
+          <string>Install Directory</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="installDirectory"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="directoryDialogButton">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="directoryTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>hotkeyTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item row="8" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
@@ -89,6 +202,123 @@
        </item>
       </layout>
      </item>
+     <item row="9" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QCheckBox" name="usePatch">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Patch/Data Mod</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="patchSelection">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="patchSelectionTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="10" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QComboBox" name="hotkeyChoice">
+         <item>
+          <property name="text">
+           <string>Choose which hotkeys to use...</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Use current AoC/Voobly hotkeys</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Use HD hotkeys for this mod only</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Use HD hotkeys for this mod and AoC</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="hotkeyTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>hotkeyTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="11" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QCheckBox" name="restrictedCivMods">
+         <property name="text">
+          <string>Install Mods with restricted civ pools</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="restrictedCivTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>tooltipTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item row="13" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
@@ -114,6 +344,108 @@
          </property>
          <property name="accessibleName">
           <string>tooltipTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="15" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QCheckBox" name="copyMaps">
+         <property name="text">
+          <string>Copy Real World and Special Maps</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="mapsTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>mapsTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="16" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QCheckBox" name="copyCustomMaps">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Try converting custom HD maps</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="customMapsTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>mapsTip</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="17" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="QCheckBox" name="fixFlags">
+         <property name="text">
+          <string>Adjust garrison flags for new architectures</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="flagsTip">
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="accessibleName">
+          <string>exeTip</string>
          </property>
          <property name="text">
           <string/>
@@ -196,338 +528,6 @@
          </property>
          <property name="accessibleName">
           <string>modsTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="16" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_10">
-       <item>
-        <widget class="QCheckBox" name="copyCustomMaps">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Try converting custom HD maps</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="customMapsTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>mapsTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="10" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QComboBox" name="hotkeyChoice">
-         <item>
-          <property name="text">
-           <string>Choose which hotkeys to use...</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Use current AoC/Voobly hotkeys</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Use HD hotkeys for this mod only</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Use HD hotkeys for this mod and AoC</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="hotkeyTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>hotkeyTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="17" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
-        <widget class="QCheckBox" name="fixFlags">
-         <property name="text">
-          <string>Adjust garrison flags for new architectures</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="flagsTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>exeTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="15" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <widget class="QCheckBox" name="copyMaps">
-         <property name="text">
-          <string>Copy Real World and Special Maps</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="mapsTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>mapsTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="6" column="0">
-      <widget class="QComboBox" name="languageChoice">
-       <property name="currentIndex">
-        <number>2</number>
-       </property>
-       <item>
-        <property name="text">
-         <string>Português-Brasil (Portuguese-Brasil)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Deutsch (German)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>English</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Español (Spanish)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Français (French)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Italiano (Italian)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>日本語 (Japanese)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>한국어 (Korean)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Nederlands (Dutch)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>русский (Russian)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Simplified Chinese (简体中文)</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Traditional Chinese (繁體中文)</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <item>
-        <widget class="QCheckBox" name="usePatch">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Patch/Data Mod</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="patchSelection">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="patchSelectionTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="7" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_8">
-       <item>
-        <widget class="QLabel" name="installLabel">
-         <property name="text">
-          <string>Install Directory</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="installDirectory"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="directoryDialogButton">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="directoryTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>hotkeyTip</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="11" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_9">
-       <item>
-        <widget class="QCheckBox" name="restrictedCivMods">
-         <property name="text">
-          <string>Install Mods with restricted civ pools</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="restrictedCivTip">
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="accessibleName">
-          <string>tooltipTip</string>
          </property>
          <property name="text">
           <string/>
