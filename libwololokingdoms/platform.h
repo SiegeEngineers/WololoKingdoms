@@ -72,13 +72,7 @@ static void mklink(char type, std::string link, std::string dest) {
 
 #include <unistd.h>
 
-#ifdef __GNUC__
-#define ALLOW_UNUSED __attribute__ ((unused))
-#else
-#define ALLOW_UNUSED
-#endif
-
-static void ALLOW_UNUSED mklink(ALLOW_UNUSED char type, std::string link, std::string dest)
+static void mklink [[maybe_unused]] ([[maybe_unused]] char type, std::string link, std::string dest)
 {
   symlink(dest.c_str(), link.c_str());
 }

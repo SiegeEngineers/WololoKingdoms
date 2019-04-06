@@ -1,6 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
+#pragma once
 #include <QMainWindow>
 #include <QProgressBar>
 #include <QPushButton>
@@ -69,7 +67,7 @@ private:
     std::map<QString, QString> translation;
     bool allowRun = true;
 
-    QProgressBar* bar = NULL;
+    QProgressBar* bar = nullptr;
     int dlcLevel;
     int patch = -1;
     std::string modName;
@@ -85,15 +83,6 @@ private:
 
 	Ui::MainWindow *ui;
 
-    /*
-    void log(std::string logMessage);
-    void setInfo(std::string info);
-    void createDialog(std::string info);
-    void createDialog(std::string info, std::string title);
-    void setProgress(int i);
-    void increaseProgress(int i);
-    std::string translate(std::string line);
-*/
     void runConverter();
 
     int initialize();
@@ -107,5 +96,3 @@ private:
 	void changeModPatch();
     void updateUI();
 };
-
-#endif // MAINWINDOW_H

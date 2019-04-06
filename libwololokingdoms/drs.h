@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include <cstdint>
 
 // https://github.com/SFTtech/openage/blob/master/doc/media/drs-files.md
 

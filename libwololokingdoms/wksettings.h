@@ -1,6 +1,4 @@
-#ifndef WKSETTINGS_H
-#define WKSETTINGS_H
-
+#pragma once
 #include <fs.h>
 #include <map>
 #include <string>
@@ -110,5 +108,3 @@ inline WKSettings::IndexType operator|(WKSettings::IndexType a, WKSettings::Inde
 inline WKSettings::IndexType operator&(WKSettings::IndexType a, WKSettings::IndexType b) {
     return static_cast<WKSettings::IndexType>(static_cast<int>(a) & static_cast<int>(b));
 }
-
-#endif // WKSETTINGS_H

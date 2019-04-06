@@ -1,24 +1,13 @@
-#ifndef WKCONVERTER_H
-#define WKCONVERTER_H
-
+#pragma once
+#include "wksettings.h"
+#include "genie/dat/DatFile.h"
+#include "genie/lang/LangFile.h"
 #include <set>
 #include <regex>
 #include <map>
 #include <vector>
 #include <string>
 #include <fs.h>
-
-#include "genie/dat/DatFile.h"
-#include "genie/lang/LangFile.h"
-#include "wksettings.h"
-
-#ifndef ALLOW_UNUSED
-#  ifdef __GNUC__
-#    define ALLOW_UNUSED __attribute__ ((unused))
-#  else
-#    define ALLOW_UNUSED
-#  endif
-#endif
 
 /**
  * WK Conversion event listener, used to update the UI and to implement platform/app-specific
@@ -37,52 +26,52 @@ public:
     /**
      * Log a message.
      */
-    virtual void log(ALLOW_UNUSED std::string logMessage) {}
+    virtual void log([[maybe_unused]] std::string logMessage) {}
 
     /**
      * Set the information line, usually describing what the converter is currently working on.
      */
-    virtual void setInfo(ALLOW_UNUSED std::string info) {}
+    virtual void setInfo([[maybe_unused]] std::string info) {}
 
     /**
      * Report an error.
      */
-    virtual void error(ALLOW_UNUSED std::exception const & err) {}
+    virtual void error([[maybe_unused]] std::exception const & err) {}
 
     /**
      * Report an error (message only).
      */
-    virtual void error(ALLOW_UNUSED std::string message) {
+    virtual void error([[maybe_unused]] std::string message) {
       error(std::runtime_error(message));
     }
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(ALLOW_UNUSED std::string info) {}
+    virtual void createDialog([[maybe_unused]] std::string info) {}
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
-    virtual void createDialog(ALLOW_UNUSED std::string info, ALLOW_UNUSED std::string title) {}
+    virtual void createDialog([[maybe_unused]] std::string info, [[maybe_unused]] std::string title) {}
 
     /**
      * Create a dialog (this can usually be a noop if you're not building a UI)
      */
     virtual void createDialog(
-        ALLOW_UNUSED std::string info,
-        ALLOW_UNUSED std::string toReplace,
-        ALLOW_UNUSED std::string replaceWith) {}
+        [[maybe_unused]] std::string info,
+        [[maybe_unused]] std::string toReplace,
+        [[maybe_unused]] std::string replaceWith) {}
 
     /**
      * Set the current progress (0-100).
      */
-    virtual void setProgress(ALLOW_UNUSED int i) {}
+    virtual void setProgress([[maybe_unused]] int i) {}
 
     /**
      * Increase the current progress.
      */
-    virtual void increaseProgress(ALLOW_UNUSED int i) {
+    virtual void increaseProgress([[maybe_unused]] int i) {
       m_cachedProgress += i;
       setProgress(m_cachedProgress);
     }
@@ -93,8 +82,8 @@ public:
      * cliFlags are strings that should be passed to the installer as command-line flags
      */
     virtual void installUserPatch(
-        ALLOW_UNUSED fs::path userPatchExe,
-        ALLOW_UNUSED std::vector<std::string> cliFlags) {}
+        [[maybe_unused]] fs::path userPatchExe,
+        [[maybe_unused]] std::vector<std::string> cliFlags) {}
 };
 
 class WKConverter {
@@ -183,5 +172,3 @@ private:
     void setupFolders(fs::path xmlOutPathUP);
     void retryInstall();
 };
-
-#endif // WKCONVERTER_H
