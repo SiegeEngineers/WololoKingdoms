@@ -209,9 +209,9 @@ void MainWindow::runConverter() {
     logFile.close();
     logFile = std::ofstream("log.txt");
     auto settings = WKSettings(this->ui->useVoobly->isChecked(), this->ui->useExe->isChecked(),
-        this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(), this->ui->useSmallTrees->isChecked(),
-        this->ui->useShortWalls->isChecked(), this->ui->copyMaps->isChecked(), this->ui->copyCustomMaps->isChecked(),
-        this->ui->restrictedCivMods->isChecked(),this->ui->useNoSnow->isChecked(), this->ui->fixFlags->isChecked(),
+        this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(),
+        this->ui->copyMaps->isChecked(), this->ui->copyCustomMaps->isChecked(),
+        this->ui->restrictedCivMods->isChecked(), this->ui->fixFlags->isChecked(),
         this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), language, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
         hdPath, outPath, vooblyDir, upDir, dataModList, modName);
@@ -233,6 +233,7 @@ void MainWindow::runConverter() {
 
     if (this->ui->useShortWalls->isChecked()) {
         settings.addDrsResources(resourceDir/"short_walls");
+        settings.useShortWalls = true;
     }
 
     auto terrainOverrideDir = resourceDir.parent_path()/"new_terrain_override";

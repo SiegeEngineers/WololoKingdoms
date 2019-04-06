@@ -22,12 +22,9 @@ public:
         bool useExe = false,
         bool useBoth = false,
         bool useMonks = true,
-        bool useSmallTrees = true,
-        bool useShortWalls = false,
         bool copyMaps = true,
         bool copyCustomMaps = false,
         bool restrictedCivMods = true,
-        bool useNoSnow = true,
         bool fixFlags = false,
         bool replaceTooltips = true,
         bool useGrid = true,
@@ -45,12 +42,9 @@ public:
         useExe(useExe),
         useBoth(useBoth),
         useMonks(useMonks),
-        useSmallTrees(useSmallTrees),
-        useShortWalls(useShortWalls),
         copyMaps(copyMaps),
         copyCustomMaps(copyCustomMaps),
         restrictedCivMods(restrictedCivMods),
-        useNoSnow(useNoSnow),
         fixFlags(fixFlags),
         replaceTooltips(replaceTooltips),
         useGrid(useGrid),
@@ -73,15 +67,15 @@ public:
     bool useExe;
     bool useBoth;
     bool useMonks;
-    bool useSmallTrees;
-    bool useShortWalls;
     bool copyMaps;
     bool copyCustomMaps;
     bool restrictedCivMods;
-    bool useNoSnow;
     bool fixFlags;
     bool replaceTooltips;
+    // Only used for information
     bool useGrid;
+    bool useShortWalls;
+
     std::string language;
     int patch;
     int hotkeyChoice;
