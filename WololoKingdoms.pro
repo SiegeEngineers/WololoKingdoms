@@ -111,3 +111,5 @@ unix: QMAKE_PRE_LINK += $$quote(cp $$PWD/third_party/steam_sdk/redistributable_b
 LIBS += -lsteam_api
 
 INCLUDEPATH += $$PWD/include
+
+QMAKE_PRE_LINK += $$quote(cp $$PWD/steam_appid.txt $$DESTDIR);
