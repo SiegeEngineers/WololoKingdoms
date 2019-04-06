@@ -1919,7 +1919,7 @@ int WKConverter::run(bool retry)
             listener->log("Copy Special Maps");
             if(settings.copyMaps) {
                 try {
-                    copyHDMaps(fs::path("resources")/"Script.Rm", installMapDir, true);
+                    copyHDMaps(resourceDir/"Script.Rm", installMapDir, true);
                 } catch (std::exception const & e) {
                     std::string message = "specialMapError$";
                     message += e.what();
@@ -2028,12 +2028,12 @@ int WKConverter::run(bool retry)
                     aocDat.Civs[24].Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
                 }
 
-                adjustArchitectureFlags(&aocDat,fs::path("resources")/"Flags.txt");
+                adjustArchitectureFlags(&aocDat,resourceDir/"Flags.txt");
 
                 patchArchitectures(&aocDat);
 
                 if(settings.fixFlags)
-                    adjustArchitectureFlags(&aocDat,fs::path("resources")/"WKFlags.txt");
+                    adjustArchitectureFlags(&aocDat,resourceDir/"WKFlags.txt");
 
                 if(settings.useShortWalls) //This needs to be AFTER patchArchitectures
                     copyWallFiles(wallsInputDir);
@@ -2209,7 +2209,7 @@ int WKConverter::run(bool retry)
                 dat.setGameVersion(genie::GameVersion::GV_TC);
                 dat.load(hdDatPath.string().c_str());
                 if(settings.fixFlags)
-                    adjustArchitectureFlags(&dat,fs::path("resources")/"WKFlags.txt");
+                    adjustArchitectureFlags(&dat,resourceDir/"WKFlags.txt");
                 dat.saveAs(outputDatPath.string().c_str());
                 listener->setProgress(20);
                 std::string patchNumber = std::get<2>(settings.dataModList[settings.patch]);

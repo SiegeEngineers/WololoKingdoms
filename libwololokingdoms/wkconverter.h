@@ -94,6 +94,9 @@ public:
       : settings(settings),
         listener(listener)
     {
+        if (settings.resourceDir != fs::path()) {
+            resourceDir = settings.resourceDir;
+        }
     }
 
     int run(bool retry = false);

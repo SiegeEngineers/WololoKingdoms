@@ -86,6 +86,7 @@ public:
     int patch;
     int hotkeyChoice;
     int dlcLevel;
+    fs::path resourceDir;
     fs::path hdPath;
     fs::path outPath;
     fs::path vooblyDir;

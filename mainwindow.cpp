@@ -38,7 +38,6 @@ WKQConverter::WKQConverter(WKSettings& settings)
 }
 
 void WKQConverter::process() {
-    printf("WKQConverter::process(%p, %p)\n", this, static_cast<WKConvertListener*>(this));
     converter = std::make_unique<WKConverter>(settings, this);
     converter->run();
 }
@@ -216,6 +215,8 @@ void MainWindow::runConverter() {
         this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), language, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
         hdPath, outPath, vooblyDir, upDir, dataModList, modName);
+
+    settings.resourceDir = resourceDir;
 
     if (this->ui->useSmallTrees->isChecked()) {
         settings.addDrsResources(resourceDir/"pussywood");
