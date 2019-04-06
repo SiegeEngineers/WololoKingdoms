@@ -17,69 +17,25 @@ public:
       Terrain = 2,
     };
 
-    WKSettings(
-        bool useVoobly = true,
-        bool useExe = false,
-        bool useBoth = false,
-        bool useMonks = true,
-        bool copyMaps = true,
-        bool copyCustomMaps = false,
-        bool restrictedCivMods = true,
-        bool fixFlags = false,
-        bool replaceTooltips = true,
-        bool useGrid = true,
-        std::string language = "en",
-        int dlcLevel = 0,
-        int patch = -1,
-        int hotkeyChoice = 0,
-        fs::path hdPath = fs::path(),
-        fs::path outPath = fs::path(),
-        fs::path vooblyDir = fs::path(),
-        fs::path upDir = fs::path(),
-        std::map<int, DataMod> dataModList = {},
-        std::string modName = ""
-    ) : useVoobly(useVoobly),
-        useExe(useExe),
-        useBoth(useBoth),
-        useMonks(useMonks),
-        copyMaps(copyMaps),
-        copyCustomMaps(copyCustomMaps),
-        restrictedCivMods(restrictedCivMods),
-        fixFlags(fixFlags),
-        replaceTooltips(replaceTooltips),
-        useGrid(useGrid),
-        language(language),
-        patch(patch),
-        hotkeyChoice(hotkeyChoice),
-        dlcLevel(dlcLevel),
-        hdPath(hdPath),
-        outPath(outPath),
-        vooblyDir(vooblyDir),
-        upDir(upDir),
-        nfzVooblyOutPath(vooblyDir/"Player.nfz"),
-        nfzUpOutPath(upDir/"Player.nfz"),
-        dataModList(dataModList),
-        modName(modName)
-    {
-    }
+    WKSettings() = default;
 
-    bool useVoobly;
-    bool useExe;
-    bool useBoth;
-    bool useMonks;
-    bool copyMaps;
-    bool copyCustomMaps;
-    bool restrictedCivMods;
-    bool fixFlags;
-    bool replaceTooltips;
+    bool useVoobly = true;
+    bool useExe = false;
+    bool useBoth = false;
+    bool useMonks = true;
+    bool copyMaps = true;
+    bool copyCustomMaps = false;
+    bool restrictedCivMods = true;
+    bool fixFlags = false;
+    bool replaceTooltips = true;
     // Only used for information
-    bool useGrid;
-    bool useShortWalls;
+    bool useGrid = true;
+    bool useShortWalls = false;
 
-    std::string language;
-    int patch;
-    int hotkeyChoice;
-    int dlcLevel;
+    std::string language = "en";
+    int patch = -1;
+    int hotkeyChoice = 0;
+    int dlcLevel = 0;
     fs::path resourceDir;
     fs::path hdPath;
     fs::path outPath;

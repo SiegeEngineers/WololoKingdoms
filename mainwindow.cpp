@@ -220,14 +220,30 @@ void MainWindow::runConverter() {
     qApp->processEvents();
     logFile.close();
     logFile = std::ofstream("log.txt");
-    auto settings = WKSettings(this->ui->useVoobly->isChecked(), this->ui->useExe->isChecked(),
-        this->ui->useBoth->isChecked(), this->ui->useMonks->isChecked(),
-        this->ui->copyMaps->isChecked(), this->ui->copyCustomMaps->isChecked(),
-        this->ui->restrictedCivMods->isChecked(), this->ui->fixFlags->isChecked(),
-        this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), language, dlcLevel,
-        this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
-        hdPath, outPath, vooblyDir, upDir, dataModList, modName);
 
+    WKSettings settings;
+    settings.useVoobly = this->ui->useVoobly->isChecked();
+    settings.useExe = this->ui->useExe->isChecked();
+    settings.useBoth = this->ui->useBoth->isChecked();
+    settings.useMonks = this->ui->useMonks->isChecked();
+    settings.copyMaps = this->ui->copyMaps->isChecked();
+    settings.copyCustomMaps = this->ui->copyCustomMaps->isChecked();
+    settings.restrictedCivMods = this->ui->restrictedCivMods->isChecked();
+    settings.fixFlags = this->ui->fixFlags->isChecked();
+    settings.replaceTooltips = this->ui->replaceTooltips->isChecked();
+    settings.useGrid = this->ui->useGrid->isChecked();
+    settings.language = language;
+    settings.dlcLevel = dlcLevel;
+    settings.patch = this->ui->usePatch->isChecked()
+        ? this->ui->patchSelection->currentIndex()
+        : -1;
+    settings.hotkeyChoice = this->ui->hotkeyChoice->currentIndex();
+    settings.hdPath = hdPath;
+    settings.outPath = outPath;
+    settings.vooblyDir = vooblyDir;
+    settings.upDir = upDir;
+    settings.dataModList = dataModList;
+    settings.modName = modName;
     settings.resourceDir = resourceDir;
 
     if (this->ui->useSmallTrees->isChecked()) {
