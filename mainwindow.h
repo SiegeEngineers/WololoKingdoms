@@ -8,6 +8,7 @@
 
 #include <set>
 #include <regex>
+#include <memory>
 #include <fs.h>
 #include "libwololokingdoms/wksettings.h"
 #include "libwololokingdoms/wkconverter.h"
@@ -18,24 +19,24 @@ class MainWindow;
 
 Q_DECLARE_METATYPE(std::string);
 
-class WKQConverter: public QObject, WKConvertListener {
+class WKQConverter: public QObject, public WKConvertListener {
     Q_OBJECT
 private:
-    WKConverter* converter;
+    WKSettings settings;
+    std::unique_ptr<WKConverter> converter;
 public slots:
     void process();
 signals:
-    void finished();
-    void log(std::string logMessage);
-    void setInfo(std::string info);
-    void createDialog(std::string info);
-    void createDialog(std::string info, std::string title);
-    void createDialog(std::string info, std::string toReplace, std::string replaceWith);
-    void setProgress(int i);
-    void increaseProgress(int i);
+    void finished() override;
+    void log(std::string logMessage) override;
+    void setInfo(std::string info) override;
+    void createDialog(std::string info) override;
+    void createDialog(std::string info, std::string title) override;
+    void createDialog(std::string info, std::string toReplace, std::string replaceWith) override;
+    void setProgress(int i) override;
+    void increaseProgress(int i) override;
 public:
     WKQConverter(WKSettings& settings);
-    ~WKQConverter();
     void error(std::exception const & err);
     void installUserPatch(fs::path exePath, std::vector<std::string> cliFlags);
 };

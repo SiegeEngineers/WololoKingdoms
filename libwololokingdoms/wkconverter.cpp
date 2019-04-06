@@ -1669,19 +1669,13 @@ int WKConverter::run(bool retry)
 
     try {
         //Installer Resources
-        fs::path pwInputDir = resourceDir/"pussywood";
-        fs::path gridInputDir = resourceDir/"Grid";
-        fs::path gridNoSnowInputDir = resourceDir/"grid no snow";
-        fs::path noSnowInputDir = resourceDir/"no snow";
         fs::path monkInputDir = resourceDir/"regional monks";
         fs::path oldMonkInputDir = resourceDir/"anti-regional monks";
         fs::path scenarioInputDir = resourceDir/"Scenario";
         fs::path newTerrainInputDir = resourceDir/"new terrains";
-        fs::path newGridTerrainInputDir = resourceDir/"new grid terrains";
         fs::path architectureFixDir = resourceDir/"architecture fixes";
         fs::path slpCompatDir = resourceDir/"old dat slp compatibility";
         fs::path modOverrideDir("mod_override");
-        fs::path terrainOverrideDir("new_terrain_override");
         fs::path wallsInputDir = resourceDir/"short_walls";
         fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
         fs::path aiInputPath = resourceDir/"Script.Ai";
@@ -1784,27 +1778,20 @@ int WKConverter::run(bool retry)
             listener->log("Visual Mod Stuff");
             if(settings.useSmallTrees || settings.useGrid || settings.useShortWalls || settings.useNoSnow) {
                 listener->setInfo("working$\n$workingMods");
-			}
-            if(settings.useSmallTrees)
-				indexDrsFiles(pwInputDir);
+            }
             listener->increaseProgress(1); //7
             if(settings.useGrid) {
-				indexDrsFiles(gridInputDir);
                 listener->increaseProgress(1); //8
-                indexDrsFiles(newGridTerrainInputDir, true, true);
                 listener->increaseProgress(2); //10
-                if(settings.useNoSnow)
-                    indexDrsFiles(gridNoSnowInputDir);
-			} else {
+            } else {
                 indexDrsFiles(newTerrainInputDir, true, true);
                 listener->increaseProgress(3); //10
-                if(settings.useNoSnow)
-                    indexDrsFiles(noSnowInputDir);
-			}
-			if(cfs::exists(terrainOverrideDir) && !cfs::is_empty(terrainOverrideDir)) {
-                indexDrsFiles(terrainOverrideDir, true, true);
-			}
+            }
             listener->increaseProgress(1); //11
+
+            for (const auto& [directory, index_type] : settings.drsModDirectories) {
+                indexDrsFiles(directory, index_type);
+            }
 
             listener->setInfo("working$\n$workingFiles");
 

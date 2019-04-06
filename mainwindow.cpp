@@ -32,15 +32,14 @@
 #include <QProcess>
 #include <steam/steam_api.h>
 
-WKQConverter::WKQConverter(WKSettings& settings) {
-    converter = new WKConverter(settings, this);
-}
-
-WKQConverter::~WKQConverter() {
-    delete converter;
+WKQConverter::WKQConverter(WKSettings& settings)
+    : settings(settings)
+{
 }
 
 void WKQConverter::process() {
+    printf("WKQConverter::process(%p, %p)\n", this, static_cast<WKConvertListener*>(this));
+    converter = std::make_unique<WKConverter>(settings, this);
     converter->run();
 }
 
@@ -217,6 +216,29 @@ void MainWindow::runConverter() {
         this->ui->replaceTooltips->isChecked(), this->ui->useGrid->isChecked(), language, dlcLevel,
         this->ui->usePatch->isChecked() ? this->ui->patchSelection->currentIndex() : -1, this->ui->hotkeyChoice->currentIndex(),
         hdPath, outPath, vooblyDir, upDir, dataModList, modName);
+
+    if (this->ui->useSmallTrees->isChecked()) {
+        settings.addDrsResources(resourceDir/"pussywood");
+    }
+    if (this->ui->useGrid->isChecked()) {
+        settings.addDrsResources(resourceDir/"Grid");
+        settings.addDrsResources(resourceDir/"new grid terrains", WKSettings::IndexType::Expansion | WKSettings::IndexType::Terrain);
+        if (this->ui->useNoSnow->isChecked()) {
+            settings.addDrsResources(resourceDir/"grid no snow");
+        }
+    } else if (this->ui->useNoSnow->isChecked()) {
+        settings.addDrsResources(resourceDir/"no snow");
+    }
+
+    if (this->ui->useShortWalls->isChecked()) {
+        settings.addDrsResources(resourceDir/"short_walls");
+    }
+
+    auto terrainOverrideDir = resourceDir.parent_path()/"new_terrain_override";
+    if (cfs::exists(terrainOverrideDir) && !cfs::is_empty(terrainOverrideDir)) {
+        settings.addDrsResources(terrainOverrideDir, WKSettings::IndexType::Expansion | WKSettings::IndexType::Terrain);
+    }
+
     QThread* thread = new QThread;
     WKQConverter* converter = new WKQConverter(settings);
     converter->moveToThread(thread);

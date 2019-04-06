@@ -27,6 +27,8 @@
 class WKConvertListener {
     int m_cachedProgress = 0;
 public:
+    virtual ~WKConvertListener() {}
+
     /**
      * Called when conversion has finished.
      */
@@ -96,19 +98,19 @@ public:
 };
 
 class WKConverter {
+    WKSettings settings;
+    WKConvertListener* listener;
 public:
-    WKConverter(WKSettings& settings, WKConvertListener* listener)
-      :
-      settings(settings),
-      listener(listener) {
+    WKConverter(WKSettings& settings, WKConvertListener* const listener)
+      : settings(settings),
+        listener(listener)
+    {
     }
 
     int run(bool retry = false);
 
 private:
 
-    WKSettings settings;
-    WKConvertListener* listener;
     std::set<char> civLetters;
     std::set<int> aocSlpFiles;
     std::map<int, fs::path> slpFiles;
@@ -150,6 +152,11 @@ private:
     void createZRmap(std::map<std::string,fs::path>& terrainOverrides, fs::path outputDir, std::string mapName);
     void terrainSwap(genie::DatFile *hdDat, genie::DatFile *aocDat, int tNew, int tOld, int slpID);
     void indexDrsFiles(fs::path const &src, bool expansionFiles = true, bool terrainFiles = false);
+    inline void indexDrsFiles(fs::path const &src, WKSettings::IndexType flags) {
+        indexDrsFiles(src,
+            static_cast<int>(flags & WKSettings::IndexType::Expansion) != 0,
+            static_cast<int>(flags & WKSettings::IndexType::Terrain) != 0);
+    }
     void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
     std::pair<int,std::string> parseHDTextLine(std::string line);
     void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut, std::map<int, std::string>& langReplacement);
