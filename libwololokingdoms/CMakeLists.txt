@@ -16,7 +16,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/)
 # dependencies:
 
 if (WK_STATIC_BUILD)
-  set(GENIEUTILS_STATIC_BUILD 1)
+    set(GENIEUTILS_STATIC_BUILD 1)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/genieutils/)
@@ -28,11 +28,11 @@ include_directories(third_party/genieutils/include/)
 include_directories(third_party/miniz)
 
 if (${ICONV_FOUND})
-  include(${ICONV_INCLUDE_DIR})
+    include(${ICONV_INCLUDE_DIR})
 endif (${ICONV_FOUND})
 
 if(NOT MSVC)
-    add_definitions(-Wall -Wsign-compare)
+    add_definitions(-Wall -Wsign-compare -Wextra -Wpedantic)
 else()
     add_definitions(/wd4244 /wd4018 /wd4267 /wd4996 /wd4800)
 endif()
@@ -44,48 +44,48 @@ check_cxx_source_compiles("
 #include <filesystem>
 namespace fs = std::filesystem;
 int main() {
-  fs::path aPath {\"hello\"};
-  aPath /= \"world\";
-  return 0;
+    fs::path aPath {\"hello\"};
+    aPath /= \"world\";
+    return 0;
 }
 " WORKING_STD_FS)
 if (NOT WORKING_STD_FS)
-  message("builtin filesystem is bad, falling back to gulrak/filesystem")
-  include_directories(third_party/filesystem/include/)
-  add_definitions(-DUSE_USERLAND_FS)
+    message("builtin filesystem is bad, falling back to gulrak/filesystem")
+    include_directories(third_party/filesystem/include/)
+    add_definitions(-DUSE_USERLAND_FS)
 endif()
 
 #------------------------------------------------------------------------------#
 # Source files:
 #------------------------------------------------------------------------------#
 set(ALL_SRC
-  fs.cpp
-  base64.cpp
-  md5.cpp
-  wk_xml.cpp
-  string_helpers.cpp
-  zr_map_creator.cpp
-  drs_creator.cpp
-  missing_strings.cpp
-  fixes/ai900unitidfix.cpp
-  fixes/berbersutfix.cpp
-  fixes/burmesefix.cpp
-  fixes/cuttingfix.cpp
-  fixes/demoshipfix.cpp
-  fixes/disablenonworkingunits.cpp
-  fixes/ethiopiansfreepikeupgradefix.cpp
-  fixes/feitoriafix.cpp
-  fixes/hotkeysfix.cpp
-  fixes/khmerfix.cpp
-  fixes/malayfix.cpp
-  fixes/maliansfreeminingupgradefix.cpp
-  fixes/portuguesefix.cpp
-  fixes/siegetowerfix.cpp
-  fixes/smallfixes.cpp
-  fixes/tricklebuildingfix.cpp
-  fixes/vietfix.cpp
-  wkconverter.cpp
-  third_party/miniz/miniz.c
+    fs.cpp
+    base64.cpp
+    md5.cpp
+    wk_xml.cpp
+    string_helpers.cpp
+    zr_map_creator.cpp
+    drs_creator.cpp
+    missing_strings.cpp
+    fixes/ai900unitidfix.cpp
+    fixes/berbersutfix.cpp
+    fixes/burmesefix.cpp
+    fixes/cuttingfix.cpp
+    fixes/demoshipfix.cpp
+    fixes/disablenonworkingunits.cpp
+    fixes/ethiopiansfreepikeupgradefix.cpp
+    fixes/feitoriafix.cpp
+    fixes/hotkeysfix.cpp
+    fixes/khmerfix.cpp
+    fixes/malayfix.cpp
+    fixes/maliansfreeminingupgradefix.cpp
+    fixes/portuguesefix.cpp
+    fixes/siegetowerfix.cpp
+    fixes/smallfixes.cpp
+    fixes/tricklebuildingfix.cpp
+    fixes/vietfix.cpp
+    wkconverter.cpp
+    third_party/miniz/miniz.c
 )
 
 #------------------------------------------------------------------------------#
@@ -93,21 +93,21 @@ set(ALL_SRC
 #------------------------------------------------------------------------------#
 
 if (WK_STATIC_BUILD)
-  message(STATUS "Building libwololokingdoms as static library")
-  add_library(${Wololokingdoms_LIBRARY} STATIC ${ALL_SRC})
+      message(STATUS "Building libwololokingdoms as static library")
+      add_library(${Wololokingdoms_LIBRARY} STATIC ${ALL_SRC})
 else()
-  add_library(${Wololokingdoms_LIBRARY} SHARED ${ALL_SRC})
-  target_link_libraries(${Wololokingdoms_LIBRARY} genieutils)
+    add_library(${Wololokingdoms_LIBRARY} SHARED ${ALL_SRC})
+    target_link_libraries(${Wololokingdoms_LIBRARY} genieutils)
 
-  INSTALL(TARGETS ${Wololokingdoms_LIBRARY}
-    LIBRARY DESTINATION lib
-  )
+    install(TARGETS ${Wololokingdoms_LIBRARY}
+        LIBRARY DESTINATION lib
+    )
 
-  install (
-    DIRECTORY ${CMAKE_SOURCE_DIR}/include/
-    DESTINATION include
-    FILES_MATCHING PATTERN "*.h*"
-  )
+    install(
+        DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h*"
+    )
 endif()
 
 target_link_libraries(${Wololokingdoms_LIBRARY})

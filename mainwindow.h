@@ -37,8 +37,8 @@ signals:
     void increaseProgress(int i) override;
 public:
     WKQConverter(WKSettings& settings);
-    void error(std::exception const & err);
-    void installUserPatch(fs::path exePath, std::vector<std::string> cliFlags);
+    void error(std::exception const & err) override;
+    void installUserPatch(fs::path exePath, std::vector<std::string> cliFlags) override;
 };
 
 class MainWindow : public QMainWindow

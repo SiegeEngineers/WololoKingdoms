@@ -63,7 +63,7 @@ static std::string dump_wine_registry(std::string regkey) {
 
 // On linux, we can still read the Wine registry
 // by first dumping the Age of Empires key to a file
-fs::path getOutPath(fs::path hdPath) {
+fs::path getOutPath([[maybe_unused]] fs::path hdPath) {
   std::stringstream registry (dump_wine_registry("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\DirectPlay\\Applications\\Age of Empires II - The Conquerors Expansion\\"));
   std::string winepath;
   std::string prefix = "\"CurrentDirectory\"=";

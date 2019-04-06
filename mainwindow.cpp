@@ -380,10 +380,9 @@ void MainWindow::setButtonWhatsThis(QPushButton* button, QString title) {
     button->setIconSize(QSize(16,16));
     button->setWhatsThis(translation[title]);
     button->disconnect();
-    QObject::connect( button, &QPushButton::clicked, this, [this, button]() {
-            QWhatsThis::showText(button->mapToGlobal(QPoint(0,0)),button->whatsThis());
-    } );
-
+    QObject::connect(button, &QPushButton::clicked, this, [button]() {
+        QWhatsThis::showText(button->mapToGlobal(QPoint(0, 0)), button->whatsThis());
+    });
 }
 
 void MainWindow::readDataModList() {
