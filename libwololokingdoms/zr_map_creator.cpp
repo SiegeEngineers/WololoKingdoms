@@ -2,7 +2,7 @@
 #include "string_helpers.h"
 #include <miniz.h>
 
-size_t ZRMapCreator::zipWriteCallback(void* context, [[allow_unused]] mz_uint64 offset, const void* buffer, size_t size) {
+size_t ZRMapCreator::zipWriteCallback(void* context, [[maybe_unused]] mz_uint64 offset, const void* buffer, size_t size) {
     const char* char_buffer = reinterpret_cast<const char*>(buffer);
     ZRMapCreator* map_creator = reinterpret_cast<ZRMapCreator*>(context);
 
