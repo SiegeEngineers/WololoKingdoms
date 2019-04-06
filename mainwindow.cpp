@@ -39,7 +39,17 @@ WKQConverter::WKQConverter(WKSettings& settings)
 
 void WKQConverter::process() {
     converter = std::make_unique<WKConverter>(settings, this);
-    converter->run();
+    try {
+        converter->run();
+    } catch (const std::exception& e) {
+        this->error(e);
+        // Retry once…
+        try {
+            converter->retryInstall();
+        } catch (const std::exception& e) {
+            this->error(e);
+        }
+    }
 }
 
 void WKQConverter::error(std::exception const & err) {

@@ -1544,8 +1544,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir, b
         cfs::copy_file(oldDir/"version.ini", newDir/"version.ini", fs::copy_options::overwrite_existing);
 }
 
-void WKConverter::retryInstall() {
-
+int WKConverter::retryInstall() {
     listener->log("Retry installation with removing folders first");
     fs::path tempFolder = "retryTemp";
     try {
@@ -1561,14 +1560,14 @@ void WKConverter::retryInstall() {
     } catch (std::exception const & e) {
         listener->error(e);
         listener->log(e.what());
-        return;
+        return -2;
     }
 
     cfs::remove_all(installDir);
     cfs::remove_all(installDir.parent_path()/"WololoKingdoms AK");
     cfs::remove_all(installDir.parent_path()/"WololoKingdoms FE");
 
-    run(true);
+    auto result = run();
     cfs::copy(tempFolder/"SaveGame",installDir/"SaveGame", fs::copy_options::recursive | fs::copy_options::skip_existing);
     cfs::copy(tempFolder/"Script.RM",installDir/"Script.RM", fs::copy_options::recursive | fs::copy_options::skip_existing);
     cfs::copy(tempFolder/"Scenario",installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::skip_existing);
@@ -1577,6 +1576,8 @@ void WKConverter::retryInstall() {
     if(cfs::exists(tempFolder/"player1.hki"))
         cfs::copy_file(tempFolder/"player1.hki", installDir/"player1.hki", ec);
     cfs::remove_all(tempFolder);
+
+    return result;
 }
 
 
@@ -1651,72 +1652,70 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     }
 }
 
-int WKConverter::run(bool retry)
+int WKConverter::run()
 {
     listener->setInfo("working");
 
     if (settings.dlcLevel == 0) { //This should never happen
         listener->setInfo("noSteam");
         listener->error("You shouldn't be here! $noSteam");
-		return -1;
-	}
+        return -1;
+    }
 
-	int ret = 0;
-	slpFiles.clear();
-	wavFiles.clear();
-	newTerrainFiles.clear();
+    int ret = 0;
+    slpFiles.clear();
+    wavFiles.clear();
+    newTerrainFiles.clear();
 
+    // Installer Resources
+    fs::path monkInputDir = resourceDir/"regional monks";
+    fs::path oldMonkInputDir = resourceDir/"anti-regional monks";
+    fs::path scenarioInputDir = resourceDir/"Scenario";
+    fs::path newTerrainInputDir = resourceDir/"new terrains";
+    fs::path architectureFixDir = resourceDir/"architecture fixes";
+    fs::path slpCompatDir = resourceDir/"old dat slp compatibility";
+    fs::path modOverrideDir("mod_override");
+    fs::path wallsInputDir = resourceDir/"short_walls";
+    fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
+    fs::path aiInputPath = resourceDir/"Script.Ai";
+    fs::path upSetupAoCSource = resourceDir/"SetupAoc.exe";
+    fs::path aocLanguageIniModDll = resourceDir/"language_x1_p1.dll";
+    fs::path patchFolder;
 
-    try {
-        //Installer Resources
-        fs::path monkInputDir = resourceDir/"regional monks";
-        fs::path oldMonkInputDir = resourceDir/"anti-regional monks";
-        fs::path scenarioInputDir = resourceDir/"Scenario";
-        fs::path newTerrainInputDir = resourceDir/"new terrains";
-        fs::path architectureFixDir = resourceDir/"architecture fixes";
-        fs::path slpCompatDir = resourceDir/"old dat slp compatibility";
-        fs::path modOverrideDir("mod_override");
-        fs::path wallsInputDir = resourceDir/"short_walls";
-        fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
-        fs::path aiInputPath = resourceDir/"Script.Ai";
-        fs::path upSetupAoCSource = resourceDir/"SetupAoc.exe";
-        fs::path aocLanguageIniModDll = resourceDir/"language_x1_p1.dll";
-        fs::path patchFolder;
+    //HD Resources
+    fs::path historyInputPath = settings.language == "zht"
+        ? (resourceDir/"zht"/"history")
+        : (settings.hdPath/"resources"/settings.language/"strings"/"history");
+    fs::path soundsInputPath = settings.hdPath / "resources"/"_common"/"sound";
+    fs::path tauntInputPath = settings.hdPath / "resources"/"en"/"sound"/"taunt";
+    fs::path scenarioSoundsInputPath = settings.hdPath / "resources"/"en"/"sound"/"scenario";
+    fs::path assetsPath = settings.hdPath / "resources"/"_common"/"drs"/"gamedata_x2";
+    fs::path aocAssetsPath = settings.hdPath / "resources"/"_common"/"drs"/"graphics";
+    fs::path aocDatPath = settings.hdPath/"resources"/"_common"/"dat"/"empires2_x1_p1.dat";
+    fs::path hdDatPath = settings.hdPath/"resources"/"_common"/"dat"/"empires2_x2_p1.dat";
 
-        //HD Resources
-        fs::path historyInputPath = settings.language == "zht"
-          ? (resourceDir/"zht"/"history")
-          : (settings.hdPath/"resources"/settings.language/"strings"/"history");
-        fs::path soundsInputPath = settings.hdPath / "resources"/"_common"/"sound";
-        fs::path tauntInputPath = settings.hdPath / "resources"/"en"/"sound"/"taunt";
-        fs::path scenarioSoundsInputPath = settings.hdPath / "resources"/"en"/"sound"/"scenario";
-        fs::path assetsPath = settings.hdPath / "resources"/"_common"/"drs"/"gamedata_x2";
-        fs::path aocAssetsPath = settings.hdPath / "resources"/"_common"/"drs"/"graphics";
-        fs::path aocDatPath = settings.hdPath/"resources"/"_common"/"dat"/"empires2_x1_p1.dat";
-        fs::path hdDatPath = settings.hdPath/"resources"/"_common"/"dat"/"empires2_x2_p1.dat";
+    installDir = settings.useExe ? settings.upDir : settings.vooblyDir;
 
-        installDir = settings.useExe ? settings.upDir : settings.vooblyDir;
+    //Voobly Target
+    fs::path versionIniPath = settings.vooblyDir / "version.ini";
+    fs::path xmlOutPath = settings.vooblyDir / "age2_x1.xml";
+    fs::path xmlPath;
 
-        //Voobly Target
-        fs::path versionIniPath = settings.vooblyDir / "version.ini";
-        fs::path xmlOutPath = settings.vooblyDir / "age2_x1.xml";
-        fs::path xmlPath;
+    //Offline Target
+    fs::path xmlOutPathUP;
+    std::string upModdedExeName;
+    fs::path upSetupAoCPath = settings.outPath / "SetupAoc.exe";
 
-        //Offline Target
-        fs::path xmlOutPathUP;
-        std::string upModdedExeName;
-        fs::path upSetupAoCPath = settings.outPath / "SetupAoc.exe";
+    //Any Target
+    fs::path languageIniPath = installDir/"language.ini";
+    fs::path soundsOutputPath = installDir/"Sound";
+    fs::path scenarioSoundsOutputPath = installDir/"Sound"/"Scenario";
+    fs::path historyOutputPath = installDir/"History";
+    fs::path tauntOutputPath = installDir/"Taunt";
+    fs::path drsOutPath = installDir/"Data"/"gamedata_x1_p1.drs";
+    fs::path outputDatPath = installDir/"Data"/"empires2_x1_p1.dat";
 
-        //Any Target
-        fs::path languageIniPath = installDir/"language.ini";
-        fs::path soundsOutputPath = installDir/"Sound";
-        fs::path scenarioSoundsOutputPath = installDir/"Sound"/"Scenario";
-        fs::path historyOutputPath = installDir/"History";
-        fs::path tauntOutputPath = installDir/"Taunt";
-        fs::path drsOutPath = installDir/"Data"/"gamedata_x1_p1.drs";
-        fs::path outputDatPath = installDir/"Data"/"empires2_x1_p1.dat";
-
-        switch(settings.dlcLevel) {
+    switch(settings.dlcLevel) {
         case 1:
             xmlOutPathUP = settings.outPath / "Games"/"WKFE.xml";
             xmlPath = resourceDir/"WK1.xml";
@@ -1732,694 +1731,425 @@ int WKConverter::run(bool retry)
             xmlPath = resourceDir/"WK3.xml";
             upModdedExeName = "WK";
             break;
-        }
+    }
 
-        if(secondAttempt) {
-            listener->log("\nSecond Attempt");
-            listener->log("\n");
+    if(secondAttempt) {
+        listener->log("\nSecond Attempt");
+        listener->log("\n");
+    } else {
+        listener->log("New Run");
+        listener->log("\n");
+    }
+    listener->log("\nHD Path:");
+    listener->log(settings.hdPath.string() + "\n" + "AoC Path:");
+    listener->log(installDir.string() + "\n");
+
+    listener->log("Patch mode: ");
+    listener->log(std::to_string(settings.patch));
+    listener->log("DLC level: ");
+    listener->log(std::to_string(settings.dlcLevel));
+
+    std::string line;
+
+    listener->setProgress(1); //1
+
+    if (settings.patch < 0) {
+        setupFolders(xmlOutPathUP);
+    } else {
+        cfs::create_directories(outputDatPath.parent_path());
+        patchFolder = resourceDir/"patches"/std::get<0>(settings.dataModList[settings.patch]);
+        hdDatPath = patchFolder/"empires2_x1_p1.dat";
+        upModdedExeName = std::get<1>(settings.dataModList[settings.patch]);
+    }
+
+    createLanguageFile(languageIniPath, patchFolder);
+    if (settings.useExe) {
+        cfs::copy_file(aocLanguageIniModDll, installDir/"Data"/"language_x1_p1.dll", fs::copy_options::overwrite_existing);
+    }
+
+    listener->increaseProgress(1); //6
+
+    if (settings.patch < 0) {
+        listener->log("index DRS files");
+        indexDrsFiles(assetsPath); //Slp/wav files to be written into gamedata_x1_p1.drs
+        indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
+
+        listener->log("Visual Mod Stuff");
+        listener->setInfo("working$\n$workingMods");
+        listener->increaseProgress(1); //7
+        if(settings.useGrid) {
+            listener->increaseProgress(1); //8
+            listener->increaseProgress(2); //10
         } else {
-            listener->log("New Run");
-            listener->log("\n");
+            indexDrsFiles(newTerrainInputDir, true, true);
+            listener->increaseProgress(3); //10
         }
-        listener->log("\nHD Path:");
-        listener->log(settings.hdPath.string() + "\n" + "AoC Path:");
-        listener->log(installDir.string() + "\n");
+        listener->increaseProgress(1); //11
 
-        listener->log("Patch mode: ");
-        listener->log(std::to_string(settings.patch));
-        listener->log("DLC level: ");
-        listener->log(std::to_string(settings.dlcLevel));
+        for (const auto& [directory, index_type] : settings.drsModDirectories) {
+            indexDrsFiles(directory, index_type);
+        }
 
-        std::string line;
+        listener->setInfo("working$\n$workingFiles");
 
-        listener->setProgress(1); //1
+        listener->log("History Files");
+        copyHistoryFiles(historyInputPath, historyOutputPath);
 
-        if (settings.patch < 0) {
-            setupFolders(xmlOutPathUP);
+        listener->log("Civ Intro Sounds");
+        copyCivIntroSounds(soundsInputPath / "civ", soundsOutputPath / "stream");
+
+        listener->increaseProgress(1); //12
+        listener->log("Create Music Playlist");
+        createMusicPlaylist(soundsInputPath / "music", soundsOutputPath / "music.m3u");
+
+        listener->increaseProgress(1); //13
+        listener->log("Copy Taunts");
+        cfs::copy(tauntInputPath, tauntOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
+
+        listener->log("Copy Scenario Sounds");
+        cfs::copy(scenarioSoundsInputPath, scenarioSoundsOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
+
+        listener->increaseProgress(1); //14
+        listener->log("Write expansion XML");
+        if(settings.useExe) {
+            std::ofstream xml_output(xmlOutPathUP);
+            write_wk_xml(xml_output, settings.dlcLevel);
+        }
+        if (settings.useVoobly) {
+            std::ofstream xml_output(xmlOutPath);
+            write_wk_xml(xml_output, settings.dlcLevel);
+        }
+
+        fs::path installMapDir = installDir/"Script.Rm";
+        listener->log("Copy Voobly Map folder");
+        if (cfs::exists(settings.outPath/"Random")) {
+            cfs::copy(settings.outPath/"Random", installMapDir, fs::copy_options::recursive | fs::copy_options::skip_existing);
         } else {
-            cfs::create_directories(outputDatPath.parent_path());
-            patchFolder = resourceDir/"patches"/std::get<0>(settings.dataModList[settings.patch]);
-            hdDatPath = patchFolder/"empires2_x1_p1.dat";
-            upModdedExeName = std::get<1>(settings.dataModList[settings.patch]);
+            cfs::create_directory(installMapDir);
+        }
+        listener->increaseProgress(1); //15
+
+        if(settings.copyCustomMaps) {
+            listener->log("Copy HD Maps");
+            copyHDMaps(settings.hdPath/"resources"/"_common"/"random-map-scripts", installMapDir);
+        } else {
+            listener->increaseProgress(3); //18
+        }
+        listener->increaseProgress(1); //19
+
+        listener->log("Copy Special Maps");
+        if(settings.copyMaps) {
+            copyHDMaps(resourceDir/"Script.Rm", installMapDir, true);
+        } else {
+            listener->increaseProgress(3);
+        }
+        listener->increaseProgress(1); //23
+        cfs::copy(scenarioInputDir,installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+
+        listener->log("Copying AI");
+        cfs::copy(aiInputPath, installDir/"Script.Ai", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+
+        listener->increaseProgress(1); //24
+        listener->log("Hotkey Setup");
+        if(settings.hotkeyChoice != 0 || cfs::exists("player1.hki"))
+            hotkeySetup();
+
+        listener->increaseProgress(1); //25
+
+        listener->log("Opening dats");
+        listener->setInfo("working$\n$workingAoc");
+
+        genie::DatFile aocDat;
+        genie::DatFile hdDat;
+        aocDat.setGameVersion(genie::GameVersion::GV_TC);
+        aocDat.load(aocDatPath.string().c_str());
+        listener->increaseProgress(3); //28
+
+        listener->setInfo("working$\n$workingHD");
+
+        hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
+        hdDat.load(hdDatPath.string().c_str());
+        listener->increaseProgress(3); //31
+
+        listener->setInfo("working$\n$workingInterface");
+
+        listener->log("HUD Hack");
+        uglyHudHack(assetsPath);
+        listener->increaseProgress(1); //32
+
+        listener->setInfo("working$\n$workingDat");
+
+        listener->log("Transfer HD Dat elements");
+        transferHdDatElements(&hdDat, &aocDat);
+        listener->increaseProgress(1); //33
+
+        listener->log("Patch Architectures");
+        /*
+         * As usual, we have to fix some mediterranean stuff first where builidings that shouldn't
+         * share the same garrison flag graphics.
+         */
+
+        const std::array buildingIDs = { 47, 51, 116, 137, 234, 235, 236};
+        for(const auto buildingId : buildingIDs) {
+            short oldGraphicID = aocDat.Civs[19].Units[buildingId].Creatable.GarrisonGraphic;
+            genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
+            newFlag.ID = aocDat.Graphics.size();
+            aocDat.Graphics.push_back(newFlag);
+            aocDat.GraphicPointers.push_back(1);
+            aocDat.Civs[19].Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
+            aocDat.Civs[24].Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
         }
 
-        createLanguageFile(languageIniPath, patchFolder);
-        if (settings.useExe) {
-            cfs::copy_file(aocLanguageIniModDll, installDir/"Data"/"language_x1_p1.dll", fs::copy_options::overwrite_existing);
-        }
+        adjustArchitectureFlags(&aocDat,resourceDir/"Flags.txt");
 
-        listener->increaseProgress(1); //6
+        patchArchitectures(&aocDat);
 
-        if (settings.patch < 0) {
-            listener->log("index DRS files");
-            indexDrsFiles(assetsPath); //Slp/wav files to be written into gamedata_x1_p1.drs
-            indexDrsFiles(aocAssetsPath, false); //Aoc slp files, just needed for comparison purposes
+        if(settings.fixFlags)
+            adjustArchitectureFlags(&aocDat,resourceDir/"WKFlags.txt");
 
-            listener->log("Visual Mod Stuff");
-            listener->setInfo("working$\n$workingMods");
-            listener->increaseProgress(1); //7
-            if(settings.useGrid) {
-                listener->increaseProgress(1); //8
-                listener->increaseProgress(2); //10
-            } else {
-                indexDrsFiles(newTerrainInputDir, true, true);
-                listener->increaseProgress(3); //10
-            }
-            listener->increaseProgress(1); //11
+        if(settings.useShortWalls) //This needs to be AFTER patchArchitectures
+            copyWallFiles(wallsInputDir);
 
-            for (const auto& [directory, index_type] : settings.drsModDirectories) {
-                indexDrsFiles(directory, index_type);
-            }
+        listener->increaseProgress(1); //64
+        if(settings.useMonks)
+            indexDrsFiles(monkInputDir);
+        else
+            indexDrsFiles(oldMonkInputDir);
+        listener->increaseProgress(1); //65
 
-            listener->setInfo("working$\n$workingFiles");
-
-            try {
-                listener->log("History Files");
-
-                copyHistoryFiles(historyInputPath, historyOutputPath);
-            } catch (std::exception const & e) {
-                std::string message = "historyError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-            try {
-                listener->log("Civ Intro Sounds");
-
-                copyCivIntroSounds(soundsInputPath / "civ", soundsOutputPath / "stream");
-            } catch (std::exception const & e) {
-                std::string message = "civIntroError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-            listener->increaseProgress(1); //12
-            listener->log("Create Music Playlist");
-            try {
-                createMusicPlaylist(soundsInputPath / "music", soundsOutputPath / "music.m3u");
+        indexDrsFiles(architectureFixDir);
+        listener->log("Mod Override Dir");
+        if(cfs::exists(modOverrideDir) && !cfs::is_empty(modOverrideDir))
+            indexDrsFiles(modOverrideDir);
+        listener->increaseProgress(1); //66
+        listener->log("Opening DRS");
+        std::ofstream drsOut(drsOutPath, std::ios::binary);
+        listener->log("Make DRS " + drsOutPath.string());
+        makeDrs(drsOut);
+        listener->increaseProgress(1); //75
 
 
-            } catch (std::exception const & e) {
-                std::string message = "musicPlaylistError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-            listener->increaseProgress(1); //13
-            listener->log("Copy Taunts");
-            try {
-
-              cfs::copy(tauntInputPath, tauntOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
-            } catch (std::exception const & e) {
-                std::string message = "tauntError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-            listener->log("Copy Scenario Sounds");
-            try {
-
-              cfs::copy(scenarioSoundsInputPath, scenarioSoundsOutputPath, fs::copy_options::recursive | fs::copy_options::skip_existing);
-            } catch (std::exception const & e) {
-                std::string message = "scenarioSoundError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-            listener->increaseProgress(1); //14
-            listener->log("Write expansion XML");
-            if(settings.useExe) {
-                std::ofstream xml_output(xmlOutPathUP);
-                write_wk_xml(xml_output, settings.dlcLevel);
-            }
-            if (settings.useVoobly) {
-                std::ofstream xml_output(xmlOutPath);
-                write_wk_xml(xml_output, settings.dlcLevel);
-            }
-
-            fs::path installMapDir = installDir/"Script.Rm";
-            listener->log("Copy Voobly Map folder");
-            if (cfs::exists(settings.outPath/"Random")) {
-                try {
-                  cfs::copy(settings.outPath/"Random", installMapDir, fs::copy_options::recursive | fs::copy_options::skip_existing);
-                } catch (std::exception const & e) {
-                    std::string message = "vooblyMapError$";
-                    message += e.what();
-                    listener->log(message);
-                    if(retry) {
-                        listener->error(message);
-                    } else {
-                        retryInstall();
-                    }
-                }
-			} else {
-                cfs::create_directory(installMapDir);
-			}
-            listener->increaseProgress(1); //15
-            if(settings.copyCustomMaps) {
-                listener->log("Copy HD Maps");
-                try {
-                    copyHDMaps(settings.hdPath/"resources"/"_common"/"random-map-scripts", installMapDir);
-                } catch (std::exception const & e) {
-                    std::string message = "hdMapError$";
-                    message += e.what();
-                    listener->log(message);
-                    if(retry) {
-                        listener->error(message);
-                    } else {
-                        retryInstall();
-                    }
-                }
-            } else {
-                listener->increaseProgress(3); //18
-            }
-            listener->increaseProgress(1); //19
-            listener->log("Copy Special Maps");
-            if(settings.copyMaps) {
-                try {
-                    copyHDMaps(resourceDir/"Script.Rm", installMapDir, true);
-                } catch (std::exception const & e) {
-                    std::string message = "specialMapError$";
-                    message += e.what();
-                    listener->log(message);
-                    if(retry) {
-                        listener->error(message);
-                    } else {
-                        retryInstall();
-                    }
-                }
-            } else {
-                listener->increaseProgress(3);
-            }
-            listener->increaseProgress(1); //23
-            try {
-              cfs::copy(scenarioInputDir,installDir/"Scenario", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-
-            } catch (std::exception const & e) {
-                std::string message = "scenarioError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-            listener->log("Copying AI");
-            try {
-              cfs::copy(aiInputPath, installDir/"Script.Ai", fs::copy_options::recursive | fs::copy_options::overwrite_existing);
-
-            } catch (std::exception const & e) {
-                std::string message = "aiError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-            listener->increaseProgress(1); //24
-            listener->log("Hotkey Setup");
-            try {
-                if(settings.hotkeyChoice != 0 || cfs::exists("player1.hki"))
-                    hotkeySetup();
-            } catch (std::exception const & e) {
-                std::string message = "hotkeyError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                } else {
-                    retryInstall();
-                }
-            }
-
-            listener->increaseProgress(1); //25
-
-            listener->log("Opening dats");
-            listener->setInfo("working$\n$workingAoc");
-
-
-
-            genie::DatFile aocDat;
-            genie::DatFile hdDat;
-            try {
-                aocDat.setGameVersion(genie::GameVersion::GV_TC);
-                aocDat.load(aocDatPath.string().c_str());
-                listener->increaseProgress(3); //28
-
-                listener->setInfo("working$\n$workingHD");
-
-                hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
-                hdDat.load(hdDatPath.string().c_str());
-                listener->increaseProgress(3); //31
-
-                listener->setInfo("working$\n$workingInterface");
-
-
-                listener->log("HUD Hack");
-                uglyHudHack(assetsPath);
-                listener->increaseProgress(1); //32
-
-                listener->setInfo("working$\n$workingDat");
-
-
-                listener->log("Transfer HD Dat elements");
-                transferHdDatElements(&hdDat, &aocDat);
-                listener->increaseProgress(1); //33
-
-                listener->log("Patch Architectures");
-                /*
-                 * As usual, we have to fix some mediterranean stuff first where builidings that shouldn't
-                 * share the same garrison flag graphics.
-                 */
-
-                const std::array buildingIDs = { 47, 51, 116, 137, 234, 235, 236};
-                for(const auto buildingId : buildingIDs) {
-                    short oldGraphicID = aocDat.Civs[19].Units[buildingId].Creatable.GarrisonGraphic;
-                    genie::Graphic newFlag = aocDat.Graphics[oldGraphicID];
-                    newFlag.ID = aocDat.Graphics.size();
-                    aocDat.Graphics.push_back(newFlag);
-                    aocDat.GraphicPointers.push_back(1);
-                    aocDat.Civs[19].Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
-                    aocDat.Civs[24].Units[buildingId].Creatable.GarrisonGraphic = newFlag.ID;
-                }
-
-                adjustArchitectureFlags(&aocDat,resourceDir/"Flags.txt");
-
-                patchArchitectures(&aocDat);
-
-                if(settings.fixFlags)
-                    adjustArchitectureFlags(&aocDat,resourceDir/"WKFlags.txt");
-
-                if(settings.useShortWalls) //This needs to be AFTER patchArchitectures
-                    copyWallFiles(wallsInputDir);
-            } catch (std::exception const & e) {
-                std::string message = "datError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                    return -2;
-                } else {
-                    retryInstall();
-                }
-            }
-
-            listener->increaseProgress(1); //64
-            try {
-                if(settings.useMonks)
-                    indexDrsFiles(monkInputDir);
-                else
-                    indexDrsFiles(oldMonkInputDir);
-                listener->increaseProgress(1); //65
-
-                indexDrsFiles(architectureFixDir);
-                listener->log("Mod Override Dir");
-                if(cfs::exists(modOverrideDir) && !cfs::is_empty(modOverrideDir))
-                    indexDrsFiles(modOverrideDir);
-                listener->increaseProgress(1); //66
-                listener->log("Opening DRS");
-                std::ofstream drsOut(drsOutPath, std::ios::binary);
-                listener->log("Make DRS " + drsOutPath.string());
-                makeDrs(drsOut);
-                listener->increaseProgress(1); //75
-
-
-                listener->log("copy gamedata_x1.drs");
-                cfs::copy_file(gamedata_x1, installDir/"Data"/"gamedata_x1.drs", fs::copy_options::overwrite_existing);
-                listener->increaseProgress(1); //76
-            } catch (std::exception const & e) {
-                std::string message = "indexingError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                    return -2;
-                } else {
-                    retryInstall();
-                }
-            }
-
-            /*
-             * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
-             */
-
-
-            std::ifstream versionFile(resourceDir/"version.txt");
-            std::string patchNumber;
-            std::getline(versionFile, patchNumber);
-            std::string dataVersion;
-            std::getline(versionFile, dataVersion);
-
-            std::string hash1;
-            std::string hash2;
-            std::getline(versionFile, hash1);
-            std::getline(versionFile, hash2);
-            versionFile.close();
-
-
-            const std::vector<wololo::DatPatch> patchTab = {
-                wololo::berbersUTFix,
-                wololo::demoShipFix,
-                wololo::vietFix,
-                wololo::malayFix,
-                wololo::ethiopiansFreePikeUpgradeFix,
-                wololo::hotkeysFix,
-                wololo::maliansFreeMiningUpgradeFix,
-                wololo::portugueseFix,
-                wololo::disableNonWorkingUnits,
-                wololo::burmeseFix,
-                wololo::siegeTowerFix,
-                wololo::khmerFix,
-                wololo::trickleBuildingFix,
-                wololo::smallFixes,
-                wololo::cuttingFix,
-                wololo::ai900UnitIdFix
-            };
-
-            listener->setInfo("working$\n$workingPatches");
-
-            listener->log("DAT Patches");
-            try{
-                for (auto& patch : patchTab) {
-                    patch.patch(&aocDat);
-                    listener->setInfo(std::string("working$\n$") + patch.name);
-                    listener->increaseProgress(1); //77-93
-                }
-
-                for (auto& civ : aocDat.Civs) {
-                    civ.Resources[198] = std::stoi(dataVersion); //Mod version: WK=1, last 3 digits are patch number
-                }
-
-                listener->log("Save DAT");
-                aocDat.saveAs(outputDatPath.string().c_str());
-            } catch (std::exception const & e) {
-                std::string message = "datSaveError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                    return -2;
-                } else {
-                    retryInstall();
-                }
-            }
-            if(!settings.useExe) {
-                    try {
-                    /*
-                     * Generate version.ini based on the installer and the hash of the dat.
-                     */
-                    listener->log("Create Hash");
-                    auto fileStream = std::fstream(outputDatPath.string(), std::ios_base::in);
-                    std::string fileData = concat_stream(fileStream);
-
-                    std::string hash = MD5(fileData).b64digest();
-                    std::ofstream versionOut(versionIniPath);
-                    if (hash != hash1 && hash != hash2) {
-                        listener->createDialog("dialogBeta");
-
-                        versionOut << (patchNumber + ".") << hash;
-                    } else {
-                        versionOut << patchNumber;
-                    }
-                    versionOut.close();
-                } catch (std::exception const & e) {
-                    std::string message = "versionFileError$";
-                    message += e.what();
-                    listener->log(message);
-                    if(retry) {
-                        listener->error(message);
-                        listener->setInfo("error");
-                        return -2;
-                    } else {
-                        retryInstall();
-                    }
-                }
-            }
-            if (settings.useBoth) {
-                listener->log("Offline installation symlink");
-                try {
-                    symlinkSetup(settings.vooblyDir, settings.upDir);
-                } catch (std::exception const & e) {
-                    std::string message = "symlinkError$";
-                    message += e.what();
-                    listener->log(message);
-                    if(retry) {
-                        listener->error(message);
-                        listener->setInfo("error");
-                        return -2;
-                    } else {
-                        retryInstall();
-                    }
-                }
-            }
-
-        } else { //If we use a balance mod or old patch, just copy the supplied dat fil
-            try {
-                listener->log("Copy DAT file");
-                cfs::remove(outputDatPath);
-                genie::DatFile dat;
-                dat.setGameVersion(genie::GameVersion::GV_TC);
-                dat.load(hdDatPath.string().c_str());
-                if(settings.fixFlags)
-                    adjustArchitectureFlags(&dat,resourceDir/"WKFlags.txt");
-                dat.saveAs(outputDatPath.string().c_str());
-                listener->setProgress(20);
-                std::string patchNumber = std::get<2>(settings.dataModList[settings.patch]);
-                std::ofstream versionOut(versionIniPath);
-                versionOut << patchNumber;
-                versionOut.close();
-            } catch (std::exception const & e) {
-                std::string message = "patchDatError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                    return -2;
-                } else {
-                    retryInstall();
-                }
-            }
-        }
-
-
-
-        listener->increaseProgress(1); //94
-
-		/*
-		 * If a user has access to more than just FE, also generate those versions
-		 * For an old patch, we'll just use the highest one
-		 * For a data mod, not sure if we should generate all versions or the highest one
-		 */
-
-        if (settings.patch >= 0) {
-            try {
-                listener->log("Patch setup");
-                std::string mod_name = baseModName + (
-                    settings.dlcLevel == 3 ? ""
-                  : settings.dlcLevel == 2 ? " AK"
-                  : " FE");
-                std::stringstream sstream;
-                write_wk_xml(sstream, settings.dlcLevel);
-                auto str = sstream.str();
-                replace_all(str, mod_name, settings.modName);
-                if(settings.useBoth || settings.useVoobly) {
-                    std::ofstream outstream (settings.vooblyDir/"age2_x1.xml");
-                    outstream << str;
-                    outstream.close();
-                    symlinkSetup(settings.vooblyDir.parent_path()/mod_name, settings.vooblyDir, true);
-                    if(std::get<3>(settings.dataModList[settings.patch]) & 4) {
-                        indexDrsFiles(slpCompatDir);
-                        std::ifstream oldDrs (settings.vooblyDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
-                        std::ofstream newDrs (settings.vooblyDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
-                        editDrs(&oldDrs, &newDrs);
-                    }
-                }
-                if(settings.useBoth || settings.useExe) {
-                    std::ofstream outstream (settings.upDir.parent_path()/(upModdedExeName + ".xml"));
-                    outstream << str;
-                    outstream.close();
-                    symlinkSetup(settings.upDir.parent_path()/mod_name, settings.upDir, true);
-                    if(std::get<3>(settings.dataModList[settings.patch]) & 4) {
-                        indexDrsFiles(slpCompatDir);
-                        std::ifstream oldDrs (settings.upDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
-                        std::ofstream newDrs (settings.upDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
-                        editDrs(&oldDrs, &newDrs);
-                    }
-                }
-            } catch (std::exception const & e) {
-                std::string message = "patchError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                    return -2;
-                } else {
-                    retryInstall();
-                }
-            }
-        } else if(settings.restrictedCivMods) {
-            try {
-                if (settings.dlcLevel > 1) {
-                    listener->log("FE Setup");
-                    fs::path vooblyModDir = settings.vooblyDir.parent_path()/(baseModName + " FE");
-                    if(settings.useBoth || settings.useVoobly) {
-                        std::ofstream outstream (vooblyModDir/"age2_x1.xml");
-                        write_wk_xml(outstream, 1);
-                        symlinkSetup(settings.vooblyDir, vooblyModDir);
-                    }
-                }
-                if (settings.dlcLevel > 2) {
-                    listener->log("AK Setup");
-                    fs::path vooblyModDir = settings.vooblyDir.parent_path()/(baseModName + " AK");
-                    if(settings.useBoth || settings.useVoobly) {
-                        std::ofstream outstream (vooblyModDir/"age2_x1.xml");
-                        write_wk_xml(outstream, 2);
-                        symlinkSetup(settings.vooblyDir, vooblyModDir);
-                    }
-                }
-            } catch (std::exception const & e) {
-                std::string message = "restrictedCivError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                } else {
-                    retryInstall();
-                }
-            }
-        }
+        listener->log("copy gamedata_x1.drs");
+        cfs::copy_file(gamedata_x1, installDir/"Data"/"gamedata_x1.drs", fs::copy_options::overwrite_existing);
+        listener->increaseProgress(1); //76
 
         /*
-         * Copy the data folder from the Voobly folder and
-         * create the offline exe
+         * Read what the current patch number and what the expected hashes (with/without flag adjustment) are
          */
-        if(settings.useBoth) {
-            try {
-                cfs::copy_file(settings.vooblyDir / "Data"/"empires2_x1_p1.dat", settings.upDir / "Data"/"empires2_x1_p1.dat", fs::copy_options::overwrite_existing);
-            } catch (std::exception const & e) {
-                std::string message = e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                    return -2;
-                } else {
-                    retryInstall();
-                }
+
+        std::ifstream versionFile(resourceDir/"version.txt");
+        std::string patchNumber;
+        std::getline(versionFile, patchNumber);
+        std::string dataVersion;
+        std::getline(versionFile, dataVersion);
+
+        std::string hash1;
+        std::string hash2;
+        std::getline(versionFile, hash1);
+        std::getline(versionFile, hash2);
+        versionFile.close();
+
+        const std::vector<wololo::DatPatch> patchTab = {
+            wololo::berbersUTFix,
+            wololo::demoShipFix,
+            wololo::vietFix,
+            wololo::malayFix,
+            wololo::ethiopiansFreePikeUpgradeFix,
+            wololo::hotkeysFix,
+            wololo::maliansFreeMiningUpgradeFix,
+            wololo::portugueseFix,
+            wololo::disableNonWorkingUnits,
+            wololo::burmeseFix,
+            wololo::siegeTowerFix,
+            wololo::khmerFix,
+            wololo::trickleBuildingFix,
+            wololo::smallFixes,
+            wololo::cuttingFix,
+            wololo::ai900UnitIdFix
+        };
+
+        listener->setInfo("working$\n$workingPatches");
+
+        listener->log("DAT Patches");
+        for (auto& patch : patchTab) {
+            patch.patch(&aocDat);
+            listener->setInfo(std::string("working$\n$") + patch.name);
+            listener->increaseProgress(1); //77-93
+        }
+
+        for (auto& civ : aocDat.Civs) {
+            civ.Resources[198] = std::stoi(dataVersion); //Mod version: WK=1, last 3 digits are patch number
+        }
+
+        listener->log("Save DAT");
+        aocDat.saveAs(outputDatPath.string().c_str());
+
+        if(!settings.useExe) {
+            /*
+             * Generate version.ini based on the installer and the hash of the dat.
+             */
+            listener->log("Create Hash");
+            auto fileStream = std::fstream(outputDatPath.string(), std::ios_base::in);
+            std::string fileData = concat_stream(fileStream);
+
+            std::string hash = MD5(fileData).b64digest();
+            std::ofstream versionOut(versionIniPath);
+            if (hash != hash1 && hash != hash2) {
+                listener->createDialog("dialogBeta");
+
+                versionOut << (patchNumber + ".") << hash;
+            } else {
+                versionOut << patchNumber;
+            }
+            versionOut.close();
+        }
+
+        if (settings.useBoth) {
+            listener->log("Offline installation symlink");
+            symlinkSetup(settings.vooblyDir, settings.upDir);
+        }
+
+    } else { //If we use a balance mod or old patch, just copy the supplied dat fil
+        listener->log("Copy DAT file");
+        cfs::remove(outputDatPath);
+        genie::DatFile dat;
+        dat.setGameVersion(genie::GameVersion::GV_TC);
+        dat.load(hdDatPath.string().c_str());
+        if(settings.fixFlags)
+            adjustArchitectureFlags(&dat,resourceDir/"WKFlags.txt");
+        dat.saveAs(outputDatPath.string().c_str());
+        listener->setProgress(20);
+        std::string patchNumber = std::get<2>(settings.dataModList[settings.patch]);
+        std::ofstream versionOut(versionIniPath);
+        versionOut << patchNumber;
+        versionOut.close();
+    }
+
+    listener->increaseProgress(1); //94
+
+    /*
+     * If a user has access to more than just FE, also generate those versions
+     * For an old patch, we'll just use the highest one
+     * For a data mod, not sure if we should generate all versions or the highest one
+     */
+
+    if (settings.patch >= 0) {
+        listener->log("Patch setup");
+        std::string mod_name = baseModName + (
+                settings.dlcLevel == 3 ? ""
+                : settings.dlcLevel == 2 ? " AK"
+                : " FE");
+        std::stringstream sstream;
+        write_wk_xml(sstream, settings.dlcLevel);
+        auto str = sstream.str();
+        replace_all(str, mod_name, settings.modName);
+        if(settings.useBoth || settings.useVoobly) {
+            std::ofstream outstream (settings.vooblyDir/"age2_x1.xml");
+            outstream << str;
+            outstream.close();
+            symlinkSetup(settings.vooblyDir.parent_path()/mod_name, settings.vooblyDir, true);
+            if(std::get<3>(settings.dataModList[settings.patch]) & 4) {
+                indexDrsFiles(slpCompatDir);
+                std::ifstream oldDrs (settings.vooblyDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                std::ofstream newDrs (settings.vooblyDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                editDrs(&oldDrs, &newDrs);
             }
         }
-        if(settings.useVoobly) {
-            listener->createDialog("dialogDone");
-
-        } else {
-            listener->log("Create Offline Exe");
-            listener->setInfo("working$\n$workingUP");
-            listener->increaseProgress(1); //95
-            try {
-                cfs::copy_file(upSetupAoCSource, upSetupAoCPath, fs::copy_options::overwrite_existing);
-
-                listener->increaseProgress(1); //96
-
-                std::vector<std::string> flags = { "-g:" + upModdedExeName };
-                listener->installUserPatch(upSetupAoCPath, flags);
-
-                std::string newExeName;
-                if(settings.patch >= 0 && (newExeName = std::get<4>(settings.dataModList[settings.patch])) != "") {
-                    if(cfs::exists(settings.outPath / "age2_x1"/(newExeName+".exe"))) {
-                        cfs::rename(settings.outPath / "age2_x1"/(newExeName+".exe"),
-                                   settings.outPath / "age2_x1"/(newExeName+".exe.bak"));
-                    }
-                    cfs::rename(settings.outPath / "age2_x1"/(upModdedExeName+".exe"),
-                               settings.outPath / "age2_x1"/(newExeName+".exe"));
-                    upModdedExeName = newExeName;
-                }
-            } catch (std::exception const & e) {
-                std::string message = "exeError$";
-                message += e.what();
-                listener->log(message);
-                if(retry) {
-                    listener->error(message);
-                    listener->setInfo("error");
-                    return -2;
-                } else {
-                    retryInstall();
-                }
+        if(settings.useBoth || settings.useExe) {
+            std::ofstream outstream (settings.upDir.parent_path()/(upModdedExeName + ".xml"));
+            outstream << str;
+            outstream.close();
+            symlinkSetup(settings.upDir.parent_path()/mod_name, settings.upDir, true);
+            if(std::get<3>(settings.dataModList[settings.patch]) & 4) {
+                indexDrsFiles(slpCompatDir);
+                std::ifstream oldDrs (settings.upDir.parent_path()/mod_name/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                std::ofstream newDrs (settings.upDir/"data"/"gamedata_x1_p1.drs", std::ios::binary);
+                editDrs(&oldDrs, &newDrs);
             }
-
-            listener->increaseProgress(1); //97
-            std::string info = settings.useBoth ? "dialogBoth" : "dialogExe";
-            listener->createDialog(info, "<exe>", upModdedExeName);
-
         }
-        listener->setInfo("workingDone");
-
-        if (settings.patch < 0 && cfs::equivalent(settings.outPath,settings.hdPath)) {
-
-            listener->log("Fix Compat Patch");
-			/*
-			 * Several small fixes for the compatibility patch. This only needs to be run once
-			 * An update to the compatibility patch would make this unnecessary most likely.
-			 */
-
-            cfs::remove_all(settings.outPath/"compatslp");
-
-            cfs::create_directory(settings.outPath/"data"/"Load");
-            if(settings.useExe) { //this causes a crash with UP 1.5 otherwise
-                listener->setInfo("workingDone");
-
-                if(cfs::file_size(settings.outPath/"data"/"blendomatic.dat") < 400000) {
-                    cfs::rename(settings.outPath/"data"/"blendomatic.dat",settings.outPath/"data"/"blendomatic.dat.bak");
-                    cfs::rename(settings.outPath/"data"/"blendomatic_x1.dat",settings.outPath/"data"/"blendomatic.dat");
-                }
-                listener->increaseProgress(1); //98
+    } else if(settings.restrictedCivMods) {
+        if (settings.dlcLevel > 1) {
+            listener->log("FE Setup");
+            fs::path vooblyModDir = settings.vooblyDir.parent_path()/(baseModName + " FE");
+            if(settings.useBoth || settings.useVoobly) {
+                std::ofstream outstream (vooblyModDir/"age2_x1.xml");
+                write_wk_xml(outstream, 1);
+                symlinkSetup(settings.vooblyDir, vooblyModDir);
             }
-		}
+        }
+        if (settings.dlcLevel > 2) {
+            listener->log("AK Setup");
+            fs::path vooblyModDir = settings.vooblyDir.parent_path()/(baseModName + " AK");
+            if(settings.useBoth || settings.useVoobly) {
+                std::ofstream outstream (vooblyModDir/"age2_x1.xml");
+                write_wk_xml(outstream, 2);
+                symlinkSetup(settings.vooblyDir, vooblyModDir);
+            }
+        }
+    }
+
+    /*
+     * Copy the data folder from the Voobly folder and
+     * create the offline exe
+     */
+    if(settings.useBoth) {
+        cfs::copy_file(settings.vooblyDir / "Data"/"empires2_x1_p1.dat", settings.upDir / "Data"/"empires2_x1_p1.dat", fs::copy_options::overwrite_existing);
+    }
+    if(settings.useVoobly) {
+        listener->createDialog("dialogDone");
+    } else {
+        listener->log("Create Offline Exe");
+        listener->setInfo("working$\n$workingUP");
+        listener->increaseProgress(1); //95
+        cfs::copy_file(upSetupAoCSource, upSetupAoCPath, fs::copy_options::overwrite_existing);
+
+        listener->increaseProgress(1); //96
+
+        std::vector<std::string> flags = { "-g:" + upModdedExeName };
+        listener->installUserPatch(upSetupAoCPath, flags);
+
+        std::string newExeName;
+        if(settings.patch >= 0 && (newExeName = std::get<4>(settings.dataModList[settings.patch])) != "") {
+            if(cfs::exists(settings.outPath / "age2_x1"/(newExeName+".exe"))) {
+                cfs::rename(settings.outPath / "age2_x1"/(newExeName+".exe"),
+                        settings.outPath / "age2_x1"/(newExeName+".exe.bak"));
+            }
+            cfs::rename(settings.outPath / "age2_x1"/(upModdedExeName+".exe"),
+                    settings.outPath / "age2_x1"/(newExeName+".exe"));
+            upModdedExeName = newExeName;
+        }
+
+        listener->increaseProgress(1); //97
+        std::string info = settings.useBoth ? "dialogBoth" : "dialogExe";
+        listener->createDialog(info, "<exe>", upModdedExeName);
+
+    }
+    listener->setInfo("workingDone");
+
+    if (settings.patch < 0 && cfs::equivalent(settings.outPath,settings.hdPath)) {
+
+        listener->log("Fix Compat Patch");
+        /*
+         * Several small fixes for the compatibility patch. This only needs to be run once
+         * An update to the compatibility patch would make this unnecessary most likely.
+         */
+
+        cfs::remove_all(settings.outPath/"compatslp");
+
+        cfs::create_directory(settings.outPath/"data"/"Load");
+        if(settings.useExe) { //this causes a crash with UP 1.5 otherwise
+            listener->setInfo("workingDone");
+
+            if(cfs::file_size(settings.outPath/"data"/"blendomatic.dat") < 400000) {
+                cfs::rename(settings.outPath/"data"/"blendomatic.dat",settings.outPath/"data"/"blendomatic.dat.bak");
+                cfs::rename(settings.outPath/"data"/"blendomatic_x1.dat",settings.outPath/"data"/"blendomatic.dat");
+            }
+            listener->increaseProgress(1); //98
+        }
+    }
 
 
-        listener->setProgress(100);
-	}
-	catch (std::exception const & e) {
-        listener->error(e);
-        listener->log(e.what());
-        listener->setInfo("error");
-        ret = 1;
-	}
-	catch (std::string const & e) {		
-        listener->error(e);
-        listener->log(e);
-        listener->setInfo("error");
-		ret = 1;
-	}
-
+    listener->setProgress(100);
 
     if(settings.patch < 0 && std::get<0>(settings.dataModList[0]) == "Patch 5.8 Beta") {
         listener->createDialog("The converter will install the Patch 5.8 Beta as a separate mod now");
@@ -2439,5 +2169,5 @@ int WKConverter::run(bool retry)
     }
 
     listener->finished();
-	return ret;
+    return ret;
 }

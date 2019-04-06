@@ -99,7 +99,8 @@ public:
         }
     }
 
-    int run(bool retry = false);
+    int run();
+    int retryInstall();
 
 private:
 
@@ -173,5 +174,4 @@ private:
     void hotkeySetup();
     void symlinkSetup(const fs::path& oldDir, const fs::path& newDir, bool dataMod = false);
     void setupFolders(fs::path xmlOutPathUP);
-    void retryInstall();
 };
