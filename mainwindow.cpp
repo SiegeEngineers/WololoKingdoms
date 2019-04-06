@@ -251,6 +251,11 @@ void MainWindow::runConverter() {
         settings.addDrsResources(terrainOverrideDir, WKSettings::IndexType::Expansion | WKSettings::IndexType::Terrain);
     }
 
+    auto modOverrideDir = resourceDir.parent_path()/"mod_override";
+    if(cfs::exists(modOverrideDir) && !cfs::is_empty(modOverrideDir)) {
+        settings.addDrsResources(modOverrideDir);
+    }
+
     QThread* thread = new QThread;
     WKQConverter* converter = new WKQConverter(settings);
     converter->moveToThread(thread);

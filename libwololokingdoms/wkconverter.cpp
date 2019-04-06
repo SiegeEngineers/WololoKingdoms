@@ -1674,7 +1674,6 @@ int WKConverter::run()
     fs::path newTerrainInputDir = resourceDir/"new terrains";
     fs::path architectureFixDir = resourceDir/"architecture fixes";
     fs::path slpCompatDir = resourceDir/"old dat slp compatibility";
-    fs::path modOverrideDir("mod_override");
     fs::path wallsInputDir = resourceDir/"short_walls";
     fs::path gamedata_x1 = resourceDir/"gamedata_x1.drs";
     fs::path aiInputPath = resourceDir/"Script.Ai";
@@ -1918,9 +1917,6 @@ int WKConverter::run()
         listener->increaseProgress(1); //65
 
         indexDrsFiles(architectureFixDir);
-        listener->log("Mod Override Dir");
-        if(cfs::exists(modOverrideDir) && !cfs::is_empty(modOverrideDir))
-            indexDrsFiles(modOverrideDir);
         listener->increaseProgress(1); //66
         listener->log("Opening DRS");
         std::ofstream drsOut(drsOutPath, std::ios::binary);
