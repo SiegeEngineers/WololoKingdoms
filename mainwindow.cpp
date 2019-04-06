@@ -42,12 +42,14 @@ void WKQConverter::process() {
     try {
         converter->run();
     } catch (const std::exception& e) {
-        this->error(e);
+        error(e);
+        emit setInfo("error");
         // Retry once…
         try {
             converter->retryInstall();
         } catch (const std::exception& e) {
-            this->error(e);
+            error(e);
+            emit setInfo("error");
         }
     }
 }
