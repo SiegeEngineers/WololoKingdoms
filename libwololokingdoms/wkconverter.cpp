@@ -609,16 +609,7 @@ void WKConverter::createMusicPlaylist(const fs::path& inputDir, const fs::path& 
 }
 
 void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir, bool replace) {
-    std::vector<fs::path> mapNames;
-    for (auto& it : fs::directory_iterator(resolve_path(inputDir))) {
-        auto extension = it.path().extension();
-        if (extension == ".rms") {
-            mapNames.push_back(it.path());
-        }
-    }
-    listener->increaseProgress(2); //15+19
-    std::map<std::string, fs::path> terrainOverrides;
-    std::array<std::map<int, std::regex>, 6> terrainsPerType = { {
+    static const std::array<std::map<int, std::regex>, 6> terrainsPerType = { {
         // The Order is important, see the TerrainTypes Enum!
         {},
         { { 23, std::regex("\\WMED_WATER\\W") },
@@ -640,7 +631,7 @@ void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir
           { 35, std::regex("\\WICE\\W") } }
     } };
 
-    std::vector<MapConvertData> replacements = {
+    static const std::vector<MapConvertData> replacements = {
         // slp_name, const_name_pattern, replaced_name_pattern, old_terrain_id, new_terrain_id, terrain_type
         { "DRAGONFOREST.slp", "DRAGONFORES(T?)", "DRAGONFORES$1", 48, 21, ForestTerrain },
         { "ACACIA_FOREST.slp", "AC(C?)ACIA(_?)FORES(T?)", "AC$1ACIA$2FORES$3", 50, 41, None },
@@ -666,12 +657,22 @@ void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir
         { "DLC_JUNGLEGRASS.slp", "DLC_JUNGLEGRASS", "DLC_JUNGLEGRASS", 60, 12, LandTerrain }
     };
 
-    std::map<int,std::string> slpNumbers = {
+    static const std::map<int, std::string> slpNumbers = {
         {0, "15001.slp"}, {1, "15002.slp"}, {2, "15017.slp"}, {3, "15007.slp"}, {4, "15014.slp"},
         {5, "15011.slp"}, {6, "15014.slp"}, {9, "15009.slp"}, {10, "15011.slp"}, {12, "15008.slp"},
         {13, "15010.slp"}, {14, "15010.slp"}, {21, "15029.slp"},  {22, "15015.slp"}, {23, "15016.slp"},
         {24, "15018.slp"},  {25, "15019.slp"}, {35, "15024.slp"}, {39, "15031.slp"}, {40, "15033.slp"}
     };
+
+    std::vector<fs::path> mapNames;
+    for (auto& it : fs::directory_iterator(resolve_path(inputDir))) {
+        auto extension = it.path().extension();
+        if (extension == ".rms") {
+            mapNames.push_back(it.path());
+        }
+    }
+    listener->increaseProgress(2); //15+19
+    std::map<std::string, fs::path> terrainOverrides;
 
     for (auto& it : mapNames) {
         std::string mapName = it.stem().string()+".rms";
@@ -798,17 +799,25 @@ void WKConverter::copyHDMaps(const fs::path& inputDir, const fs::path& outputDir
     listener->increaseProgress(1); //16+20 22?
 }
 
-bool WKConverter::usesMultipleWaterTerrains(std::string& map, std::map<int,bool>& terrainsUsed) {
+bool WKConverter::usesMultipleWaterTerrains(const std::string& map, std::map<int,bool>& terrainsUsed) {
+    static const auto rxDlcWater4 = std::regex("\\WDLC_WATER4\\W");
+    static const auto rxDlcWater5 = std::regex("\\WDLC_WATER5\\W");
+    static const auto rxWater = std::regex("\\WWATER\\W");
+    static const auto rxMedWater = std::regex("\\WMED_WATER\\W");
+    static const auto rxDeepWater = std::regex("\\WDEEP_WATER\\W");
+
     if(!terrainsUsed[23]) {
-        int hits = (int)std::regex_search(map,std::regex("\\WDLC_WATER4\\W")) + (int)std::regex_search(map,std::regex("\\DLC_WATER5\\W"))
-                + (int)std::regex_search(map,std::regex("\\WATER\\W")) + (int)std::regex_search(map,std::regex("\\MED_WATER\\W"))
-                + (int)std::regex_search(map,std::regex("\\DEEP_WATER\\W"));
+        int hits = (int)std::regex_search(map, rxDlcWater4) + (int)std::regex_search(map, rxDlcWater5)
+                + (int)std::regex_search(map, rxWater) + (int)std::regex_search(map, rxMedWater)
+                + (int)std::regex_search(map, rxDeepWater);
         terrainsUsed[23] = hits > 1;
     }
     return terrainsUsed[23];
 }
 
 void WKConverter::upgradeTrees(int usedTerrain, int oldTerrain, std::string& map) {
+    static const auto rxPlayerSetup = std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n");
+    static const auto rxIncludeDrs = std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n");
 
     std::string newTree;
     std::string oldTree;
@@ -823,30 +832,32 @@ void WKConverter::upgradeTrees(int usedTerrain, int oldTerrain, std::string& map
         newTree = "DLC_RAINTREE";
     }
     if(map.find("<PLAYER_SETUP>")!=std::string::npos)
-        map = std::regex_replace(map, std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n"),
+        map = std::regex_replace(map, rxPlayerSetup,
             "<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
     else
-        map = std::regex_replace(map, std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n"),
+        map = std::regex_replace(map, rxIncludeDrs,
             "#include_drs random_map.def$1\n<PLAYER_SETUP>$1\n  effect_amount GAIA_UPGRADE_UNIT "+oldTree+" "+newTree+" 0$1\n");
 }
 
-bool WKConverter::isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, std::string& map, std::map<int,std::regex>& patterns) {
+bool WKConverter::isTerrainUsed(int terrain, std::map<int,bool>& terrainsUsed, const std::string& map, const std::map<int, std::regex>& patterns) {
+    static const auto rxForest = std::regex("\\W(PINE_FOREST|LEAVES|JUNGLE|BAMBOO|FOREST)\\W");
+    static const auto rxDesert = std::regex("\\W(PALM_DESERT|DESERT)\\W");
+
     if(terrain == 5 || terrain == 10) {
         if(!terrainsUsed[63]) {
             terrainsUsed[63] = true;
-            terrainsUsed[64] = std::regex_search(map,std::regex("\\WPINE_FOREST\\W")) || std::regex_search(map,std::regex("\\WLEAVES\\W"))
-              || std::regex_search(map,std::regex("\\WJUNGLE\\W")) ||  std::regex_search(map,std::regex("\\BAMBOO\\W")) || std::regex_search(map,std::regex("\\WFOREST\\W"));
+            terrainsUsed[64] = std::regex_search(map, rxForest);
         }
         return terrainsUsed[64];
     }
     if(terrain == 13 || terrain == 14) {
         if(!terrainsUsed[65]) {
             terrainsUsed[65] = true;
-            terrainsUsed[66] = std::regex_search(map,std::regex("\\WPALM_DESERT\\W")) || std::regex_search(map,std::regex("\\WDESERT\\W"));
+            terrainsUsed[66] = std::regex_search(map, rxDesert);
         }
         return terrainsUsed[66];
     } else {
-        return terrainsUsed[terrain] = std::regex_search(map,patterns[terrain]);
+        return terrainsUsed[terrain] = std::regex_search(map, patterns.at(terrain));
     }
 }
 
