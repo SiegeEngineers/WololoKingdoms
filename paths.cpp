@@ -37,7 +37,7 @@ fs::path getHDPath(fs::path steamPath) {
 	if(fs::exists(steamPath/"steamapps"/"appmanifest_221380.acf")) {
 		hdPath = extractHDPath(steamPath);
 	} else if (fs::exists(steamPath/"steamapps"/"libraryfolders.vdf")) {
-		std::ifstream libraryFolders((steamPath/"steamapps"/"libraryfolders.vdf").c_str());
+		std::ifstream libraryFolders(steamPath/"steamapps"/"libraryfolders.vdf");
 		while (std::getline(libraryFolders,line)) {
 			size_t i;
 			if ((i = line.find("\"1\"")) != std::string::npos || (i = line.find("\"2\"")) != std::string::npos || (i = line.find("\"3\"")) != std::string::npos) {
