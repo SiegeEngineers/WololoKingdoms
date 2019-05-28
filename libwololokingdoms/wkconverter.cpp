@@ -1,11 +1,6 @@
-#include <map>
-#include <cctype>
-#include <string>
-#include <fstream>
+#include <genie/dat/DatFile.h>
+#include <genie/lang/LangFile.h>
 #include <fs.h>
-
-#include "genie/dat/DatFile.h"
-#include "genie/lang/LangFile.h"
 #include "md5.h"
 #include "wololo/datPatch.h"
 #include "fixes/berbersutfix.h"
@@ -24,7 +19,6 @@
 #include "fixes/cuttingfix.h"
 #include "fixes/smallfixes.h"
 #include "fixes/tricklebuildingfix.h"
-
 #include "string_helpers.h"
 #include "platform.h"
 #include "zr_map_creator.h"
@@ -34,6 +28,10 @@
 #include "caseless.h"
 #include "missing_strings.h"
 #include "wk_xml.h"
+#include <map>
+#include <cctype>
+#include <string>
+#include <fstream>
 
 // this copy is unfortunate but cfs::resolve returns a temporary :/
 const fs::path resolve_path(const fs::path& input) {

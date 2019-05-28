@@ -33,9 +33,9 @@ documentation and/or software.
 #ifndef BZF_MD5_H
 #define BZF_MD5_H
  
+#include "base64.h"
 #include <cstring>
 #include <iostream>
-#include "base64.h"
  
  
 // a small class for calculating MD5 hashes of strings or byte arrays

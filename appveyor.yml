@@ -2,19 +2,16 @@ image: Visual Studio 2017
 
 environment:
   VS_VERSION: vs2017
-  QTDIR: C:\Qt\5.12\mingw73_64
-  COMPILER_DIR: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64
-  PLATFORM: msvc2017_64
+  QTDIR: C:\Qt\5.12\msvc2017
+  PLATFORM: msvc2017
 
 platform:
-  - x64
+  - x86
 
 install:
-  - set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
-  - set VC_VARSALL=amd64
-  - set PATH=%PATH%;%COMPILER_DIR%\bin;%QTDIR%\bin
+  - set PATH=%PATH%;%QTDIR%\bin
   - git submodule update --init --recursive
 build_script:
-  - call %VC_DIR% %VC_VARSALL% || exit /B 1
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat" || exit /B 1
   - cmake -B build
   - cmake --build build

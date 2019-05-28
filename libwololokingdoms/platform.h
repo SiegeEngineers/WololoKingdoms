@@ -5,10 +5,8 @@
  * This contains platform specific functions; things that are different between Linux and Windows
  */
 
-#define MKLINK_HARD 'H'
 #define MKLINK_SOFT 's'
 #define MKLINK_DIR 'd'
-#define MKLINK_JUNCTION 'J'
 
 #ifdef _WIN32
 /**
@@ -16,6 +14,7 @@
  */
 #include <windows.h>
 #include <shellapi.h>
+#include <sstream>
 
 static void runCmd(std::wstring exe) {
     SHELLEXECUTEINFO ShExecInfo = {0};
@@ -44,9 +43,7 @@ static void mklink(char type, std::string link, std::string dest) {
     wdest.push_back(w);
   }
 
-  if (type == MKLINK_HARD) {
-    CreateHardLink(wlink.c_str(), wdest.c_str(), NULL);
-  } else if (type == MKLINK_SOFT) {
+  if (type == MKLINK_SOFT) {
     std::wstringstream line;
     line << L"/C mklink " << wlink << L" " << wdest;
     runCmd(line.str().c_str());
@@ -58,10 +55,6 @@ static void mklink(char type, std::string link, std::string dest) {
     line << L"/C mklink /d " << wlink << L" " << wdest;
     runCmd(line.str().c_str());
 #endif
-  } else if (type == MKLINK_JUNCTION) {
-    std::wstringstream line;
-    line << L"/C mklink /J " << wlink << L" " << wdest;
-    runCmd(line.str().c_str());
   }
 }
 

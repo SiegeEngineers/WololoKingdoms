@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 /*
 * Base64 encoding/decoding (RFC1341)

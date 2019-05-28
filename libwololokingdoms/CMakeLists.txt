@@ -16,7 +16,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/)
 # dependencies:
 
 if (WK_STATIC_BUILD)
-    set(GENIEUTILS_STATIC_BUILD 1)
+  set(GENIEUTILS_STATIC_BUILD 1)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/genieutils/)
@@ -26,6 +26,10 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/genieutils/)
 include_directories(include/)
 include_directories(third_party/genieutils/include/)
 include_directories(third_party/miniz)
+if (WIN32)
+  add_definitions(-DICONV_SECOND_ARGUMENT_IS_CONST)
+  include_directories(third_party/genieutils/extern/win-iconv)
+endif()
 
 if (${ICONV_FOUND})
     include(${ICONV_INCLUDE_DIR})
@@ -56,6 +60,11 @@ if (NOT WORKING_STD_FS)
     message("builtin filesystem is bad, falling back to gulrak/filesystem")
     include_directories(third_party/filesystem/include/)
     add_definitions(-DUSE_USERLAND_FS)
+endif()
+
+if (WIN32)
+  add_definitions(-DUNICODE)
+  add_definitions(-D_UNICODE)
 endif()
 
 #------------------------------------------------------------------------------#

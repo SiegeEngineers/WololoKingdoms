@@ -1,13 +1,13 @@
 #pragma once
-#include <map>
 #include <fs.h>
+#include <map>
 
 #ifdef _WIN32
 
 /**
  * Windows is already case insensitive.
  */
-namespace cfs = std::filesystem;
+namespace cfs = fs;
 
 #else
 

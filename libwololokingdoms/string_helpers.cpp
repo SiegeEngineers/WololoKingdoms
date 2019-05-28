@@ -2,6 +2,7 @@
 #include <istream>
 #include <algorithm>
 #include <iconv.h>
+#include <cctype> // std::tolower
 #include "string_helpers.h"
 
 void replace_all(std::string& str, const std::string& from, const std::string& to) {
@@ -42,7 +43,11 @@ std::string concat_stream(std::istream& stream) {
 }
 
 std::string iconvert (const std::string& input, const std::string& from, const std::string& to) {
+#ifdef ICONV_SECOND_ARGUMENT_IS_CONST
+  const char* in_str = input.c_str();
+#else
   char* in_str = const_cast<char*>(input.c_str());
+#endif
   auto in_size = input.length();
   size_t out_size = in_size * 2;
   char* result = new char[out_size];

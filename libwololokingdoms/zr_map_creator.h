@@ -1,9 +1,9 @@
 #pragma once
+#include <miniz.h>
 #include <string>
 #include <vector>
 #include <tuple>
 #include <iostream>
-#include <miniz.h>
 
 class ZRMapCreator {
     mz_zip_archive mz_handle;

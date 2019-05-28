@@ -2,12 +2,12 @@
 #include "wksettings.h"
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
+#include <fs.h>
 #include <set>
 #include <regex>
 #include <map>
 #include <vector>
 #include <string>
-#include <fs.h>
 
 /**
  * WK Conversion event listener, used to update the UI and to implement platform/app-specific
