@@ -63,55 +63,55 @@ static const fs::path& caseless(fs::path const& input) {
  * Case-insensitive wrappers around fs methods, for use on case sensitive file systems.
  */
 namespace cfs {
-  fs::path resolve(const fs::path& p) {
+  static fs::path resolve [[maybe_unused]] (const fs::path& p) {
     return caseless(p);
   }
-  bool exists(const fs::path& p) {
+  static bool exists [[maybe_unused]] (const fs::path& p) {
     return fs::exists(caseless(p));
   }
-  bool is_directory(const fs::path& p) {
+  static bool is_directory [[maybe_unused]] (const fs::path& p) {
     return fs::is_directory(caseless(p));
   }
-  bool is_symlink(const fs::path& p) {
+  static bool is_symlink [[maybe_unused]] (const fs::path& p) {
     return fs::is_symlink(caseless(p));
   }
-  bool is_empty(const fs::path& p) {
+  static bool is_empty [[maybe_unused]] (const fs::path& p) {
     return fs::is_empty(caseless(p));
   }
-  bool equivalent(const fs::path& a, const fs::path& b) {
+  static bool equivalent [[maybe_unused]] (const fs::path& a, const fs::path& b) {
     return fs::equivalent(caseless(a), caseless(b));
   }
-  void remove(const fs::path& p) {
+  static void remove [[maybe_unused]] (const fs::path& p) {
     fs::remove(caseless(p));
   }
-  void remove_all(const fs::path& p) {
+  static void remove_all [[maybe_unused]] (const fs::path& p) {
     fs::remove_all(caseless(p));
   }
-  void create_directory(const fs::path& p) {
+  static void create_directory [[maybe_unused]] (const fs::path& p) {
     fs::create_directory(caseless(p));
   }
-  void create_directories(const fs::path& p) {
+  static void create_directories [[maybe_unused]] (const fs::path& p) {
     fs::create_directories(caseless(p));
   }
-  void copy_file(const fs::path& a, const fs::path& b) {
+  static void copy_file [[maybe_unused]] (const fs::path& a, const fs::path& b) {
     fs::copy_file(caseless(a), caseless(b));
   }
-  void copy_file(const fs::path& a, const fs::path& b, std::error_code& ec) {
+  static void copy_file [[maybe_unused]] (const fs::path& a, const fs::path& b, std::error_code& ec) {
     fs::copy_file(caseless(a), caseless(b), ec);
   }
-  void copy_file(const fs::path& a, const fs::path& b, fs::copy_options options) {
+  static void copy_file [[maybe_unused]] (const fs::path& a, const fs::path& b, fs::copy_options options) {
     fs::copy_file(caseless(a), caseless(b), options);
   }
-  void copy(const fs::path& a, const fs::path& b, fs::copy_options options) {
+  static void copy [[maybe_unused]] (const fs::path& a, const fs::path& b, fs::copy_options options) {
     fs::copy(caseless(a), caseless(b), options);
   }
-  void rename(const fs::path& a, const fs::path& b) {
+  static void rename [[maybe_unused]] (const fs::path& a, const fs::path& b) {
     fs::rename(caseless(a), caseless(b));
   }
-  size_t file_size(const fs::path& p) {
+  static size_t file_size [[maybe_unused]] (const fs::path& p) {
     return fs::file_size(caseless(p));
   }
-  fs::file_time_type last_write_time(const fs::path& p) {
+  static fs::file_time_type last_write_time [[maybe_unused]] (const fs::path& p) {
     return fs::last_write_time(caseless(p));
   }
 }
