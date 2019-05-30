@@ -1,23 +1,21 @@
 #ifndef _WIN32
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <fs.h>
-#include <stdio.h>
 #include "libwololokingdoms/platform.h"
 #include "libwololokingdoms/string_helpers.h"
 #include "paths.h"
 #include <QProcess>
-#include <pwd.h>
-#include <iconv.h>
 #include <errno.h>
+#include <fs.h>
+#include <fstream>
+#include <iconv.h>
+#include <iostream>
+#include <pwd.h>
+#include <stdio.h>
+#include <string>
 
-fs::path getExePath() {
-    return fs::read_symlink("/proc/self/exe");
-}
+fs::path getExePath() { return fs::read_symlink("/proc/self/exe"); }
 
 static fs::path getHomeDirectory() {
-  const char *homedir = getenv("HOME");
+  const char* homedir = getenv("HOME");
   if (homedir == NULL) {
     homedir = getpwuid(getuid())->pw_dir;
   }
@@ -25,9 +23,7 @@ static fs::path getHomeDirectory() {
   return fs::path(homedir);
 }
 
-fs::path getSteamPath() {
-  return getHomeDirectory()/".steam"/"steam";
-}
+fs::path getSteamPath() { return getHomeDirectory() / ".steam" / "steam"; }
 
 static fs::path resolveWinePath(std::string winepath) {
   QProcess process;
@@ -44,11 +40,9 @@ static std::string dump_wine_registry(std::string regkey) {
   fs::path tempFile("wk_tmp.reg");
 
   QProcess wine;
-  wine.start("wine", QStringList()
-      << QString("regedit")
-      << QString("/E")
-      << QString::fromStdString(tempFile.string())
-      << QString::fromStdString(regkey));
+  wine.start("wine", QStringList() << QString("regedit") << QString("/E")
+                                   << QString::fromStdString(tempFile.string())
+                                   << QString::fromStdString(regkey));
   wine.waitForFinished();
 
   if (wine.exitCode() != 0) {
@@ -64,7 +58,9 @@ static std::string dump_wine_registry(std::string regkey) {
 // On linux, we can still read the Wine registry
 // by first dumping the Age of Empires key to a file
 fs::path getOutPath([[maybe_unused]] fs::path hdPath) {
-  std::stringstream registry (dump_wine_registry("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\DirectPlay\\Applications\\Age of Empires II - The Conquerors Expansion\\"));
+  std::stringstream registry(dump_wine_registry(
+      "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\DirectPlay\\Applications\\Age "
+      "of Empires II - The Conquerors Expansion\\"));
   std::string winepath;
   std::string prefix = "\"CurrentDirectory\"=";
   std::string line;

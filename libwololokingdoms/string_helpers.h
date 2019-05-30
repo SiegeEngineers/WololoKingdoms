@@ -1,14 +1,15 @@
 #pragma once
-#include <string>
 #include <istream>
 #include <sstream>
+#include <string>
 
 /**
  * Replace all occurrences of `from` with `to` in `str`.
  *
  * This mutates `str`.
  */
-void replace_all(std::string& str, const std::string& from, const std::string& to);
+void replace_all(std::string& str, const std::string& from,
+                 const std::string& to);
 
 /**
  * Convert a std::string to a std::wstring.
@@ -33,4 +34,5 @@ std::string concat_stream(std::istream& stream);
 /**
  * Convert a std::string from encoding `from` to encoding `to`.
  */
-std::string iconvert(const std::string& input, const std::string& from, const std::string& to);
+std::string iconvert(const std::string& input, const std::string& from,
+                     const std::string& to);

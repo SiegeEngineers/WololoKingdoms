@@ -6,12 +6,10 @@
 namespace wololo {
 
 struct DatPatch {
-    void (*patch)(genie::DatFile*);
-	std::string name;
+  void (*patch)(genie::DatFile*);
+  std::string name;
 };
 
-}
-
-
+} // namespace wololo
 
 #endif // DATPATCH_H

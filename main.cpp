@@ -16,14 +16,15 @@ bool can_run_windows_programs() {
 #endif
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
   QApplication application(argc, argv);
   application.setApplicationName("WololoKingdoms");
   application.setApplicationVersion("5.8.2");
 
   QCommandLineParser cli;
-  cli.setApplicationDescription("Installer for the WololoKingdoms mod, bringing Age of Empires II: HD Edition expansions to Age of Empires II: The Conquerors");
+  cli.setApplicationDescription(
+      "Installer for the WololoKingdoms mod, bringing Age of Empires II: HD "
+      "Edition expansions to Age of Empires II: The Conquerors");
   cli.addHelpOption();
   cli.addVersionOption();
 
@@ -32,7 +33,10 @@ int main(int argc, char *argv[])
   MainWindow window;
 
   if (!can_run_windows_programs()) {
-    QMessageBox::warning(&window, "Wine not found", "Wine could not be found. You will have to pick the path to your Age of Empires 2 directory manually.", QMessageBox::Ok);
+    QMessageBox::warning(&window, "Wine not found",
+                         "Wine could not be found. You will have to pick the "
+                         "path to your Age of Empires 2 directory manually.",
+                         QMessageBox::Ok);
   }
 
   window.show();

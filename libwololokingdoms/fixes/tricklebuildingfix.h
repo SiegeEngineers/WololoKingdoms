@@ -5,8 +5,8 @@
 namespace wololo {
 
 extern DatPatch trickleBuildingFix;
-int getNewGraphicId(genie::DatFile *aocDat, int i);
+int getNewGraphicId(genie::DatFile* aocDat, int i);
 
-}
+} // namespace wololo
 
 #endif // TRICKLEBUILDINGFIX_H
