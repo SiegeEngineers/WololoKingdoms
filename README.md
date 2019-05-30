@@ -35,7 +35,7 @@ If this error happens every time, your original language file may be corrupt.
 ## How to use (on Linux)
 You can install Age of Empires 2 HD on Linux by enabling Steam Play for unsupported games. Open Steam, and in the top left menu select Steam » Settings » Steam Play. There is a checkbox under "Advanced" to enable Steam Play for all titles. Restart Steam and install AoE2:HD.
 You must also install AoC 1.0c in Wine first.
-[Download the latest WololoKingdoms release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch `WololoKingdoms.sh`. It will attempt to find your Wine-based AoC installation.
+[Download the latest WololoKingdoms release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch `./WololoKingdoms`. It will attempt to find your Wine-based AoC installation.
 
 > Linux is not a primary supported platform for WololoKingdoms. The latest releases may not always work.
 
