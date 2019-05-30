@@ -10,17 +10,17 @@ void feitoriaPatch(genie::DatFile* aocDat) {
   float const goldAdded = 0.45;
   float const stoneAdded = 0.25;
 
-  size_t const feitoriaId = 1021;          // 960
-  size_t const woodAnnexId = 1391;         // 957
-  size_t const foodAnnexId = 1392;         // 956
-  size_t const goldAnnexId = 1393;         // 959
-  size_t const stoneAnnexId = 1394;        // 958
-  size_t const woodTrickleId = 1395;       // 952
-  size_t const foodTrickleId = 1396;       // 951
-  size_t const goldTrickleId = 1397;       // 954
-  size_t const stoneTrickleId = 1398;      // 954
-  size_t const feitoriaDeadStackId = 1399; // 955
-  size_t const feitoriaStackId = 1400;     // 949
+  int16_t const feitoriaId = 1021;          // 960
+  int16_t const woodAnnexId = 1391;         // 957
+  int16_t const foodAnnexId = 1392;         // 956
+  int16_t const goldAnnexId = 1393;         // 959
+  int16_t const stoneAnnexId = 1394;        // 958
+  int16_t const woodTrickleId = 1395;       // 952
+  int16_t const foodTrickleId = 1396;       // 951
+  int16_t const goldTrickleId = 1397;       // 954
+  int16_t const stoneTrickleId = 1398;      // 954
+  int16_t const feitoriaDeadStackId = 1399; // 955
+  int16_t const feitoriaStackId = 1400;     // 949
 
   for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
     aocDat->Civs[civIndex].Units[feitoriaStackId] =
