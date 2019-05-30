@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 project(WololoKingdoms)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/libwololokingdoms/cmake/)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -29,11 +30,14 @@ else()
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc")
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/steam_appid.txt ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+add_custom_target(build-time-make-directory ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/steam_appid.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt COPYONLY)
 if (WIN32)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/third_party/steam_sdk/redistributable_bin/steam_api.dll ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/third_party/steam_sdk/redistributable_bin/steam_api.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_api.dll COPYONLY)
 else()
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/third_party/steam_sdk/redistributable_bin/linux64/libsteam_api.so ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/third_party/steam_sdk/redistributable_bin/linux64/libsteam_api.so ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libsteam_api.so COPYONLY)
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -93,7 +97,7 @@ if (UNIX)
   set(ALL_SRC ${ALL_SRC} paths_linux.cpp)
 endif()
 
-link_directories(${CMAKE_CURRENT_BINARY_DIR})
+link_directories(${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 if (WIN32)
   # let it know where to find the .lib
   link_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/steam_sdk/redistributable_bin/)
@@ -120,3 +124,7 @@ target_link_libraries(${Wololokingdoms_INSTALLER} steam_api)
 
 # Use the Widgets module from Qt 5
 target_link_libraries(${Wololokingdoms_INSTALLER} Qt5::Widgets)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources)
