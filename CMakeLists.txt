@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.9.4)
 
 set(Wololokingdoms_INSTALLER WololoKingdoms)
 set(CMAKE_CXX_STANDARD 17)
@@ -17,8 +17,17 @@ set(CMAKE_AUTOUIC ON)
 # Find the QtWidgets library
 find_package(Qt5Widgets REQUIRED)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ENABLE_LTO OUTPUT error)
+
 set(WK_STATIC_BUILD 1)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libwololokingdoms/)
+
+if (MSVC)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MT(d)")
+else()
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc")
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/steam_appid.txt ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 if (WIN32)
@@ -96,6 +105,10 @@ if (MSVC) # Check if we are using the Visual Studio compiler
     WIN32_EXECUTABLE YES
     LINK_FLAGS "/ENTRY:mainCRTStartup"
   )
+endif()
+if(ENABLE_LTO)
+  message(STATUS "Building with link time optimization")
+  set_property(TARGET ${Wololokingdoms_INSTALLER} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 target_link_libraries(${Wololokingdoms_INSTALLER} wololokingdoms)
