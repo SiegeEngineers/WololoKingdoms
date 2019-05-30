@@ -9,13 +9,17 @@
 #define MKLINK_SOFT 's'
 #define MKLINK_DIR 'd'
 
-#ifdef _WIN32
 /**
  * Windows
+ * HACK(goto-bus-stop) Using two ifdef blocks so clang-format doesn't mess up
+ * the sort…how to do this properly?
  */
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#ifdef _WIN32
 #include <shellapi.h>
 #include <sstream>
-#include <windows.h>
 
 static void runCmd(std::wstring exe) {
   SHELLEXECUTEINFO ShExecInfo = {0};
