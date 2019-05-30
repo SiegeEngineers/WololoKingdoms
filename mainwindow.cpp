@@ -658,7 +658,7 @@ void MainWindow::changeLanguage() {
    */
   std::string line;
   std::string langBackup;
-  if (!cfs::exists(resourceDir / (language + ".txt"))) {
+  if (!cfs::exists(resourceDir / "locales" / (language + ".txt"))) {
     if (translation["runButton"].isEmpty()) {
       langBackup = language;
       language = "en";
@@ -669,7 +669,7 @@ void MainWindow::changeLanguage() {
   } else {
     langBackup = language;
   }
-  std::ifstream translationFile(resourceDir / (language + ".txt"));
+  std::ifstream translationFile(resourceDir / "locales" / (language + ".txt"));
   while (std::getline(translationFile, line)) {
     /*
      *  \\\\n -> \\n, means we want a \n in the text files for aoc
