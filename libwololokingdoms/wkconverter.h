@@ -166,6 +166,7 @@ private:
   void loadGameStrings(std::map<int, std::string>& langReplacement);
   void loadModdedStrings(fs::path moddedStringsFile,
                          std::map<int, std::string>& langReplacement);
+  void makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir);
   void makeDrs(std::ofstream& out);
   void editDrs(std::ifstream* in, std::ofstream* out);
   void uglyHudHack(const fs::path&);

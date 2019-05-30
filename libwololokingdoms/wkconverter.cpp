@@ -400,6 +400,15 @@ void WKConverter::convertLanguageFile(
   iniOut.close();
 }
 
+void WKConverter::makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir) {
+  DRSCreator drs(out);
+  for (auto& p : fs::directory_iterator(cfs::resolve(drsDir))) {
+    auto id = std::atoi(p.path().stem().c_str());
+    drs.addFile(Bina, id, p.path());
+  }
+  drs.commit();
+}
+
 void WKConverter::makeDrs(std::ofstream& out) {
   DRSCreator drs(out);
   listener->setInfo("working$\n$workingDrs");
@@ -2055,7 +2064,6 @@ int WKConverter::run() {
   fs::path architectureFixDir = resourceDir / "architecture fixes";
   fs::path slpCompatDir = resourceDir / "old dat slp compatibility";
   fs::path wallsInputDir = resourceDir / "short_walls";
-  fs::path gamedata_x1 = resourceDir / "gamedata_x1.drs";
   fs::path aiInputPath = resourceDir / "Script.Ai";
   fs::path upSetupAoCSource = resourceDir / "SetupAoc.exe";
   fs::path aocLanguageIniModDll = resourceDir / "language_x1_p1.dll";
@@ -2324,9 +2332,10 @@ int WKConverter::run() {
     makeDrs(drsOut);
     listener->increaseProgress(1); // 75
 
-    listener->log("copy gamedata_x1.drs");
-    cfs::copy_file(gamedata_x1, installDir / "Data" / "gamedata_x1.drs",
-                   fs::copy_options::overwrite_existing);
+    listener->log("Make random map scripts DRS");
+    std::ofstream gameDataX1(installDir / "Data" / "gamedata_x1.drs", std::ios::binary);
+    makeRandomMapScriptsDrs(gameDataX1, resourceDir / "gamedata_x1");
+
     listener->increaseProgress(1); // 76
 
     /*
