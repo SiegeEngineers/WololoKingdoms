@@ -57,26 +57,14 @@ steam_api.lib
 prelog.txt
 
 # Temporary or generated files for build system
-object_script.WololoKingdoms.Release
-object_script.WololoKingdoms.Debug
 WololoKingdoms_resource.rc
-moc_predefs.h
-moc_*.cpp
-ui_*.h
-/Makefile.Release
-/Makefile.Debug
-Makefile
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
-.qmake.stash
-Setup.iss
-release/
+build/
 *.o
 
 # Misc
 resources/
 mod_override/
 log.txt
-OLDREADME.md
-debug/
