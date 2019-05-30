@@ -402,9 +402,9 @@ void WKConverter::convertLanguageFile(
 
 void WKConverter::makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir) {
   DRSCreator drs(out);
-  for (auto& p : fs::directory_iterator(cfs::resolve(drsDir))) {
+  for (auto& p : fs::directory_iterator(resolve_path(drsDir))) {
     auto id = std::atoi(p.path().stem().c_str());
-    drs.addFile(Bina, id, p.path());
+    drs.addFile(DRSTableType::Bina, id, p.path());
   }
   drs.commit();
 }
@@ -430,11 +430,11 @@ void WKConverter::makeDrs(std::ofstream& out) {
   slpFiles.erase(start, std::next(start, 8));
 
   for (auto& [id, data] : slpFiles) {
-    drs.addFile(Slp, id, data);
+    drs.addFile(DRSTableType::Slp, id, data);
   }
   listener->increaseProgress(2);
   for (auto& [id, data] : wavFiles) {
-    drs.addFile(Wav, id, data);
+    drs.addFile(DRSTableType::Wav, id, data);
   }
   listener->increaseProgress(2);
 
