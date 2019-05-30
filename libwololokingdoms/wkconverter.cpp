@@ -295,7 +295,7 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
           ? resourceDir / "zht" / "key-value-strings-utf8.txt"
           : settings.hdPath / "resources" / settings.language / "strings" /
                 "key-value" / "key-value-strings-utf8.txt";
-  fs::path modLangIni = resourceDir / (settings.language + ".ini");
+  fs::path improvedTooltipStrings = resourceDir / "improved-tooltips" / (settings.language + ".ini");
   /*
    * Create the language files (.ini for Voobly, .dll for offline)
    */
@@ -304,7 +304,7 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
 
   listener->log("Replace tooltips");
   if (settings.replaceTooltips) {
-    loadModdedStrings(modLangIni, langReplacement);
+    loadModdedStrings(improvedTooltipStrings, langReplacement);
   }
   listener->increaseProgress(1); // 2
 
