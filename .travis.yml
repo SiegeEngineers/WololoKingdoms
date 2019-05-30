@@ -1,0 +1,12 @@
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+    - os: linux
+      compiler: clang
+
+script:
+  - cmake -B build
+  - cmake --build build
