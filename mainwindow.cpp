@@ -6,10 +6,6 @@
 #include <set>
 #include <sstream>
 #include <string>
-#ifdef _WIN32
-#include <shellapi.h>
-#include <windows.h>
-#endif
 
 #include "libwololokingdoms/caseless.h"
 #include "libwololokingdoms/platform.h"
