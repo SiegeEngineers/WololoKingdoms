@@ -2086,7 +2086,6 @@ int WKConverter::run() {
   // Voobly Target
   fs::path versionIniPath = settings.vooblyDir / "version.ini";
   fs::path xmlOutPath = settings.vooblyDir / "age2_x1.xml";
-  fs::path xmlPath;
 
   // Offline Target
   fs::path xmlOutPathUP;
@@ -2105,17 +2104,14 @@ int WKConverter::run() {
   switch (settings.dlcLevel) {
   case 1:
     xmlOutPathUP = settings.outPath / "Games" / "WKFE.xml";
-    xmlPath = resourceDir / "WK1.xml";
     upModdedExeName = "WKFE";
     break;
   case 2:
     xmlOutPathUP = settings.outPath / "Games" / "WKAK.xml";
-    xmlPath = resourceDir / "WK2.xml";
     upModdedExeName = "WKAK";
     break;
   case 3:
     xmlOutPathUP = settings.outPath / "Games" / "WK.xml";
-    xmlPath = resourceDir / "WK3.xml";
     upModdedExeName = "WK";
     break;
   }

@@ -65,6 +65,5 @@ build/
 *.o
 
 # Misc
-resources/
 mod_override/
 log.txt
