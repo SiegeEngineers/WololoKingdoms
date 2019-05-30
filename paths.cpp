@@ -92,7 +92,7 @@ fs::path getSteamPath() {
   else
     RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Valve\\Steam", 0, KEY_READ,
                  &hKey);
-  RegQueryValueEx(hKey, L"InstallPath", NULL, NULL,
+  RegQueryValueEx(hKey, L"InstallPath", nullptr, nullptr,
                   reinterpret_cast<LPBYTE>(temp), &size);
   RegCloseKey(hKey);
   auto steamPath = std::wstring(temp);
@@ -116,7 +116,7 @@ fs::path getOutPath(fs::path hdPath) {
                  L"Software\\Microsoft\\DirectPlay\\Applications\\Age of "
                  L"Empires II - The Conquerors Expansion",
                  0, KEY_READ, &hKey);
-  RegQueryValueEx(hKey, L"CurrentDirectory", NULL, NULL,
+  RegQueryValueEx(hKey, L"CurrentDirectory", nullptr, nullptr,
                   reinterpret_cast<LPBYTE>(temp), &size);
   RegCloseKey(hKey);
   std::string outPathString = wstrtostr(std::wstring(temp));

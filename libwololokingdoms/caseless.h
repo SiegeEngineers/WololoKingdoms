@@ -9,8 +9,8 @@
 namespace cfs = fs;
 
 #else
-#include <map>
 #include "./string_helpers.h"
+#include <map>
 
 // Remember the casing of previously used paths.
 static std::map<fs::path, fs::path> caseless_directories = {};

@@ -27,7 +27,7 @@ void ZRMapCreator::addFile(const std::string& name, std::istream& content) {
   mz_zip_writer_add_mem_ex(&mz_handle,
                            name.c_str(),      // name
                            str.c_str(), size, // content
-                           NULL, 0,           // comment
+                           nullptr, 0,        // comment
                            // MZ_ZIP_FLAG_WOLOLOKINGDOMS is a custom flag to
                            // force output of uncompressed size header members
                            // where normally, miniz would omit them
