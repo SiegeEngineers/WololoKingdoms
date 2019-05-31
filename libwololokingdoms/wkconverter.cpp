@@ -2059,8 +2059,8 @@ int WKConverter::run() {
   // Installer Resources
   fs::path newMonkGraphicsDir = resourceDir / "graphics" / "monks";
   fs::path newTerrainGraphicsDir = resourceDir / "graphics" / "terrains";
+  fs::path newArchitectureGraphicsDir = resourceDir / "graphics" / "architecture";
   fs::path scenarioInputDir = resourceDir / "Scenario";
-  fs::path architectureFixDir = resourceDir / "architecture fixes";
   fs::path slpCompatDir = resourceDir / "old dat slp compatibility";
   fs::path wallsInputDir = resourceDir / "short_walls";
   fs::path aiInputPath = resourceDir / "Script.Ai";
@@ -2320,9 +2320,9 @@ int WKConverter::run() {
     // Add graphics for the new monk units
     indexDrsFiles(newMonkGraphicsDir);
     listener->increaseProgress(1); // 65
-
-    indexDrsFiles(architectureFixDir);
+    indexDrsFiles(newArchitectureGraphicsDir);
     listener->increaseProgress(1); // 66
+
     listener->log("Opening DRS");
     std::ofstream drsOut(drsOutPath, std::ios::binary);
     listener->log("Make DRS " + drsOutPath.string());
