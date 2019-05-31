@@ -295,7 +295,8 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
           ? resourceDir / "zht" / "key-value-strings-utf8.txt"
           : settings.hdPath / "resources" / settings.language / "strings" /
                 "key-value" / "key-value-strings-utf8.txt";
-  fs::path improvedTooltipStrings = resourceDir / "improved-tooltips" / (settings.language + ".ini");
+  fs::path improvedTooltipStrings =
+      resourceDir / "improved-tooltips" / (settings.language + ".ini");
   /*
    * Create the language files (.ini for Voobly, .dll for offline)
    */
@@ -400,7 +401,8 @@ void WKConverter::convertLanguageFile(
   iniOut.close();
 }
 
-void WKConverter::makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir) {
+void WKConverter::makeRandomMapScriptsDrs(std::ofstream& out,
+                                          const fs::path& drsDir) {
   DRSCreator drs(out);
   for (auto& p : fs::directory_iterator(resolve_path(drsDir))) {
     auto id = std::atoi(p.path().stem().c_str());
@@ -1415,26 +1417,27 @@ bool WKConverter::checkGraphics(genie::DatFile* aocDat, short graphicID,
     return true;
 }
 
+/**
+ * @param aocDatFile The Dat File of WK to be patched.
+ * @param replacedGraphics These graphics have already been replaced, we can
+ * just return the id.
+ * @param duplicatedGraphics These Graphics have already been duplicated with a
+ * previous duplicateGraphic call. Passed on to avoid circular loops with
+ * recursive calls for deltas.
+ * @param graphicID The ID of the graphic to be duplicated.
+ * @param compareID The ID of the same building of the burmese, to serve as a
+ * comparison. If -1, it's one of the monk/dark age graphics to be duped, see
+ * slpIdConversion parameter.
+ * @param offset The offset of the civ/civ group for the new SLPs
+ * (24000+offset*1000 and so on).
+ * @param civGroup This is mostly unit graphics, which are only seperated into
+ * civ groups, not per civs.
+ */
 short WKConverter::duplicateGraphic(genie::DatFile* aocDat,
                                     std::map<short, short>& replacedGraphics,
                                     std::vector<short> duplicatedGraphics,
                                     short graphicID, short compareID,
                                     short offset, bool civGroups) {
-
-  /*
-   * Parameters:
-   * aocDatFile: The Dat File of WK to be patched
-   * replacedGraphics: These graphics have already been replaced, we can just
-   * return the id. duplicatedGraphics: These Graphics have already been
-   * duplicated with a previous duplicateGraphic call. Passed on to avoid
-   * circular loops with recursive calls for deltas graphicID: The ID of the
-   * graphic to be duplicated compareID: The ID of the same building of the
-   * burmese, to serve as a comparison. If -1, it's one of the monk/dark age
-   * graphics to be duped, see slpIdConversion parameter offset: The offset of
-   * the civ/civ group for the new SLPs (24000+offset*1000 and so on) civGroup:
-   * This is mostly unit graphics, which are only seperated into civ groups, not
-   * per civs
-   */
 
   if (replacedGraphics.count(
           graphicID)) // We've already replaced this, return the new graphics ID
@@ -2059,7 +2062,8 @@ int WKConverter::run() {
   // Installer Resources
   fs::path newMonkGraphicsDir = resourceDir / "graphics" / "monks";
   fs::path newTerrainGraphicsDir = resourceDir / "graphics" / "terrains";
-  fs::path newArchitectureGraphicsDir = resourceDir / "graphics" / "architecture";
+  fs::path newArchitectureGraphicsDir =
+      resourceDir / "graphics" / "architecture";
   fs::path scenarioInputDir = resourceDir / "Scenario";
   fs::path slpCompatDir = resourceDir / "old dat slp compatibility";
   fs::path wallsInputDir = resourceDir / "short_walls";
@@ -2330,7 +2334,8 @@ int WKConverter::run() {
     listener->increaseProgress(1); // 75
 
     listener->log("Make random map scripts DRS");
-    std::ofstream gameDataX1(installDir / "Data" / "gamedata_x1.drs", std::ios::binary);
+    std::ofstream gameDataX1(installDir / "Data" / "gamedata_x1.drs",
+                             std::ios::binary);
     makeRandomMapScriptsDrs(gameDataX1, resourceDir / "gamedata_x1");
 
     listener->increaseProgress(1); // 76
