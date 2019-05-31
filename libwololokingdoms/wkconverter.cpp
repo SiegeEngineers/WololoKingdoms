@@ -2057,10 +2057,9 @@ int WKConverter::run() {
   newTerrainFiles.clear();
 
   // Installer Resources
-  fs::path monkInputDir = resourceDir / "regional monks";
-  fs::path oldMonkInputDir = resourceDir / "anti-regional monks";
+  fs::path newMonkGraphicsDir = resourceDir / "graphics" / "monks";
+  fs::path newTerrainGraphicsDir = resourceDir / "graphics" / "terrains";
   fs::path scenarioInputDir = resourceDir / "Scenario";
-  fs::path newTerrainInputDir = resourceDir / "new terrains";
   fs::path architectureFixDir = resourceDir / "architecture fixes";
   fs::path slpCompatDir = resourceDir / "old dat slp compatibility";
   fs::path wallsInputDir = resourceDir / "short_walls";
@@ -2177,7 +2176,7 @@ int WKConverter::run() {
       listener->increaseProgress(1); // 8
       listener->increaseProgress(2); // 10
     } else {
-      indexDrsFiles(newTerrainInputDir, true, true);
+      indexDrsFiles(newTerrainGraphicsDir, true, true);
       listener->increaseProgress(3); // 10
     }
     listener->increaseProgress(1); // 11
@@ -2318,10 +2317,8 @@ int WKConverter::run() {
       copyWallFiles(wallsInputDir);
 
     listener->increaseProgress(1); // 64
-    if (settings.useMonks)
-      indexDrsFiles(monkInputDir);
-    else
-      indexDrsFiles(oldMonkInputDir);
+    // Add graphics for the new monk units
+    indexDrsFiles(newMonkGraphicsDir);
     listener->increaseProgress(1); // 65
 
     indexDrsFiles(architectureFixDir);

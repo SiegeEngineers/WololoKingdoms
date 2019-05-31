@@ -221,7 +221,6 @@ void MainWindow::runConverter() {
   settings.useVoobly = this->ui->useVoobly->isChecked();
   settings.useExe = this->ui->useExe->isChecked();
   settings.useBoth = this->ui->useBoth->isChecked();
-  settings.useMonks = this->ui->useMonks->isChecked();
   settings.copyMaps = this->ui->copyMaps->isChecked();
   settings.copyCustomMaps = this->ui->copyCustomMaps->isChecked();
   settings.restrictedCivMods = this->ui->restrictedCivMods->isChecked();
@@ -244,6 +243,9 @@ void MainWindow::runConverter() {
 
   if (this->ui->useSmallTrees->isChecked()) {
     settings.addDrsResources(resourceDir / "pussywood");
+  }
+  if (this->ui->useMonks->isChecked()) {
+    settings.addDrsResources(resourceDir / "regional monks");
   }
   if (this->ui->useGrid->isChecked()) {
     settings.addDrsResources(resourceDir / "Grid");

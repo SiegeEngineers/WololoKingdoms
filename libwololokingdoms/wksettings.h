@@ -22,7 +22,6 @@ public:
   bool useVoobly = true;
   bool useExe = false;
   bool useBoth = false;
-  bool useMonks = true;
   bool copyMaps = true;
   bool copyCustomMaps = false;
   bool restrictedCivMods = true;
