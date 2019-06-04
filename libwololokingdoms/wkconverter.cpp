@@ -1809,16 +1809,29 @@ void WKConverter::hotkeySetup() {
   }
 }
 
+/**
+ * Add graphics for the new monk units.
+ *
+ * @param slpFiles map to add the monk SLP files to.
+ * @param newMonkGraphicsDir directory path on disk to the monk graphic SLPs.
+ */
+static void addNewMonkGraphics(std::map<int, fs::path>& slpFiles, const fs::path& newMonkGraphicsDir) {
+  slpFiles[50730] = newMonkGraphicsDir / "icons.slp";
+  for (auto i = 90774; i <= 160774; i += 10000) {
+    slpFiles[i] = newMonkGraphicsDir / "european_monk.slp";
+  }
+}
+
+/**
+ * Sets up symlinks between the different mod versions (offline/AK/FE), so as
+ * much as possible is shared and as little space is needed as possible.
+ *
+ * @param oldDir The directory the symlink references.
+ * @param newDir The directory the symlink should be created in.
+ * @param dataMod If true, the symlink is for wk-based datamod.
+ */
 void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                                bool dataMod) {
-
-  /* Sets up symlinks between the different mod versions (offline/AK/FE), so as
-   * much as possible is shared and as little space is needed as possible
-   * Parameters:
-   * oldDir: The directory the symlink references.
-   * newDir: The directory the symlink should be created in
-   * dataMod: If true, the symlink is for wk-based datamod
-   */
   bool vooblySrc =
       tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
   bool vooblyDst =
@@ -2322,8 +2335,9 @@ int WKConverter::run() {
 
     listener->increaseProgress(1); // 64
     // Add graphics for the new monk units
-    indexDrsFiles(newMonkGraphicsDir);
+    addNewMonkGraphics(slpFiles, newMonkGraphicsDir);
     listener->increaseProgress(1); // 65
+
     indexDrsFiles(newArchitectureGraphicsDir);
     listener->increaseProgress(1); // 66
 
