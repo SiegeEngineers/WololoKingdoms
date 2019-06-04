@@ -23,6 +23,7 @@
 #include <QProcess>
 #include <QProgressBar>
 #include <QSettings>
+#include <QShortcut>
 #include <QThreadPool>
 #include <QWhatsThis>
 #include <QtConcurrent/QtConcurrent>
@@ -195,6 +196,10 @@ int MainWindow::initialize() {
                    &MainWindow::runConverter);
 
   updateUI();
+
+  // Add exit keyboard shortcut.
+  new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this, SLOT(close()));
+
   return 0;
 }
 
