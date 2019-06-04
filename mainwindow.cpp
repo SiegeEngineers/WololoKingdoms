@@ -246,26 +246,27 @@ void MainWindow::runConverter() {
   settings.modName = modName;
   settings.resourceDir = resourceDir;
 
+  auto visualModsDir = resourceDir / "visual-mods";
   if (this->ui->useSmallTrees->isChecked()) {
-    settings.addDrsResources(resourceDir / "pussywood");
+    settings.addDrsResources(visualModsDir / "small-trees");
   }
   if (this->ui->useMonks->isChecked()) {
-    settings.addDrsResources(resourceDir / "regional monks");
+    settings.addDrsResources(visualModsDir / "regional-monks");
   }
   if (this->ui->useGrid->isChecked()) {
-    settings.addDrsResources(resourceDir / "Grid");
-    settings.addDrsResources(resourceDir / "new grid terrains",
+    settings.addDrsResources(visualModsDir / "grid-terrains");
+    settings.addDrsResources(visualModsDir / "new-grid-terrains",
                              WKSettings::IndexType::Expansion |
                                  WKSettings::IndexType::Terrain);
     if (this->ui->useNoSnow->isChecked()) {
-      settings.addDrsResources(resourceDir / "grid no snow");
+      settings.addDrsResources(visualModsDir / "grid-no-snow");
     }
   } else if (this->ui->useNoSnow->isChecked()) {
-    settings.addDrsResources(resourceDir / "no snow");
+    settings.addDrsResources(visualModsDir / "no-snow");
   }
 
   if (this->ui->useShortWalls->isChecked()) {
-    settings.addDrsResources(resourceDir / "short_walls");
+    settings.addDrsResources(visualModsDir / "short-walls");
     settings.useShortWalls = true;
   }
 

@@ -2079,7 +2079,7 @@ int WKConverter::run() {
       resourceDir / "graphics" / "architecture";
   fs::path scenarioInputDir = resourceDir / "Scenario";
   fs::path slpCompatDir = resourceDir / "old dat slp compatibility";
-  fs::path wallsInputDir = resourceDir / "short_walls";
+  fs::path wallsInputDir = resourceDir / "visual-mods" / "short-walls";
   fs::path aiInputPath = resourceDir / "Script.Ai";
   fs::path upSetupAoCSource = resourceDir / "SetupAoc.exe";
   fs::path aocLanguageIniModDll = resourceDir / "language_x1_p1.dll";
