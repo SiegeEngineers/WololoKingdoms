@@ -1854,17 +1854,17 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     fs::path currentPath = current->path();
     std::string extension = currentPath.extension().string();
     if (extension == ".hki") {
-      mklink(MKLINK_SOFT, resolve_path(newDir / currentPath.filename()),
+      mklink(LinkType::Soft, resolve_path(newDir / currentPath.filename()),
              resolve_path(currentPath));
     }
   }
   if (datalink) {
-    mklink(MKLINK_DIR, resolve_path(newDir / "Data"),
+    mklink(LinkType::Dir, resolve_path(newDir / "Data"),
            resolve_path(oldDir / "Data"));
   } else {
-    mklink(MKLINK_DIR, resolve_path(newDir / "Data" / "gamedata_x1_p1.drs"),
+    mklink(LinkType::Dir, resolve_path(newDir / "Data" / "gamedata_x1_p1.drs"),
            resolve_path(oldDir / "Data" / "gamedata_x1_p1.drs"));
-    mklink(MKLINK_DIR, resolve_path(newDir / "Data" / "gamedata_x1.drs"),
+    mklink(LinkType::Dir, resolve_path(newDir / "Data" / "gamedata_x1.drs"),
            resolve_path(oldDir / "Data" / "gamedata_x1.drs"));
   }
   std::string languageString = "";
@@ -1872,28 +1872,28 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   if (!dataMod) {
     if (vooblyDst) {
       cfs::remove(newDir / "language.ini");
-      mklink(MKLINK_SOFT, resolve_path(newDir / "language.ini"),
+      mklink(LinkType::Soft, resolve_path(newDir / "language.ini"),
              resolve_path(oldDir / "language.ini"));
     } else if (!vooblySrc) {
       cfs::remove(newDir / "Data" / "language_x1_p1.dll");
-      mklink(MKLINK_SOFT, resolve_path(newDir / "Data" / "language_x1_p1.dll"),
+      mklink(LinkType::Soft, resolve_path(newDir / "Data" / "language_x1_p1.dll"),
              resolve_path(oldDir / "Data" / "language_x1_p1.dll"));
     }
   }
 
-  mklink(MKLINK_DIR, resolve_path(newDir / "Taunt"),
+  mklink(LinkType::Dir, resolve_path(newDir / "Taunt"),
          resolve_path(oldDir / "Taunt"));
-  mklink(MKLINK_DIR, resolve_path(newDir / "Script.Rm"),
+  mklink(LinkType::Dir, resolve_path(newDir / "Script.Rm"),
          resolve_path(oldDir / "Script.Rm"));
-  mklink(MKLINK_DIR, resolve_path(newDir / "Sound"),
+  mklink(LinkType::Dir, resolve_path(newDir / "Sound"),
          resolve_path(oldDir / "Sound"));
-  mklink(MKLINK_DIR, resolve_path(newDir / "History"),
+  mklink(LinkType::Dir, resolve_path(newDir / "History"),
          resolve_path(oldDir / "History"));
-  mklink(MKLINK_DIR, resolve_path(newDir / "Screenshots"),
+  mklink(LinkType::Dir, resolve_path(newDir / "Screenshots"),
          resolve_path(oldDir / "Screenshots"));
-  mklink(MKLINK_DIR, resolve_path(newDir / "Scenario"),
+  mklink(LinkType::Dir, resolve_path(newDir / "Scenario"),
          resolve_path(oldDir / "Scenario"));
-  mklink(MKLINK_SOFT, resolve_path(newDir / "player.nfz"),
+  mklink(LinkType::Soft, resolve_path(newDir / "player.nfz"),
          resolve_path(oldDir / "player.nfz"));
   if (!cfs::exists(
           newDir /

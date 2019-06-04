@@ -6,8 +6,10 @@
  * Linux and Windows
  */
 
-#define MKLINK_SOFT 's'
-#define MKLINK_DIR 'd'
+enum class LinkType {
+  Soft,
+  Dir
+};
 
 /**
  * Windows
@@ -36,7 +38,7 @@ static void runCmd(std::wstring exe) {
   WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
 
-static void mklink(char type, std::string link, std::string dest) {
+static void mklink(LinkType type, std::string link, std::string dest) {
   std::wstring wlink;
   std::wstring wdest;
   for (auto c : link) {
@@ -48,11 +50,11 @@ static void mklink(char type, std::string link, std::string dest) {
     wdest.push_back(w);
   }
 
-  if (type == MKLINK_SOFT) {
+  if (type == LinkType::Soft) {
     std::wstringstream line;
     line << L"/C mklink " << wlink << L" " << wdest;
     runCmd(line.str().c_str());
-  } else if (type == MKLINK_DIR) {
+  } else if (type == LinkType::Dir) {
 #ifdef CreateSymbolicLink
     CreateSymbolicLink(wlink.c_str(), wdest.c_str(),
                        SYMBOLIC_LINK_FLAG_DIRECTORY);
@@ -71,7 +73,7 @@ static void mklink(char type, std::string link, std::string dest) {
 
 #include <unistd.h>
 
-static void mklink [[maybe_unused]] ([[maybe_unused]] char type,
+static void mklink [[maybe_unused]] ([[maybe_unused]] LinkType type,
                                      std::string link, std::string dest) {
   symlink(dest.c_str(), link.c_str());
 }
