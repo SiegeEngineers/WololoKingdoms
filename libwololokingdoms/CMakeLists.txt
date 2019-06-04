@@ -42,22 +42,12 @@ else()
 endif()
 
 # check c++17 filesystem support
-# (mingw's windows header has a bug)
-include(CheckCXXSourceCompiles)
-set(CMAKE_REQUIRED_FLAGS "-std=c++17")
-set(CMAKE_REQUIRED_LIBRARIES stdc++fs)
-check_cxx_source_compiles("
-#include <filesystem>
-int main() {
-    std::filesystem::path aPath {\"hello\"};
-    aPath /= \"world\";
-    return 0;
-}
-" WORKING_STD_FS)
+# (mingw's windows header has a bug and msvc doesn't have it)
+include(HasWorkingFilesystem)
 set(CMAKE_REQUIRED_FLAGS)
 set(CMAKE_REQUIRED_LIBRARIES)
 if (NOT WORKING_STD_FS)
-    message("builtin filesystem is bad, falling back to gulrak/filesystem")
+  message(WARNING "builtin filesystem is bad, falling back to gulrak/filesystem")
     include_directories(third_party/filesystem/include/)
     add_definitions(-DUSE_USERLAND_FS)
 endif()
