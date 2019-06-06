@@ -650,18 +650,16 @@ void WKConverter::copyCivIntroSounds(const fs::path& inputDir,
  * Shifts the offset between interface files by 10 so there's space for the new
  * civs
  */
-void WKConverter::uglyHudHack(const fs::path& assetsPath) {
-  std::vector<int> hudFiles = {51130, 51160};
+static void shiftHudIndices(std::map<int, fs::path>& slpFiles, const fs::path& assetsPath) {
+  const std::array hudFiles = {51130, 51160};
   int base_index = 0;
   for (auto hud_file_id : hudFiles) {
-    for (size_t i = 1; i <= 23; i++) {
+    for (auto i = 1; i <= 23; i++) {
       slpFiles[hud_file_id + i + (base_index + 1) * 10] =
           assetsPath / (std::to_string(hud_file_id + i) + ".slp");
     }
     base_index++;
   }
-
-  indexDrsFiles(resourceDir / "expansion interfaces fix");
 }
 
 void WKConverter::copyWallFiles(const fs::path& inputDir) {
@@ -2296,7 +2294,8 @@ int WKConverter::run() {
     listener->setInfo("working$\n$workingInterface");
 
     listener->log("HUD Hack");
-    uglyHudHack(assetsPath);
+    shiftHudIndices(slpFiles, assetsPath);
+    indexDrsFiles(resourceDir / "graphics" / "huds");
     listener->increaseProgress(1); // 32
 
     listener->setInfo("working$\n$workingDat");

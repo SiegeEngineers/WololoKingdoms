@@ -169,7 +169,6 @@ private:
   void makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir);
   void makeDrs(std::ofstream& out);
   void editDrs(std::ifstream* in, std::ofstream* out);
-  void uglyHudHack(const fs::path&);
   void copyCivIntroSounds(const fs::path& inputDir, const fs::path& outputDir);
   void copyWallFiles(const fs::path& inputDir);
   void createMusicPlaylist(const fs::path& inputDir, const fs::path& outputDir);
