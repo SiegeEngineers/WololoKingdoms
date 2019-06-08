@@ -1,45 +1,15 @@
 #pragma once
-#include "libwololokingdoms/wkconverter.h"
-#include "libwololokingdoms/wksettings.h"
 #include <QMainWindow>
 #include <QMetaType>
 #include <QProgressBar>
 #include <QPushButton>
 #include <fs.h>
-#include <memory>
-#include <regex>
-#include <set>
 
 namespace Ui {
 class MainWindow;
 }
 
 Q_DECLARE_METATYPE(std::string)
-
-class WKQConverter : public QObject, public WKConvertListener {
-  Q_OBJECT
-private:
-  WKSettings settings;
-  std::unique_ptr<WKConverter> converter;
-public slots:
-  void process();
-signals:
-  void finished() override;
-  void log(std::string logMessage) override;
-  void setInfo(std::string info) override;
-  void createDialog(std::string info) override;
-  void createDialog(std::string info, std::string title) override;
-  void createDialog(std::string info, std::string toReplace,
-                    std::string replaceWith) override;
-  void setProgress(int i) override;
-  void increaseProgress(int i) override;
-
-public:
-  WKQConverter(WKSettings& settings);
-  void error(std::exception const& err) override;
-  void installUserPatch(fs::path exePath,
-                        std::vector<std::string> cliFlags) override;
-};
 
 class MainWindow : public QMainWindow {
   Q_OBJECT

@@ -6,14 +6,13 @@
 #include <set>
 #include <sstream>
 #include <string>
-
 #include "libwololokingdoms/caseless.h"
 #include "libwololokingdoms/platform.h"
 #include "libwololokingdoms/string_helpers.h"
 #include "paths.h"
 #include <chrono>
 #include <thread>
-
+#include "wkinstaller.h"
 #include "dialog.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -28,47 +27,6 @@
 #include <QWhatsThis>
 #include <QtConcurrent/QtConcurrent>
 #include <steam/steam_api.h>
-
-WKQConverter::WKQConverter(WKSettings& settings) : settings(settings) {}
-
-void WKQConverter::process() {
-  converter = std::make_unique<WKConverter>(settings, this);
-  try {
-    converter->run();
-  } catch (const std::exception& e) {
-    error(e);
-    emit setInfo("error");
-    // Retry once…
-    try {
-      converter->retryInstall();
-    } catch (const std::exception& e) {
-      error(e);
-      emit setInfo("error");
-    }
-  }
-}
-
-void WKQConverter::error(std::exception const& err) { emit log(err.what()); }
-
-void WKQConverter::installUserPatch(fs::path exePath,
-                                    std::vector<std::string> cliFlags) {
-  QProcess process;
-  QStringList args;
-  QString name = QString::fromStdString(exePath.string());
-
-#ifndef _WIN32
-  // Use wine on non-windows
-  args << name;
-  name = QString("wine");
-#endif
-
-  for (auto arg : cliFlags) {
-    args << QString::fromStdString(arg);
-  }
-
-  process.start(name, args);
-  process.waitForFinished();
-}
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -283,25 +241,25 @@ void MainWindow::runConverter() {
   }
 
   QThread* thread = new QThread;
-  WKQConverter* converter = new WKQConverter(settings);
-  converter->moveToThread(thread);
-  connect(converter, SIGNAL(log(std::string)), this, SLOT(log(std::string)));
-  connect(converter, SIGNAL(setInfo(std::string)), this,
+  WKInstaller* installer = new WKInstaller(settings);
+  installer->moveToThread(thread);
+  connect(installer, SIGNAL(log(std::string)), this, SLOT(log(std::string)));
+  connect(installer, SIGNAL(setInfo(std::string)), this,
           SLOT(setInfo(std::string)));
-  connect(converter, SIGNAL(createDialog(std::string)), this,
+  connect(installer, SIGNAL(createDialog(std::string)), this,
           SLOT(createDialog(std::string)));
-  connect(converter, SIGNAL(createDialog(std::string, std::string)), this,
+  connect(installer, SIGNAL(createDialog(std::string, std::string)), this,
           SLOT(createDialog(std::string, std::string)));
-  connect(converter,
+  connect(installer,
           SIGNAL(createDialog(std::string, std::string, std::string)), this,
           SLOT(createDialog(std::string, std::string, std::string)));
-  connect(converter, SIGNAL(setProgress(int)), this, SLOT(setProgress(int)));
-  connect(converter, SIGNAL(increaseProgress(int)), this,
+  connect(installer, SIGNAL(setProgress(int)), this, SLOT(setProgress(int)));
+  connect(installer, SIGNAL(increaseProgress(int)), this,
           SLOT(increaseProgress(int)));
 
-  connect(thread, SIGNAL(started()), converter, SLOT(process()));
-  connect(converter, SIGNAL(finished()), thread, SLOT(quit()));
-  connect(converter, SIGNAL(finished()), converter, SLOT(deleteLater()));
+  connect(thread, SIGNAL(started()), installer, SLOT(process()));
+  connect(installer, SIGNAL(finished()), thread, SLOT(quit()));
+  connect(installer, SIGNAL(finished()), installer, SLOT(deleteLater()));
   connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
   thread->start();
   logFile.close();

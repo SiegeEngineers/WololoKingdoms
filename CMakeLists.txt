@@ -79,6 +79,7 @@ set(ALL_SRC
   dialog.cpp
   mainwindow.ui
   mainwindow.cpp
+  wkinstaller.cpp
   paths.cpp
 )
 
