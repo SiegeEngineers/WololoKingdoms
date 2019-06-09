@@ -6,10 +6,7 @@
  * Linux and Windows
  */
 
-enum class LinkType {
-  Soft,
-  Dir
-};
+enum class LinkType { Soft, Dir };
 
 /**
  * Windows

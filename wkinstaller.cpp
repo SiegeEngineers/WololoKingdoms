@@ -1,6 +1,6 @@
 #include "wkinstaller.h"
-#include <QString>
 #include <QProcess>
+#include <QString>
 
 WKInstaller::WKInstaller(WKSettings& settings) : settings(settings) {}
 
@@ -24,7 +24,7 @@ void WKInstaller::process() {
 void WKInstaller::error(std::exception const& err) { emit log(err.what()); }
 
 void WKInstaller::installUserPatch(fs::path exePath,
-                                    std::vector<std::string> cliFlags) {
+                                   std::vector<std::string> cliFlags) {
   QProcess process;
   QStringList args;
   QString name = QString::fromStdString(exePath.string());

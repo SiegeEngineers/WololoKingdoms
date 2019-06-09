@@ -1,9 +1,9 @@
-#include <QObject>
-#include <memory>
-#include <string>
-#include <fs.h>
 #include "libwololokingdoms/wkconverter.h"
 #include "libwololokingdoms/wksettings.h"
+#include <QObject>
+#include <fs.h>
+#include <memory>
+#include <string>
 
 class WKInstaller : public QObject, public WKConvertListener {
   Q_OBJECT

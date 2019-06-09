@@ -650,7 +650,8 @@ void WKConverter::copyCivIntroSounds(const fs::path& inputDir,
  * Shifts the offset between interface files by 10 so there's space for the new
  * civs
  */
-static void shiftHudIndices(std::map<int, fs::path>& slpFiles, const fs::path& assetsPath) {
+static void shiftHudIndices(std::map<int, fs::path>& slpFiles,
+                            const fs::path& assetsPath) {
   const std::array hudFiles = {51130, 51160};
   int base_index = 0;
   for (auto hud_file_id : hudFiles) {
@@ -1813,7 +1814,8 @@ void WKConverter::hotkeySetup() {
  * @param slpFiles map to add the monk SLP files to.
  * @param newMonkGraphicsDir directory path on disk to the monk graphic SLPs.
  */
-static void addNewMonkGraphics(std::map<int, fs::path>& slpFiles, const fs::path& newMonkGraphicsDir) {
+static void addNewMonkGraphics(std::map<int, fs::path>& slpFiles,
+                               const fs::path& newMonkGraphicsDir) {
   slpFiles[50730] = newMonkGraphicsDir / "icons.slp";
   for (auto i = 90774; i <= 160774; i += 10000) {
     slpFiles[i] = newMonkGraphicsDir / "european_monk.slp";
@@ -1887,7 +1889,8 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
              resolve_path(oldDir / "language.ini"));
     } else if (!vooblySrc) {
       cfs::remove(newDir / "Data" / "language_x1_p1.dll");
-      mklink(LinkType::Soft, resolve_path(newDir / "Data" / "language_x1_p1.dll"),
+      mklink(LinkType::Soft,
+             resolve_path(newDir / "Data" / "language_x1_p1.dll"),
              resolve_path(oldDir / "Data" / "language_x1_p1.dll"));
     }
   }

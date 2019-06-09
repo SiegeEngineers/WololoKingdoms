@@ -1,21 +1,11 @@
-#include <algorithm>
-#include <cctype>
-#include <fs.h>
-#include <iostream>
-#include <map>
-#include <set>
-#include <sstream>
-#include <string>
+#include "mainwindow.h"
+#include "dialog.h"
 #include "libwololokingdoms/caseless.h"
 #include "libwololokingdoms/platform.h"
 #include "libwololokingdoms/string_helpers.h"
 #include "paths.h"
-#include <chrono>
-#include <thread>
-#include "wkinstaller.h"
-#include "dialog.h"
-#include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "wkinstaller.h"
 #include <QFileDialog>
 #include <QFuture>
 #include <QPoint>
@@ -26,7 +16,17 @@
 #include <QThreadPool>
 #include <QWhatsThis>
 #include <QtConcurrent/QtConcurrent>
+#include <algorithm>
+#include <cctype>
+#include <chrono>
+#include <fs.h>
+#include <iostream>
+#include <map>
+#include <set>
+#include <sstream>
 #include <steam/steam_api.h>
+#include <string>
+#include <thread>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
