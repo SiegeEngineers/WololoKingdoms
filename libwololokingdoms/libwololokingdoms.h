@@ -34,7 +34,7 @@ void wksettings_mod_name(wksettings_t, const char* name);
 
 // Add mods.
 void wksettings_data_mod(wksettings_t, const char* name, const char* exe, const char* version, int flags, const char* exe2);
-void wksettings_drs_resources(wksettings_t, const char* dir, WKIndexType type);
+void wksettings_drs_resources(wksettings_t, const char* dir, enum WKIndexType type);
 
 // Converter setup.
 typedef void* wkconverter_t;
