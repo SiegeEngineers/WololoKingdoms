@@ -38,7 +38,7 @@ void wksettings_drs_resources(wksettings_t, const char* dir, enum WKIndexType ty
 
 // Converter setup.
 typedef void* wkconverter_t;
-wkconverter_t wkconverter_create(wksettings_t);
+wkconverter_t wkconverter_create(wksettings_t settings, void* context);
 void wkconverter_free(wkconverter_t);
 
 // Callbacks.
