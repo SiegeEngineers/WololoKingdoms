@@ -214,7 +214,12 @@ extern "C" void wkconverter_free(wkconverter_t inst) {
 }
 
 extern "C" int wkconverter_run(wkconverter_t inst) {
-  return inst->converter->run();
+  try {
+    return inst->converter->run();
+  } catch (const std::exception& e) {
+    inst->listener->error(e);
+    return -3;
+  }
 }
 
 extern "C" int wkconvert(wksettings_t settings, void* context) {
