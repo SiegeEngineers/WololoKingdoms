@@ -4,7 +4,7 @@
 #
 # Adapted from the libgenieutils CMakeLists.txt file.
 
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.9.4)
 
 set(Wololokingdoms_LIBRARY wololokingdoms)
 set(CMAKE_CXX_STANDARD 17)
@@ -12,6 +12,11 @@ set(CMAKE_CXX_STANDARD 17)
 project(libwololokingdoms)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/)
+
+if (CMAKE_BUILD_TYPE EQUAL RELEASE)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT ENABLE_LTO OUTPUT error)
+endif()
 
 # dependencies:
 
@@ -113,4 +118,7 @@ else()
     )
 endif()
 
-target_link_libraries(${Wololokingdoms_LIBRARY})
+if(ENABLE_LTO)
+  message(STATUS "Building libwololokingdoms with link time optimization")
+  set_property(TARGET ${Wololokingdoms_LIBRARY} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()

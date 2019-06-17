@@ -18,8 +18,10 @@ set(CMAKE_AUTOUIC ON)
 # Find the QtWidgets library
 find_package(Qt5Widgets REQUIRED)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ENABLE_LTO OUTPUT error)
+if (CMAKE_BUILD_TYPE EQUAL RELEASE)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT ENABLE_LTO OUTPUT error)
+endif()
 
 set(WK_STATIC_BUILD 1)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libwololokingdoms/)
@@ -101,7 +103,7 @@ if (MSVC) # Check if we are using the Visual Studio compiler
   )
 endif()
 if(ENABLE_LTO)
-  message(STATUS "Building with link time optimization")
+  message(STATUS "Building wololokingdoms installer with link time optimization")
   set_property(TARGET ${Wololokingdoms_INSTALLER} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
