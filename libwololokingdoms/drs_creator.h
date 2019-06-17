@@ -10,6 +10,10 @@ enum class DRSTableType {
   Wav = 0x77617620   // 'wav '
 };
 
+class DRSCreatorTableEntry;
+class DRSCreatorTable;
+class DRSCreator;
+
 class DRSCreatorTableEntry {
   uint32_t id_;
   uint32_t offset_ = 0;
@@ -19,15 +23,27 @@ class DRSCreatorTableEntry {
   fs::path filename_;
 
 public:
-  DRSCreatorTableEntry(uint32_t id, std::istream* data);
-  DRSCreatorTableEntry(uint32_t id, const fs::path& filename);
-  DRSCreatorTableEntry(DRSCreatorTableEntry&& entry);
+  inline DRSCreatorTableEntry(uint32_t id, std::istream* data)
+      : id_(id), stream_(data) {}
+  inline DRSCreatorTableEntry(uint32_t id, const fs::path& filename)
+      : id_(id), filename_(filename) {}
+  inline DRSCreatorTableEntry(DRSCreatorTableEntry&& entry)
+      : id_(entry.id_), stream_(entry.stream_),
+        filename_(std::move(entry.filename_)) {
+    entry.stream_ = nullptr;
+  }
   DRSCreatorTableEntry(const DRSCreatorTableEntry&) = delete;
   DRSCreatorTableEntry& operator=(DRSCreatorTableEntry const&);
-  ~DRSCreatorTableEntry();
+  inline ~DRSCreatorTableEntry() {
+    // may be moved out.
+    if (stream_)
+      delete stream_;
+  }
 
-  void writeMeta(std::ostream& target);
-  void writeContent(std::ostream& target);
+private:
+  inline void writeMeta(std::ostream& target);
+  inline void writeContent(std::ostream& target);
+  friend class DRSCreatorTable;
 };
 
 class DRSCreatorTable {
@@ -36,13 +52,16 @@ class DRSCreatorTable {
   bool wrote_contents_ = false;
 
 public:
-  void addFile(uint32_t id, std::istream* data);
-  void addFile(uint32_t id, const fs::path& filename);
-  void setOffset(uint32_t offset);
-  size_t getMetaSize();
-  void writeMeta(DRSTableType type, std::ostream& target);
-  void writeFileMeta(std::ostream& target);
-  void writeFileContents(std::ostream& target);
+  inline void addFile(uint32_t id, std::istream* data);
+  inline void addFile(uint32_t id, const fs::path& filename);
+
+private:
+  inline void setOffset(uint32_t offset);
+  inline size_t getMetaSize();
+  inline void writeMeta(DRSTableType type, std::ostream& target);
+  inline void writeFileMeta(std::ostream& target);
+  inline void writeFileContents(std::ostream& target);
+  friend class DRSCreator;
 };
 
 class DRSCreator {
@@ -50,9 +69,28 @@ class DRSCreator {
   std::map<DRSTableType, DRSCreatorTable> tables_;
 
 public:
-  DRSCreator(std::ostream& output);
+  inline DRSCreator(std::ostream& output) : output_(output) {}
 
-  void addFile(DRSTableType table, uint32_t id, std::istream* data);
-  void addFile(DRSTableType table, uint32_t id, const fs::path& filename);
+  inline void addFile(DRSTableType table, uint32_t id, std::istream* data);
+  inline void addFile(DRSTableType table, uint32_t id,
+                      const fs::path& filename);
   void commit();
 };
+
+inline void DRSCreatorTable::addFile(uint32_t id, std::istream* data) {
+  files_.push_back(DRSCreatorTableEntry(id, data));
+}
+
+inline void DRSCreatorTable::addFile(uint32_t id, const fs::path& filename) {
+  files_.push_back(DRSCreatorTableEntry(id, filename));
+}
+
+inline void DRSCreator::addFile(DRSTableType table, uint32_t id,
+                                std::istream* data) {
+  tables_[table].addFile(id, data);
+}
+
+inline void DRSCreator::addFile(DRSTableType table, uint32_t id,
+                                const fs::path& filename) {
+  tables_[table].addFile(id, filename);
+}
