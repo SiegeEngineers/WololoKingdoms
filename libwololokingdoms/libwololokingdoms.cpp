@@ -183,7 +183,8 @@ extern "C" void wksettings_data_mod(wksettings_t inst, const char* name, const c
 }
 
 extern "C" void wksettings_drs_resources(wksettings_t inst, const path_char_t* dir, WKSettings::IndexType type) {
-  inst->addDrsResources(dir, type);
+  std::filesystem::path dir_path = dir;
+  inst->addDrsResources(dir_path, type);
 }
 
 extern "C" wkconverter_t wkconverter_create(wksettings_t settings, void* context) {
