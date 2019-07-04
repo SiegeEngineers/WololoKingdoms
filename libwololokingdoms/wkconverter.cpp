@@ -1631,7 +1631,7 @@ bool WKConverter::identifyHotkeyFile(const fs::path& directory,
    * Returns true if a hotkey file was found
    */
   int maxHkiNumber = -1;
-  std::time_t lastHkiEdit = std::time_t(0);
+  fs::file_time_type lastHkiEdit;
   for (auto& f : fs::directory_iterator(directory)) {
     if (f.path().extension() == ".hki") {
       std::string numberString = f.path().stem().string().substr(6);
@@ -1642,8 +1642,7 @@ bool WKConverter::identifyHotkeyFile(const fs::path& directory,
         maxHkiNumber = hkiNumber;
         maxHki = f.path();
       }
-      auto lastModified =
-          fs::file_time_type::clock::to_time_t(cfs::last_write_time(f.path()));
+      auto lastModified = cfs::last_write_time(f.path());
       if (lastModified > lastHkiEdit) {
         lastHkiEdit = lastModified;
         lastEditedHki = f.path();
