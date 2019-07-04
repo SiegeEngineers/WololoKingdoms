@@ -1,9 +1,9 @@
 #include "wksettings.h"
 #include "wkconverter.h"
 #include <memory>
-#include <filesystem>
+#include <fs.h>
 
-using path_char_t = std::filesystem::path::value_type;
+using path_char_t = fs::path::value_type;
 
 class Listener;
 
@@ -183,7 +183,7 @@ extern "C" void wksettings_data_mod(wksettings_t inst, const char* name, const c
 }
 
 extern "C" void wksettings_drs_resources(wksettings_t inst, const path_char_t* dir, WKSettings::IndexType type) {
-  std::filesystem::path dir_path = dir;
+  fs::path dir_path = dir;
   inst->addDrsResources(dir_path, type);
 }
 
