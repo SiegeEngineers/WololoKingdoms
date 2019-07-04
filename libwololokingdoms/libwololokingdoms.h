@@ -2,6 +2,12 @@
 extern "C" {
 #endif
 
+#ifdef _WIN32
+typedef unsigned short path_char_t;
+#else
+typedef char path_char_t;
+#endif
+
 enum WKIndexType {
   DRSIndexOnly = 0,
   DRSExpansionResources = 1,
@@ -25,16 +31,16 @@ void wksettings_language(wksettings_t, const char* code);
 void wksettings_patch(wksettings_t, int patch);
 void wksettings_hotkeys(wksettings_t, int choice);
 void wksettings_dlc_level(wksettings_t, int level);
-void wksettings_resource_path(wksettings_t, const char* path);
-void wksettings_hd_path(wksettings_t, const char* path);
-void wksettings_output_path(wksettings_t, const char* path);
-void wksettings_voobly_path(wksettings_t, const char* path);
-void wksettings_up_path(wksettings_t, const char* path);
-void wksettings_mod_name(wksettings_t, const char* name);
+void wksettings_resource_path(wksettings_t, const path_char_t* path);
+void wksettings_hd_path(wksettings_t, const path_char_t* path);
+void wksettings_output_path(wksettings_t, const path_char_t* path);
+void wksettings_voobly_path(wksettings_t, const path_char_t* path);
+void wksettings_up_path(wksettings_t, const path_char_t* path);
+void wksettings_mod_name(wksettings_t, const path_char_t* name);
 
 // Add mods.
 void wksettings_data_mod(wksettings_t, const char* name, const char* exe, const char* version, int flags, const char* exe2);
-void wksettings_drs_resources(wksettings_t, const char* dir, enum WKIndexType type);
+void wksettings_drs_resources(wksettings_t, const path_char_t* dir, enum WKIndexType type);
 
 // Converter setup.
 typedef void* wkconverter_t;

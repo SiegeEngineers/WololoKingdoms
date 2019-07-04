@@ -1,6 +1,9 @@
 #include "wksettings.h"
 #include "wkconverter.h"
 #include <memory>
+#include <filesystem>
+
+using path_char_t = std::filesystem::path::value_type;
 
 class Listener;
 
@@ -31,16 +34,16 @@ extern "C" {
   void wksettings_patch(wksettings_t, int patch);
   void wksettings_hotkeys(wksettings_t, int choice);
   void wksettings_dlc_level(wksettings_t, int level);
-  void wksettings_resource_path(wksettings_t, const char* path);
-  void wksettings_hd_path(wksettings_t, const char* path);
-  void wksettings_output_path(wksettings_t, const char* path);
-  void wksettings_voobly_path(wksettings_t, const char* path);
-  void wksettings_up_path(wksettings_t, const char* path);
-  void wksettings_mod_name(wksettings_t, const char* name);
+  void wksettings_resource_path(wksettings_t, const path_char_t* path);
+  void wksettings_hd_path(wksettings_t, const path_char_t* path);
+  void wksettings_output_path(wksettings_t, const path_char_t* path);
+  void wksettings_voobly_path(wksettings_t, const path_char_t* path);
+  void wksettings_up_path(wksettings_t, const path_char_t* path);
+  void wksettings_mod_name(wksettings_t, const path_char_t* name);
 
   // Add mods.
   void wksettings_data_mod(wksettings_t, const char* name, const char* exe, const char* version, int flags, const char* exe2);
-  void wksettings_drs_resources(wksettings_t, const char* dir, WKSettings::IndexType type);
+  void wksettings_drs_resources(wksettings_t, const path_char_t* dir, WKSettings::IndexType type);
 
   // Converter setup.
   wkconverter_t wkconverter_create(wksettings_t settings, void* context);
@@ -150,27 +153,27 @@ extern "C" void wksettings_dlc_level(wksettings_t inst, int level) {
   inst->dlcLevel = level;
 }
 
-extern "C" void wksettings_resource_path(wksettings_t inst, const char* path) {
+extern "C" void wksettings_resource_path(wksettings_t inst, const path_char_t* path) {
   inst->resourceDir = path;
 }
 
-extern "C" void wksettings_hd_path(wksettings_t inst, const char* path) {
+extern "C" void wksettings_hd_path(wksettings_t inst, const path_char_t* path) {
   inst->hdPath = path;
 }
 
-extern "C" void wksettings_output_path(wksettings_t inst, const char* path) {
+extern "C" void wksettings_output_path(wksettings_t inst, const path_char_t* path) {
   inst->outPath = path;
 }
 
-extern "C" void wksettings_voobly_path(wksettings_t inst, const char* path) {
+extern "C" void wksettings_voobly_path(wksettings_t inst, const path_char_t* path) {
   inst->vooblyDir = path;
 }
 
-extern "C" void wksettings_up_path(wksettings_t inst, const char* path) {
+extern "C" void wksettings_up_path(wksettings_t inst, const path_char_t* path) {
   inst->upDir = path;
 }
 
-extern "C" void wksettings_mod_name(wksettings_t inst, const char* name) {
+extern "C" void wksettings_mod_name(wksettings_t inst, const path_char_t* name) {
   inst->modName = name;
 }
 
@@ -179,7 +182,7 @@ extern "C" void wksettings_data_mod(wksettings_t inst, const char* name, const c
   /* inst->dataModList.emplace_back(name, exe, version, flags, exe2 == nullptr ? "" : exe2); */
 }
 
-extern "C" void wksettings_drs_resources(wksettings_t inst, const char* dir, WKSettings::IndexType type) {
+extern "C" void wksettings_drs_resources(wksettings_t inst, const path_char_t* dir, WKSettings::IndexType type) {
   inst->addDrsResources(dir, type);
 }
 
