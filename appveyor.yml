@@ -2,7 +2,6 @@ image: Visual Studio 2017
 
 environment:
   VS_VERSION: vs2017
-  QTDIR: C:\Qt\5.12\msvc2017
   PLATFORM: msvc2017
 
 platform:
@@ -16,6 +15,8 @@ install:
 for:
   - matrix:
       only: [{ "platform": "x86" }]
+    environment:
+      QTDIR: C:\Qt\5.12\msvc2017
     build_script:
       - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86 || exit /B 1
       - cmake -B build -G "Visual Studio 15 2017"
@@ -23,6 +24,8 @@ for:
       - 7z a build\WololoKingdoms.zip build\bin
   - matrix:
       only: [{ "platform": "x64" }]
+    environment:
+      QTDIR: C:\Qt\5.12\msvc2017_64
     build_script:
       - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64 || exit /B 1
       - cmake -B build -G "Visual Studio 15 2017 Win64"
