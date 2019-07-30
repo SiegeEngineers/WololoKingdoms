@@ -30,6 +30,7 @@ for:
       - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64 || exit /B 1
       - cmake -B build -G "Visual Studio 15 2017 Win64"
       - cmake --build build
+      - 7z a build\WololoKingdoms.zip build\bin
 
 artifacts:
   - path: build\WololoKingdoms.zip
