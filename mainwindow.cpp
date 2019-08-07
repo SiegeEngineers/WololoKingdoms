@@ -619,9 +619,7 @@ void MainWindow::changeLanguage() {
   }
   /*
    * Loads the contents of <language>.txt into memory (If it exists). This is
-   * used to change the language of the installer ui, as well as some special
-   * in-game lines (Terrain names in the scenario editor, some fixes for faulty
-   * lines in the original language files)
+   * used to change the language of the installer ui
    */
   std::string line;
   std::string langBackup;

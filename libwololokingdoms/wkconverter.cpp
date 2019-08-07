@@ -44,7 +44,7 @@ const fs::path resolve_path(const fs::path& input) {
 
 void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement) {
   std::string line;
-  std::ifstream translationFile(resourceDir /
+  std::ifstream translationFile(resourceDir / "locales" /
                                 (settings.language + "_game.txt"));
   while (std::getline(translationFile, line)) {
     /*
@@ -292,7 +292,7 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
   std::map<int, std::string> langReplacement;
   fs::path keyValuesStringsPath =
       settings.language == "zht"
-          ? resourceDir / "zht" / "key-value-strings-utf8.txt"
+          ? resourceDir / "locales" / "traditional chinese game strings" / "key-value-strings-utf8.txt"
           : settings.hdPath / "resources" / settings.language / "strings" /
                 "key-value" / "key-value-strings-utf8.txt";
   fs::path improvedTooltipStrings =
@@ -2127,7 +2127,7 @@ int WKConverter::run() {
 
   // HD Resources
   fs::path historyInputPath = settings.language == "zht"
-                                  ? (resourceDir / "zht" / "history")
+                                  ? (resourceDir / "locales" / "traditional chinese game strings" / "history")
                                   : (settings.hdPath / "resources" /
                                      settings.language / "strings" / "history");
   fs::path soundsInputPath =
