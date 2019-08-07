@@ -49,7 +49,7 @@ static void mklink(LinkType type, std::string link, std::string dest) {
 
   if (type == LinkType::Soft) {
     std::wstringstream line;
-    line << L"/C mklink " << wlink << L" " << wdest;
+    line << L"/C mklink \"" << wlink << L"\" \"" << wdest << L"\"";
     runCmd(line.str().c_str());
   } else if (type == LinkType::Dir) {
 #ifdef CreateSymbolicLink
@@ -57,7 +57,7 @@ static void mklink(LinkType type, std::string link, std::string dest) {
                        SYMBOLIC_LINK_FLAG_DIRECTORY);
 #else
     std::wstringstream line;
-    line << L"/C mklink /d " << wlink << L" " << wdest;
+    line << L"/C mklink /d \"" << wlink << L"\" \"" << wdest << L"\"";
     runCmd(line.str().c_str());
 #endif
   }
