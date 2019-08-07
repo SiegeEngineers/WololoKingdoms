@@ -27,6 +27,7 @@ void wksettings_fix_flags(wksettings_t, char enable);
 void wksettings_replace_tooltips(wksettings_t, char enable);
 void wksettings_use_grid(wksettings_t, char enable);
 void wksettings_use_short_walls(wksettings_t, char enable);
+void wksettings_use_monks(wksettings_t inst, char enable);
 void wksettings_language(wksettings_t, const char* code);
 void wksettings_patch(wksettings_t, int patch);
 void wksettings_hotkeys(wksettings_t, int choice);

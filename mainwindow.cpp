@@ -190,6 +190,7 @@ void MainWindow::runConverter() {
   settings.fixFlags = this->ui->fixFlags->isChecked();
   settings.replaceTooltips = this->ui->replaceTooltips->isChecked();
   settings.useGrid = this->ui->useGrid->isChecked();
+  settings.useMonks = this->ui->useMonks->isChecked();
   settings.language = language;
   settings.dlcLevel = dlcLevel;
   settings.patch = this->ui->usePatch->isChecked()

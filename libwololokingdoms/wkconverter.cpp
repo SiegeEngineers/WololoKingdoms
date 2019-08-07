@@ -1808,6 +1808,23 @@ void WKConverter::hotkeySetup() {
 }
 
 /**
+ * Adds monk graphics for one civ/civ group with a given prefix to the drs
+ *
+ * @param slpFiles map to add the monk SLP files to.
+ * @param newMonkGraphicsDir directory path on disk to the monk graphic SLPs.
+ * @param Number of the civ/civ group prefix
+ */
+static void addMonkGraphicsToCiv(std::map<int, fs::path>& slpFiles,
+                               const fs::path& newMonkGraphicsDir, int prefix) {
+  for (fs::directory_iterator current(newMonkGraphicsDir), end; current != end; ++current) {
+    auto src = current->path();
+    std::string extension = src.extension().string();
+    int id = prefix*10000+atoi(src.stem().string().c_str());
+    slpFiles[id] = src;
+  }
+}
+
+/**
  * Add graphics for the new monk units.
  *
  * @param slpFiles map to add the monk SLP files to.
@@ -1815,7 +1832,30 @@ void WKConverter::hotkeySetup() {
  */
 static void addNewMonkGraphics(std::map<int, fs::path>& slpFiles,
                                const fs::path& newMonkGraphicsDir) {
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"christian",6); //Goths, Teutons, Vikings
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"christian",7); //Byzantines, Slavs
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",9); //Japanese
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",10); //Chinese, Koreans
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",11); // SEA
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",16); // Huns, Mongols
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"imam",12); // Turks, Persians, Saracens, Berbers
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"african",13); // Indians
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"african",14); // Ethiopians, Malians
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"legacy",6); // Legacy SLPs for data mods of older patches
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"legacy",7); // Legacy SLPs for data mods of older patches
+}
+
+/**
+ * Add graphics for the new monk units.
+ *
+ * @param slpFiles map to add the monk SLP files to.
+ * @param newMonkGraphicsDir directory path on disk to the monk graphic SLPs.
+ */
+static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
+                               const fs::path& newMonkGraphicsDir) {
   slpFiles[50730] = newMonkGraphicsDir / "icons.slp";
+  slpFiles[60131] = newMonkGraphicsDir / "european_monk.slp";
+  slpFiles[70131] = newMonkGraphicsDir / "european_monk.slp";
   for (auto i = 90774; i <= 160774; i += 10000) {
     slpFiles[i] = newMonkGraphicsDir / "european_monk.slp";
   }
@@ -2335,8 +2375,12 @@ int WKConverter::run() {
       copyWallFiles(wallsInputDir);
 
     listener->increaseProgress(1); // 64
-    // Add graphics for the new monk units
-    addNewMonkGraphics(slpFiles, newMonkGraphicsDir);
+    // Add monk graphics
+    if (settings.useMonks) {
+        addNewMonkGraphics(slpFiles, newMonkGraphicsDir);
+    } else {
+        addOldMonkGraphics(slpFiles, newMonkGraphicsDir);
+    }
     listener->increaseProgress(1); // 65
 
     indexDrsFiles(newArchitectureGraphicsDir);

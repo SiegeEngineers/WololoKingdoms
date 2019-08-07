@@ -30,6 +30,7 @@ public:
   // Only used for information
   bool useGrid = true;
   bool useShortWalls = false;
+  bool useMonks = false;
 
   std::string language = "en";
   int patch = -1;

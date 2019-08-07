@@ -137,6 +137,10 @@ extern "C" void wksettings_use_short_walls(wksettings_t inst, char enable) {
   inst->useShortWalls = enable != 0;
 }
 
+extern "C" void wksettings_use_monks(wksettings_t inst, char enable) {
+  inst->useMonks = enable != 0;
+}
+
 extern "C" void wksettings_language(wksettings_t inst, const char* code) {
   inst->language = code;
 }
