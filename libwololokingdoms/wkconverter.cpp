@@ -1871,6 +1871,8 @@ static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
  */
 void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                                bool dataMod) {
+  //TODO: Maybe the best way to improve this would be to check for symlinks and just skip the
+  // delete it/create it new part if it's a symlink
   bool vooblySrc =
       tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
   bool vooblyDst =
@@ -1914,9 +1916,9 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     mklink(LinkType::Dir, resolve_path(newDir / "Data"),
            resolve_path(oldDir / "Data"));
   } else {
-    mklink(LinkType::Dir, resolve_path(newDir / "Data" / "gamedata_x1_p1.drs"),
+    mklink(LinkType::Soft, resolve_path(newDir / "Data" / "gamedata_x1_p1.drs"),
            resolve_path(oldDir / "Data" / "gamedata_x1_p1.drs"));
-    mklink(LinkType::Dir, resolve_path(newDir / "Data" / "gamedata_x1.drs"),
+    mklink(LinkType::Soft, resolve_path(newDir / "Data" / "gamedata_x1.drs"),
            resolve_path(oldDir / "Data" / "gamedata_x1.drs"));
   }
   std::string languageString = "";
