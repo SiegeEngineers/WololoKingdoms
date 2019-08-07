@@ -2266,11 +2266,11 @@ int WKConverter::run() {
 
     listener->increaseProgress(1); // 14
     listener->log("Write expansion XML");
-    if (settings.useExe) {
+    if (settings.useExe || settings.useBoth) {
       std::ofstream xml_output(xmlOutPathUP);
       write_wk_xml(xml_output, settings.dlcLevel);
     }
-    if (settings.useVoobly) {
+    if (settings.useVoobly || settings.useBoth) {
       std::ofstream xml_output(xmlOutPath);
       write_wk_xml(xml_output, settings.dlcLevel);
     }
