@@ -80,8 +80,8 @@ void WKConverter::indexDrsFiles(fs::path const& src, bool expansionFiles,
    * creation.
    */
   if (cfs::is_directory(src)) {
-    for (fs::directory_iterator current(src), end; current != end; ++current) {
-      indexDrsFiles(current->path(), expansionFiles, terrainFiles);
+    for (const auto& current : fs::directory_iterator(src)) {
+      indexDrsFiles(current.path(), expansionFiles, terrainFiles);
     }
   } else {
     std::string extension = src.extension().string();
@@ -405,7 +405,7 @@ void WKConverter::convertLanguageFile(
 void WKConverter::makeRandomMapScriptsDrs(std::ofstream& out,
                                           const fs::path& drsDir) {
   DRSCreator drs(out);
-  for (auto& p : fs::directory_iterator(resolve_path(drsDir))) {
+  for (const auto& p : fs::directory_iterator(resolve_path(drsDir))) {
     auto id = std::atoi(p.path().stem().c_str());
     drs.addFile(DRSTableType::Bina, id, p.path());
   }
@@ -782,7 +782,7 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
       {39, "15031.slp"}, {40, "15033.slp"}};
 
   std::vector<fs::path> mapNames;
-  for (auto& it : fs::directory_iterator(resolve_path(inputDir))) {
+  for (const auto& it : fs::directory_iterator(resolve_path(inputDir))) {
     auto extension = it.path().extension();
     if (extension == ".rms") {
       mapNames.push_back(it.path());
@@ -1633,7 +1633,7 @@ bool WKConverter::identifyHotkeyFile(const fs::path& directory,
    */
   int maxHkiNumber = -1;
   fs::file_time_type lastHkiEdit;
-  for (auto& f : fs::directory_iterator(directory)) {
+  for (const auto& f : fs::directory_iterator(directory)) {
     if (f.path().extension() == ".hki") {
       std::string numberString = f.path().stem().string().substr(6);
       if (numberString.find_first_not_of("0123456789") != std::string::npos)
@@ -1818,9 +1818,8 @@ void WKConverter::hotkeySetup() {
 static void addMonkGraphicsToCiv(std::map<int, fs::path>& slpFiles,
                                  const fs::path& newMonkGraphicsDir,
                                  int prefix) {
-  for (fs::directory_iterator current(newMonkGraphicsDir), end; current != end;
-       ++current) {
-    auto src = current->path();
+  for (const auto& current : fs::directory_iterator(newMonkGraphicsDir)) {
+    auto src = current.path();
     std::string extension = src.extension().string();
     int id = prefix * 10000 + atoi(src.stem().string().c_str());
     slpFiles[id] = src;
@@ -1909,15 +1908,15 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   cfs::remove_all(newDir / "Screenshots");
   cfs::remove_all(newDir / "Scenario");
   cfs::remove(newDir / "player.nfz");
-  for (fs::directory_iterator current(newDir), end; current != end; ++current) {
-    std::string extension = current->path().extension().string();
+  for (const auto& current : fs::directory_iterator(newDir)) {
+    std::string extension = current.path().extension().string();
     if (extension == ".hki") {
-      cfs::remove(current->path());
+      cfs::remove(current.path());
     }
   }
   std::string hotkeyString = "";
-  for (fs::directory_iterator current(oldDir), end; current != end; ++current) {
-    fs::path currentPath = current->path();
+  for (const auto& current : fs::directory_iterator(oldDir)) {
+    fs::path currentPath = current.path();
     std::string extension = currentPath.extension().string();
     if (extension == ".hki") {
       mklink(LinkType::Soft, resolve_path(newDir / currentPath.filename()),
@@ -1965,9 +1964,8 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   if (!cfs::exists(
           newDir /
           "Taunt")) { // Symlink didn't work, we'll do a regular copy instead
-    for (fs::directory_iterator current(oldDir), end; current != end;
-         ++current) {
-      fs::path currentPath(current->path());
+    for (const auto& current : fs::directory_iterator(oldDir)) {
+      const auto& currentPath = current.path();
       if (!cfs::is_directory(currentPath) ||
           tolower(currentPath.filename().string()) != "savegame") {
         cfs::copy(currentPath, newDir / currentPath.filename(),
