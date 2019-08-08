@@ -2450,15 +2450,15 @@ int WKConverter::run() {
        * Generate version.ini based on the installer and the hash of the dat.
        */
       listener->log("Create Hash");
-      auto fileStream = std::fstream(outputDatPath.string(), std::ios_base::in);
+      auto fileStream = std::fstream(outputDatPath.string(), std::ios_base::in | std::ios_base::binary);
       std::string fileData = concat_stream(fileStream);
 
-      std::string hash = MD5(fileData).b64digest();
+      std::string hash = MD5(fileData).b64digest().substr(0,10);
       std::ofstream versionOut(versionIniPath);
       if (hash != hash1 && hash != hash2) {
         listener->createDialog("dialogBeta");
 
-        versionOut << (patchNumber + ".") << hash;
+        versionOut << hash;
       } else {
         versionOut << patchNumber;
       }
