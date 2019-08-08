@@ -12,10 +12,6 @@ namespace fs {
 
 #else
 
-#ifdef _WIN32
-#define GHC_WIN_WSTRING_STRING_TYPE
-#endif
-
 #include <ghc/fs_fwd.hpp>
 
 namespace fs {
