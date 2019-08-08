@@ -2142,11 +2142,13 @@ int WKConverter::run() {
   // Voobly Target
   fs::path versionIniPath = settings.vooblyDir / "version.ini";
   fs::path xmlOutPath = settings.vooblyDir / "age2_x1.xml";
+  settings.nfzVooblyOutPath = settings.vooblyDir / "Player.nfz";
 
   // Offline Target
   fs::path xmlOutPathUP;
   std::string upModdedExeName;
   fs::path upSetupAoCPath = settings.outPath / "SetupAoc.exe";
+  settings.nfzUpOutPath = settings.upDir / "Player.nfz";
 
   // Any Target
   fs::path languageIniPath = installDir / "language.ini";
