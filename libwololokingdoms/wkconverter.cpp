@@ -1872,6 +1872,21 @@ static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
 }
 
 /**
+ * Checks if a symlink exists already. If not, it removes a possibly existing
+ * directory/file and creates a symlink.
+ *
+ * @param oldPath The directory/file the symlink references.
+ * @param newPath The directory/file the symlink should be created in.
+ */
+void WKConverter::refreshSymlink(const fs::path& oldPath, const fs::path& newPath, const LinkType type) {
+      if(cfs::is_symlink(newPath))
+          return;
+      cfs::remove_all(newPath);
+      mklink(type, resolve_path(newPath),
+             resolve_path(oldPath));
+}
+
+/**
  * Sets up symlinks between the different mod versions (offline/AK/FE), so as
  * much as possible is shared and as little space is needed as possible.
  *
@@ -1893,74 +1908,37 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   bool datalink = vooblySrc == vooblyDst && !dataMod;
 
   if (datalink) {
-    cfs::remove_all(newDir / "Data");
+    refreshSymlink(oldDir / "Data", newDir / "Data", LinkType::Dir);
   } else {
     cfs::create_directory(newDir / "Data");
-    cfs::remove(newDir / "Data" / "gamedata_x1.drs");
-    cfs::remove(newDir / "Data" / "gamedata_x1_p1.drs");
+    refreshSymlink(oldDir / "Data" / "gamedata_x1.drs", newDir / "Data" / "gamedata_x1.drs", LinkType::Soft);
+    refreshSymlink(oldDir / "Data" / "gamedata_x1_p1.drs", newDir / "Data" / "gamedata_x1_p1.drs", LinkType::Soft);
   }
-
-  cfs::remove_all(newDir / "Taunt");
-  cfs::remove_all(newDir / "Sound");
-  cfs::remove_all(newDir / "History");
-  cfs::remove_all(newDir / "Script.Rm");
-  cfs::remove_all(newDir / "Script.Ai");
-  cfs::remove_all(newDir / "Screenshots");
-  cfs::remove_all(newDir / "Scenario");
-  cfs::remove(newDir / "player.nfz");
-  for (const auto& current : fs::directory_iterator(newDir)) {
-    std::string extension = current.path().extension().string();
-    if (extension == ".hki") {
-      cfs::remove(current.path());
-    }
-  }
-  std::string hotkeyString = "";
   for (const auto& current : fs::directory_iterator(oldDir)) {
     fs::path currentPath = current.path();
     std::string extension = currentPath.extension().string();
     if (extension == ".hki") {
-      mklink(LinkType::Soft, resolve_path(newDir / currentPath.filename()),
-             resolve_path(currentPath));
+      refreshSymlink(newDir / currentPath.filename(), resolve_path(currentPath), LinkType::Soft);
     }
   }
-  if (datalink) {
-    mklink(LinkType::Dir, resolve_path(newDir / "Data"),
-           resolve_path(oldDir / "Data"));
-  } else {
-    mklink(LinkType::Soft, resolve_path(newDir / "Data" / "gamedata_x1_p1.drs"),
-           resolve_path(oldDir / "Data" / "gamedata_x1_p1.drs"));
-    mklink(LinkType::Soft, resolve_path(newDir / "Data" / "gamedata_x1.drs"),
-           resolve_path(oldDir / "Data" / "gamedata_x1.drs"));
-  }
-  std::string languageString = "";
 
   if (!dataMod) {
     if (vooblyDst) {
-      cfs::remove(newDir / "language.ini");
-      mklink(LinkType::Soft, resolve_path(newDir / "language.ini"),
-             resolve_path(oldDir / "language.ini"));
-    } else if (!vooblySrc) {
-      cfs::remove(newDir / "Data" / "language_x1_p1.dll");
-      mklink(LinkType::Soft,
-             resolve_path(newDir / "Data" / "language_x1_p1.dll"),
-             resolve_path(oldDir / "Data" / "language_x1_p1.dll"));
+      refreshSymlink(oldDir / "language.ini", newDir / "language.ini", LinkType::Soft);
+    } else if (!vooblySrc) {        
+      refreshSymlink(oldDir / "Data" / "language_x1_p1.dll", newDir / "Data" / "language_x1_p1.dll", LinkType::Soft);
     }
   }
 
-  mklink(LinkType::Dir, resolve_path(newDir / "Taunt"),
-         resolve_path(oldDir / "Taunt"));
-  mklink(LinkType::Dir, resolve_path(newDir / "Script.Rm"),
-         resolve_path(oldDir / "Script.Rm"));
-  mklink(LinkType::Dir, resolve_path(newDir / "Sound"),
-         resolve_path(oldDir / "Sound"));
-  mklink(LinkType::Dir, resolve_path(newDir / "History"),
-         resolve_path(oldDir / "History"));
-  mklink(LinkType::Dir, resolve_path(newDir / "Screenshots"),
-         resolve_path(oldDir / "Screenshots"));
-  mklink(LinkType::Dir, resolve_path(newDir / "Scenario"),
-         resolve_path(oldDir / "Scenario"));
-  mklink(LinkType::Soft, resolve_path(newDir / "player.nfz"),
-         resolve_path(oldDir / "player.nfz"));
+  refreshSymlink(oldDir / "Taunt", newDir / "Taunt", LinkType::Dir);
+  refreshSymlink(oldDir / "Sound", newDir / "Sound", LinkType::Dir);
+  refreshSymlink(oldDir / "History", newDir / "History", LinkType::Dir);
+  refreshSymlink(oldDir / "Script.Rm", newDir / "Script.Rm", LinkType::Dir);
+  refreshSymlink(oldDir / "Script.Ai", newDir / "Script.Ai", LinkType::Dir);
+  refreshSymlink(oldDir / "Screenshots", newDir / "Screenshots", LinkType::Dir);
+  refreshSymlink(oldDir / "Scenario", newDir / "Scenario", LinkType::Dir);
+  refreshSymlink(oldDir / "player.nfz", newDir / "player.nfz", LinkType::Soft);
+
   if (!cfs::exists(
           newDir /
           "Taunt")) { // Symlink didn't work, we'll do a regular copy instead

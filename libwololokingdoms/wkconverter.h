@@ -2,6 +2,7 @@
 #include "genie/dat/DatFile.h"
 #include "genie/lang/LangFile.h"
 #include "wksettings.h"
+#include "platform.h"
 #include <fs.h>
 #include <map>
 #include <regex>
@@ -190,6 +191,7 @@ private:
                       fs::path dst);
   void removeWkHotkeys();
   void hotkeySetup();
+  void refreshSymlink(const fs::path& oldDir, const fs::path& newDir, const LinkType type);
   void symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                     bool dataMod = false);
   void setupFolders(fs::path xmlOutPathUP);
