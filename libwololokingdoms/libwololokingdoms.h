@@ -40,8 +40,10 @@ void wksettings_up_path(wksettings_t, const path_char_t* path);
 void wksettings_mod_name(wksettings_t, const path_char_t* name);
 
 // Add mods.
-void wksettings_data_mod(wksettings_t, const char* name, const char* exe, const char* version, int flags, const char* exe2);
-void wksettings_drs_resources(wksettings_t, const path_char_t* dir, enum WKIndexType type);
+void wksettings_data_mod(wksettings_t, const char* name, const char* exe,
+                         const char* version, int flags, const char* exe2);
+void wksettings_drs_resources(wksettings_t, const path_char_t* dir,
+                              enum WKIndexType type);
 
 // Converter setup.
 typedef void* wkconverter_t;
@@ -51,9 +53,12 @@ void wkconverter_free(wkconverter_t);
 // Callbacks.
 void wkconverter_on_finished(wkconverter_t inst, void (*onFinished)(void*));
 void wkconverter_on_log(wkconverter_t inst, void (*onLog)(void*, const char*));
-void wkconverter_on_set_info(wkconverter_t inst, void (*onSetInfo)(void*, const char*));
-void wkconverter_on_error(wkconverter_t inst, void (*onError)(void*, const char*));
-void wkconverter_on_progress(wkconverter_t inst, void (*onProgress)(void*, int));
+void wkconverter_on_set_info(wkconverter_t inst,
+                             void (*onSetInfo)(void*, const char*));
+void wkconverter_on_error(wkconverter_t inst,
+                          void (*onError)(void*, const char*));
+void wkconverter_on_progress(wkconverter_t inst,
+                             void (*onProgress)(void*, int));
 
 // Run the converter.
 int wkconverter_run(wkconverter_t);

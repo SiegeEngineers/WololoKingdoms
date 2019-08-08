@@ -292,7 +292,8 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
   std::map<int, std::string> langReplacement;
   fs::path keyValuesStringsPath =
       settings.language == "zht"
-          ? resourceDir / "locales" / "traditional chinese game strings" / "key-value-strings-utf8.txt"
+          ? resourceDir / "locales" / "traditional chinese game strings" /
+                "key-value-strings-utf8.txt"
           : settings.hdPath / "resources" / settings.language / "strings" /
                 "key-value" / "key-value-strings-utf8.txt";
   fs::path improvedTooltipStrings =
@@ -1815,11 +1816,13 @@ void WKConverter::hotkeySetup() {
  * @param Number of the civ/civ group prefix
  */
 static void addMonkGraphicsToCiv(std::map<int, fs::path>& slpFiles,
-                               const fs::path& newMonkGraphicsDir, int prefix) {
-  for (fs::directory_iterator current(newMonkGraphicsDir), end; current != end; ++current) {
+                                 const fs::path& newMonkGraphicsDir,
+                                 int prefix) {
+  for (fs::directory_iterator current(newMonkGraphicsDir), end; current != end;
+       ++current) {
     auto src = current->path();
     std::string extension = src.extension().string();
-    int id = prefix*10000+atoi(src.stem().string().c_str());
+    int id = prefix * 10000 + atoi(src.stem().string().c_str());
     slpFiles[id] = src;
   }
 }
@@ -1832,17 +1835,25 @@ static void addMonkGraphicsToCiv(std::map<int, fs::path>& slpFiles,
  */
 static void addNewMonkGraphics(std::map<int, fs::path>& slpFiles,
                                const fs::path& newMonkGraphicsDir) {
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"christian",6); //Goths, Teutons, Vikings
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"christian",7); //Byzantines, Slavs
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",9); //Japanese
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",10); //Chinese, Koreans
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",11); // SEA
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"shaman",16); // Huns, Mongols
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"imam",12); // Turks, Persians, Saracens, Berbers
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"african",13); // Indians
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"african",14); // Ethiopians, Malians
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"legacy",6); // Legacy SLPs for data mods of older patches
-  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir/"legacy",7); // Legacy SLPs for data mods of older patches
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "christian",
+                       6); // Goths, Teutons, Vikings
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "christian",
+                       7); // Byzantines, Slavs
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "shaman", 9); // Japanese
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "shaman",
+                       10); // Chinese, Koreans
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "shaman", 11); // SEA
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "shaman",
+                       16); // Huns, Mongols
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "imam",
+                       12); // Turks, Persians, Saracens, Berbers
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "african", 13); // Indians
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "african",
+                       14); // Ethiopians, Malians
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "legacy",
+                       6); // Legacy SLPs for data mods of older patches
+  addMonkGraphicsToCiv(slpFiles, newMonkGraphicsDir / "legacy",
+                       7); // Legacy SLPs for data mods of older patches
 }
 
 /**
@@ -1871,7 +1882,8 @@ static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
  */
 void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                                bool dataMod) {
-  //TODO: Maybe the best way to improve this would be to check for symlinks and just skip the
+  // TODO: Maybe the best way to improve this would be to check for symlinks and
+  // just skip the
   // delete it/create it new part if it's a symlink
   bool vooblySrc =
       tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
@@ -2128,10 +2140,12 @@ int WKConverter::run() {
   fs::path patchFolder;
 
   // HD Resources
-  fs::path historyInputPath = settings.language == "zht"
-                                  ? (resourceDir / "locales" / "traditional chinese game strings" / "history")
-                                  : (settings.hdPath / "resources" /
-                                     settings.language / "strings" / "history");
+  fs::path historyInputPath =
+      settings.language == "zht"
+          ? (resourceDir / "locales" / "traditional chinese game strings" /
+             "history")
+          : (settings.hdPath / "resources" / settings.language / "strings" /
+             "history");
   fs::path soundsInputPath =
       settings.hdPath / "resources" / "_common" / "sound";
   fs::path tauntInputPath =
@@ -2379,9 +2393,9 @@ int WKConverter::run() {
     listener->increaseProgress(1); // 64
     // Add monk graphics
     if (settings.useMonks) {
-        addNewMonkGraphics(slpFiles, newMonkGraphicsDir);
+      addNewMonkGraphics(slpFiles, newMonkGraphicsDir);
     } else {
-        addOldMonkGraphics(slpFiles, newMonkGraphicsDir);
+      addOldMonkGraphics(slpFiles, newMonkGraphicsDir);
     }
     listener->increaseProgress(1); // 65
 
