@@ -729,7 +729,7 @@ void MainWindow::updateUI() {
   resourceDir/("patches/"+std::get<0>(dataModList[patch])+"/"); else patchFolder
   = resourceDir;
   */
-  if (!cfs::exists(resourceDir / (language + ".ini"))) {
+  if (!cfs::exists(resourceDir / "improved-tooltips" / (language + ".ini"))) {
     this->ui->replaceTooltips->setEnabled(false);
     this->ui->replaceTooltips->setChecked(false);
   } else {
