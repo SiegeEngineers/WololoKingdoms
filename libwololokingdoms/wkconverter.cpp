@@ -795,7 +795,7 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
     std::string mapName = it.stem().string() + ".rms";
     if (mapName.substr(0, 3) == "ZR@") {
       cfs::copy_file(it, outputDir / mapName,
-                     fs::copy_options::overwrite_existing);
+                     fs::copy_options::update_existing);
       continue;
     }
     if (cfs::exists(outputDir / it.filename()) ||
@@ -1669,14 +1669,14 @@ void WKConverter::copyHotkeyFile(const fs::path& maxHki,
   fs::path bak1 = dst.parent_path() / (dst.stem().string() + "_bak1.hki");
   fs::path bak2 = dst.parent_path() / (dst.stem().string() + "_bak2.hki");
   if (cfs::exists(bak1))
-    cfs::copy_file(bak1, bak2, fs::copy_options::overwrite_existing);
+    cfs::copy_file(bak1, bak2, fs::copy_options::update_existing);
   if (cfs::exists(dst))
-    cfs::copy_file(dst, bak1, fs::copy_options::overwrite_existing);
-  cfs::copy_file(maxHki, dst, fs::copy_options::overwrite_existing);
+    cfs::copy_file(dst, bak1, fs::copy_options::update_existing);
+  cfs::copy_file(maxHki, dst, fs::copy_options::update_existing);
   if (!cfs::equivalent(lastEditedHki, maxHki)) {
     cfs::copy_file(lastEditedHki,
                    dst.parent_path() / (dst.stem().string() + "_alt.hki"),
-                   fs::copy_options::overwrite_existing);
+                   fs::copy_options::update_existing);
   }
 }
 
@@ -1977,7 +1977,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   cfs::create_directories(newDir / "Savegame" / "Multi");
   if (vooblyDst && !dataMod)
     cfs::copy_file(oldDir / "version.ini", newDir / "version.ini",
-                   fs::copy_options::overwrite_existing);
+                   fs::copy_options::update_existing);
 }
 
 int WKConverter::retryInstall() {
@@ -1989,18 +1989,18 @@ int WKConverter::retryInstall() {
     cfs::create_directories(tempFolder / "Script.RM");
     cfs::copy(installDir / "SaveGame", tempFolder / "SaveGame",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
     cfs::copy(installDir / "Script.RM", tempFolder / "Script.RM",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
     cfs::copy(installDir / "Scenario", tempFolder / "Scenario",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
     cfs::copy_file(installDir / "player.nfz", tempFolder / "player.nfz",
-                   fs::copy_options::overwrite_existing);
+                   fs::copy_options::update_existing);
     if (cfs::exists(installDir / "player1.hki"))
       cfs::copy_file(installDir / "player1.hki", tempFolder / "player1.hki",
-                     fs::copy_options::overwrite_existing);
+                     fs::copy_options::update_existing);
   } catch (std::exception const& e) {
     listener->error(e);
     listener->log(e.what());
@@ -2041,18 +2041,18 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     cfs::create_directories(tempFolder / "Script.RM");
     cfs::copy(installDir / "SaveGame", tempFolder / "SaveGame",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
     cfs::copy(installDir / "Script.RM", tempFolder / "Script.RM",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
     cfs::copy(installDir / "Scenario", tempFolder / "Scenario",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
     cfs::copy_file(installDir / "player.nfz", tempFolder / "player.nfz",
-                   fs::copy_options::overwrite_existing);
+                   fs::copy_options::update_existing);
     if (cfs::exists(installDir / "player1.hki"))
       cfs::copy_file(installDir / "player1.hki", tempFolder / "player1.hki",
-                     fs::copy_options::overwrite_existing);
+                     fs::copy_options::update_existing);
     cfs::remove_all(installDir);
     cfs::create_directories(installDir / "SaveGame");
     cfs::create_directories(installDir / "SaveGame");
@@ -2228,7 +2228,7 @@ int WKConverter::run() {
   if (settings.useExe) {
     cfs::copy_file(aocLanguageIniModDll,
                    installDir / "Data" / "language_x1_p1.dll",
-                   fs::copy_options::overwrite_existing);
+                   fs::copy_options::update_existing);
   }
 
   listener->increaseProgress(1); // 6
@@ -2318,12 +2318,12 @@ int WKConverter::run() {
     listener->increaseProgress(1); // 23
     cfs::copy(scenarioInputDir, installDir / "Scenario",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
 
     listener->log("Copying AI");
     cfs::copy(aiInputPath, installDir / "Script.Ai",
               fs::copy_options::recursive |
-                  fs::copy_options::overwrite_existing);
+                  fs::copy_options::update_existing);
 
     listener->increaseProgress(1); // 24
     listener->log("Hotkey Setup");
@@ -2588,7 +2588,7 @@ int WKConverter::run() {
   if (settings.useBoth) {
     cfs::copy_file(settings.vooblyDir / "Data" / "empires2_x1_p1.dat",
                    settings.upDir / "Data" / "empires2_x1_p1.dat",
-                   fs::copy_options::overwrite_existing);
+                   fs::copy_options::update_existing);
   }
   if (settings.useVoobly) {
     listener->createDialog("dialogDone");
@@ -2597,7 +2597,7 @@ int WKConverter::run() {
     listener->setInfo("working$\n$workingUP");
     listener->increaseProgress(1); // 95
     cfs::copy_file(upSetupAoCSource, upSetupAoCPath,
-                   fs::copy_options::overwrite_existing);
+                   fs::copy_options::update_existing);
 
     listener->increaseProgress(1); // 96
 
