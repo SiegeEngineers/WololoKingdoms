@@ -36,41 +36,41 @@ void PortuguesePatch(genie::DatFile* aocDat) {
   // This moves the Caraval in the Tech tree to the castle, so that it shows up
   // only for portuguese and doesn't obscure shipwright Delete Caravels from the
   // dock and add them to the castle
-  for (std::vector<genie::BuildingConnection>::iterator
-           buildingIt = aocDat->TechTree.BuildingConnections.begin(),
-           end = aocDat->TechTree.BuildingConnections.end();
-       buildingIt != end; buildingIt++) {
+  for (auto& building : aocDat->TechTree.BuildingConnections) {
     // Iterate connected units of each age
-    if (buildingIt->ID == castleId) {
-      for (std::vector<int32_t>::iterator unitIt = buildingIt->Units.begin(),
-                                          end = buildingIt->Units.end();
+    if (building.ID == castleId) {
+      for (std::vector<int32_t>::iterator unitIt = building.Units.begin(),
+                                          end = building.Units.end();
            unitIt != end; ++unitIt) {
         if (*unitIt == petardId) {
-          unitIt = buildingIt->Units.insert(unitIt, caravelId);
+          unitIt = building.Units.insert(unitIt, caravelId);
           ++unitIt;
-          unitIt = buildingIt->Units.insert(unitIt, eliteCaravelId);
+          unitIt = building.Units.insert(unitIt, eliteCaravelId);
           break;
         }
       }
     }
-    if (buildingIt->ID == dockId) {
-      for (std::vector<int32_t>::iterator unitIt = buildingIt->Units.begin(),
-                                          end = buildingIt->Units.end();
+    if (building.ID == dockId) {
+      bool visited = false;
+      for (std::vector<int32_t>::iterator unitIt = building.Units.begin(),
+                                          end = building.Units.end();
            unitIt != end; ++unitIt) {
         if (*unitIt == caravelId || *unitIt == eliteCaravelId) {
-          unitIt = buildingIt->Units.erase(unitIt);
+          building.Units.erase(unitIt--);
+          end = building.Units.end();
+          if (visited)
+              break;
+          visited = true;
         }
       }
     }
   }
 
   // Change UpperBuilding of Caravels to the Castle
-  for (std::vector<genie::UnitConnection>::iterator
-           unitIt = aocDat->TechTree.UnitConnections.begin(),
-           end = aocDat->TechTree.UnitConnections.end();
-       unitIt != end; ++unitIt) {
-    if (unitIt->ID == caravelId || unitIt->ID == eliteCaravelId) {
-      unitIt->UpperBuilding = castleId;
+  for (auto& unit : aocDat->TechTree.UnitConnections)
+  {
+    if (unit.ID == caravelId || unit.ID == eliteCaravelId) {
+      unit.UpperBuilding = castleId;
     }
   }
 }
