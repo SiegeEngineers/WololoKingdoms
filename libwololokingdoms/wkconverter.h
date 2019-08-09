@@ -133,8 +133,8 @@ private:
 
   struct MapConvertData {
     std::string slp_name;
-    std::string const_name_pattern;
-    std::string replaced_name_pattern;
+    std::vector<std::string> const_names;
+    std::string replaced_name;
     int old_terrain_id;
     int new_terrain_id;
     TerrainType terrain_type;
