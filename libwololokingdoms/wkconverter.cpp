@@ -2526,7 +2526,12 @@ int WKConverter::run() {
       symlinkSetup(settings.vooblyDir.parent_path() / dlcLevelName,
                    settings.vooblyDir, true);
       if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
+        /*
+         * Older patches need some SLP files that aren't in the drs used for the main WK mod
+         * So we'll remove the symlink, copy the drs instead and insert the missing SLP files
+         */
         indexDrsFiles(slpCompatDir);
+        fs::remove(settings.vooblyDir / "data" / "gamedata_x1_p1.drs");
         std::ifstream oldDrs(settings.vooblyDir.parent_path() / dlcLevelName /
                                  "data" / "gamedata_x1_p1.drs",
                              std::ios::binary);
@@ -2546,13 +2551,27 @@ int WKConverter::run() {
       symlinkSetup(settings.upDir.parent_path() / dlcLevelName, settings.upDir,
                    true);
       if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
-        indexDrsFiles(slpCompatDir);
-        std::ifstream oldDrs(settings.upDir.parent_path() / dlcLevelName / "data" /
-                                 "gamedata_x1_p1.drs",
-                             std::ios::binary);
-        std::ofstream newDrs(settings.upDir / "data" / "gamedata_x1_p1.drs",
-                             std::ios::binary);
-        editDrs(&oldDrs, &newDrs);
+        /*
+         * Older patches need some SLP files that aren't in the drs used for the main WK mod
+         * So we'll remove the symlink, copy the drs instead and insert the missing SLP files
+         *
+         * Possible improvement: If useBoth is selected, the drs file is symlinked from the voobly folder to save space
+         * The rest of the files are symlinked from the base UP folder. Two different sources for the symlinks is kind of ugly, but for now it works
+         * Linking everything from the Voobly folder instead would be nicer
+         */
+        if(settings.useBoth) {
+           refreshSymlink(settings.vooblyDir / "data" / "gamedata_x1_p1.drs",
+                          settings.upDir / "data" / "gamedata_x1_p1.drs", LinkType::Soft);
+        } else {
+          indexDrsFiles(slpCompatDir);
+          fs::remove(settings.upDir / "data" / "gamedata_x1_p1.drs");
+          std::ifstream oldDrs(settings.upDir.parent_path() / dlcLevelName / "data" /
+                                   "gamedata_x1_p1.drs",
+                               std::ios::binary);
+          std::ofstream newDrs(settings.upDir / "data" / "gamedata_x1_p1.drs",
+                               std::ios::binary);
+          editDrs(&oldDrs, &newDrs);
+        }
       }
     }
   } else if (settings.restrictedCivMods) {
