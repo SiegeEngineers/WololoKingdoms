@@ -26,7 +26,7 @@ public slots:
   QString translate(QString line);
 
 public:
-  explicit MainWindow(QWidget* parent = 0);
+  explicit MainWindow(QWidget* parent = 0, bool skipUpdater = false);
   ~MainWindow();
 
 private:
@@ -39,6 +39,7 @@ private:
   std::string language = "en";
   std::map<QString, QString> translation;
   bool allowRun = true;
+  bool skipUpdater = false;
 
   QProgressBar* bar = nullptr;
   int dlcLevel;

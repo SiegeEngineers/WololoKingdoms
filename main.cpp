@@ -19,7 +19,7 @@ bool can_run_windows_programs() {
 int main(int argc, char* argv[]) {
   QApplication application(argc, argv);
   application.setApplicationName("WololoKingdoms");
-  application.setApplicationVersion("5.8.2");
+  application.setApplicationVersion("5.8.1.6");
 
   QCommandLineParser cli;
   cli.setApplicationDescription(
@@ -27,10 +27,14 @@ int main(int argc, char* argv[]) {
       "Edition expansions to Age of Empires II: The Conquerors");
   cli.addHelpOption();
   cli.addVersionOption();
+  QCommandLineOption skipUpdaterOption("s", QCoreApplication::translate("main", "Do not call the auto-updater."));
+  cli.addOption(skipUpdaterOption);
+
 
   cli.process(application);
 
-  MainWindow window;
+  bool skipUpdater = cli.isSet(skipUpdaterOption);
+  MainWindow window(nullptr, skipUpdater);
 
   if (!can_run_windows_programs()) {
     QMessageBox::warning(&window, "Wine not found",

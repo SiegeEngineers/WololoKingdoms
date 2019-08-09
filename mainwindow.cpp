@@ -28,12 +28,13 @@
 #include <string>
 #include <thread>
 
-MainWindow::MainWindow(QWidget* parent)
+MainWindow::MainWindow(QWidget* parent, bool skipUpdater)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   fs::path exePath = getExePath();
   if (exePath != fs::path()) {
     fs::current_path(exePath.parent_path());
   }
+  this->skipUpdater = skipUpdater;
   ui->setupUi(this);
   initialize();
 }
@@ -45,6 +46,15 @@ int MainWindow::initialize() {
 
   logFile = std::ofstream("prelog.txt");
   QDialog* dialog;
+
+  if (!skipUpdater &&
+      cfs::exists("WKUpdater.exe")) {
+    QProcess process;
+    process.start(QString("WKUpdater.exe"), QStringList() << "");
+    process.waitForStarted();
+    exit(EXIT_FAILURE);
+  }
+
   resourceDir = fs::current_path() / "resources";
   // Handle resources/ being in a parent directory (for out of source build)
   if (!fs::exists(resourceDir) &&
@@ -90,14 +100,6 @@ int MainWindow::initialize() {
     this->ui->restrictedCivMods->setEnabled(!this->ui->useExe->isChecked());
     updateUI();
   });
-
-  if (QCoreApplication::arguments().back() != "-s" &&
-      cfs::exists("WKUpdater.exe")) {
-    QProcess process;
-    process.start(QString("WKUpdater.exe"), QStringList() << "");
-    process.waitForStarted();
-    exit(EXIT_FAILURE);
-  }
 
   readDataModList();
 
