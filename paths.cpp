@@ -119,7 +119,7 @@ fs::path getOutPath(fs::path hdPath) {
     outPathString += "\\";
   fs::path outPath(outPathString);
   if (!fs::exists(outPath / "age2_x1")) {
-    if (fs::exists(outPath.parent_path() / "age2_x1")) { //If currentDirectory points one level too deep, had this happen with a faulty aoe2tools installation
+    if (fs::exists(outPath.parent_path().parent_path() / "age2_x1")) { //If currentDirectory points one level too deep, had this happen with a faulty aoe2tools installation
       outPath = outPath.parent_path().parent_path(); //ParentPath needs to be called twice because the first one only removes the trailing /
     } else if (fs::exists(hdPath / "age2_x1")) {
       outPath = hdPath;
