@@ -7,9 +7,10 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
+#include <steam/steam_api.h>
 
 #ifdef _WIN32
-#include <windows.h>
+#include <Windows.h>
 #endif
 
 static fs::path extractHDPath(fs::path steamPath) {
@@ -79,52 +80,48 @@ fs::path getExePath() {
   return fs::path(str);
 }
 
-fs::path getSteamPath() {
-  wchar_t temp[300];
-  unsigned long size = sizeof(temp);
-  HKEY hKey;
+std::wstring readRegistryKey(std::wstring keyPath, std::wstring key) {
+    wchar_t temp[300];
+    unsigned long size = sizeof(temp);
+    HKEY hKey;
 
-  BOOL w64;
-  IsWow64Process(GetCurrentProcess(), &w64);
-  if (w64)
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\WOW6432Node\\Valve\\Steam", 0,
-                 KEY_READ, &hKey);
-  else
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Valve\\Steam", 0, KEY_READ,
-                 &hKey);
-  RegQueryValueEx(hKey, L"InstallPath", nullptr, nullptr,
-                  reinterpret_cast<LPBYTE>(temp), &size);
-  RegCloseKey(hKey);
-  auto steamPath = std::wstring(temp);
-  return steamPath;
+    BOOL w64;
+    IsWow64Process(GetCurrentProcess(), &w64);
+    LONG result = 0;
+    for(int i = 0; i < 2; i++) {
+        if (w64)
+          result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, (L"Software\\WOW6432Node\\"+keyPath).c_str(), 0,
+                       KEY_READ, &hKey);
+        else
+          result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, (L"Software\\"+keyPath).c_str(), 0, KEY_READ,
+                       &hKey);
+        if (result == ERROR_SUCCESS)
+            break;
+        w64 = !w64; //If the key read wasn't successful, maybe the 32/64-bit check was erroneous, we'll check the other key
+    }
+    if (result != ERROR_SUCCESS)
+        return L"";
+    RegQueryValueEx(hKey, key.c_str(), nullptr, nullptr,
+                    reinterpret_cast<LPBYTE>(temp), &size);
+    RegCloseKey(hKey);
+    return std::wstring(temp);
+}
+
+fs::path getSteamPath() {
+  return readRegistryKey(L"Valve\\Steam", L"InstallPath");
 }
 
 fs::path getOutPath(fs::path hdPath) {
-  wchar_t temp[300];
-  unsigned long size = sizeof(temp);
-  HKEY hKey;
-
-  BOOL w64;
-  IsWow64Process(GetCurrentProcess(), &w64);
-  if (w64)
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                 L"Software\\WOW6432Node\\Microsoft\\DirectPlay\\Applications\\"
-                 L"Age of Empires II - The Conquerors Expansion",
-                 0, KEY_READ, &hKey);
-  else
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                 L"Software\\Microsoft\\DirectPlay\\Applications\\Age of "
-                 L"Empires II - The Conquerors Expansion",
-                 0, KEY_READ, &hKey);
-  RegQueryValueEx(hKey, L"CurrentDirectory", nullptr, nullptr,
-                  reinterpret_cast<LPBYTE>(temp), &size);
-  RegCloseKey(hKey);
-  std::string outPathString = wstrtostr(std::wstring(temp));
+  std::string outPathString = wstrtostr(
+              readRegistryKey(L"Microsoft\\DirectPlay\\Applications\\Age of "
+                                L"Empires II - The Conquerors Expansion", L"CurrentDirectory"));
   if (outPathString.at(outPathString.length() - 1) != '\\')
     outPathString += "\\";
   fs::path outPath(outPathString);
   if (!fs::exists(outPath / "age2_x1")) {
-    if (fs::exists(hdPath / "age2_x1")) {
+    if (fs::exists(outPath.parent_path() / "age2_x1")) { //If currentDirectory points one level too deep, had this happen with a faulty aoe2tools installation
+      outPath = outPath.parent_path().parent_path(); //ParentPath needs to be called twice because the first one only removes the trailing /
+    } else if (fs::exists(hdPath / "age2_x1")) {
       outPath = hdPath;
     } else {
       outPath = fs::path();

@@ -60,9 +60,6 @@ int MainWindow::initialize() {
     updateUI();
     return -2;
   }
-  steamPath = getSteamPath();
-  hdPath = getHDPath(steamPath);
-  hdPath.make_preferred();
   if (hdPath == fs::path()) {
     updateUI();
     this->ui->label->setText(translation["noSteamInstallation"]);
@@ -436,12 +433,13 @@ void MainWindow::readDataModList() {
 
 bool MainWindow::checkSteamApi() {
   QDialog* dialog;
+  QProcess process;
   SteamAPI_Init();
-  if (!SteamApps()) {
+  if (!SteamApps()) {      
+    steamPath = getSteamPath();
     // open steam
-    QProcess process;
-    process.start(QString::fromStdString((steamPath / "Steam.exe").string()));
-    process.waitForStarted();
+    process.start(QString::fromStdString("\""+(steamPath / "Steam.exe").string()+"\""));
+    process.waitForStarted(120);
     SteamAPI_Init();
   }
   int tries = 0;
@@ -469,6 +467,18 @@ bool MainWindow::checkSteamApi() {
     dialog->exec();
     allowRun = false;
   } else if (SteamApps()->BIsDlcInstalled(239550)) {
+    // Steam API works, let's get the HD install path for later.
+    char temp[520];
+    uint copied = SteamApps()->GetAppInstallDir(221380, temp, 520);
+    if(copied != 0) {
+      hdPath = fs::path(std::string(temp));
+    } else { //Check the registry if this didn't work
+      if(steamPath == fs::path())
+        steamPath = getSteamPath();
+      hdPath = getHDPath(steamPath);
+    }
+    hdPath.make_preferred();
+    // Check the other DLCs
     if (SteamApps()->BIsDlcInstalled(355950)) {
       if (SteamApps()->BIsDlcInstalled(488060))
         dlcLevel = 3;
