@@ -1022,12 +1022,12 @@ bool WKConverter::isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
 void WKConverter::createZRmap(std::map<std::string, fs::path>& terrainOverrides,
                               fs::path outputDir, std::string mapName) {
   fs::path outname = outputDir / ("ZR@" + mapName);
-  std::ofstream outstream(outname);
+  std::ofstream outstream(outname, std::ios_base::out | std::ios_base::binary);
   outstream.exceptions(std::ofstream::failbit | std::ofstream::badbit);
   ZRMapCreator map(outstream);
   terrainOverrides[mapName] = outputDir / mapName;
   for (auto& [name, path] : terrainOverrides) {
-    std::ifstream file_stream(path);
+    std::ifstream file_stream(path, std::ios_base::in | std::ios_base::binary);
     map.addFile(name, file_stream);
   }
   map.end();
