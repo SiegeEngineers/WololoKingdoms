@@ -1937,9 +1937,8 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   }
 
   if (!dataMod) {
-    if (vooblyDst) {
-      refreshSymlink(oldDir / "language.ini", newDir / "language.ini", LinkType::Soft);
-    } else if (!vooblySrc) {        
+    refreshSymlink(oldDir / "language.ini", newDir / "language.ini", LinkType::Soft);
+    if (!vooblySrc) {
       refreshSymlink(oldDir / "Data" / "language_x1_p1.dll", newDir / "Data" / "language_x1_p1.dll", LinkType::Soft);
     }
   }
@@ -2219,9 +2218,10 @@ int WKConverter::run() {
   }
 
   createLanguageFile(languageIniPath, patchFolder);
-  if (settings.useExe) {
+  if (settings.useExe || settings.useBoth) {
+    cfs::create_directories(settings.upDir / "Data");
     cfs::copy_file(aocLanguageIniModDll,
-                   installDir / "Data" / "language_x1_p1.dll",
+                   settings.upDir / "Data" / "language_x1_p1.dll",
                    fs::copy_options::update_existing);
   }
 
@@ -2512,22 +2512,22 @@ int WKConverter::run() {
 
   if (settings.patch >= 0) {
     listener->log("Patch setup");
-    std::string mod_name =
+    std::string dlcLevelName =
         baseModName +
         (settings.dlcLevel == 3 ? "" : settings.dlcLevel == 2 ? " AK" : " FE");
     std::stringstream sstream;
     write_wk_xml(sstream, settings.dlcLevel);
     auto str = sstream.str();
-    replace_all(str, mod_name, settings.modName);
+    replace_all(str, dlcLevelName, settings.modName);
     if (settings.useBoth || settings.useVoobly) {
       std::ofstream outstream(settings.vooblyDir / "age2_x1.xml");
       outstream << str;
       outstream.close();
-      symlinkSetup(settings.vooblyDir.parent_path() / mod_name,
+      symlinkSetup(settings.vooblyDir.parent_path() / dlcLevelName,
                    settings.vooblyDir, true);
       if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
         indexDrsFiles(slpCompatDir);
-        std::ifstream oldDrs(settings.vooblyDir.parent_path() / mod_name /
+        std::ifstream oldDrs(settings.vooblyDir.parent_path() / dlcLevelName /
                                  "data" / "gamedata_x1_p1.drs",
                              std::ios::binary);
         std::ofstream newDrs(settings.vooblyDir / "data" / "gamedata_x1_p1.drs",
@@ -2540,11 +2540,14 @@ int WKConverter::run() {
                               (upModdedExeName + ".xml"));
       outstream << str;
       outstream.close();
-      symlinkSetup(settings.upDir.parent_path() / mod_name, settings.upDir,
+      fs::copy_file(settings.vooblyDir / "language.ini",
+                    settings.upDir / "language.ini",
+                    fs::copy_options::update_existing);
+      symlinkSetup(settings.upDir.parent_path() / dlcLevelName, settings.upDir,
                    true);
       if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
         indexDrsFiles(slpCompatDir);
-        std::ifstream oldDrs(settings.upDir.parent_path() / mod_name / "data" /
+        std::ifstream oldDrs(settings.upDir.parent_path() / dlcLevelName / "data" /
                                  "gamedata_x1_p1.drs",
                              std::ios::binary);
         std::ofstream newDrs(settings.upDir / "data" / "gamedata_x1_p1.drs",
