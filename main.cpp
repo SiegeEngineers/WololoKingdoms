@@ -27,9 +27,10 @@ int main(int argc, char* argv[]) {
       "Edition expansions to Age of Empires II: The Conquerors");
   cli.addHelpOption();
   cli.addVersionOption();
-  QCommandLineOption skipUpdaterOption("s", QCoreApplication::translate("main", "Do not call the auto-updater."));
+  QCommandLineOption skipUpdaterOption(
+      "s",
+      QCoreApplication::translate("main", "Do not call the auto-updater."));
   cli.addOption(skipUpdaterOption);
-
 
   cli.process(application);
 

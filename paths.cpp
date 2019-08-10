@@ -6,8 +6,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <stdio.h>
-#include <string>
 #include <steam/steam_api.h>
+#include <string>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -81,30 +81,34 @@ fs::path getExePath() {
 }
 
 std::wstring readRegistryKey(std::wstring keyPath, std::wstring key) {
-    wchar_t temp[300];
-    unsigned long size = sizeof(temp);
-    HKEY hKey;
+  wchar_t temp[300];
+  unsigned long size = sizeof(temp);
+  HKEY hKey;
 
-    BOOL w64;
-    IsWow64Process(GetCurrentProcess(), &w64);
-    LONG result = 0;
-    for(int i = 0; i < 2; i++) {
-        if (w64)
-          result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, (L"Software\\WOW6432Node\\"+keyPath).c_str(), 0,
+  BOOL w64;
+  IsWow64Process(GetCurrentProcess(), &w64);
+  LONG result = 0;
+  for (int i = 0; i < 2; i++) {
+    if (w64)
+      result = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                            (L"Software\\WOW6432Node\\" + keyPath).c_str(), 0,
+                            KEY_READ, &hKey);
+    else
+      result =
+          RegOpenKeyEx(HKEY_LOCAL_MACHINE, (L"Software\\" + keyPath).c_str(), 0,
                        KEY_READ, &hKey);
-        else
-          result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, (L"Software\\"+keyPath).c_str(), 0, KEY_READ,
-                       &hKey);
-        if (result == ERROR_SUCCESS)
-            break;
-        w64 = !w64; //If the key read wasn't successful, maybe the 32/64-bit check was erroneous, we'll check the other key
-    }
-    if (result != ERROR_SUCCESS)
-        return L"";
-    RegQueryValueEx(hKey, key.c_str(), nullptr, nullptr,
-                    reinterpret_cast<LPBYTE>(temp), &size);
-    RegCloseKey(hKey);
-    return std::wstring(temp);
+    if (result == ERROR_SUCCESS)
+      break;
+    // If the key read wasn't successful, maybe the 32/64-bit check
+    // was erroneous, we'll check the other key
+    w64 = !w64;
+  }
+  if (result != ERROR_SUCCESS)
+    return L"";
+  RegQueryValueEx(hKey, key.c_str(), nullptr, nullptr,
+                  reinterpret_cast<LPBYTE>(temp), &size);
+  RegCloseKey(hKey);
+  return std::wstring(temp);
 }
 
 fs::path getSteamPath() {
@@ -112,15 +116,20 @@ fs::path getSteamPath() {
 }
 
 fs::path getOutPath(fs::path hdPath) {
-  std::string outPathString = wstrtostr(
-              readRegistryKey(L"Microsoft\\DirectPlay\\Applications\\Age of "
-                                L"Empires II - The Conquerors Expansion", L"CurrentDirectory"));
+  std::string outPathString =
+      wstrtostr(readRegistryKey(L"Microsoft\\DirectPlay\\Applications\\Age of "
+                                L"Empires II - The Conquerors Expansion",
+                                L"CurrentDirectory"));
   if (outPathString.at(outPathString.length() - 1) != '\\')
     outPathString += "\\";
   fs::path outPath(outPathString);
   if (!fs::exists(outPath / "age2_x1")) {
-    if (fs::exists(outPath.parent_path().parent_path() / "age2_x1")) { //If currentDirectory points one level too deep, had this happen with a faulty aoe2tools installation
-      outPath = outPath.parent_path().parent_path(); //ParentPath needs to be called twice because the first one only removes the trailing /
+    // If currentDirectory points one level too deep, had
+    // this happen with a faulty aoe2tools installation
+    if (fs::exists(outPath.parent_path().parent_path() / "age2_x1")) {
+      // ParentPath needs to be called twice because the
+      // first one only removes the trailing /
+      outPath = outPath.parent_path().parent_path();
     } else if (fs::exists(hdPath / "age2_x1")) {
       outPath = hdPath;
     } else {

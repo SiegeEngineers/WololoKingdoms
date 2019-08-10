@@ -66,15 +66,18 @@ void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement) {
   translationFile.close();
 }
 
-
 /**
  * Index files to be written into the drs into a map, with the ID the file
- * will have later as  the key, and the path it should be copied from as the value
+ * will have later as  the key, and the path it should be copied from as the
+ * value
  *
- * @param src: The directory to iterate through. All .slp and .wav files in this directory will be indexed
+ * @param src: The directory to iterate through. All .slp and .wav files in this
+ * directory will be indexed
  * @param expansionFiles: If false, files are written to a seperate map.
- *        They are not written to the drs later, but we need them for comparison purposes in the independent architecture patching.
- * @param terrainFiles: If true, these are terrain files, written to a seperate map, as we need them for expansion map creation.
+ *        They are not written to the drs later, but we need them for comparison
+ * purposes in the independent architecture patching.
+ * @param terrainFiles: If true, these are terrain files, written to a seperate
+ * map, as we need them for expansion map creation.
  */
 void WKConverter::indexDrsFiles(fs::path const& src, bool expansionFiles,
                                 bool terrainFiles) {
@@ -738,37 +741,92 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
   static const std::vector<MapConvertData> replacements = {
       // slp_name, const_name_pattern, replaced_name_pattern, old_terrain_id,
       // new_terrain_id, terrain_type
-      {"DRAGONFOREST.slp", {"DRAGONFORES","DRAGONFOREST"}, "DRAGONFOREST", 48, 21,
+      {"DRAGONFOREST.slp",
+       {"DRAGONFORES", "DRAGONFOREST"},
+       "DRAGONFOREST",
+       48,
+       21,
        ForestTerrain},
-      {"ACACIA_FOREST.slp", {"ACCACIA_FOREST","ACACIA_FOREST","ACACIAFORES"}, "ACACIA_FOREST", 50,
-       41, None},
-      {"DLC_RAINFOREST.slp",  {"DLC_RAINFOREST"}, "DLC_RAINFOREST", 56, 10,
+      {"ACACIA_FOREST.slp",
+       {"ACCACIA_FOREST", "ACACIA_FOREST", "ACACIAFORES"},
+       "ACACIA_FOREST",
+       50,
+       41,
+       None},
+      {"DLC_RAINFOREST.slp",
+       {"DLC_RAINFOREST"},
+       "DLC_RAINFOREST",
+       56,
+       10,
        ForestTerrain},
-      {"BAOBAB.slp", {"BAOBABS","BAOBAB_FOREST"}, "BAOBAB_FOREST", 49, 16, None},
-      {"DLC_MANGROVESHALLOW.slp", {"DLC_MANGROVESHALLOW"}, "DLC_MANGROVESHALLOW",
-       54, 11, None},
-       {"DLC_MANGROVEFOREST.slp", {"DLC_MANGROVEFOREST"}, "DLC_MANGROVEFOREST", 55,
-       20, None},
-    {"DLC_NEWSHALLOW.slp", {"DLC_NEWSHALLOW"}, "DLC_NEWSHALLOW", 59, 4,
+      {"BAOBAB.slp",
+       {"BAOBABS", "BAOBAB_FOREST"},
+       "BAOBAB_FOREST",
+       49,
+       16,
+       None},
+      {"DLC_MANGROVESHALLOW.slp",
+       {"DLC_MANGROVESHALLOW"},
+       "DLC_MANGROVESHALLOW",
+       54,
+       11,
+       None},
+      {"DLC_MANGROVEFOREST.slp",
+       {"DLC_MANGROVEFOREST"},
+       "DLC_MANGROVEFOREST",
+       55,
+       20,
+       None},
+      {"DLC_NEWSHALLOW.slp",
+       {"DLC_NEWSHALLOW"},
+       "DLC_NEWSHALLOW",
+       59,
+       4,
        FixedTerrain},
-    {"SAVANNAH.slp", {"SAVANNAH", "DLC_SAVANNAH"}, "SAVANNAH", 41, 14, LandTerrain},
-    {"DIRT4.slp", {"DIRT4", "DLC_DIRT4"}, "DIRT4", 42, 3, LandTerrain},
-    {"MOORLAND.slp", {"DLC_MOORLAND", "MOORLAND"}, "DLC_MOORLAND", 44, 9, LandTerrain},
-    {"CRACKEDIT.slp", {"CRACKEDIT"}, "CRACKEDIT", 45, 38, None},
-    {"QUICKSAND.slp", {"QUICKSAND", "DLC_QUICKSAND"}, "QUICKSAND", 46, 40,
+      {"SAVANNAH.slp",
+       {"SAVANNAH", "DLC_SAVANNAH"},
+       "SAVANNAH",
+       41,
+       14,
+       LandTerrain},
+      {"DIRT4.slp", {"DIRT4", "DLC_DIRT4"}, "DIRT4", 42, 3, LandTerrain},
+      {"MOORLAND.slp",
+       {"DLC_MOORLAND", "MOORLAND"},
+       "DLC_MOORLAND",
+       44,
+       9,
+       LandTerrain},
+      {"CRACKEDIT.slp", {"CRACKEDIT"}, "CRACKEDIT", 45, 38, None},
+      {"QUICKSAND.slp",
+       {"QUICKSAND", "DLC_QUICKSAND"},
+       "QUICKSAND",
+       46,
+       40,
        FixedTerrain},
-    {"BLACK.slp", {"BLACK", "DLC_BLACK"}, "DLC_BLACK", 47, 40, FixedTerrain},
-    {"DLC_BEACH2.slp", {"DLC_BEACH2"}, "DLC_BEACH2", 51, 2, FixedTerrain},
-    {"DLC_BEACH3.slp", {"DLC_BEACH3"}, "DLC_BEACH3", 52, 2, FixedTerrain},
-    {"DLC_BEACH4.slp", {"DLC_BEACH4"}, "DLC_BEACH4", 53, 2, FixedTerrain},
-    {"DLC_DRYROAD.slp", {"DLC_DRYROAD"}, "DLC_DRYROAD", 43, 25, LandTerrain},
-    {"DLC_WATER4.slp", {"DLC_WATER4"}, "DLC_WATER4", 57, 22, WaterTerrain},
-    {"DLC_WATER5.slp", {"DLC_WATER5"}, "DLC_WATER5", 58, 1, WaterTerrain},
-    {"DLC_JUNGLELEAVES.slp", {"DLC_JUNGLELEAVES"}, "DLC_JUNGLELEAVES", 62, 5,
+      {"BLACK.slp", {"BLACK", "DLC_BLACK"}, "DLC_BLACK", 47, 40, FixedTerrain},
+      {"DLC_BEACH2.slp", {"DLC_BEACH2"}, "DLC_BEACH2", 51, 2, FixedTerrain},
+      {"DLC_BEACH3.slp", {"DLC_BEACH3"}, "DLC_BEACH3", 52, 2, FixedTerrain},
+      {"DLC_BEACH4.slp", {"DLC_BEACH4"}, "DLC_BEACH4", 53, 2, FixedTerrain},
+      {"DLC_DRYROAD.slp", {"DLC_DRYROAD"}, "DLC_DRYROAD", 43, 25, LandTerrain},
+      {"DLC_WATER4.slp", {"DLC_WATER4"}, "DLC_WATER4", 57, 22, WaterTerrain},
+      {"DLC_WATER5.slp", {"DLC_WATER5"}, "DLC_WATER5", 58, 1, WaterTerrain},
+      {"DLC_JUNGLELEAVES.slp",
+       {"DLC_JUNGLELEAVES"},
+       "DLC_JUNGLELEAVES",
+       62,
+       5,
        LandTerrain},
-    {"DLC_JUNGLEROAD.slp", {"DLC_JUNGLEROAD"}, "DLC_JUNGLEROAD", 61, 39,
+      {"DLC_JUNGLEROAD.slp",
+       {"DLC_JUNGLEROAD"},
+       "DLC_JUNGLEROAD",
+       61,
+       39,
        LandTerrain},
-    {"DLC_JUNGLEGRASS.slp", {"DLC_JUNGLEGRASS"}, "DLC_JUNGLEGRASS", 60, 12,
+      {"DLC_JUNGLEGRASS.slp",
+       {"DLC_JUNGLEGRASS"},
+       "DLC_JUNGLEGRASS",
+       60,
+       12,
        LandTerrain}};
 
   static const std::map<int, std::string> slpNumbers = {
@@ -795,8 +853,9 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
   for (auto& it : mapNames) {
     /*
      * If the Map is already a ZR@ map, just copy it
-     * If not, check if a ZR@ map with that name exists in the target directory and remove it to be replaced by
-     * the newly converted map, if the replace option is set to true. Else skip that map.
+     * If not, check if a ZR@ map with that name exists in the target directory
+     * and remove it to be replaced by the newly converted map, if the replace
+     * option is set to true. Else skip that map.
      */
     std::string mapName = it.stem().string() + ".rms";
     std::string mapPrefix = mapName.substr(0, 3);
@@ -805,7 +864,8 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
                      fs::copy_options::update_existing);
       continue;
     } else if (mapPrefix == "es_") {
-      continue; //These maps are already added to Voobly with the es@ prefix, no need to have this twice
+      continue; // These maps are already added to Voobly with the es@ prefix,
+                // no need to have this twice
     }
     if (cfs::exists(outputDir / it.filename()) ||
         cfs::exists(outputDir / ("ZR@" + it.filename().string()))) {
@@ -834,14 +894,16 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
 
     /*
      * Search for specific constant names in the map.
-     * Some constants have multiple spellings, which is why const_names is a vector.
-     * Finding one is enough, so in that case we can break out of the inner loop
+     * Some constants have multiple spellings, which is why const_names is a
+     * vector. Finding one is enough, so in that case we can break out of the
+     * inner loop
      */
     for (auto& replacement : replacements) {
       for (auto& const_name : replacement.const_names) {
-        if(map.find(const_name) != std::string::npos) {
+        if (map.find(const_name) != std::string::npos) {
           if (replacement.new_terrain_id < 41) {
-            // 41 is also an expansion terrain, but that's okay, it's a fixed replacement
+            // 41 is also an expansion terrain, but that's okay, it's a fixed
+            // replacement
             terrainsUsed.at(replacement.new_terrain_id) = true;
           }
           terrainsUsed.at(replacement.old_terrain_id) = true;
@@ -884,25 +946,25 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
 
       std::regex terrainConstDef;
       std::string terrainName;
-      if(replacement.const_names.size() == 1)
+      if (replacement.const_names.size() == 1)
         terrainName = replacement.const_names[0];
       else {
         terrainName = "(";
-        for(auto& const_name: replacement.const_names) {
-          terrainName += const_name+"|";
+        for (auto& const_name : replacement.const_names) {
+          terrainName += const_name + "|";
         }
-        terrainName[terrainName.size()-1] = ')';
+        terrainName[terrainName.size() - 1] = ')';
       }
       if (usedTerrain != replacement.new_terrain_id) {
         map = std::regex_replace(map, std::regex(terrainName),
                                  "MY" + replacement.replaced_name);
         std::regex terrainConstDef =
-            std::regex("#const\\sMY+" + terrainName +
-                       "\\s+" + std::to_string(replacement.old_terrain_id));
+            std::regex("#const\\sMY+" + terrainName + "\\s+" +
+                       std::to_string(replacement.old_terrain_id));
         std::string temp =
             std::regex_replace(map, terrainConstDef,
-                               "#const MY" + replacement.replaced_name +
-                                   " " + std::to_string(usedTerrain));
+                               "#const MY" + replacement.replaced_name + " " +
+                                   std::to_string(usedTerrain));
         if (temp != map)
           map = temp;
         else {
@@ -910,12 +972,12 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
                 std::to_string(usedTerrain) + "\n" + map;
         }
       } else {
-        terrainConstDef  =
+        terrainConstDef =
             std::regex("#const\\s+" + terrainName + "\\s+" +
                        std::to_string(replacement.old_terrain_id));
         map = std::regex_replace(map, terrainConstDef,
-                                 "#const " + replacement.replaced_name +
-                                     " " + std::to_string(usedTerrain));
+                                 "#const " + replacement.replaced_name + " " +
+                                     std::to_string(usedTerrain));
       }
 
       if (replacement.terrain_type == None ||
@@ -1892,12 +1954,12 @@ static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
  * @param oldPath The directory/file the symlink references.
  * @param newPath The directory/file the symlink should be created in.
  */
-void WKConverter::refreshSymlink(const fs::path& oldPath, const fs::path& newPath, const LinkType type) {
-      if(cfs::is_symlink(newPath))
-          return;
-      cfs::remove_all(newPath);
-      mklink(type, resolve_path(newPath),
-             resolve_path(oldPath));
+void WKConverter::refreshSymlink(const fs::path& oldPath,
+                                 const fs::path& newPath, const LinkType type) {
+  if (cfs::is_symlink(newPath))
+    return;
+  cfs::remove_all(newPath);
+  mklink(type, resolve_path(newPath), resolve_path(oldPath));
 }
 
 /**
@@ -1925,21 +1987,26 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     refreshSymlink(oldDir / "Data", newDir / "Data", LinkType::Dir);
   } else {
     cfs::create_directory(newDir / "Data");
-    refreshSymlink(oldDir / "Data" / "gamedata_x1.drs", newDir / "Data" / "gamedata_x1.drs", LinkType::Soft);
-    refreshSymlink(oldDir / "Data" / "gamedata_x1_p1.drs", newDir / "Data" / "gamedata_x1_p1.drs", LinkType::Soft);
+    refreshSymlink(oldDir / "Data" / "gamedata_x1.drs",
+                   newDir / "Data" / "gamedata_x1.drs", LinkType::Soft);
+    refreshSymlink(oldDir / "Data" / "gamedata_x1_p1.drs",
+                   newDir / "Data" / "gamedata_x1_p1.drs", LinkType::Soft);
   }
   for (const auto& current : fs::directory_iterator(oldDir)) {
     fs::path currentPath = current.path();
     std::string extension = currentPath.extension().string();
     if (extension == ".hki") {
-      refreshSymlink(newDir / currentPath.filename(), resolve_path(currentPath), LinkType::Soft);
+      refreshSymlink(newDir / currentPath.filename(), resolve_path(currentPath),
+                     LinkType::Soft);
     }
   }
 
   if (!dataMod) {
-    refreshSymlink(oldDir / "language.ini", newDir / "language.ini", LinkType::Soft);
+    refreshSymlink(oldDir / "language.ini", newDir / "language.ini",
+                   LinkType::Soft);
     if (!vooblySrc) {
-      refreshSymlink(oldDir / "Data" / "language_x1_p1.dll", newDir / "Data" / "language_x1_p1.dll", LinkType::Soft);
+      refreshSymlink(oldDir / "Data" / "language_x1_p1.dll",
+                     newDir / "Data" / "language_x1_p1.dll", LinkType::Soft);
     }
   }
 
@@ -1979,14 +2046,11 @@ int WKConverter::retryInstall() {
     cfs::create_directories(tempFolder / "SaveGame");
     cfs::create_directories(tempFolder / "Script.RM");
     cfs::copy(installDir / "SaveGame", tempFolder / "SaveGame",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
     cfs::copy(installDir / "Script.RM", tempFolder / "Script.RM",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
     cfs::copy(installDir / "Scenario", tempFolder / "Scenario",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
     cfs::copy_file(installDir / "player.nfz", tempFolder / "player.nfz",
                    fs::copy_options::update_existing);
     if (cfs::exists(installDir / "player1.hki"))
@@ -2031,14 +2095,11 @@ void WKConverter::setupFolders(fs::path xmlOutPathUP) {
     cfs::create_directories(tempFolder / "SaveGame");
     cfs::create_directories(tempFolder / "Script.RM");
     cfs::copy(installDir / "SaveGame", tempFolder / "SaveGame",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
     cfs::copy(installDir / "Script.RM", tempFolder / "Script.RM",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
     cfs::copy(installDir / "Scenario", tempFolder / "Scenario",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
     cfs::copy_file(installDir / "player.nfz", tempFolder / "player.nfz",
                    fs::copy_options::update_existing);
     if (cfs::exists(installDir / "player1.hki"))
@@ -2311,13 +2372,11 @@ int WKConverter::run() {
     }
     listener->increaseProgress(1); // 23
     cfs::copy(scenarioInputDir, installDir / "Scenario",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
 
     listener->log("Copying AI");
     cfs::copy(aiInputPath, installDir / "Script.Ai",
-              fs::copy_options::recursive |
-                  fs::copy_options::update_existing);
+              fs::copy_options::recursive | fs::copy_options::update_existing);
 
     listener->increaseProgress(1); // 24
     listener->log("Hotkey Setup");
@@ -2464,10 +2523,11 @@ int WKConverter::run() {
        * Generate version.ini based on the installer and the hash of the dat.
        */
       listener->log("Create Hash");
-      auto fileStream = std::fstream(outputDatPath.string(), std::ios_base::in | std::ios_base::binary);
+      auto fileStream = std::fstream(outputDatPath.string(),
+                                     std::ios_base::in | std::ios_base::binary);
       std::string fileData = concat_stream(fileStream);
 
-      std::string hash = MD5(fileData).b64digest().substr(0,10);
+      std::string hash = MD5(fileData).b64digest().substr(0, 10);
       std::ofstream versionOut(versionIniPath);
       if (hash != hash1 && hash != hash2) {
         listener->createDialog("dialogBeta");
@@ -2527,8 +2587,9 @@ int WKConverter::run() {
                    settings.vooblyDir, true);
       if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
         /*
-         * Older patches need some SLP files that aren't in the drs used for the main WK mod
-         * So we'll remove the symlink, copy the drs instead and insert the missing SLP files
+         * Older patches need some SLP files that aren't in the drs used for the
+         * main WK mod So we'll remove the symlink, copy the drs instead and
+         * insert the missing SLP files
          */
         indexDrsFiles(slpCompatDir);
         fs::remove(settings.vooblyDir / "data" / "gamedata_x1_p1.drs");
@@ -2552,21 +2613,25 @@ int WKConverter::run() {
                    true);
       if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
         /*
-         * Older patches need some SLP files that aren't in the drs used for the main WK mod
-         * So we'll remove the symlink, copy the drs instead and insert the missing SLP files
+         * Older patches need some SLP files that aren't in the drs used for the
+         * main WK mod So we'll remove the symlink, copy the drs instead and
+         * insert the missing SLP files
          *
-         * Possible improvement: If useBoth is selected, the drs file is symlinked from the voobly folder to save space
-         * The rest of the files are symlinked from the base UP folder. Two different sources for the symlinks is kind of ugly, but for now it works
-         * Linking everything from the Voobly folder instead would be nicer
+         * Possible improvement: If useBoth is selected, the drs file is
+         * symlinked from the voobly folder to save space The rest of the files
+         * are symlinked from the base UP folder. Two different sources for the
+         * symlinks is kind of ugly, but for now it works Linking everything
+         * from the Voobly folder instead would be nicer
          */
-        if(settings.useBoth) {
-           refreshSymlink(settings.vooblyDir / "data" / "gamedata_x1_p1.drs",
-                          settings.upDir / "data" / "gamedata_x1_p1.drs", LinkType::Soft);
+        if (settings.useBoth) {
+          refreshSymlink(settings.vooblyDir / "data" / "gamedata_x1_p1.drs",
+                         settings.upDir / "data" / "gamedata_x1_p1.drs",
+                         LinkType::Soft);
         } else {
           indexDrsFiles(slpCompatDir);
           fs::remove(settings.upDir / "data" / "gamedata_x1_p1.drs");
-          std::ifstream oldDrs(settings.upDir.parent_path() / dlcLevelName / "data" /
-                                   "gamedata_x1_p1.drs",
+          std::ifstream oldDrs(settings.upDir.parent_path() / dlcLevelName /
+                                   "data" / "gamedata_x1_p1.drs",
                                std::ios::binary);
           std::ofstream newDrs(settings.upDir / "data" / "gamedata_x1_p1.drs",
                                std::ios::binary);

@@ -47,8 +47,7 @@ int MainWindow::initialize() {
   logFile = std::ofstream("prelog.txt");
   QDialog* dialog;
 
-  if (!skipUpdater &&
-      cfs::exists("WKUpdater.exe")) {
+  if (!skipUpdater && cfs::exists("WKUpdater.exe")) {
     QProcess process;
     process.start(QString("WKUpdater.exe"), QStringList() << "");
     process.waitForStarted();
@@ -437,10 +436,11 @@ bool MainWindow::checkSteamApi() {
   QDialog* dialog;
   QProcess process;
   SteamAPI_Init();
-  if (!SteamApps()) {      
+  if (!SteamApps()) {
     steamPath = getSteamPath();
     // open steam
-    process.start(QString::fromStdString("\""+(steamPath / "Steam.exe").string()+"\""));
+    process.start(QString::fromStdString(
+        "\"" + (steamPath / "Steam.exe").string() + "\""));
     process.waitForStarted(120);
     SteamAPI_Init();
   }
@@ -472,10 +472,10 @@ bool MainWindow::checkSteamApi() {
     // Steam API works, let's get the HD install path for later.
     char temp[520];
     uint copied = SteamApps()->GetAppInstallDir(221380, temp, 520);
-    if(copied != 0) {
+    if (copied != 0) {
       hdPath = fs::path(std::string(temp));
-    } else { //Check the registry if this didn't work
-      if(steamPath == fs::path())
+    } else { // Check the registry if this didn't work
+      if (steamPath == fs::path())
         steamPath = getSteamPath();
       hdPath = getHDPath(steamPath);
     }

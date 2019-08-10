@@ -59,7 +59,7 @@ void PortuguesePatch(genie::DatFile* aocDat) {
           building.Units.erase(unitIt--);
           end = building.Units.end();
           if (visited)
-              break;
+            break;
           visited = true;
         }
       }
@@ -67,8 +67,7 @@ void PortuguesePatch(genie::DatFile* aocDat) {
   }
 
   // Change UpperBuilding of Caravels to the Castle
-  for (auto& unit : aocDat->TechTree.UnitConnections)
-  {
+  for (auto& unit : aocDat->TechTree.UnitConnections) {
     if (unit.ID == caravelId || unit.ID == eliteCaravelId) {
       unit.UpperBuilding = castleId;
     }
