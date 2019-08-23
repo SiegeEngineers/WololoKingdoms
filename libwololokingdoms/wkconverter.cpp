@@ -2248,21 +2248,13 @@ int WKConverter::run() {
     break;
   }
 
-  if (secondAttempt) {
-    listener->log("\nSecond Attempt");
-    listener->log("\n");
-  } else {
-    listener->log("New Run");
-    listener->log("\n");
-  }
-  listener->log("\nHD Path:");
-  listener->log(settings.hdPath.string() + "\n" + "AoC Path:");
-  listener->log(installDir.string() + "\n");
-
-  listener->log("Patch mode: ");
-  listener->log(std::to_string(settings.patch));
-  listener->log("DLC level: ");
-  listener->log(std::to_string(settings.dlcLevel));
+  listener->log(secondAttempt
+                    ? "Second Attempt\n"
+                    : "NewRun\n"
+                      "HD Path:" + settings.hdPath.string() + 
+                "\nAoC Path:" + installDir.string() +
+                "\nPatch mode: " + std::to_string(settings.patch) +
+                "\nDLC level: " + std::to_string(settings.dlcLevel));
 
   std::string line;
 

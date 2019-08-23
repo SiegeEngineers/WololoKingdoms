@@ -178,6 +178,8 @@ void MainWindow::runConverter() {
   logFile.close();
   logFile = std::ofstream("log.txt");
 
+  this->ui->centralWidget->setDisabled(true);
+
   WKSettings settings;
   settings.useVoobly = this->ui->useVoobly->isChecked();
   settings.useExe = this->ui->useExe->isChecked();
@@ -261,12 +263,11 @@ void MainWindow::runConverter() {
   connect(installer, SIGNAL(finished()), installer, SLOT(deleteLater()));
   connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
   thread->start();
-  logFile.close();
 }
 
 static QTime log_timer;
 void MainWindow::log(std::string logMessage) {
-  logFile << logMessage << std::endl;
+  logFile << log_timer.elapsed() << "ms - " << logMessage << std::endl;
   std::cout << log_timer.elapsed() << "ms - " << logMessage << std::endl;
   log_timer.restart();
 }
@@ -304,8 +305,11 @@ void MainWindow::createDialog(std::string info, std::string toReplace,
 void MainWindow::setProgress(int i) {
   if (i < 0)
     i = 0;
-  else if (i > 100)
+  else if (i >= 100) {
+    this->ui->centralWidget->setDisabled(false);  	
+    logFile.close();
     i = 100;
+  }
   bar->setValue(i);
   bar->repaint();
 }
