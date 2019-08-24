@@ -39,13 +39,13 @@ public:
   /**
    * Report an error.
    */
-  virtual void error([[maybe_unused]] std::exception const& err) {}
+  virtual void error([[maybe_unused]] std::exception const& err, bool showDialog = false) {}
 
   /**
    * Report an error (message only).
    */
-  virtual void error([[maybe_unused]] std::string message) {
-    error(std::runtime_error(message));
+  virtual void error([[maybe_unused]] std::string message, bool showDialog = false) {
+    error(std::runtime_error(message), showDialog);
   }
 
   /**

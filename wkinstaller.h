@@ -25,7 +25,7 @@ signals:
 
 public:
   WKInstaller(WKSettings& settings);
-  void error(std::exception const& err) override;
+  void error(std::exception const& err, bool showDialog = false) override;
   void installUserPatch(fs::path exePath,
                         std::vector<std::string> cliFlags) override;
 };

@@ -17,6 +17,7 @@ class MainWindow : public QMainWindow {
 public slots:
   void log(std::string logMessage);
   void setInfo(std::string info);
+  void finished();
   void createDialog(std::string info);
   void createDialog(std::string info, std::string title);
   void createDialog(std::string info, std::string toReplace,

@@ -257,6 +257,7 @@ void MainWindow::runConverter() {
   connect(installer, SIGNAL(setProgress(int)), this, SLOT(setProgress(int)));
   connect(installer, SIGNAL(increaseProgress(int)), this,
           SLOT(increaseProgress(int)));
+  connect(installer, SIGNAL(finished()), this, SLOT(finished()));
 
   connect(thread, SIGNAL(started()), installer, SLOT(process()));
   connect(installer, SIGNAL(finished()), thread, SLOT(quit()));
@@ -301,6 +302,8 @@ void MainWindow::createDialog(std::string info, std::string toReplace,
   QDialog* dialog = new Dialog(this, QString::fromStdString(infoStr));
   dialog->exec();
 }
+
+void MainWindow::finished() { this->ui->centralWidget->setDisabled(false); }
 
 void MainWindow::setProgress(int i) {
   if (i < 0)

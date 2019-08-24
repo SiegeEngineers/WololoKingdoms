@@ -15,13 +15,19 @@ void WKInstaller::process() {
     try {
       converter->retryInstall();
     } catch (const std::exception& e) {
-      error(e);
+      error(e, true);
+      emit finished();
       emit setInfo("error");
     }
   }
 }
 
-void WKInstaller::error(std::exception const& err) { emit log(err.what()); }
+void WKInstaller::error(std::exception const& err, bool showDialog) { 
+  std::string errorMessage = err.what();
+  if (showDialog)
+	emit createDialog("dialogError$" + errorMessage, "Error");
+  emit log(errorMessage); 
+}
 
 void WKInstaller::installUserPatch(fs::path exePath,
                                    std::vector<std::string> cliFlags) {
