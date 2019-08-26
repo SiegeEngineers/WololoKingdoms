@@ -1812,15 +1812,6 @@ void WKConverter::hotkeySetup() {
   fs::path nfzOutPath =
       settings.useExe ? settings.nfzUpOutPath : settings.nfzVooblyOutPath;
 
-  /*
-      if(!cfs::exists(hkiPath)) { //If player0.hki doesn't exist, look for
-     player1.hki, otherwise use default HD hotkeys
-      if(cfs::exists(settings.hdPath/"Profiles"/"player1.hki"))
-              hkiPath = settings.hdPath/"Profiles"/"player1.hki";
-              else
-                              hkiPath = resourceDir / "player1_age2hd.hki";
-      }
-  */
   std::error_code ec;
 
   if (cfs::exists(nfzPath)) // Copy the Aoc Profile
@@ -1996,7 +1987,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     fs::path currentPath = current.path();
     std::string extension = currentPath.extension().string();
     if (extension == ".hki") {
-      refreshSymlink(newDir / currentPath.filename(), resolve_path(currentPath),
+      refreshSymlink(resolve_path(currentPath), newDir / currentPath.filename(),
                      LinkType::Soft);
     }
   }
@@ -2251,10 +2242,11 @@ int WKConverter::run() {
   listener->log(secondAttempt
                     ? "Second Attempt\n"
                     : "NewRun\n"
-                      "HD Path:" + settings.hdPath.string() + 
-                "\nAoC Path:" + installDir.string() +
-                "\nPatch mode: " + std::to_string(settings.patch) +
-                "\nDLC level: " + std::to_string(settings.dlcLevel));
+                      "HD Path:" +
+                          settings.hdPath.string() +
+                          "\nAoC Path:" + installDir.string() +
+                          "\nPatch mode: " + std::to_string(settings.patch) +
+                          "\nDLC level: " + std::to_string(settings.dlcLevel));
 
   std::string line;
 
@@ -2372,7 +2364,7 @@ int WKConverter::run() {
 
     listener->increaseProgress(1); // 24
     listener->log("Hotkey Setup");
-    if (settings.hotkeyChoice != 0 || cfs::exists("player1.hki"))
+    if (settings.hotkeyChoice != 0)
       hotkeySetup();
 
     listener->increaseProgress(1); // 25

@@ -17,6 +17,7 @@ bool can_run_windows_programs() {
 }
 
 int main(int argc, char* argv[]) {
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QApplication application(argc, argv);
   application.setApplicationName("WololoKingdoms");
   application.setApplicationVersion("5.8.1.6");
