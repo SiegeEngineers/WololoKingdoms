@@ -28,9 +28,18 @@ You can then use it as a mod in Voobly (To do that, click the "Settings" button 
 ## How to use (without Voobly)
 [Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch as usual.
 Select the "Create an offline installation" checkbox and let the program run.
-You can launch the game using the "WK.exe" in the "age2_x1/" folder.
-Rarely there can be issues with creating the language_x1_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
+You can launch the game using the "WK.exe" in the "age2\_x1/" folder.
+Rarely there can be issues with creating the language\_x1\_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
 If this error happens every time, your original language file may be corrupt.
+
+## How to use (on Linux)
+You can install Age of Empires 2 HD on Linux by enabling Steam Play for unsupported games. Open Steam, and in the top left menu select Steam » Settings » Steam Play. There is a checkbox under "Advanced" to enable Steam Play for all titles. Restart Steam and install AoE2:HD.
+You must also install AoC 1.0c in Wine first.
+[Download the latest WololoKingdoms release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch `./WololoKingdoms`. It will attempt to find your Wine-based AoC installation.
+
+> Linux is not a primary supported platform for WololoKingdoms. The latest releases may not always work.
+
+> The Linux version of WololoKingdoms is currently not being tested with Voobly. If you're lucky it _may_ work.
 
 ## Options
 
@@ -39,7 +48,7 @@ The options in the installer have a "Help" Icon to explain them, but they will a
 - Language: Here you can choose the language you want your game to be in. It's possible that for use without Voobly, there might be some issues with special characters that aren't in the english alphabet.
 	- If there is a translation file available, this will also change the language of the installer window. Currently, only Simplified Chinese has been translated. If you want the option available for your native language, you could volunteer to translate them
 - Install Directory: This should automatically detect your installation of the original game, if it exists. If for some reason this doesn't work, or you have multiple installations you want to choose from, you can select the installation directory here.
-	- Choose the main folder (so that /age2_x1 is a subfolder), or the installer won't recognize it.
+	- Choose the main folder (so that /age2\_x1 is a subfolder), or the installer won't recognize it.
 - Voobly Installation/Offline Installation/Both: You can choose to install this as a Voobly Data Mod, as a seperate WK.exe for use without Voobly ("offline"), or both. During the offline installation, you will get a separate window for creation of the WK.exe.
 	- Here you have several options to choose from. Refer to http://userpatch.aiscripters.net/guide.html for more information on those.
 - Old Patch/Data Mod: For installation of additional data mods based on WK. Check the point on data mods below for more information
@@ -83,34 +92,31 @@ It's also possible for other data mods based on WK to be added to the installer.
 
 I've done my best to make the installer stable, but sometimes it can still have issues.
 Generally, if you encounter problems: Make sure you run the installer as administrator (right click the exe -> run as administrator). If you get a message about an exception, often just closing the installer and running it again helps
-- **Q**: The installer can't read/write the language_x1_p1.dll when creating an offline installation! What's going on?
-**A**: Creating a language_x1_p1.dll language file for offline use without Voobly can be unstable unfortunately. You may need to rerun it a few times, but it should eventually work. 
+- **Q**: The installer can't read/write the language\_x1\_p1.dll when creating an offline installation! What's going on?
+**A**: Creating a language\_x1\_p1.dll language file for offline use without Voobly can be unstable unfortunately. You may need to rerun it a few times, but it should eventually work. 
 If you don't need to use an offline installation though, make sure that checkbox is unchecked, to avoid potential issues.
 - **Q**: Why is my interface is messed up? It looks like this: https://imgur.com/a/xouXF
 **A**: This happens if you reinstalled an older version of the compatibility patch after installing WololoKingdoms. To fix it, you can go into the Age2HD folder and delete the "compatslp" subfolder.
-- **Q**: This doesn't work with Linux/Wine
-**A**: I made a shell script that should create missing symlinks that don't get created under wine: https://1drv.ms/u/s!Ark-SUz3-qr5qUcUahqd95ULA_sa
-Put this into your aoc folder (so next to the Voobly Mods directory) and run it. 
 
 ## New maps
 
 There is a number of new maps. Many of these have a ZR@ prefix, which replace the graphics of some terrains.
 
-- ZR@sm_ maps are the special maps from the HD expansions
-- ZR@rw_ maps are the real world maps from the HD expansions
+- ZR@sm\_ maps are the special maps from the HD expansions
+- ZR@rw\_ maps are the real world maps from the HD expansions
 - ZR@CtR maps are capture the relic maps. When playing these, make sure to select "Relics" as the victory condition
-- SD_ maps are sudden death maps, with only one TC being allowed, and losing that will make you lose the game.
-- NoCut_Black_Forest is a concept map, showing off the possibility to disable regular Onager cutting and enabling mangonel/onager cutting with a seperate imperial age technology.
+- SD\_ maps are sudden death maps, with only one TC being allowed, and losing that will make you lose the game.
+- NoCut\_Black\_Forest is a concept map, showing off the possibility to disable regular Onager cutting and enabling mangonel/onager cutting with a seperate imperial age technology.
 
 ## Regional Monks, Independent Architecture, Custom Mods
 
 The WololoKingdoms supports Independent Architecture like this HD Data Mod: http://steamcommunity.com/sharedfiles/filedetails/?id=893953860
 To replace a civ's architecture, download an IA mod for that civ from the steam workshop, find the folder you just downloaded in the steam workshop folder (usually C:\Program Files (x86)\Steam\steamapps\workshop\content\221380) and copy that folder.
-You can then paste it into the /mod_override folder you'll find next to the installer.
+You can then paste it into the /mod\_override folder you'll find next to the installer.
 Alternatively you can use a Voobly mod like this one: http://www.voobly.com/gamemods/mod/858/WK-Architectures-showcase
 You can also paste any graphics/sound mod you want to use offline into this folder.
 
-There's also a "new_terrain_override" folder, should you wish to use different terrain slps for the expansion terrains. You can look at "/resources/new terrains" to see the naming convention.
+There's also a "new\_terrain\_override" folder, should you wish to use different terrain slps for the expansion terrains. You can look at "/resources/new terrains" to see the naming convention.
 
 There are also additional monk skins for Middle Eastern/African and Asian Monks. If you don't like these, you can uncheck "Regional monks" in the installer.
 
@@ -135,12 +141,12 @@ The Independent Architecture concept has been expanded to units. The default uni
 
 To allow for maps with the new expansion terrains, some changes have been made. These terrains have changed from AoC:
 
-- DLC_MANGROVESHALLOWS replaces Dirt 2 (Terrain nr. 11). To get the Dirt 2 look, use the Building Residue terrain (Nr. 27)
-- CRACKEDIT (Cracked Earth) replaces Snow Road (Terrain nr. 38). This terrain has a damage multiplier, all buildings placed on it will take 1.2x of the regular damage.
+- `DLC_MANGROVESHALLOWS` replaces Dirt 2 (Terrain nr. 11). To get the Dirt 2 look, use the Building Residue terrain (Nr. 27)
+- `CRACKEDIT` (Cracked Earth) replaces Snow Road (Terrain nr. 38). This terrain has a damage multiplier, all buildings placed on it will take 1.2x of the regular damage.
 - Snow Road replaces Snow Dirt (Terrain nr. 33). To get the Snow Dirt look, use the Snow Building Residue terrain (Nr. 36)
-- DLC_MANGROVEFOREST replaces Oak Forest (Terrain nr. 20). Use regular forest (Nr. 10) instead, it looks identical (apart from the name of the trees).
-- BAOBAB replaces Old Grass (Terrain nr. 16). This terrain was only used as the base terrain for cliffs. If you want to change the look of the cliff terrain, you can replace terrain nr. 16 with any other terrain in the rms script.
-- ACACIA_FOREST is now Terrain nr. 41 (previously unused).
+- `DLC_MANGROVEFOREST` replaces Oak Forest (Terrain nr. 20). Use regular forest (Nr. 10) instead, it looks identical (apart from the name of the trees).
+- `BAOBAB` replaces Old Grass (Terrain nr. 16). This terrain was only used as the base terrain for cliffs. If you want to change the look of the cliff terrain, you can replace terrain nr. 16 with any other terrain in the rms script.
+- `ACACIA_FOREST` is now Terrain nr. 41 (previously unused).
 - The three Ice Terrains (Shallow Ice/26, Solid Ice/35 and Ice Beach/37) now use different SLP files. The default appearance is the same, but it allows for terrain mods that distinguish between the terrains, e.g. to make it visible where ships can and can't go. You can see this in use when selecting the "No snow" option
 	- Shallow Ice/26 is 15024.slp, Solid Ice/35 is 15020.slp and Ice Beach/37 is 15034.slp
 
@@ -153,13 +159,13 @@ WololoKingdoms has some additional unique features:
 	- IDs 1304-1307: Regular Food, Wood, Stone Gold Workshops
 	- 1308: Auto-Convertible Workshop with all four resource trickles
 	- 1309: Regular Workshop with all four resource trickles.
-	- All resource trickles are at a rate of 1/s. The speed of the trickle can be adjusted globally (for all such buildings on the map, including regular Feitorias) by changing the amount of resources 205-208 (Food, Wood, Stone, Gold) with effect_amount statements or corresponding triggers.
+	- All resource trickles are at a rate of 1/s. The speed of the trickle can be adjusted globally (for all such buildings on the map, including regular Feitorias) by changing the amount of resources 205-208 (Food, Wood, Stone, Gold) with effect\_amount statements or corresponding triggers.
 
-- There is an option to disable fire galleys and demo rafts in feudal (with fire ship/demo ship not needing the war galley research) with rms scripting. There is an AOC_Islands.rms map included that demonstrates this. (Disabling Tech 604 disables Fire Galleys, Tech 605 Demo Rafts. Disabling Tech 168 enables Fire Ships in Castle, and disabling Tech 170 enables Demo Ships in Castle
+- There is an option to disable fire galleys and demo rafts in feudal (with fire ship/demo ship not needing the war galley research) with rms scripting. There is an AOC\_Islands.rms map included that demonstrates this. (Disabling Tech 604 disables Fire Galleys, Tech 605 Demo Rafts. Disabling Tech 168 enables Fire Ships in Castle, and disabling Tech 170 enables Demo Ships in Castle
 - There is an option to enable the X-Patch Trade cart change (In short: Trade Carts are twice as effective, but cost 2 pop. This is intended to reduce the number of units in the lategame and lessen lag due to fewer pathfinding calculation). To do so, disable Tech 88.
 - There is an option to move coinage/banking techs:
 	- Disable Tech 17 to remove Banking, Tech 23 to remove Coinage. Disable Tech 223 to get Castle Age Coinage, Tech 224 for Imperial Age coinage and tech 225 for Imperial Age Banking.
-- Added XP_Black_Forest.rms to demonstrate this.
+- Added XP\_Black\_Forest.rms to demonstrate this.
 
 
 ## Limitations
@@ -176,9 +182,35 @@ The Forgotten team has made a fantastic work with their expansions and, while th
 If you want to share this with other people so you can play together, send them this page, everyone needs to generate their files by themselves using this program and the files from their copy of AOE2HD with the expansions. If there are problems with this, report the issue and I will try to fix it.
 
 ## How to build
-The process for building it is kinda messy for now, you will need a compiled version of the Apre's DAT library :
-https://github.com/Tails8521/genieutils (I didn't change anything, just forked it, thanks a lot Apre and Tapsa for this library)
-I used Qt Creator for editing and building it, you will also need Boost installed.
+
+The project is made of two parts: a library `libwololokingdoms` and the installer application. The library creates a `libwololokingdoms.dll` that contains the conversion logic and is used by the installer application.
+
+You need a C++17 capable compiler because this project uses the new `<filesystem>` API.
+
+Some dependencies are added as git submodules. To get them, do:
+
+```bash
+git submodule update --init --recursive
+```
+
+### Installer Application
+
+The installer application is a Qt app. You can use Qt Creator to build it, or use CMake from the command line.
+
+The installer requires the Steamworks SDK, which it uses to check if and where HD Edition is installed. Get it from [Steam](https://partner.steamgames.com/doc/gettingstarted).
+
+To build the project on the command line:
+
+```bash
+cmake -B build
+cmake --build build
+```
+
+You can find the compiled application in the `build/bin` directory. On subsequent builds you can do `cmake --build build`.
+
+### libwololokingdoms
+
+libwololokingdoms is built automatically when building the installer application. To build it standalone, see the [libwololokingdoms readme](./libwololokingdoms/README.md).
 
 ## Special thanks
 - Tails8521 for the African Kingdoms version of this installer. Without him this would never have happened.
@@ -186,11 +218,15 @@ I used Qt Creator for editing and building it, you will also need Boost installe
 - Trirem for taking care of the project after Jineapple stepped down
 - The UserPatch team for making the new bonuses possible to use and all other great improvements that Userpatch brings.
 - The folks at Voobly for the support offered and a great platform to play the mod on.
-- Apre for the genieutils library
+- Apre, Tapsa and sandsmark for the genieutils library
 - Tapsa for Advanced Genie Editor
 - Alqualunte and TWest for advices and testing
 - The AI scripters that have made their AIs compatible with this project, among them CheeseOnToast, TheMax and Promiskuitiv
 - Phoenix1vs for converting the interfaces for AK and RotR civilizations.
-- Saint_Michaels for creating the Independent Architecture mod on Steam which served as a template for this function on WololoKingdoms.
+- Saint\_Michaels for creating the Independent Architecture mod on Steam which served as a template for this function on WololoKingdoms.
 - Shulker for creating an in-game logo for WololoKingdoms
 - The Forgotten Empires team for three great expansions!
+
+## License
+
+[GPL-3.0](./COPYING)

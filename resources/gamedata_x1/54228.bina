@@ -1,0 +1,66 @@
+/* ********* BLIND RANDOM ********** */
+/* 25 spr 01 */
+
+
+#include_drs random_map.def 54000
+
+
+start_random
+  percent_chance 5
+    #include_drs Arabia.rms 54201
+
+  percent_chance 6
+    #include_drs Archipelago.rms 54202
+
+  percent_chance 5
+    #include_drs Baltic.rms 54203
+
+  percent_chance 6
+    #include_drs Coastal.rms 54205
+
+  percent_chance 5
+    #include_drs Continental.rms 54206
+
+  percent_chance 5
+    #include_drs Crater_Lake.rms 54207
+
+  percent_chance 5
+    #include_drs Gold_Rush.rms 54209
+
+  percent_chance 6
+    #include_drs Highland.rms 54210
+
+  percent_chance 5
+    #include_drs Islands.rms 54211
+
+  percent_chance 5
+    #include_drs Mediterranean.rms 54212
+
+  percent_chance 5
+    #include_drs Migration.rms 54213
+
+  percent_chance 6
+    #include_drs Rivers.rms 54217
+
+  percent_chance 5
+    #include_drs Team_Islands.rms 54218
+
+  percent_chance 5
+    #include_drs Mongolia.rms 54220
+
+  percent_chance 5
+    #include_drs Yucatan.rms 54221
+
+  percent_chance 5
+    #include_drs scandanavia.rms 54219
+                  
+  percent_chance 5
+    #include_drs Ghost_Lake.rms 54226
+
+  percent_chance 5
+    #include_drs Oasis.rms 54225
+
+  percent_chance 6
+    #include_drs Salt_Marsh.rms 54226
+
+end_random

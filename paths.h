@@ -1,10 +1,9 @@
-#ifndef PATHS_H
-#define PATHS_H
+#pragma once
+#include <fs.h>
 
-#include <boost/filesystem.hpp>
-
-std::string getSteamPath();
-boost::filesystem::path getHDPath(std::string steamPath);
-boost::filesystem::path getOutPath(boost::filesystem::path HDPath);
-
-#endif // PATHS_H
+static fs::path extractHDPath(fs::path steamPath);
+fs::path getExePath();
+std::wstring readRegistryKey(std::wstring keyPath, std::wstring key);
+fs::path getSteamPath();
+fs::path getHDPath(fs::path steamPath);
+fs::path getOutPath(fs::path HDPath);

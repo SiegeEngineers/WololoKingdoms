@@ -1,0 +1,9 @@
+[submodule "libwololokingdoms/third_party/genieutils"]
+	path = libwololokingdoms/third_party/genieutils
+	url = https://github.com/sandsmark/genieutils
+[submodule "libwololokingdoms/third_party/pcrio"]
+	path = libwololokingdoms/third_party/pcrio
+	url = https://github.com/sandsmark/pcrio
+[submodule "libwololokingdoms/third_party/filesystem"]
+	path = libwololokingdoms/third_party/filesystem
+	url = https://github.com/gulrak/filesystem
