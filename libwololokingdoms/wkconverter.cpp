@@ -42,18 +42,10 @@ const fs::path resolve_path(const fs::path& input) {
 #endif
 }
 
-void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement) {
+void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement, fs::path file) {
   std::string line;
-  std::ifstream translationFile(resourceDir / "locales" /
-                                (settings.language + "_game.txt"));
+  std::ifstream translationFile(file);
   while (std::getline(translationFile, line)) {
-    /*
-     *  \\\\n -> \\n, means we want a \n in the text files for aoc
-     *  If no such line is found, it might be a line for the installer itself,
-     * where we want actual linebreaks, so replace \\n -> \n with a linebreak
-     */
-    if (line.find("\\\\n") == std::string::npos)
-      replace_all(line, "\\n", "\n");
     unsigned int index = line.find('=');
     std::string key = line.substr(0, index);
     try {
@@ -304,7 +296,13 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
    * Create the language files (.ini for Voobly, .dll for offline)
    */
 
-  loadGameStrings(langReplacement);
+  fs::path extraGameStringFile =
+      fs::path(resourceDir / "locales" / (settings.language + "_game.txt"));
+  if (fs::exists(extraGameStringFile)) {
+    loadGameStrings(langReplacement, extraGameStringFile);
+  } else {
+    loadGameStrings(langReplacement, resourceDir / "locales" / ("en_game.txt"));
+  }
 
   listener->log("Replace tooltips");
   if (settings.replaceTooltips) {

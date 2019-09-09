@@ -164,7 +164,7 @@ private:
   void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut,
                            std::map<int, std::string>& langReplacement);
   void createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
-  void loadGameStrings(std::map<int, std::string>& langReplacement);
+  void loadGameStrings(std::map<int, std::string>& langReplacement, fs::path file);
   void loadModdedStrings(fs::path moddedStringsFile,
                          std::map<int, std::string>& langReplacement);
   void makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir);

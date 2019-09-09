@@ -5,6 +5,8 @@ namespace wololo {
 
 void cuttingPatch(genie::DatFile* aocDat) {
 
+  //TODO: Make sure the regular (cutting) unit remains at the normal ID
+
   // Civ Bonus Fix
   size_t const onagerID = 550;
   size_t const newOnagerID = 948;
@@ -32,26 +34,21 @@ void cuttingPatch(genie::DatFile* aocDat) {
       aocDat->Effects[onagerEffectID].EffectCommands[0];
 
   aocDat->UnitHeaders[newOnagerID] = aocDat->UnitHeaders[onagerID];
-  // aocDat->UnitHeaders[newMangonelID] = aocDat->UnitHeaders[mangonelID];
-  // aocDat->UnitHeaders[newMangonelID].TaskList.push_back(aocDat->UnitHeaders[onagerID].TaskList[4]);
   aocDat->UnitHeaders[onagerID].TaskList.erase(
       aocDat->UnitHeaders[onagerID].TaskList.begin() + 4);
   for (size_t i = 0; i < aocDat->Civs.size(); i++) {
     aocDat->Civs[i].Units[newOnagerID] = aocDat->Civs[i].Units[onagerID];
-    // aocDat->Civs[i].Units[newMangonelID] = aocDat->Civs[i].Units[mangonelID];
+    // TODO replace onagerID in here with newOnagerID with the new data upate
     aocDat->Civs[i].Units[onagerID].Combat.BlastAttackLevel = 2;
-    // aocDat->Civs[i].Units[newMangonelID].Combat.BlastAttackLevel = 1;
+    aocDat->Civs[i].Units[onagerID].LanguageDLLCreation += 205;
+    aocDat->Civs[i].Units[onagerID].LanguageDLLHelp += 205;
+    aocDat->Civs[i].Units[onagerID].LanguageDLLName += 205;
   }
-  // effect.UnitClassID = newMangonelID;
-  // aocDat->Effects[cuttingTechID].EffectCommands.push_back(effect);
   effect.UnitClassID = newOnagerID;
   aocDat->Effects[onagerCuttingEffectID].EffectCommands.push_back(effect);
   effect.TargetUnit = onagerID;
   aocDat->Effects[onagerCuttingEffectID].EffectCommands.push_back(effect);
   aocDat->Effects[onagerCuttingEffectID].Name = "Onager Cutting Tech";
-  // effect.TargetUnit = newMangonelID;
-  // effect.UnitClassID = siegeOnagerID;
-  // aocDat->Effects[siegeOnagerTechID].EffectCommands.push_back(effect);
   effect.TargetUnit = newOnagerID;
   aocDat->Effects[siegeOnagerTechID].EffectCommands.push_back(effect);
   effect.Type = 102;
@@ -69,35 +66,22 @@ void cuttingPatch(genie::DatFile* aocDat) {
 
   aocDat->Effects[chemistryID].EffectCommands.push_back(
       aocDat->Effects[chemistryID].EffectCommands[66]);
-  // aocDat->Effects[chemistryID].EffectCommands.push_back(aocDat->Effects[chemistryID].EffectCommands[66]);
   aocDat->Effects[chemistryID].EffectCommands[69].TargetUnit = newOnagerID;
-  // aocDat->Effects[chemistryID].EffectCommands[70].TargetUnit = newMangonelID;
 
   aocDat->Effects[furorCelticaID].EffectCommands.push_back(
       aocDat->Effects[furorCelticaID].EffectCommands[0]);
-  // aocDat->Effects[furorCelticaID].EffectCommands.push_back(aocDat->Effects[furorCelticaID].EffectCommands[0]);
   aocDat->Effects[furorCelticaID].EffectCommands[12].TargetUnit = newOnagerID;
-  // aocDat->Effects[furorCelticaID].EffectCommands[13].TargetUnit =
-  // newMangonelID;
 
   aocDat->Effects[koreanTeamBonusID].EffectCommands.push_back(
       aocDat->Effects[koreanTeamBonusID].EffectCommands[0]);
-  // aocDat->Effects[koreanTeamBonusID].EffectCommands.push_back(aocDat->Effects[koreanTeamBonusID].EffectCommands[0]);
   aocDat->Effects[koreanTeamBonusID].EffectCommands[3].TargetUnit = newOnagerID;
-  // aocDat->Effects[koreanTeamBonusID].EffectCommands[4].TargetUnit =
-  // newMangonelID;
 
   aocDat->Effects[shinkichonID].EffectCommands.push_back(
       aocDat->Effects[shinkichonID].EffectCommands[0]);
-  // aocDat->Effects[shinkichonID].EffectCommands.push_back(aocDat->Effects[shinkichonID].EffectCommands[0]);
   aocDat->Effects[shinkichonID].EffectCommands.push_back(
       aocDat->Effects[shinkichonID].EffectCommands[1]);
-  // aocDat->Effects[shinkichonID].EffectCommands.push_back(aocDat->Effects[shinkichonID].EffectCommands[1]);
   aocDat->Effects[shinkichonID].EffectCommands[12].TargetUnit = newOnagerID;
   aocDat->Effects[shinkichonID].EffectCommands[13].TargetUnit = newOnagerID;
-  // aocDat->Effects[shinkichonID].EffectCommands[13].TargetUnit =
-  // newMangonelID; aocDat->Effects[shinkichonID].EffectCommands[15].TargetUnit =
-  // newMangonelID;
 
   aocDat->Techs[cuttingResearchID] = aocDat->Techs[siegeOnagerTechID];
   aocDat->Techs[cuttingResearchID].RequiredTechs[1] = onagerTechID;

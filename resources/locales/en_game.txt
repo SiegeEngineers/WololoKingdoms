@@ -16,6 +16,14 @@
 9542=http://www.aoe2sheet.info/link_collection.html
 17440=Uprooting
 28440=Research <b>Uprooting<b> (<cost>) \n Mangonels and Onagers can cut down trees
+5653=Onager (NoCut)
+14653=Onager (NoCut)
+6653=Build Onager (NoCut)
+5654=Ballista Elephant (NoCut)
+14654=Ballista Elephant (NoCut)
+6654=Create Ballista Elephant (NoCut)
+26653=Build <b>Onager (NoCut)<b> (<cost>)\nCreation time 46s (<i>Celt ally<i> 38.3s); Powerful against massed units, especially Archers.\n<hp>; <attack> (Melee), Blast Radius: 1.25 (+12 vs. Siege Weapons, +45 vs. Buildings (+54 <i>Siege Eng.<i>); Reload time: 6; Melee/Pierce Armor: 0/7; Range: 8 (<i>SE<i> 9) (min: 3)(<i>Korean ally<i> 1)\nClass: Siege Weapons; Speed: 0.6; Line of sight: 10 (11)
+26654=Create <b>Ballista Elephant (NoCut)<b> (<cost>)\nCreation time 25s; Heavy cavalry equipped with a Scorpion. <hp>; <attack> (+8 vs. Ships, +5 vs. Buildings, +3 extra vs. Stone Defense); Reload time: 2.5; Melee/Pierce Armor: 0/3 (-2 Armor (2 extra dmg) each against anti-Cavalry, anti-Elephant and anti-Siege dmg); Range: 5 <i>(SE 6)<i>; Accuracy: 100%; Classes: Cavalry, Siege, Elephants, Unique Units; Speed: 0.8; Attack delay: 0.28s; Line of sight: 7
 10622=Dirt 1
 10626=Mangrove Forest
 10642=Mangrove Shallows

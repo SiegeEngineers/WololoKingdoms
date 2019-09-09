@@ -45,6 +45,9 @@ void khmerPatch(genie::DatFile* aocDat) {
     aocDat->Civs[i].Units[newElephantId].Combat.Attacks.erase(
         aocDat->Civs[i].Units[newElephantId].Combat.Attacks.begin() + 4);
     aocDat->Civs[i].Units[newElephantId].Combat.BlastAttackLevel = 2;
+    aocDat->Civs[i].Units[newElephantId].LanguageDLLCreation += 508;
+    aocDat->Civs[i].Units[newElephantId].LanguageDLLHelp += 508;
+    aocDat->Civs[i].Units[newElephantId].LanguageDLLName += 508;
   }
   aocDat->Effects[doubleCrossbowId].EffectCommands.push_back(
       aocDat->Effects[doubleCrossbowId].EffectCommands[0]);
