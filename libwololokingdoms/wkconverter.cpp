@@ -710,7 +710,7 @@ void WKConverter::createMusicPlaylist(const fs::path& inputDir,
                                       const fs::path& outputDir) {
   std::ofstream outputFile(outputDir);
   for (int i = 1; i <= 23; i++) {
-    outputFile << inputDir << "xmusic" << std::to_string(i) << ".mp3"
+    outputFile << inputDir.string() << "\\xmusic" << std::to_string(i) << ".mp3"
                << std::endl;
   }
   outputFile.close();
