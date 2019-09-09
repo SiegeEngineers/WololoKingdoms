@@ -1944,11 +1944,15 @@ static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
  *
  * @param oldPath The directory/file the symlink references.
  * @param newPath The directory/file the symlink should be created in.
+ * @param type Soft for files, Dir for directories
+ * @param copyOldContents possible contents of the newPath folder are copied to oldPath before the symlink is created
  */
 void WKConverter::refreshSymlink(const fs::path& oldPath,
-                                 const fs::path& newPath, const LinkType type) {
+                                 const fs::path& newPath, const LinkType type, bool copyOldContents) {
   if (cfs::is_symlink(newPath))
     return;
+  if (copyOldContents)
+    cfs::copy(newPath, oldPath, cfs::copy_options::skip_existing | cfs::copy_options::recursive);
   cfs::remove_all(newPath);
   mklink(type, resolve_path(newPath), resolve_path(oldPath));
 }
@@ -1961,11 +1965,9 @@ void WKConverter::refreshSymlink(const fs::path& oldPath,
  * @param newDir The directory the symlink should be created in.
  * @param dataMod If true, the symlink is for wk-based datamod.
  */
+
 void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                                bool dataMod) {
-  // TODO: Maybe the best way to improve this would be to check for symlinks and
-  // just skip the
-  // delete it/create it new part if it's a symlink
   bool vooblySrc =
       tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
   bool vooblyDst =
@@ -1995,6 +1997,10 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   if (!dataMod) {
     refreshSymlink(oldDir / "language.ini", newDir / "language.ini",
                    LinkType::Soft);
+    if (!vooblyDst) {
+      refreshSymlink(oldDir / "SaveGame", newDir / "SaveGame", LinkType::Dir,
+                     true);
+	}
     if (!vooblySrc) {
       refreshSymlink(oldDir / "Data" / "language_x1_p1.dll",
                      newDir / "Data" / "language_x1_p1.dll", LinkType::Soft);

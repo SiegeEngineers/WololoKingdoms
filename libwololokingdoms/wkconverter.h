@@ -192,7 +192,7 @@ private:
   void removeWkHotkeys();
   void hotkeySetup();
   void refreshSymlink(const fs::path& oldDir, const fs::path& newDir,
-                      const LinkType type);
+                      const LinkType type, bool copyOldContents = false);
   void symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                     bool dataMod = false);
   void setupFolders(fs::path xmlOutPathUP);
