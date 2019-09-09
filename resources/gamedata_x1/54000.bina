@@ -1,6 +1,7 @@
 /* random map types for ai */
 /* Numbers come from Object Category ID */
 /* 29 NOV 99 */
+#define WOLOLOKINGDOMS
 
 #const ARABIA          9
 #const ARCHIPELAGO     10
