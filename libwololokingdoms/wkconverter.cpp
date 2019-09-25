@@ -1949,7 +1949,7 @@ void WKConverter::refreshSymlink(const fs::path& oldPath,
                                  const fs::path& newPath, const LinkType type, bool copyOldContents) {
   if (cfs::is_symlink(newPath))
     return;
-  if (copyOldContents)
+  if (copyOldContents && cfs::exists(newPath))
     cfs::copy(newPath, oldPath, cfs::copy_options::skip_existing | cfs::copy_options::recursive);
   cfs::remove_all(newPath);
   mklink(type, resolve_path(newPath), resolve_path(oldPath));
