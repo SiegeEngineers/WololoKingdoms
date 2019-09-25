@@ -1140,14 +1140,14 @@ void WKConverter::transferHdDatElements(genie::DatFile* hdDat,
   terrainSwap(hdDat, aocDat, 41, 50, 15013); // acacia forest
   terrainSwap(hdDat, aocDat, 16, 49, 15025); // baobab forest
 
-  std::map<int, std::string> newTerrainSlps = {
+  const std::array<std::tuple<int, std::string>, 7> newTerrainSlps = {{
       {15012, "DLC_MANGROVEFOREST.slp"},
       {15013, "ACACIA_FOREST.slp"},
       {15025, "BAOBAB.slp"},
       {15003, "15003.slp"},
       {15032, "CRACKEDIT.slp"},
       {15034, "ICE_SOLID.slp"},
-      {15020, "ICE_BEACH.slp"}};
+      {15020, "ICE_BEACH.slp"}}};
 
   for (auto& [id, name] : newTerrainSlps) {
     if (slpFiles[id].empty())
