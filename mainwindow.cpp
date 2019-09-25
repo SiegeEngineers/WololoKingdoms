@@ -448,7 +448,7 @@ bool MainWindow::checkSteamApi() {
     // open steam
     process.start(QString::fromStdString(
         "\"" + (steamPath / "Steam.exe").string() + "\""));
-    process.waitForStarted(120);
+    process.waitForStarted(60000);
     SteamAPI_Init();
   }
   int tries = 0;

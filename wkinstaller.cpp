@@ -46,5 +46,5 @@ void WKInstaller::installUserPatch(fs::path exePath,
   }
 
   process.start(name, args);
-  process.waitForFinished();
+  process.waitForFinished(180000);
 }
