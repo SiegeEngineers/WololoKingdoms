@@ -9,9 +9,9 @@ class Dialog : public QDialog {
   Q_OBJECT
 
 public:
-  explicit Dialog(QWidget* parent = 0, QString message = "Error",
+  explicit Dialog(QWidget* parent = nullptr, QString message = "Error",
                   QString title = "Note");
-  ~Dialog();
+  ~Dialog() override;
 
 private:
   Ui::Dialog* ui;

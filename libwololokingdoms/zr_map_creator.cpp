@@ -6,7 +6,7 @@ size_t ZRMapCreator::zipWriteCallback(void* context,
                                       [[maybe_unused]] mz_uint64 offset,
                                       const void* buffer, size_t size) {
   const char* char_buffer = reinterpret_cast<const char*>(buffer);
-  ZRMapCreator* map_creator = reinterpret_cast<ZRMapCreator*>(context);
+  auto* map_creator = reinterpret_cast<ZRMapCreator*>(context);
 
   map_creator->output.write(char_buffer, size);
   return size;

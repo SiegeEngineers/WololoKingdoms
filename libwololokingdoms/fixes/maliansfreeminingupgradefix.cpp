@@ -13,11 +13,9 @@ void maliansMiningUpgradesPatch(genie::DatFile* aocDat) {
 
   std::vector<genie::EffectCommand>* effectsPtr =
       &aocDat->Effects[freeMiningUpgradesTechId].EffectCommands;
-  for (std::vector<genie::EffectCommand>::iterator it = effectsPtr->begin(),
-                                                   end = effectsPtr->end();
-       it != end; it++) {
+  for (auto& it : *effectsPtr) {
     aocDat->Effects[maliansTechTreeTechId].EffectCommands.push_back(
-        *it); // copy the effects into the ethiopians tech tree
+        it); // copy the effects into the ethiopians tech tree
   }
 }
 

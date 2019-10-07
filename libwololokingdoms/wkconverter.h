@@ -18,7 +18,7 @@ class WKConvertListener {
   int m_cachedProgress = 0;
 
 public:
-  virtual ~WKConvertListener() {}
+  virtual ~WKConvertListener() = default;
 
   /**
    * Called when conversion has finished.
@@ -39,12 +39,14 @@ public:
   /**
    * Report an error.
    */
-  virtual void error([[maybe_unused]] std::exception const& err, bool showDialog = false) {}
+  virtual void error([[maybe_unused]] std::exception const& err,
+                     bool showDialog = false) {}
 
   /**
    * Report an error (message only).
    */
-  virtual void error([[maybe_unused]] std::string message, bool showDialog = false) {
+  virtual void error([[maybe_unused]] std::string message,
+                     bool showDialog = false) {
     error(std::runtime_error(message), showDialog);
   }
 
@@ -164,7 +166,8 @@ private:
   void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut,
                            std::map<int, std::string>& langReplacement);
   void createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
-  void loadGameStrings(std::map<int, std::string>& langReplacement, fs::path file);
+  void loadGameStrings(std::map<int, std::string>& langReplacement,
+                       fs::path file);
   void loadModdedStrings(fs::path moddedStringsFile,
                          std::map<int, std::string>& langReplacement);
   void makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir);

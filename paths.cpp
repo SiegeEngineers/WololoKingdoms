@@ -1,11 +1,11 @@
 #include "paths.h"
 #include "libwololokingdoms/platform.h"
 #include "libwololokingdoms/string_helpers.h"
+#include <cstdio>
 #include <fs.h>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <stdio.h>
 #include <steam/steam_api.h>
 #include <string>
 

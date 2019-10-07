@@ -5,7 +5,7 @@ extern "C" {
 #ifdef _WIN32
 typedef unsigned short path_char_t;
 #else
-typedef char path_char_t;
+using path_char_t = char;
 #endif
 
 enum WKIndexType {
@@ -15,7 +15,7 @@ enum WKIndexType {
 };
 
 // Create settings.
-typedef void* wksettings_t;
+using wksettings_t = void*;
 wksettings_t wksettings_create();
 void wksettings_free(wksettings_t);
 
@@ -46,7 +46,7 @@ void wksettings_drs_resources(wksettings_t, const path_char_t* dir,
                               enum WKIndexType type);
 
 // Converter setup.
-typedef void* wkconverter_t;
+using wkconverter_t = void*;
 wkconverter_t wkconverter_create(wksettings_t settings, void* context);
 void wkconverter_free(wkconverter_t);
 

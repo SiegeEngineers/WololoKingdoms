@@ -241,8 +241,8 @@ void MainWindow::runConverter() {
     settings.addDrsResources(modOverrideDir);
   }
 
-  QThread* thread = new QThread;
-  WKInstaller* installer = new WKInstaller(settings);
+  auto* thread = new QThread;
+  auto* installer = new WKInstaller(settings);
   installer->moveToThread(thread);
   connect(installer, SIGNAL(log(std::string)), this, SLOT(log(std::string)));
   connect(installer, SIGNAL(setInfo(std::string)), this,
@@ -309,7 +309,7 @@ void MainWindow::setProgress(int i) {
   if (i < 0)
     i = 0;
   else if (i >= 100) {
-    this->ui->centralWidget->setDisabled(false);  	
+    this->ui->centralWidget->setDisabled(false);
     logFile.close();
     i = 100;
   }

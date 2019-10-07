@@ -3,13 +3,13 @@
 #include "libwololokingdoms/string_helpers.h"
 #include "paths.h"
 #include <QProcess>
-#include <errno.h>
+#include <cerrno>
+#include <cstdio>
 #include <fs.h>
 #include <fstream>
 #include <iconv.h>
 #include <iostream>
 #include <pwd.h>
-#include <stdio.h>
 #include <string>
 
 fs::path getExePath() { return fs::read_symlink("/proc/self/exe"); }

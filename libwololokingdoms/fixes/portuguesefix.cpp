@@ -39,8 +39,7 @@ void PortuguesePatch(genie::DatFile* aocDat) {
   for (auto& building : aocDat->TechTree.BuildingConnections) {
     // Iterate connected units of each age
     if (building.ID == castleId) {
-      for (std::vector<int32_t>::iterator unitIt = building.Units.begin(),
-                                          end = building.Units.end();
+      for (auto unitIt = building.Units.begin(), end = building.Units.end();
            unitIt != end; ++unitIt) {
         if (*unitIt == petardId) {
           unitIt = building.Units.insert(unitIt, caravelId);
@@ -52,8 +51,7 @@ void PortuguesePatch(genie::DatFile* aocDat) {
     }
     if (building.ID == dockId) {
       bool visited = false;
-      for (std::vector<int32_t>::iterator unitIt = building.Units.begin(),
-                                          end = building.Units.end();
+      for (auto unitIt = building.Units.begin(), end = building.Units.end();
            unitIt != end; ++unitIt) {
         if (*unitIt == caravelId || *unitIt == eliteCaravelId) {
           building.Units.erase(unitIt--);

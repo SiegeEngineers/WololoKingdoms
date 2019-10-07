@@ -22,11 +22,9 @@ void khmerPatch(genie::DatFile* aocDat) {
   std::vector<genie::EffectCommand>* effectsPtr =
       &aocDat->Effects[khmerBonusTechId].EffectCommands;
   std::vector<genie::EffectCommand> effectsToAdd;
-  for (std::vector<genie::EffectCommand>::iterator it = effectsPtr->begin(),
-                                                   end = effectsPtr->end();
-       it != end; it++) {
+  for (auto& it : *effectsPtr) {
     // add an attribute to disable drop-off
-    effect = *it;
+    effect = it;
     effect.Type = 0;
     effect.AttributeID = 31; // Drop-off of resources
     effect.Amount = 4.0f;
@@ -39,15 +37,14 @@ void khmerPatch(genie::DatFile* aocDat) {
   // use in CtR maps
   aocDat->UnitHeaders[newElephantId] = aocDat->UnitHeaders[ballistaElephantId];
   aocDat->UnitHeaders[newElephantId].TaskList.pop_back();
-  for (size_t i = 0; i < aocDat->Civs.size(); i++) {
-    aocDat->Civs[i].Units[newElephantId] =
-        aocDat->Civs[i].Units[ballistaElephantId];
-    aocDat->Civs[i].Units[newElephantId].Combat.Attacks.erase(
-        aocDat->Civs[i].Units[newElephantId].Combat.Attacks.begin() + 4);
-    aocDat->Civs[i].Units[newElephantId].Combat.BlastAttackLevel = 2;
-    aocDat->Civs[i].Units[newElephantId].LanguageDLLCreation += 508;
-    aocDat->Civs[i].Units[newElephantId].LanguageDLLHelp += 508;
-    aocDat->Civs[i].Units[newElephantId].LanguageDLLName += 508;
+  for (auto& Civ : aocDat->Civs) {
+    Civ.Units[newElephantId] = Civ.Units[ballistaElephantId];
+    Civ.Units[newElephantId].Combat.Attacks.erase(
+        Civ.Units[newElephantId].Combat.Attacks.begin() + 4);
+    Civ.Units[newElephantId].Combat.BlastAttackLevel = 2;
+    Civ.Units[newElephantId].LanguageDLLCreation += 508;
+    Civ.Units[newElephantId].LanguageDLLHelp += 508;
+    Civ.Units[newElephantId].LanguageDLLName += 508;
   }
   aocDat->Effects[doubleCrossbowId].EffectCommands.push_back(
       aocDat->Effects[doubleCrossbowId].EffectCommands[0]);
@@ -80,10 +77,8 @@ void khmerPatch(genie::DatFile* aocDat) {
   aocDat->Techs[khmerBuildingResearchId].RequiredTechs[0] = -1;
   aocDat->Techs[khmerBuildingResearchId].RequiredTechs[1] = -1;
 
-  for (size_t i = 0;
-       i < sizeof(buildingResearchs) / sizeof(buildingResearchs[0]); i++) {
-    aocDat->Techs[buildingResearchs[i]].RequiredTechs[1] =
-        khmerBuildingResearchId;
+  for (unsigned long buildingResearch : buildingResearchs) {
+    aocDat->Techs[buildingResearch].RequiredTechs[1] = khmerBuildingResearchId;
   }
 }
 

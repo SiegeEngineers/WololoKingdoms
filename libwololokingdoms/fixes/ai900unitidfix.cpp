@@ -82,35 +82,31 @@ void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   genie::UnitHeader tmpHeader = aocDat->UnitHeaders[id1];
   aocDat->UnitHeaders[id1] = aocDat->UnitHeaders[id2];
   aocDat->UnitHeaders[id2] = tmpHeader;
-  for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); ++civIndex) {
+  for (auto& Civ : aocDat->Civs) {
     /* switch all 3 ids around first*/
-    aocDat->Civs[civIndex].Units[id1].ID = id2;
-    aocDat->Civs[civIndex].Units[id1].CopyID = id2;
-    aocDat->Civs[civIndex].Units[id1].BaseID = id2;
-    aocDat->Civs[civIndex].Units[id2].ID = id1;
-    aocDat->Civs[civIndex].Units[id2].CopyID = id1;
-    aocDat->Civs[civIndex].Units[id2].BaseID = id1;
+    Civ.Units[id1].ID = id2;
+    Civ.Units[id1].CopyID = id2;
+    Civ.Units[id1].BaseID = id2;
+    Civ.Units[id2].ID = id1;
+    Civ.Units[id2].CopyID = id1;
+    Civ.Units[id2].BaseID = id1;
     /*switch the units*/
-    genie::Unit tmpUnit = aocDat->Civs[civIndex].Units[id1];
-    aocDat->Civs[civIndex].Units[id1] = aocDat->Civs[civIndex].Units[id2];
-    aocDat->Civs[civIndex].Units[id2] = tmpUnit;
+    genie::Unit tmpUnit = Civ.Units[id1];
+    Civ.Units[id1] = Civ.Units[id2];
+    Civ.Units[id2] = tmpUnit;
     /*switch the unit pointers*/
-    uint32_t tmpPointer = aocDat->Civs[civIndex].UnitPointers[id1];
-    aocDat->Civs[civIndex].UnitPointers[id1] =
-        aocDat->Civs[civIndex].UnitPointers[id2];
-    aocDat->Civs[civIndex].UnitPointers[id2] = tmpPointer;
+    uint32_t tmpPointer = Civ.UnitPointers[id1];
+    Civ.UnitPointers[id1] = Civ.UnitPointers[id2];
+    Civ.UnitPointers[id2] = tmpPointer;
   }
 
   // Then : modify all references to these units
 
   // Iterate techs
-  for (std::vector<genie::Effect>::iterator techIt = aocDat->Effects.begin(),
-                                            end = aocDat->Effects.end();
-       techIt != end; ++techIt) {
+  for (auto& techIt : aocDat->Effects) {
     // Iterate effects of each tech
-    for (std::vector<genie::EffectCommand>::iterator
-             techEffectsIt = techIt->EffectCommands.begin(),
-             end = techIt->EffectCommands.end();
+    for (auto techEffectsIt = techIt.EffectCommands.begin(),
+              end = techIt.EffectCommands.end();
          techEffectsIt != end; ++techEffectsIt) {
       switch (techEffectsIt->Type) {
       case 3: // upgrade unit (this ones uses 2 units hence the special case,
@@ -126,80 +122,57 @@ void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   }
 
   // Iterate tech tree ages
-  for (std::vector<genie::TechTreeAge>::iterator
-           ageIt = aocDat->TechTree.TechTreeAges.begin(),
-           end = aocDat->TechTree.TechTreeAges.end();
-       ageIt != end; ++ageIt) {
+  for (auto& ageIt : aocDat->TechTree.TechTreeAges) {
     // Iterate connected units of each age
-    for (std::vector<int32_t>::iterator unitIt = ageIt->Units.begin(),
-                                        end = ageIt->Units.end();
+    for (auto unitIt = ageIt.Units.begin(), end = ageIt.Units.end();
          unitIt != end; ++unitIt) {
       swapId(&(*unitIt), id1, id2);
     }
   }
 
   // Iterate tech tree buildings
-  for (std::vector<genie::BuildingConnection>::iterator
-           buildingIt = aocDat->TechTree.BuildingConnections.begin(),
-           end = aocDat->TechTree.BuildingConnections.end();
-       buildingIt != end; buildingIt++) {
+  for (auto& buildingIt : aocDat->TechTree.BuildingConnections) {
     // Iterate connected units of each age
-    for (std::vector<int32_t>::iterator unitIt = buildingIt->Units.begin(),
-                                        end = buildingIt->Units.end();
+    for (auto unitIt = buildingIt.Units.begin(), end = buildingIt.Units.end();
          unitIt != end; ++unitIt) {
       swapId(&(*unitIt), id1, id2);
     }
-    swapIdInCommon(&buildingIt->Common, id1, id2);
+    swapIdInCommon(&buildingIt.Common, id1, id2);
   }
 
   // Iterate tech tree units
-  for (std::vector<genie::UnitConnection>::iterator
-           unitIt = aocDat->TechTree.UnitConnections.begin(),
-           end = aocDat->TechTree.UnitConnections.end();
-       unitIt != end; ++unitIt) {
-    swapId(&unitIt->ID, id1, id2);
+  for (auto& unitIt : aocDat->TechTree.UnitConnections) {
+    swapId(&unitIt.ID, id1, id2);
     // Iterate connected units of each unit
-    for (std::vector<int32_t>::iterator unitUnitIt = unitIt->Units.begin(),
-                                        end = unitIt->Units.end();
+    for (auto unitUnitIt = unitIt.Units.begin(), end = unitIt.Units.end();
          unitUnitIt != end; ++unitUnitIt) {
       swapId(&(*unitUnitIt), id1, id2);
     }
-    swapIdInCommon(&unitIt->Common, id1, id2);
+    swapIdInCommon(&unitIt.Common, id1, id2);
   }
 
   // Iterate tech tree researches
-  for (std::vector<genie::ResearchConnection>::iterator
-           researchIt = aocDat->TechTree.ResearchConnections.begin(),
-           end = aocDat->TechTree.ResearchConnections.end();
-       researchIt != end; researchIt++) {
+  for (auto& researchIt : aocDat->TechTree.ResearchConnections) {
     // Iterate connected units of each researches
-    for (std::vector<int32_t>::iterator
-             researchUnitIt = researchIt->Units.begin(),
-             end = researchIt->Units.end();
+    for (auto researchUnitIt = researchIt.Units.begin(),
+              end = researchIt.Units.end();
          researchUnitIt != end; ++researchUnitIt) {
       swapId(&(*researchUnitIt), id1, id2);
     }
-    swapIdInCommon(&researchIt->Common, id1, id2);
+    swapIdInCommon(&researchIt.Common, id1, id2);
   }
 
   // Iterate through Civs Units to replace the dead unit graphic if necessary
-  for (std::vector<genie::Civ>::iterator civIt = aocDat->Civs.begin(),
-                                         end = aocDat->Civs.end();
-       civIt != end; ++civIt) {
-    for (std::vector<genie::Unit>::iterator unitIt = civIt->Units.begin(),
-                                            end = civIt->Units.end();
+  for (auto& civIt : aocDat->Civs) {
+    for (auto unitIt = civIt.Units.begin(), end = civIt.Units.end();
          unitIt != end; ++unitIt) {
       swapId(&unitIt->DeadUnitID, id1, id2);
     }
   }
 
   // Iterate through Unit commands (e.g. villagers hunting animals)
-  for (std::vector<genie::UnitHeader>::iterator
-           unitIt = aocDat->UnitHeaders.begin(),
-           end = aocDat->UnitHeaders.end();
-       unitIt != end; ++unitIt) {
-    for (std::vector<genie::Task>::iterator taskIt = unitIt->TaskList.begin(),
-                                            end = unitIt->TaskList.end();
+  for (auto& unitIt : aocDat->UnitHeaders) {
+    for (auto taskIt = unitIt.TaskList.begin(), end = unitIt.TaskList.end();
          taskIt != end; ++taskIt) {
       swapId(&taskIt->UnitID, id1, id2);
     }

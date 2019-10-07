@@ -2,6 +2,7 @@
 #include <fs.h>
 #include <iostream>
 #include <map>
+#include <utility>
 #include <vector>
 
 enum class DRSTableType {
@@ -25,8 +26,8 @@ class DRSCreatorTableEntry {
 public:
   inline DRSCreatorTableEntry(uint32_t id, std::istream* data)
       : id_(id), stream_(data) {}
-  inline DRSCreatorTableEntry(uint32_t id, const fs::path& filename)
-      : id_(id), filename_(filename) {}
+  inline DRSCreatorTableEntry(uint32_t id, fs::path filename)
+      : id_(id), filename_(std::move(filename)) {}
   inline DRSCreatorTableEntry(DRSCreatorTableEntry&& entry)
       : id_(entry.id_), stream_(entry.stream_),
         filename_(std::move(entry.filename_)) {
@@ -78,11 +79,11 @@ public:
 };
 
 inline void DRSCreatorTable::addFile(uint32_t id, std::istream* data) {
-  files_.push_back(DRSCreatorTableEntry(id, data));
+  files_.emplace_back(id, data);
 }
 
 inline void DRSCreatorTable::addFile(uint32_t id, const fs::path& filename) {
-  files_.push_back(DRSCreatorTableEntry(id, filename));
+  files_.emplace_back(id, filename);
 }
 
 inline void DRSCreator::addFile(DRSTableType table, uint32_t id,

@@ -42,7 +42,8 @@ const fs::path resolve_path(const fs::path& input) {
 #endif
 }
 
-void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement, fs::path file) {
+void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement,
+                                  fs::path file) {
   std::string line;
   std::ifstream translationFile(file);
   while (std::getline(translationFile, line)) {
@@ -1033,9 +1034,9 @@ bool WKConverter::usesMultipleWaterTerrains(const std::string& map,
 
 void WKConverter::upgradeTrees(int usedTerrain, int oldTerrain,
                                std::string& map) {
-  static const auto rxPlayerSetup = std::regex("<PLAYER_SETUP>\\s*(\\r*)\\n");
+  static const auto rxPlayerSetup = std::regex(R"(<PLAYER_SETUP>\s*(\r*)\n)");
   static const auto rxIncludeDrs =
-      std::regex("#include_drs\\s+random_map\\.def\\s*(\\r*)\\n");
+      std::regex(R"(#include_drs\s+random_map\.def\s*(\r*)\n)");
 
   std::string newTree;
   std::string oldTree;
@@ -1140,14 +1141,14 @@ void WKConverter::transferHdDatElements(genie::DatFile* hdDat,
   terrainSwap(hdDat, aocDat, 41, 50, 15013); // acacia forest
   terrainSwap(hdDat, aocDat, 16, 49, 15025); // baobab forest
 
-  const std::array<std::tuple<int, std::string>, 7> newTerrainSlps = {{
-      {15012, "DLC_MANGROVEFOREST.slp"},
-      {15013, "ACACIA_FOREST.slp"},
-      {15025, "BAOBAB.slp"},
-      {15003, "15003.slp"},
-      {15032, "CRACKEDIT.slp"},
-      {15034, "ICE_SOLID.slp"},
-      {15020, "ICE_BEACH.slp"}}};
+  const std::array<std::tuple<int, std::string>, 7> newTerrainSlps = {
+      {{15012, "DLC_MANGROVEFOREST.slp"},
+       {15013, "ACACIA_FOREST.slp"},
+       {15025, "BAOBAB.slp"},
+       {15003, "15003.slp"},
+       {15032, "CRACKEDIT.slp"},
+       {15034, "ICE_SOLID.slp"},
+       {15020, "ICE_BEACH.slp"}}};
 
   for (auto& [id, name] : newTerrainSlps) {
     if (slpFiles[id].empty())
@@ -1657,8 +1658,7 @@ short WKConverter::duplicateGraphic(genie::DatFile* aocDat,
      * comparison, this is usually with damage graphics and different amount of
      * Flames.
      */
-    std::vector<genie::GraphicDelta>::iterator compIt =
-        aocDat->Graphics[compareID].Deltas.begin();
+    auto compIt = aocDat->Graphics[compareID].Deltas.begin();
     for (auto& it : newGraphic.Deltas) {
       if (it.GraphicID != -1 &&
           std::find(duplicatedGraphics.begin(), duplicatedGraphics.end(),
@@ -1943,14 +1943,17 @@ static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
  * @param oldPath The directory/file the symlink references.
  * @param newPath The directory/file the symlink should be created in.
  * @param type Soft for files, Dir for directories
- * @param copyOldContents possible contents of the newPath folder are copied to oldPath before the symlink is created
+ * @param copyOldContents possible contents of the newPath folder are copied to
+ * oldPath before the symlink is created
  */
 void WKConverter::refreshSymlink(const fs::path& oldPath,
-                                 const fs::path& newPath, const LinkType type, bool copyOldContents) {
+                                 const fs::path& newPath, const LinkType type,
+                                 bool copyOldContents) {
   if (cfs::is_symlink(newPath))
     return;
   if (copyOldContents && cfs::exists(newPath))
-    cfs::copy(newPath, oldPath, cfs::copy_options::skip_existing | cfs::copy_options::recursive);
+    cfs::copy(newPath, oldPath,
+              cfs::copy_options::skip_existing | cfs::copy_options::recursive);
   cfs::remove_all(newPath);
   mklink(type, resolve_path(newPath), resolve_path(oldPath));
 }
@@ -1998,7 +2001,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     if (!vooblyDst) {
       refreshSymlink(oldDir / "SaveGame", newDir / "SaveGame", LinkType::Dir,
                      true);
-	}
+    }
     if (!vooblySrc) {
       refreshSymlink(oldDir / "Data" / "language_x1_p1.dll",
                      newDir / "Data" / "language_x1_p1.dll", LinkType::Soft);

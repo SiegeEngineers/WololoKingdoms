@@ -29,56 +29,44 @@ void trickleBuildingPatch(genie::DatFile* aocDat) {
     aocDat->UnitHeaders[newUnitsStartID + 9].TaskList[0 + i].WorkValue1 = 1;
     int graphic1 = getNewGraphicId(aocDat, i);
     int graphic2 = getNewGraphicId(aocDat, 4 + i);
-    for (size_t j = 0; j < aocDat->Civs.size(); j++) {
-      aocDat->Civs[j].Units[newUnitsStartID + i] =
-          aocDat->Civs[j].Units[tradeWorkshopID];
-      aocDat->Civs[j].Units[newUnitsStartID + i].StandingGraphic.first =
-          graphic1;
-      aocDat->Civs[j].Units[newUnitsStartID + i].Action.DefaultTaskID = 0;
-      aocDat->Civs[j].Units[newUnitsStartID + i].LanguageDLLName =
-          newStringStartID + i;
-      aocDat->Civs[j].Units[newUnitsStartID + i].ID = newUnitsStartID + i;
-      aocDat->Civs[j].Units[newUnitsStartID + i].CopyID = newUnitsStartID + i;
-      aocDat->Civs[j].Units[newUnitsStartID + i].BaseID = newUnitsStartID + i;
-      aocDat->Civs[j].Units[newUnitsStartID + i].Class = 1;
-      aocDat->Civs[j].Units[newUnitsStartID + i].BlastDefenseLevel = 0;
-      aocDat->Civs[j].Units[newUnitsStartID + 4 + i] =
-          aocDat->Civs[j].Units[tradeWorkshopID];
-      aocDat->Civs[j].Units[newUnitsStartID + 4 + i].StandingGraphic.first =
-          graphic2;
-      aocDat->Civs[j].Units[newUnitsStartID + 4 + i].LanguageDLLName =
+    for (auto& Civ : aocDat->Civs) {
+      Civ.Units[newUnitsStartID + i] = Civ.Units[tradeWorkshopID];
+      Civ.Units[newUnitsStartID + i].StandingGraphic.first = graphic1;
+      Civ.Units[newUnitsStartID + i].Action.DefaultTaskID = 0;
+      Civ.Units[newUnitsStartID + i].LanguageDLLName = newStringStartID + i;
+      Civ.Units[newUnitsStartID + i].ID = newUnitsStartID + i;
+      Civ.Units[newUnitsStartID + i].CopyID = newUnitsStartID + i;
+      Civ.Units[newUnitsStartID + i].BaseID = newUnitsStartID + i;
+      Civ.Units[newUnitsStartID + i].Class = 1;
+      Civ.Units[newUnitsStartID + i].BlastDefenseLevel = 0;
+      Civ.Units[newUnitsStartID + 4 + i] = Civ.Units[tradeWorkshopID];
+      Civ.Units[newUnitsStartID + 4 + i].StandingGraphic.first = graphic2;
+      Civ.Units[newUnitsStartID + 4 + i].LanguageDLLName =
           newStringStartID + 4 + i;
-      aocDat->Civs[j].Units[newUnitsStartID + 4 + i].ID =
-          newUnitsStartID + 4 + i;
-      aocDat->Civs[j].Units[newUnitsStartID + 4 + i].CopyID =
-          newUnitsStartID + 4 + i;
-      aocDat->Civs[j].Units[newUnitsStartID + 4 + i].BaseID =
-          newUnitsStartID + 4 + i;
+      Civ.Units[newUnitsStartID + 4 + i].ID = newUnitsStartID + 4 + i;
+      Civ.Units[newUnitsStartID + 4 + i].CopyID = newUnitsStartID + 4 + i;
+      Civ.Units[newUnitsStartID + 4 + i].BaseID = newUnitsStartID + 4 + i;
     }
   }
 
   int graphic1 = getNewGraphicId(aocDat, 8);
   int graphic2 = getNewGraphicId(aocDat, 9);
-  for (size_t j = 0; j < aocDat->Civs.size(); j++) {
-    aocDat->Civs[j].Units[newUnitsStartID + 8] =
-        aocDat->Civs[j].Units[tradeWorkshopID];
-    aocDat->Civs[j].Units[newUnitsStartID + 8].StandingGraphic.first = graphic1;
-    aocDat->Civs[j].Units[newUnitsStartID + 8].Action.DefaultTaskID = 0;
-    aocDat->Civs[j].Units[newUnitsStartID + 8].LanguageDLLName =
-        newStringStartID + 8;
-    aocDat->Civs[j].Units[newUnitsStartID + 8].ID = newUnitsStartID + 8;
-    aocDat->Civs[j].Units[newUnitsStartID + 8].CopyID = newUnitsStartID + 8;
-    aocDat->Civs[j].Units[newUnitsStartID + 8].BaseID = newUnitsStartID + 8;
-    aocDat->Civs[j].Units[newUnitsStartID + 8].Class = 1;
-    aocDat->Civs[j].Units[newUnitsStartID + 8].BlastDefenseLevel = 0;
-    aocDat->Civs[j].Units[newUnitsStartID + 9] =
-        aocDat->Civs[j].Units[tradeWorkshopID];
-    aocDat->Civs[j].Units[newUnitsStartID + 9].StandingGraphic.first = graphic2;
-    aocDat->Civs[j].Units[newUnitsStartID + 9].LanguageDLLName =
-        newStringStartID + 9;
-    aocDat->Civs[j].Units[newUnitsStartID + 9].ID = newUnitsStartID + 9;
-    aocDat->Civs[j].Units[newUnitsStartID + 9].CopyID = newUnitsStartID + 9;
-    aocDat->Civs[j].Units[newUnitsStartID + 9].BaseID = newUnitsStartID + 9;
+  for (auto& Civ : aocDat->Civs) {
+    Civ.Units[newUnitsStartID + 8] = Civ.Units[tradeWorkshopID];
+    Civ.Units[newUnitsStartID + 8].StandingGraphic.first = graphic1;
+    Civ.Units[newUnitsStartID + 8].Action.DefaultTaskID = 0;
+    Civ.Units[newUnitsStartID + 8].LanguageDLLName = newStringStartID + 8;
+    Civ.Units[newUnitsStartID + 8].ID = newUnitsStartID + 8;
+    Civ.Units[newUnitsStartID + 8].CopyID = newUnitsStartID + 8;
+    Civ.Units[newUnitsStartID + 8].BaseID = newUnitsStartID + 8;
+    Civ.Units[newUnitsStartID + 8].Class = 1;
+    Civ.Units[newUnitsStartID + 8].BlastDefenseLevel = 0;
+    Civ.Units[newUnitsStartID + 9] = Civ.Units[tradeWorkshopID];
+    Civ.Units[newUnitsStartID + 9].StandingGraphic.first = graphic2;
+    Civ.Units[newUnitsStartID + 9].LanguageDLLName = newStringStartID + 9;
+    Civ.Units[newUnitsStartID + 9].ID = newUnitsStartID + 9;
+    Civ.Units[newUnitsStartID + 9].CopyID = newUnitsStartID + 9;
+    Civ.Units[newUnitsStartID + 9].BaseID = newUnitsStartID + 9;
   }
 }
 

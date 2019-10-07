@@ -22,11 +22,11 @@ void WKInstaller::process() {
   }
 }
 
-void WKInstaller::error(std::exception const& err, bool showDialog) { 
+void WKInstaller::error(std::exception const& err, bool showDialog) {
   std::string errorMessage = err.what();
   if (showDialog)
-	emit createDialog("dialogError$" + errorMessage, "Error");
-  emit log(errorMessage); 
+    emit createDialog("dialogError$" + errorMessage, "Error");
+  emit log(errorMessage);
 }
 
 void WKInstaller::installUserPatch(fs::path exePath,

@@ -14,10 +14,10 @@ void demoshipPatch(genie::DatFile* aocDat) {
   size_t const heavyDemoShipUnitId = 528;
   // size_t const darkAgeTechId = 104;
 
-  for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
-    aocDat->Civs[civIndex].Units[demoRaftUnitId].Creatable.HeroMode = 96;
-    aocDat->Civs[civIndex].Units[demoShipUnitId].Creatable.HeroMode = 96;
-    aocDat->Civs[civIndex].Units[heavyDemoShipUnitId].Creatable.HeroMode = 96;
+  for (auto& Civ : aocDat->Civs) {
+    Civ.Units[demoRaftUnitId].Creatable.HeroMode = 96;
+    Civ.Units[demoShipUnitId].Creatable.HeroMode = 96;
+    Civ.Units[heavyDemoShipUnitId].Creatable.HeroMode = 96;
   }
   /*genie::TechageEffect effect = genie::TechageEffect();
       effect.Type = 0; // set attribute

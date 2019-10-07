@@ -50,7 +50,7 @@ public:
 
   inline void addDrsResources(const fs::path& directory,
                               IndexType type = IndexType::Expansion) {
-    drsModDirectories.push_back(std::make_pair(directory, type));
+    drsModDirectories.emplace_back(directory, type);
   }
 };
 

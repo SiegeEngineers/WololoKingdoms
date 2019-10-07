@@ -5,7 +5,7 @@ namespace wololo {
 
 void cuttingPatch(genie::DatFile* aocDat) {
 
-  //TODO: Make sure the regular (cutting) unit remains at the normal ID
+  // TODO: Make sure the regular (cutting) unit remains at the normal ID
 
   // Civ Bonus Fix
   size_t const onagerID = 550;
@@ -36,13 +36,13 @@ void cuttingPatch(genie::DatFile* aocDat) {
   aocDat->UnitHeaders[newOnagerID] = aocDat->UnitHeaders[onagerID];
   aocDat->UnitHeaders[onagerID].TaskList.erase(
       aocDat->UnitHeaders[onagerID].TaskList.begin() + 4);
-  for (size_t i = 0; i < aocDat->Civs.size(); i++) {
-    aocDat->Civs[i].Units[newOnagerID] = aocDat->Civs[i].Units[onagerID];
+  for (auto& Civ : aocDat->Civs) {
+    Civ.Units[newOnagerID] = Civ.Units[onagerID];
     // TODO replace onagerID in here with newOnagerID with the new data upate
-    aocDat->Civs[i].Units[onagerID].Combat.BlastAttackLevel = 2;
-    aocDat->Civs[i].Units[onagerID].LanguageDLLCreation += 205;
-    aocDat->Civs[i].Units[onagerID].LanguageDLLHelp += 205;
-    aocDat->Civs[i].Units[onagerID].LanguageDLLName += 205;
+    Civ.Units[onagerID].Combat.BlastAttackLevel = 2;
+    Civ.Units[onagerID].LanguageDLLCreation += 205;
+    Civ.Units[onagerID].LanguageDLLHelp += 205;
+    Civ.Units[onagerID].LanguageDLLName += 205;
   }
   effect.UnitClassID = newOnagerID;
   aocDat->Effects[onagerCuttingEffectID].EffectCommands.push_back(effect);

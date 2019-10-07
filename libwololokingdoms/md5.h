@@ -49,21 +49,21 @@ documentation and/or software.
 // assumes that char is 8 bit and int is 32 bit
 class MD5 {
 public:
-  typedef unsigned int size_type; // must be 32bit
+  using size_type = unsigned int; // must be 32bit
 
   MD5();
   MD5(const std::string& text);
   void update(const unsigned char* buf, size_type length);
   void update(const char* buf, size_type length);
   MD5& finalize();
-  std::string hexdigest() const;
-  std::string b64digest() const;
+  [[nodiscard]] std::string hexdigest() const;
+  [[nodiscard]] std::string b64digest() const;
   friend std::ostream& operator<<(std::ostream&, MD5 md5);
 
 private:
   void init();
-  typedef unsigned char uint1; //  8bit
-  typedef unsigned int uint4;  // 32bit
+  using uint1 = unsigned char; //  8bit
+  using uint4 = unsigned int;  // 32bit
   enum { blocksize = 64 };     // VC6 won't eat a const static int here
 
   void transform(const uint1 block[blocksize]);

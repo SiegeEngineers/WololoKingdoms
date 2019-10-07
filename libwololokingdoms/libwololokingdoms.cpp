@@ -16,8 +16,8 @@ public:
       : converter(converter), listener(listener) {}
 };
 
-typedef WKSettings* wksettings_t;
-typedef wkconvert_handle* wkconverter_t;
+using wksettings_t = WKSettings*;
+using wkconverter_t = wkconvert_handle*;
 
 extern "C" {
 wksettings_t wksettings_create();
@@ -81,19 +81,19 @@ public:
   void (*onError)(void*, const char*) = nullptr;
   void (*onProgress)(void*, int) = nullptr;
 
-  virtual ~Listener() {}
+  ~Listener() override = default;
 
-  virtual void finished() {
+  void finished() override {
     if (onFinished != nullptr)
       onFinished(context);
   }
 
-  virtual void log(std::string logMessage) {
+  void log(std::string logMessage) override {
     if (onLog != nullptr)
       onLog(context, logMessage.c_str());
   }
 
-  virtual void setInfo(std::string info) {
+  void setInfo(std::string info) override {
     if (onSetInfo != nullptr)
       onSetInfo(context, info.c_str());
   }
@@ -103,7 +103,7 @@ public:
       onError(context, err.what());
   }
 
-  virtual void setProgress(int i) {
+  void setProgress(int i) override {
     if (onProgress != nullptr)
       onProgress(context, i);
   }

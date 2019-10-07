@@ -27,8 +27,8 @@ public slots:
   QString translate(QString line);
 
 public:
-  explicit MainWindow(QWidget* parent = 0, bool skipUpdater = false);
-  ~MainWindow();
+  explicit MainWindow(QWidget* parent = nullptr, bool skipUpdater = false);
+  ~MainWindow() override;
 
 private:
   fs::path steamPath;

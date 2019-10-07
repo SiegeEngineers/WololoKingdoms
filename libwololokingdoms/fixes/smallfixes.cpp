@@ -90,8 +90,8 @@ void smallPatches(genie::DatFile* aocDat) {
     aocDat->Civs[civIndex].Units[kingID].Combat.AttackGraphic =
         aocDat->Civs[civIndex].Units[kingID].StandingGraphic.first;
     // fix gate rubbles
-    for (size_t i = 0; i < sizeof(gates) / sizeof(gates[0]); i++) {
-      aocDat->Civs[civIndex].Units[gates[i]].DeadUnitID = 144;
+    for (short gate : gates) {
+      aocDat->Civs[civIndex].Units[gate].DeadUnitID = 144;
     }
   }
   // Fix longboats having an unload ability that could mess with attacks
@@ -110,12 +110,12 @@ void smallPatches(genie::DatFile* aocDat) {
   aocDat->Effects[teutonTeamBonusID].EffectCommands[2].UnitClassID = 1;
 
   // mountains were too small for their graphics
-  for (size_t i = 0; i < sizeof(mountains) / sizeof(mountains[0]); i++) {
-    aocDat->Civs[0].Units[mountains[i]].ClearanceSize = {3, 3};
+  for (short mountain : mountains) {
+    aocDat->Civs[0].Units[mountain].ClearanceSize = {3, 3};
   }
   // fixes galleon sounds
   for (size_t fileID = 5555; fileID < 5563; fileID++) {
-    genie::SoundItem* item = new genie::SoundItem();
+    auto* item = new genie::SoundItem();
     item->ResourceID = fileID;
     item->FileName = "wgal" + std::to_string(fileID - 5554) + ".wav";
     item->Probability = fileID < 5557 ? 5 : 15;
@@ -173,19 +173,17 @@ void smallPatches(genie::DatFile* aocDat) {
   // Have an x-patch upgrade to trade carts that's disabled by default
 
   aocDat->UnitHeaders[xtradeCartId] = aocDat->UnitHeaders[tradeCartId];
-  for (size_t i = 0; i < aocDat->Civs.size(); i++) {
-    aocDat->Civs[i].Units[xtradeCartId] = aocDat->Civs[i].Units[tradeCartId];
-    aocDat->Civs[i].Units[xtradeCartId].HitPoints = 115;
-    aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[0].Amount *= 2;
-    aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[1].Amount *= 2;
-    aocDat->Civs[i].Units[xtradeCartId].ResourceStorages[2].Amount *= 2;
-    aocDat->Civs[i].Units[xtradeCartId].Action.WorkRate *= 1.65;
-    aocDat->Civs[i].Units[xtradeCartId].Creatable.TrainTime *= 1.65;
-    aocDat->Civs[i].Units[xtradeCartId].HitPoints = 115;
-    aocDat->Civs[i].Units[xtradeCartId].Creatable.ResourceCosts[0].Amount *=
-        1.65;
-    aocDat->Civs[i].Units[xtradeCartId].Creatable.ResourceCosts[1].Amount *=
-        1.65;
+  for (auto& Civ : aocDat->Civs) {
+    Civ.Units[xtradeCartId] = Civ.Units[tradeCartId];
+    Civ.Units[xtradeCartId].HitPoints = 115;
+    Civ.Units[xtradeCartId].ResourceStorages[0].Amount *= 2;
+    Civ.Units[xtradeCartId].ResourceStorages[1].Amount *= 2;
+    Civ.Units[xtradeCartId].ResourceStorages[2].Amount *= 2;
+    Civ.Units[xtradeCartId].Action.WorkRate *= 1.65;
+    Civ.Units[xtradeCartId].Creatable.TrainTime *= 1.65;
+    Civ.Units[xtradeCartId].HitPoints = 115;
+    Civ.Units[xtradeCartId].Creatable.ResourceCosts[0].Amount *= 1.65;
+    Civ.Units[xtradeCartId].Creatable.ResourceCosts[1].Amount *= 1.65;
   }
 
   aocDat->Techs[xPatchResearchId] = aocDat->Techs[FireShipDisablerId];

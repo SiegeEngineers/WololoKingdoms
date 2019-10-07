@@ -3,7 +3,7 @@
 #include <QCommandLineParser>
 #include <QMessageBox>
 #ifndef _WIN32
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 bool can_run_windows_programs() {
