@@ -13,8 +13,10 @@ static const unsigned char base64_table[65] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 std::string base64_encode(const unsigned char* src, size_t len) {
-  unsigned char *out, *pos;
-  const unsigned char *end, *in;
+  unsigned char* out;
+  unsigned char* pos;
+  const unsigned char* end;
+  const unsigned char* in;
 
   size_t olen;
 
@@ -38,7 +40,7 @@ std::string base64_encode(const unsigned char* src, size_t len) {
     in += 3;
   }
 
-  if (end - in) {
+  if ((end - in) != 0) {
     *pos++ = base64_table[in[0] >> 2];
     if (end - in == 1) {
       *pos++ = base64_table[(in[0] & 0x03) << 4];

@@ -13,7 +13,7 @@ inline void DRSCreatorTableEntry::writeMeta(std::ostream& target) {
 
 inline void DRSCreatorTableEntry::writeContent(std::ostream& target) {
   offset_ = target.tellp();
-  if (stream_) {
+  if (stream_ != nullptr) {
     target << stream_->rdbuf();
   } else {
     std::ifstream stream(filename_, std::ios::binary);

@@ -34,7 +34,7 @@
 #include <string>
 
 // this copy is unfortunate but cfs::resolve returns a temporary :/
-const fs::path resolve_path(const fs::path& input) {
+fs::path resolve_path(const fs::path& input) {
 #ifdef _WIN32
   return input;
 #else
@@ -312,7 +312,7 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
   listener->increaseProgress(1); // 2
 
   if (settings.patch >= 0 &&
-      std::get<3>(settings.dataModList[settings.patch]) & 2) {
+      ((std::get<3>(settings.dataModList[settings.patch]) & 2) != 0)) {
     /*
      * A data mod might need slightly changed strings.
      */
@@ -376,7 +376,7 @@ void WKConverter::convertLanguageFile(
     } catch (std::invalid_argument const& e) {
       continue;
     }
-    if (langReplacement.count(nb)) {
+    if (langReplacement.count(nb) != 0u) {
       // this string has been changed by one of our patches (modified attributes
       // etc.)
       line = langReplacement[nb];
@@ -862,7 +862,8 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
       cfs::copy_file(it, outputDir / mapName,
                      fs::copy_options::update_existing);
       continue;
-    } else if (mapPrefix == "es_") {
+    }
+    if (mapPrefix == "es_") {
       continue; // These maps are already added to Voobly with the es@ prefix,
                 // no need to have this twice
     }
@@ -925,8 +926,8 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
         for (auto& [id, rx] : terrainsPerType[replacement.terrain_type]) {
           if (terrainsUsed.at(id))
             continue;
-          else if (isTerrainUsed(id, terrainsUsed, map,
-                                 terrainsPerType[replacement.terrain_type])) {
+          if (isTerrainUsed(id, terrainsUsed, map,
+                            terrainsPerType[replacement.terrain_type])) {
             continue;
           }
           success = true;
@@ -1005,7 +1006,7 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
       std::string scenarioFile = it.stem().string() + ".scx";
       terrainOverrides[scenarioFile] = resolve_path(inputDir / scenarioFile);
     }
-    if (terrainOverrides.size() != 0) {
+    if (!terrainOverrides.empty()) {
       createZRmap(terrainOverrides, outputDir, mapName);
     }
     terrainOverrides.clear();
@@ -1089,9 +1090,8 @@ bool WKConverter::isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
       terrainsUsed[66] = std::regex_search(map, rxDesert);
     }
     return terrainsUsed[66];
-  } else {
-    return terrainsUsed[terrain] = std::regex_search(map, patterns.at(terrain));
   }
+  return terrainsUsed[terrain] = std::regex_search(map, patterns.at(terrain));
 }
 
 void WKConverter::createZRmap(std::map<std::string, fs::path>& terrainOverrides,
@@ -1488,8 +1488,8 @@ bool WKConverter::checkGraphics(genie::DatFile* aocDat, short graphicID,
         return true;
     }
     return false;
-  } else
-    return true;
+  }
+  return true;
 }
 
 /**
@@ -1514,8 +1514,8 @@ short WKConverter::duplicateGraphic(genie::DatFile* aocDat,
                                     short graphicID, short compareID,
                                     short offset, bool civGroups) {
 
-  if (replacedGraphics.count(
-          graphicID)) // We've already replaced this, return the new graphics ID
+  if (replacedGraphics.count(graphicID) !=
+      0u) // We've already replaced this, return the new graphics ID
     return replacedGraphics[graphicID];
 
   /*
@@ -1642,7 +1642,7 @@ short WKConverter::duplicateGraphic(genie::DatFile* aocDat,
   }
 
   char civLetter = newGraphic.Name.at(newGraphic.Name.length() - 1);
-  if (civLetters.count(civLetter)) {
+  if (civLetters.count(civLetter) != 0u) {
     if (newGraphic.FileName == newGraphic.Name) {
       newGraphic.FileName.replace(newGraphic.FileName.length() - 1, 1, civCode);
       newGraphic.Name = newGraphic.FileName;
@@ -1724,10 +1724,7 @@ bool WKConverter::identifyHotkeyFile(const fs::path& directory,
       }
     }
   }
-  if (maxHkiNumber != -1)
-    return true;
-  else
-    return false;
+  return maxHkiNumber != -1;
 }
 
 void WKConverter::copyHotkeyFile(const fs::path& maxHki,
@@ -2382,13 +2379,13 @@ int WKConverter::run() {
     genie::DatFile aocDat;
     genie::DatFile hdDat;
     aocDat.setGameVersion(genie::GameVersion::GV_TC);
-    aocDat.load(aocDatPath.string().c_str());
+    aocDat.load(aocDatPath.string());
     listener->increaseProgress(3); // 28
 
     listener->setInfo("working$\n$workingHD");
 
     hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
-    hdDat.load(hdDatPath.string().c_str());
+    hdDat.load(hdDatPath.string());
     listener->increaseProgress(3); // 31
 
     listener->setInfo("working$\n$workingInterface");
@@ -2541,7 +2538,7 @@ int WKConverter::run() {
     cfs::remove(outputDatPath);
     genie::DatFile dat;
     dat.setGameVersion(genie::GameVersion::GV_TC);
-    dat.load(hdDatPath.string().c_str());
+    dat.load(hdDatPath.string());
     if (settings.fixFlags)
       adjustArchitectureFlags(&dat, resourceDir / "WKFlags.txt");
     dat.saveAs(outputDatPath.string().c_str());
@@ -2576,7 +2573,7 @@ int WKConverter::run() {
       outstream.close();
       symlinkSetup(settings.vooblyDir.parent_path() / dlcLevelName,
                    settings.vooblyDir, true);
-      if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
+      if ((std::get<3>(settings.dataModList[settings.patch]) & 4) != 0) {
         /*
          * Older patches need some SLP files that aren't in the drs used for the
          * main WK mod So we'll remove the symlink, copy the drs instead and
@@ -2602,7 +2599,7 @@ int WKConverter::run() {
                     fs::copy_options::update_existing);
       symlinkSetup(settings.upDir.parent_path() / dlcLevelName, settings.upDir,
                    true);
-      if (std::get<3>(settings.dataModList[settings.patch]) & 4) {
+      if ((std::get<3>(settings.dataModList[settings.patch]) & 4) != 0) {
         /*
          * Older patches need some SLP files that aren't in the drs used for the
          * main WK mod So we'll remove the symlink, copy the drs instead and
@@ -2678,8 +2675,8 @@ int WKConverter::run() {
 
     std::string newExeName;
     if (settings.patch >= 0 &&
-        (newExeName = std::get<4>(settings.dataModList[settings.patch])) !=
-            "") {
+        !(newExeName = std::get<4>(settings.dataModList[settings.patch]))
+             .empty()) {
       if (cfs::exists(settings.outPath / "age2_x1" / (newExeName + ".exe"))) {
         cfs::rename(settings.outPath / "age2_x1" / (newExeName + ".exe"),
                     settings.outPath / "age2_x1" / (newExeName + ".exe.bak"));

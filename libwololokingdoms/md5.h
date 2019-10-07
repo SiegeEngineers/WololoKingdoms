@@ -53,8 +53,8 @@ public:
 
   MD5();
   MD5(const std::string& text);
-  void update(const unsigned char* buf, size_type length);
-  void update(const char* buf, size_type length);
+  void update(const unsigned char* input, size_type length);
+  void update(const char* input, size_type length);
   MD5& finalize();
   [[nodiscard]] std::string hexdigest() const;
   [[nodiscard]] std::string b64digest() const;
@@ -92,6 +92,6 @@ private:
                         uint4 ac);
 };
 
-std::string md5(const std::string str);
+std::string md5(std::string str);
 
 #endif

@@ -443,7 +443,7 @@ bool MainWindow::checkSteamApi() {
   QDialog* dialog;
   QProcess process;
   SteamAPI_Init();
-  if (!SteamApps()) {
+  if (SteamApps() == nullptr) {
     steamPath = getSteamPath();
     // open steam
     process.start(QString::fromStdString(
@@ -452,23 +452,21 @@ bool MainWindow::checkSteamApi() {
     SteamAPI_Init();
   }
   int tries = 0;
-  while (!SteamApps() && tries < 40) {
+  while ((SteamApps() == nullptr) && tries < 40) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     SteamAPI_Init();
     tries++;
   }
-  if (!SteamApps()) {
+  if (SteamApps() == nullptr) {
     if (!SteamAPI_Init()) {
-      log(("noSteamApi. Path: " + hdPath.string() +
-           " Steam Path: " + steamPath.string())
-              .c_str());
+      log("noSteamApi. Path: " + hdPath.string() +
+          " Steam Path: " + steamPath.string());
       this->ui->label->setText(translation["noSteamApi"]);
       dialog = new Dialog(this, translation["noSteamApi"],
                           translation["errorTitle"]);
     } else {
-      log(("noSteamApi. Path: " + hdPath.string() +
-           " Steam Path: " + steamPath.string())
-              .c_str());
+      log("noSteamApi. Path: " + hdPath.string() +
+          " Steam Path: " + steamPath.string());
       this->ui->label->setText(translation["noSteam"]);
       dialog =
           new Dialog(this, translation["noSteam"], translation["errorTitle"]);
@@ -504,9 +502,8 @@ bool MainWindow::checkSteamApi() {
     SteamAPI_Shutdown();
     return true;
   } else {
-    log(("noSteamApi. Path: " + hdPath.string() +
-         " Steam Path: " + steamPath.string())
-            .c_str());
+    log("noSteamApi. Path: " + hdPath.string() +
+        " Steam Path: " + steamPath.string());
     this->ui->label->setText(translation["noFE"]);
     dialog = new Dialog(this, translation["noFE"], translation["errorTitle"]);
     dialog->exec();
@@ -578,7 +575,7 @@ void MainWindow::changeModPatch() {
 
   std::string dlcExtension = dlcLevel == 3 ? "" : dlcLevel == 2 ? " AK" : " FE";
   modName += std::get<0>(dataModList[patch]);
-  if (std::get<3>(dataModList[patch]) & 1) {
+  if ((std::get<3>(dataModList[patch]) & 1) != 0) {
     modName += dlcExtension;
   }
 

@@ -144,16 +144,16 @@ private:
 
   void copyHDMaps(const fs::path& inputDir, const fs::path& outputDir,
                   bool replace = false);
-  bool usesMultipleWaterTerrains(const std::string& map,
-                                 std::map<int, bool>& terrainsUsed);
-  bool isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
-                     const std::string& map,
-                     const std::map<int, std::regex>& patterns);
-  void upgradeTrees(int usedTerrain, int oldTerrain, std::string& map);
-  void createZRmap(std::map<std::string, fs::path>& terrainOverrides,
-                   fs::path outputDir, std::string mapName);
-  void terrainSwap(genie::DatFile* hdDat, genie::DatFile* aocDat, int tNew,
-                   int tOld, int slpID);
+  static bool usesMultipleWaterTerrains(const std::string& map,
+                                        std::map<int, bool>& terrainsUsed);
+  static bool isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
+                            const std::string& map,
+                            const std::map<int, std::regex>& patterns);
+  static void upgradeTrees(int usedTerrain, int oldTerrain, std::string& map);
+  static void createZRmap(std::map<std::string, fs::path>& terrainOverrides,
+                          fs::path outputDir, std::string mapName);
+  static void terrainSwap(genie::DatFile* hdDat, genie::DatFile* aocDat,
+                          int tNew, int tOld, int slpID);
   void indexDrsFiles(fs::path const& src, bool expansionFiles = true,
                      bool terrainFiles = false);
   inline void indexDrsFiles(fs::path const& src, WKSettings::IndexType flags) {
@@ -161,23 +161,27 @@ private:
         src, static_cast<int>(flags & WKSettings::IndexType::Expansion) != 0,
         static_cast<int>(flags & WKSettings::IndexType::Terrain) != 0);
   }
-  void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
-  std::pair<int, std::string> parseHDTextLine(std::string line);
+  static void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
+  static std::pair<int, std::string> parseHDTextLine(std::string line);
   void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut,
                            std::map<int, std::string>& langReplacement);
   void createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
-  void loadGameStrings(std::map<int, std::string>& langReplacement,
-                       fs::path file);
-  void loadModdedStrings(fs::path moddedStringsFile,
-                         std::map<int, std::string>& langReplacement);
-  void makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir);
+  static void loadGameStrings(std::map<int, std::string>& langReplacement,
+                              fs::path file);
+  static void loadModdedStrings(fs::path moddedStringsFile,
+                                std::map<int, std::string>& langReplacement);
+  static void makeRandomMapScriptsDrs(std::ofstream& out,
+                                      const fs::path& drsDir);
   void makeDrs(std::ofstream& out);
   void editDrs(std::ifstream* in, std::ofstream* out);
-  void copyCivIntroSounds(const fs::path& inputDir, const fs::path& outputDir);
+  static void copyCivIntroSounds(const fs::path& inputDir,
+                                 const fs::path& outputDir);
   void copyWallFiles(const fs::path& inputDir);
-  void createMusicPlaylist(const fs::path& inputDir, const fs::path& outputDir);
+  static void createMusicPlaylist(const fs::path& inputDir,
+                                  const fs::path& outputDir);
   void transferHdDatElements(genie::DatFile* hdDat, genie::DatFile* aocDat);
-  void adjustArchitectureFlags(genie::DatFile* aocDat, fs::path flagFilename);
+  static void adjustArchitectureFlags(genie::DatFile* aocDat,
+                                      fs::path flagFilename);
   void patchArchitectures(genie::DatFile* aocDat);
   bool checkGraphics(genie::DatFile* aocDat, short graphicID,
                      std::vector<int> checkedGraphics);
@@ -188,14 +192,14 @@ private:
                          std::map<short, short>& replacedGraphics,
                          std::vector<short> duplicatedGraphics, short graphicID,
                          short compareID, short offset, bool civGroups = false);
-  bool identifyHotkeyFile(const fs::path& directory, fs::path& maxHki,
-                          fs::path& lastEditedHki);
-  void copyHotkeyFile(const fs::path& maxHki, const fs::path& lastEditedHki,
-                      fs::path dst);
+  static bool identifyHotkeyFile(const fs::path& directory, fs::path& maxHki,
+                                 fs::path& lastEditedHki);
+  static void copyHotkeyFile(const fs::path& maxHki,
+                             const fs::path& lastEditedHki, fs::path dst);
   void removeWkHotkeys();
   void hotkeySetup();
-  void refreshSymlink(const fs::path& oldDir, const fs::path& newDir,
-                      const LinkType type, bool copyOldContents = false);
+  static void refreshSymlink(const fs::path& oldPath, const fs::path& newPath,
+                             LinkType type, bool copyOldContents = false);
   void symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                     bool dataMod = false);
   void setupFolders(fs::path xmlOutPathUP);

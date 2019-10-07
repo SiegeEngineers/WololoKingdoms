@@ -19,7 +19,7 @@ void malayPatch(genie::DatFile* aocDat) {
     aocDat->Effects[malayTechTreeId].EffectCommands.push_back(
         aocDat->Effects[malayEffectTechId].EffectCommands[i]);
   }
-  if (aocDat->Effects[fishtrapTechId].EffectCommands.size() == 0 ||
+  if (aocDat->Effects[fishtrapTechId].EffectCommands.empty() ||
       aocDat->Effects[fishtrapTechId].EffectCommands[0].TargetUnit != 88) {
     // Fish trap effect not fixed on HD yet
     genie::EffectCommand effect;

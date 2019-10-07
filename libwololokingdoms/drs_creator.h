@@ -37,7 +37,7 @@ public:
   DRSCreatorTableEntry& operator=(DRSCreatorTableEntry const&);
   inline ~DRSCreatorTableEntry() {
     // may be moved out.
-    if (stream_)
+    if (stream_ != nullptr)
       delete stream_;
   }
 
