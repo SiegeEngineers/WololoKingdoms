@@ -1,0 +1,3 @@
+---
+Checks: 'bugprone-*,clang-diagnostic-*,clang-analyzer-*,modernize-*,-modernize-use-trailing-return-type,portability-*,readability-*,-readability-braces-around-statements,-readability-uppercase-literal-suffix'
+FormatStyle: file
