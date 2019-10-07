@@ -53,14 +53,15 @@ std::string iconvert(const std::string& input, const std::string& from,
 #endif
   auto in_size = input.length();
   size_t out_size = in_size * 2;
-  char* result = new char[out_size];
-  char* out = result; // separate value because iconv advances the pointer
-
   iconv_t convert = iconv_open(to.c_str(), from.c_str());
   if (convert == (iconv_t)-1) {
     return "";
   }
+
+  char* result = new char[out_size];
+  char* out = result; // separate value because iconv advances the pointer
   if (iconv(convert, &in_str, &in_size, &out, &out_size) == (size_t)-1) {
+    delete[] result;
     return "";
   }
   *out = '\0';
