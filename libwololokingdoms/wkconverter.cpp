@@ -119,11 +119,14 @@ void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
   }
 }
 
-std::optional<std::pair<int, std::string>> WKConverter::parseHDTextLine(std::string line) const noexcept {
-  int spaceIdx = line.find(' ');
+using KeyValueString = std::pair<int, std::string>;
+std::optional<KeyValueString> parseHDTextLine(std::string line) noexcept {
+  int spaceIdx = line.find_first_of(" \t");
   auto stringKey = line.substr(0, spaceIdx);
 
-  if (stringKey.empty() || !std::all_of(stringKey.begin(), stringKey.end(), [](char ch) { return std::isdigit(ch); })) {
+  if (stringKey.empty() ||
+      !std::all_of(stringKey.begin(), stringKey.end(),
+                   [](char ch) { return std::isdigit(ch); })) {
     return std::nullopt;
   }
 
@@ -151,6 +154,14 @@ std::optional<std::pair<int, std::string>> WKConverter::parseHDTextLine(std::str
     // skip the old civ descriptions
     return std::nullopt;
   }
+
+  // load the string from the HD edition file
+  int startIdx = line.find('"', spaceIdx);
+  int endIdx = line.find('"', startIdx + 1);
+  auto value = line.substr(startIdx + 1, endIdx - startIdx - 1);
+
+  // Remap string key IDs to AoC
+
   if (nb >= 20312 && nb <= 20341) {
     switch (nb) {
     case 20312:
@@ -260,33 +271,21 @@ std::optional<std::pair<int, std::string>> WKConverter::parseHDTextLine(std::str
     nb += 5700;
   }
 
-  if (nb >= 120150 &&
-      nb <= 120180) { // descriptions of the civs in the expansion
-    // These civ descriptions can be too long for the tech tree, we'll take out
-    // some newlines
+  // These civ descriptions can be too long for the tech tree, we'll take out
+  // some newlines
+  if (nb >= 120150 && nb <= 120180) {
     if (nb == 120156 || nb == 120155) {
-      replace_all(line, "civilization \\n\\n", "civilization \\n");
+      replace_all(value, "civilization \\n\\n", "civilization \\n");
     }
     if (nb == 120167) {
-      replace_all(line, "civilization \\n\\n", "civilization \\n");
-      replace_all(line, "\\n\\n<b>Unique Tech", "\\n<b>Unique Tech");
+      replace_all(value, "civilization \\n\\n", "civilization \\n");
+      replace_all(value, "\\n\\n<b>Unique Tech", "\\n<b>Unique Tech");
     }
     // replace the old descriptions of the civs in the base game
     nb -= 100000;
   }
 
-  // load the string from the HD edition file
-  int firstQuoteIdx = spaceIdx;
-  do {
-    firstQuoteIdx++;
-  } while (line[firstQuoteIdx] != '"');
-  int secondQuoteIdx = firstQuoteIdx;
-  do {
-    secondQuoteIdx++;
-  } while (line[secondQuoteIdx] != '"');
-  line = line.substr(firstQuoteIdx + 1, secondQuoteIdx - firstQuoteIdx - 1);
-
-  return std::make_pair(nb, line);
+  return std::make_pair(nb, value);
 }
 
 void WKConverter::createLanguageFile(fs::path languageIniPath,
