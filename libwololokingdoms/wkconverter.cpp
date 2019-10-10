@@ -1113,15 +1113,15 @@ void WKConverter::createZRmap(std::map<std::string, fs::path>& terrainOverrides,
 void WKConverter::transferHdDatElements(genie::DatFile* hdDat,
                                         genie::DatFile* aocDat) {
 
-  aocDat->Sounds = hdDat->Sounds;
-  aocDat->GraphicPointers = hdDat->GraphicPointers;
-  aocDat->Graphics = hdDat->Graphics;
-  aocDat->Effects = hdDat->Effects;
-  aocDat->UnitHeaders = hdDat->UnitHeaders;
-  aocDat->Civs = hdDat->Civs;
-  aocDat->Techs = hdDat->Techs;
-  aocDat->UnitLines = hdDat->UnitLines;
-  aocDat->TechTree = hdDat->TechTree;
+  aocDat->Sounds = std::move(hdDat->Sounds);
+  aocDat->GraphicPointers = std::move(hdDat->GraphicPointers);
+  aocDat->Graphics = std::move(hdDat->Graphics);
+  aocDat->Effects = std::move(hdDat->Effects);
+  aocDat->UnitHeaders = std::move(hdDat->UnitHeaders);
+  aocDat->Civs = std::move(hdDat->Civs);
+  aocDat->Techs = std::move(hdDat->Techs);
+  aocDat->UnitLines = std::move(hdDat->UnitLines);
+  aocDat->TechTree = std::move(hdDat->TechTree);
   aocDat->TerrainRestrictions.push_back(aocDat->TerrainRestrictions[14]);
   aocDat->FloatPtrTerrainTables.push_back(1);
   aocDat->TerrainPassGraphicPointers.push_back(1);
@@ -2377,29 +2377,31 @@ int WKConverter::run() {
     listener->setInfo("working$\n$workingAoc");
 
     genie::DatFile aocDat;
-    genie::DatFile hdDat;
     aocDat.setGameVersion(genie::GameVersion::GV_TC);
     aocDat.load(aocDatPath.string());
     listener->increaseProgress(3); // 28
-
-    listener->setInfo("working$\n$workingHD");
-
-    hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
-    hdDat.load(hdDatPath.string());
-    listener->increaseProgress(3); // 31
 
     listener->setInfo("working$\n$workingInterface");
 
     listener->log("HUD Hack");
     shiftHudIndices(slpFiles, assetsPath);
     indexDrsFiles(resourceDir / "graphics" / "huds");
-    listener->increaseProgress(1); // 32
+    listener->increaseProgress(1); // 29
 
-    listener->setInfo("working$\n$workingDat");
+    // `hdDat` is destroyed by `transferHdDatElements` so make this scope small
+    // to prevent accidental use afterward
+    {
+      listener->setInfo("working$\n$workingHD");
+      genie::DatFile hdDat;
+      hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
+      hdDat.load(hdDatPath.string().c_str());
+      listener->increaseProgress(3); // 32
 
-    listener->log("Transfer HD Dat elements");
-    transferHdDatElements(&hdDat, &aocDat);
-    listener->increaseProgress(1); // 33
+      listener->setInfo("working$\n$workingDat");
+      listener->log("Transfer HD Dat elements");
+      transferHdDatElements(&hdDat, &aocDat);
+      listener->increaseProgress(1); // 33
+    }
 
     listener->log("Patch Architectures");
     /*
