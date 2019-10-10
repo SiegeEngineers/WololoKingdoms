@@ -31,6 +31,7 @@
 #include <genie/dat/DatFile.h>
 #include <genie/lang/LangFile.h>
 #include <map>
+#include <optional>
 #include <string>
 
 // this copy is unfortunate but cfs::resolve returns a temporary :/
@@ -118,28 +119,37 @@ void WKConverter::copyHistoryFiles(fs::path inputDir, fs::path outputDir) {
   }
 }
 
-std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
+std::optional<std::pair<int, std::string>> WKConverter::parseHDTextLine(std::string line) const noexcept {
   int spaceIdx = line.find(' ');
-  std::string number = line.substr(0, spaceIdx);
-  int nb = stoi(number);
+  auto stringKey = line.substr(0, spaceIdx);
+
+  if (stringKey.empty() || !std::all_of(stringKey.begin(), stringKey.end(), [](char ch) { return std::isdigit(ch); })) {
+    return std::nullopt;
+  }
+
+  int nb = std::atoi(stringKey.c_str());
+  if (nb == 0) {
+    // Conversion failed.
+    return std::nullopt;
+  }
   if (nb == 0xFFFF) {
     /*
      * this one seems to be used by AOC for dynamically-generated strings
      * (like market tributes), maybe it's the maximum the game can read ?
      */
-    throw std::invalid_argument("FFFF");
+    return std::nullopt;
   }
   if (nb <= 1000) {
     // skip changes to fonts
-    throw std::invalid_argument("fonts");
+    return std::nullopt;
   }
   if (nb >= 20150 && nb <= 20167) {
     // skip the old civ descriptions
-    throw std::invalid_argument("old civ descriptions");
+    return std::nullopt;
   }
   if (nb >= 9871 && nb <= 9946) {
     // skip the old civ descriptions
-    throw std::invalid_argument("uncentered achievement screen stuff");
+    return std::nullopt;
   }
   if (nb >= 20312 && nb <= 20341) {
     switch (nb) {
@@ -243,13 +253,11 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
 
   if (nb >= 5800 && nb < 6000) {
     nb += 5700;
-    number = std::to_string(nb);
   }
   if (nb >= 106000 && nb < 106160) { // AK&AoR AI names have 10xxxx id, get rid
                                      // of the 10, then shift
     nb -= 100000;
     nb += 5700;
-    number = std::to_string(nb);
   }
 
   if (nb >= 120150 &&
@@ -265,7 +273,6 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
     }
     // replace the old descriptions of the civs in the base game
     nb -= 100000;
-    number = std::to_string(nb);
   }
 
   // load the string from the HD edition file
@@ -319,11 +326,10 @@ void WKConverter::createLanguageFile(fs::path languageIniPath,
     std::ifstream modLang(patchFolder / (settings.language + ".txt"));
     std::string line;
     while (std::getline(modLang, line)) {
-      try {
-        auto [id, value] = parseHDTextLine(line);
+      auto result = parseHDTextLine(line);
+      if (result) {
+        auto& [id, value] = result.value();
         langReplacement[id] = value;
-      } catch (std::invalid_argument const& e) {
-        continue;
       }
     }
     modLang.close();
@@ -371,9 +377,10 @@ void WKConverter::convertLanguageFile(
   std::string line;
   int nb;
   while (std::getline(in, line)) {
-    try {
-      std::tie(nb, line) = parseHDTextLine(line);
-    } catch (std::invalid_argument const& e) {
+    auto result = parseHDTextLine(line);
+    if (result) {
+      std::tie(nb, line) = result.value();
+    } else {
       continue;
     }
     if (langReplacement.count(nb) != 0u) {

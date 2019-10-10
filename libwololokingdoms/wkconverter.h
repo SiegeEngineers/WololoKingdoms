@@ -5,6 +5,7 @@
 #include "wksettings.h"
 #include <fs.h>
 #include <map>
+#include <optional>
 #include <regex>
 #include <set>
 #include <string>
@@ -163,6 +164,7 @@ private:
   }
   static void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
   static std::pair<int, std::string> parseHDTextLine(std::string line);
+  static std::optional<std::pair<int, std::string>> parseHDTextLine(std::string line) const noexcept;
   void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut,
                            std::map<int, std::string>& langReplacement);
   void createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
