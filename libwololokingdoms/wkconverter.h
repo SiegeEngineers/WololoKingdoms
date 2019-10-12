@@ -130,7 +130,7 @@ private:
                                         std::map<int, bool>& terrainsUsed);
   static bool isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
                             const std::string& map,
-                            const std::map<int, std::regex>& patterns);
+                            const std::map<int, std::string_view>& constNames);
   static void upgradeTrees(int usedTerrain, int oldTerrain, std::string& map);
   static void createZRmap(std::map<std::string, fs::path>& terrainOverrides,
                           fs::path outputDir, std::string mapName);

@@ -29,6 +29,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/genieutils/)
 # include directories:
 
 include_directories(include/)
+include_directories(third_party/compile-time-regular-expressions/include/)
 include_directories(third_party/genieutils/include/)
 include_directories(third_party/miniz)
 if (WIN32)
@@ -58,6 +59,8 @@ if (NOT WORKING_STD_FS)
 endif()
 
 if (WIN32)
+  add_definitions(-DWIN32_LEAN_AND_MEAN)
+  add_definitions(-DNOMINMAX)
   add_definitions(-DUNICODE)
   add_definitions(-D_UNICODE)
 endif()
