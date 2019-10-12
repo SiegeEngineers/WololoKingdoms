@@ -1075,12 +1075,13 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
   listener->increaseProgress(1); // 16+20 22?
 }
 
-static constexpr auto rxAnyWatterConst =
-    ctll::fixed_string(R"(\W(MED_|DEEP_)?WATER|DLC_WATER[45]\W)");
+// Match WATER, MED_WATER, DEEP_WATER, DLC_WATER4, DLC_WATER5
+static constexpr auto rxAnyWaterConst =
+    ctll::fixed_string(R"(\W(?:(MED_|DEEP_)?WATER|DLC_WATER[45])\W)");
 bool WKConverter::usesMultipleWaterTerrains(const std::string& map,
                                             std::map<int, bool>& terrainsUsed) {
   if (!terrainsUsed[23]) {
-    terrainsUsed[23] = ctre::search<rxAnyWatterConst>(map);
+    terrainsUsed[23] = ctre::search<rxAnyWaterConst>(map);
   }
   return terrainsUsed[23];
 }
