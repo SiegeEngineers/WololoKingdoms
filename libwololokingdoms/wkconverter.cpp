@@ -26,6 +26,8 @@
 #include "wololo/datPatch.h"
 #include "zr_map_creator.h"
 #include <cctype>
+#include <ctll.hpp>
+#include <ctre.hpp>
 #include <fs.h>
 #include <fstream>
 #include <genie/dat/DatFile.h>
@@ -33,8 +35,6 @@
 #include <map>
 #include <optional>
 #include <string>
-#include <ctll.hpp>
-#include <ctre.hpp>
 
 enum TerrainType {
   None,
@@ -741,25 +741,22 @@ void WKConverter::createMusicPlaylist(const fs::path& inputDir,
   outputFile.close();
 }
 
-static const std::array<std::map<int, std::regex>, 6> terrainsPerType = {
+static const std::array<std::map<int, std::string_view>, 6> terrainsPerType = {
     {// The Order is important, see the TerrainTypes Enum!
      {},
-     {{23, std::regex("\\WMED_WATER\\W")},
-      {22, std::regex("\\WDEEP_WATER\\W")}},
+     {{23, "MED_WATER"}, {22, "DEEP_WATER"}},
      {},
-     {{0, std::regex("\\WGRASS\\W")},
-      {3, std::regex("\\WDIRT3\\W")},
-      {6, std::regex("\\WDIRT1\\W")},
-      {9, std::regex("\\WGRASS3\\W")},
-      {12, std::regex("\\WGRASS2\\W")},
-      {14, std::regex("\\WDESERT\\W")},
-      {24, std::regex("\\WROAD\\W")},
-      {25, std::regex("\\WROAD2\\W")},
-      {39, std::regex("\\WROAD3\\W")}},
-     {{10, std::regex("\\WFOREST\\W")},
-      {13, std::regex("\\WPALM_DESERT\\W")},
-      {21, std::regex("\\WSNOW_FOREST\\W")}},
-     {{40, std::regex("\\WDLC_ROCK\\W")}, {35, std::regex("\\WICE\\W")}}}};
+     {{0, "GRASS"},
+      {3, "DIRT3"},
+      {6, "DIRT1"},
+      {9, "GRASS3"},
+      {12, "GRASS2"},
+      {14, "DESERT"},
+      {24, "ROAD"},
+      {25, "ROAD2"},
+      {39, "ROAD3"}},
+     {{10, "FOREST"}, {13, "PALM_DESERT"}, {21, "SNOW_FOREST"}},
+     {{40, "DLC_ROCK"}, {35, "ICE"}}}};
 
 static const std::vector<MapConvertData> rmsTerrainReplacements = {
     // slp_name, const_name_pattern, replaced_name_pattern, old_terrain_id,
@@ -1078,7 +1075,8 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
   listener->increaseProgress(1); // 16+20 22?
 }
 
-static constexpr auto rxAnyWatterConst = ctll::fixed_string(R"(\W(MED_|DEEP_)?WATER|DLC_WATER[45]\W)");
+static constexpr auto rxAnyWatterConst =
+    ctll::fixed_string(R"(\W(MED_|DEEP_)?WATER|DLC_WATER[45]\W)");
 bool WKConverter::usesMultipleWaterTerrains(const std::string& map,
                                             std::map<int, bool>& terrainsUsed) {
   if (!terrainsUsed[23]) {
@@ -1123,11 +1121,30 @@ void WKConverter::upgradeTrees(int usedTerrain, int oldTerrain,
                                oldTree + " " + newTree + " 0$1\n");
 }
 
-static constexpr auto rxForest = ctll::fixed_string("\\W(PINE_FOREST|LEAVES|JUNGLE|BAMBOO|FOREST)\\W");
-static constexpr auto rxDesert = ctll::fixed_string("\\W(PALM_DESERT|DESERT)\\W");
-bool WKConverter::isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
-                                const std::string& map,
-                                const std::map<int, std::regex>& patterns) {
+bool contains_rms_word(std::string_view haystack, std::string_view needle) {
+  auto index = haystack.find(needle);
+  if (index == std::string_view::npos) {
+    return false;
+  } else {
+    // We can only check for whitespace, because the RMS parser in the game is
+    // extremely whitespace sensitive. For example, it parser `WATER)` as a
+    // single word, not `WATER` followed by `)`.
+    auto endOfName = index + needle.size();
+    if ((index > 0 && !std::isspace(haystack[index - 1])) ||
+        (endOfName < haystack.size() - 1 && !std::isspace(haystack[endOfName]))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static constexpr auto rxForest =
+    ctll::fixed_string("\\W(PINE_FOREST|LEAVES|JUNGLE|BAMBOO|FOREST)\\W");
+static constexpr auto rxDesert =
+    ctll::fixed_string("\\W(PALM_DESERT|DESERT)\\W");
+bool WKConverter::isTerrainUsed(
+    int terrain, std::map<int, bool>& terrainsUsed, const std::string& map,
+    const std::map<int, std::string_view>& constNames) {
   if (terrain == 5 || terrain == 10) {
     if (!terrainsUsed[63]) {
       terrainsUsed[63] = true;
@@ -1142,7 +1159,8 @@ bool WKConverter::isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
     }
     return terrainsUsed[66];
   }
-  return terrainsUsed[terrain] = std::regex_search(map, patterns.at(terrain));
+  terrainsUsed[terrain] = contains_rms_word(map, constNames.at(terrain));
+  return terrainsUsed[terrain];
 }
 
 void WKConverter::createZRmap(std::map<std::string, fs::path>& terrainOverrides,
