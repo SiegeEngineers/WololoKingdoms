@@ -9,6 +9,7 @@
 #include "fixes/demoshipfix.h"
 #include "fixes/disablenonworkingunits.h"
 #include "fixes/ethiopiansfreepikeupgradefix.h"
+#include "fixes/houseattackfix.h"
 #include "fixes/hotkeysfix.h"
 #include "fixes/khmerfix.h"
 #include "fixes/malayfix.h"
@@ -2477,6 +2478,7 @@ int WKConverter::run() {
         wololo::vietFix,
         wololo::malayFix,
         wololo::ethiopiansFreePikeUpgradeFix,
+		wololo::houseAttackFix,
         wololo::hotkeysFix,
         wololo::maliansFreeMiningUpgradeFix,
         wololo::portugueseFix,

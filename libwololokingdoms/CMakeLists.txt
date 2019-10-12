@@ -83,6 +83,7 @@ set(ALL_SRC
     fixes/disablenonworkingunits.cpp
     fixes/ethiopiansfreepikeupgradefix.cpp
     fixes/feitoriafix.cpp
+	fixes/houseattackfix.cpp
     fixes/hotkeysfix.cpp
     fixes/khmerfix.cpp
     fixes/malayfix.cpp
