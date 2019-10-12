@@ -7,3 +7,6 @@
 [submodule "libwololokingdoms/third_party/filesystem"]
 	path = libwololokingdoms/third_party/filesystem
 	url = https://github.com/gulrak/filesystem
+[submodule "libwololokingdoms/third_party/compile-time-regular-expressions"]
+	path = libwololokingdoms/third_party/compile-time-regular-expressions
+	url = https://github.com/hanickadot/compile-time-regular-expressions

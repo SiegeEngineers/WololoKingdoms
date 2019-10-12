@@ -33,6 +33,8 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <ctll.hpp>
+#include <ctre.hpp>
 
 enum TerrainType {
   None,
@@ -1076,21 +1078,11 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
   listener->increaseProgress(1); // 16+20 22?
 }
 
-static const std::regex rxDlcWater4("\\WDLC_WATER4\\W");
-static const std::regex rxDlcWater5("\\WDLC_WATER5\\W");
-static const std::regex rxWater("\\WWATER\\W");
-static const std::regex rxMedWater("\\WMED_WATER\\W");
-static const std::regex rxDeepWater("\\WDEEP_WATER\\W");
-
+static constexpr auto rxAnyWatterConst = ctll::fixed_string(R"(\W(MED_|DEEP_)?WATER|DLC_WATER[45]\W)");
 bool WKConverter::usesMultipleWaterTerrains(const std::string& map,
                                             std::map<int, bool>& terrainsUsed) {
   if (!terrainsUsed[23]) {
-    int hits = (int)std::regex_search(map, rxDlcWater4) +
-               (int)std::regex_search(map, rxDlcWater5) +
-               (int)std::regex_search(map, rxWater) +
-               (int)std::regex_search(map, rxMedWater) +
-               (int)std::regex_search(map, rxDeepWater);
-    terrainsUsed[23] = hits > 1;
+    terrainsUsed[23] = ctre::search<rxAnyWatterConst>(map);
   }
   return terrainsUsed[23];
 }
