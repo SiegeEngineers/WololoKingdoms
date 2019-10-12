@@ -124,24 +124,6 @@ private:
   std::string baseModName = "WololoKingdoms";
   fs::path resourceDir = "resources";
 
-  enum TerrainType {
-    None,
-    WaterTerrain,
-    FixedTerrain,
-    LandTerrain,
-    ForestTerrain,
-    UnbuildableTerrain
-  };
-
-  struct MapConvertData {
-    std::string slp_name;
-    std::vector<std::string> const_names;
-    std::string replaced_name;
-    int old_terrain_id;
-    int new_terrain_id;
-    TerrainType terrain_type;
-  };
-
   void copyHDMaps(const fs::path& inputDir, const fs::path& outputDir,
                   bool replace = false);
   static bool usesMultipleWaterTerrains(const std::string& map,
