@@ -9,8 +9,8 @@ void demoshipPatch(genie::DatFile* aocDat) {
    * without However, it does full damage in the entire blast radius
    */
 
-  size_t const demoRaftUnitId = 653;
-  size_t const demoShipUnitId = 527;
+  size_t const demoRaftUnitId = 527;
+  size_t const demoShipUnitId = 653;
   size_t const heavyDemoShipUnitId = 528;
   // size_t const darkAgeTechId = 104;
 
