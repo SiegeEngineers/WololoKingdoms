@@ -1123,23 +1123,22 @@ void WKConverter::upgradeTrees(int usedTerrain, int oldTerrain,
                                oldTree + " " + newTree + " 0$1\n");
 }
 
-static const std::regex
-    rxForest("\\W(PINE_FOREST|LEAVES|JUNGLE|BAMBOO|FOREST)\\W");
-static const std::regex rxDesert("\\W(PALM_DESERT|DESERT)\\W");
+static constexpr auto rxForest = ctll::fixed_string("\\W(PINE_FOREST|LEAVES|JUNGLE|BAMBOO|FOREST)\\W");
+static constexpr auto rxDesert = ctll::fixed_string("\\W(PALM_DESERT|DESERT)\\W");
 bool WKConverter::isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
                                 const std::string& map,
                                 const std::map<int, std::regex>& patterns) {
   if (terrain == 5 || terrain == 10) {
     if (!terrainsUsed[63]) {
       terrainsUsed[63] = true;
-      terrainsUsed[64] = std::regex_search(map, rxForest);
+      terrainsUsed[64] = ctre::search<rxForest>(map);
     }
     return terrainsUsed[64];
   }
   if (terrain == 13 || terrain == 14) {
     if (!terrainsUsed[65]) {
       terrainsUsed[65] = true;
-      terrainsUsed[66] = std::regex_search(map, rxDesert);
+      terrainsUsed[66] = ctre::search<rxDesert>(map);
     }
     return terrainsUsed[66];
   }
