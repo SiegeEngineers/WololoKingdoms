@@ -6,20 +6,20 @@ namespace wololo {
 void demoshipPatch(genie::DatFile* aocDat) {
   /*
    * There are a few hardcoded detonation units, UP 1.5 offers a way to do it
-   * without However, it does full damage in the entire blast radius
+   * without. However, it does full damage in the entire blast radius.
    */
 
-  size_t const demoRaftUnitId = 527;
-  size_t const demoShipUnitId = 653;
-  size_t const heavyDemoShipUnitId = 528;
-  // size_t const darkAgeTechId = 104;
-
+  // TODO remove commented out code
+  //size_t const demoRaftUnitId = 1104;
+  size_t const demoShipUnitId = 527;
+  //size_t const heavyDemoShipUnitId = 528;
+  
   for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
-    aocDat->Civs[civIndex].Units[demoRaftUnitId].Creatable.HeroMode = 96;
+    //aocDat->Civs[civIndex].Units[demoRaftUnitId].Creatable.HeroMode = 96;
 	// Hero mode for the demo ship must be 104 so that it's attack stance defaults to Defensive
 	// when a Demolition ship is placed in the scenario editor.
     aocDat->Civs[civIndex].Units[demoShipUnitId].Creatable.HeroMode = 104;
-    aocDat->Civs[civIndex].Units[heavyDemoShipUnitId].Creatable.HeroMode = 96;
+    //aocDat->Civs[civIndex].Units[heavyDemoShipUnitId].Creatable.HeroMode = 96;
   }
   /*genie::TechageEffect effect = genie::TechageEffect();
       effect.Type = 0; // set attribute
