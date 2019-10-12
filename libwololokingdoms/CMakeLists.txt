@@ -59,6 +59,8 @@ if (NOT WORKING_STD_FS)
 endif()
 
 if (WIN32)
+  add_definitions(-DWIN32_LEAN_AND_MEAN)
+  add_definitions(-DNOMINMAX)
   add_definitions(-DUNICODE)
   add_definitions(-D_UNICODE)
 endif()
