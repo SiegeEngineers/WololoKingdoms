@@ -2454,7 +2454,7 @@ int WKConverter::run() {
       listener->setInfo("working$\n$workingHD");
       genie::DatFile hdDat;
       hdDat.setGameVersion(genie::GameVersion::GV_Cysion);
-      hdDat.load(hdDatPath.string().c_str());
+      hdDat.load(hdDatPath.string());
       listener->increaseProgress(3); // 32
 
       listener->setInfo("working$\n$workingDat");
