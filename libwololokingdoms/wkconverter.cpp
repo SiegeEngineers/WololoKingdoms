@@ -2487,7 +2487,8 @@ int WKConverter::run() {
         wololo::trickleBuildingFix,
         wololo::smallFixes,
         wololo::cuttingFix,
-        wololo::ai900UnitIdFix};
+        wololo::ai900UnitIdFix
+	};
 
     listener->setInfo("working$\n$workingPatches");
 
