@@ -1020,7 +1020,7 @@ void WKConverter::copyHDMaps(const fs::path& inputDir,
         map = std::regex_replace(map, std::regex(terrainName),
                                  "MY" + replacement.replaced_name);
         std::regex terrainConstDef =
-            std::regex("#const\\sMY+" + terrainName + "\\s+" +
+            std::regex("#const\\s+MY" + terrainName + "\\s+" +
                        std::to_string(replacement.old_terrain_id));
         std::string temp =
             std::regex_replace(map, terrainConstDef,
