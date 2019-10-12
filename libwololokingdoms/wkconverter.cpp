@@ -1123,20 +1123,23 @@ void WKConverter::upgradeTrees(int usedTerrain, int oldTerrain,
 }
 
 bool contains_rms_word(std::string_view haystack, std::string_view needle) {
-  auto index = haystack.find(needle);
-  if (index == std::string_view::npos) {
-    return false;
-  } else {
+  size_t index = 0;
+  while (true) {
+    index = haystack.find(needle, index);
+    if (index == std::string_view::npos) {
+      return false;
+    }
+    auto endOfName = index + needle.size();
     // We can only check for whitespace, because the RMS parser in the game is
     // extremely whitespace sensitive. For example, it parser `WATER)` as a
     // single word, not `WATER` followed by `)`.
-    auto endOfName = index + needle.size();
-    if ((index > 0 && !std::isspace(haystack[index - 1])) ||
-        (endOfName < haystack.size() - 1 && !std::isspace(haystack[endOfName]))) {
-      return false;
+    if ((index == 0 || std::isspace(haystack[index - 1])) &&
+        (endOfName == haystack.size() - 1 || std::isspace(haystack[endOfName]))) {
+      return true;
     }
+
+    index += 1;
   }
-  return true;
 }
 
 static constexpr auto rxForest =
