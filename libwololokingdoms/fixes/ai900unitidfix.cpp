@@ -79,25 +79,17 @@ void swapIdInCommon(genie::techtree::Common* common, int id1, int id2) {
 
 void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   // First : swap the actual units
-  genie::UnitHeader tmpHeader = aocDat->UnitHeaders[id1];
-  aocDat->UnitHeaders[id1] = aocDat->UnitHeaders[id2];
-  aocDat->UnitHeaders[id2] = tmpHeader;
+  std::swap(aocDat->UnitHeaders[id1], aocDat->UnitHeaders[id2]);
   for (auto& Civ : aocDat->Civs) {
-    /* switch all 3 ids around first*/
+    // Fix the IDs
     Civ.Units[id1].ID = id2;
     Civ.Units[id1].CopyID = id2;
     Civ.Units[id1].BaseID = id2;
     Civ.Units[id2].ID = id1;
     Civ.Units[id2].CopyID = id1;
     Civ.Units[id2].BaseID = id1;
-    /*switch the units*/
-    genie::Unit tmpUnit = Civ.Units[id1];
-    Civ.Units[id1] = Civ.Units[id2];
-    Civ.Units[id2] = tmpUnit;
-    /*switch the unit pointers*/
-    uint32_t tmpPointer = Civ.UnitPointers[id1];
-    Civ.UnitPointers[id1] = Civ.UnitPointers[id2];
-    Civ.UnitPointers[id2] = tmpPointer;
+    std::swap(Civ.Units[id1], Civ.Units[id2]);
+    std::swap(Civ.UnitPointers[id1], Civ.UnitPointers[id2]);
   }
 
   // Then : modify all references to these units
