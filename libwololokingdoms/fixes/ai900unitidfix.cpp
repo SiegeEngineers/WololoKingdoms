@@ -12,7 +12,7 @@ namespace wololo {
  * work
  */
 
-std::vector<std::pair<int, int>> const unitsIDtoSwap = {
+static const std::vector<std::pair<int, int>> unitsIDtoSwap = {
 
     {1103, 529}, // Fire Galley, Fire Ship
     {1104, 527}, // Demolition Raft, Demolition Ship NOTE: These two are special
@@ -53,7 +53,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
     {1122, 891}  // Elite Ballista Ele, SGTWR_D
 };
 
-void swapId(int32_t* val, int32_t id1, int32_t id2) {
+static void swapId(int32_t* val, int32_t id1, int32_t id2) {
   if (*val == id1) {
     *val = id2;
   } else if (*val == id2) {
@@ -61,7 +61,7 @@ void swapId(int32_t* val, int32_t id1, int32_t id2) {
   }
 }
 
-void swapId(int16_t* val, int16_t id1, int16_t id2) {
+static void swapId(int16_t* val, int16_t id1, int16_t id2) {
   if (*val == id1) {
     *val = id2;
   } else if (*val == id2) {
@@ -69,7 +69,7 @@ void swapId(int16_t* val, int16_t id1, int16_t id2) {
   }
 }
 
-void swapIdInCommon(genie::techtree::Common* common, int id1, int id2) {
+static void swapIdInCommon(genie::techtree::Common* common, int id1, int id2) {
   for (int i = 0; i < common->SlotsUsed; i++) {
     if (common->Mode[i] == 2) { // Unit
       swapId(&common->UnitResearch[i], id1, id2);
@@ -77,7 +77,7 @@ void swapIdInCommon(genie::techtree::Common* common, int id1, int id2) {
   }
 }
 
-void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
+static void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   // First : swap the actual units
   std::swap(aocDat->UnitHeaders[id1], aocDat->UnitHeaders[id2]);
   for (auto& Civ : aocDat->Civs) {
