@@ -92,6 +92,7 @@ set(ALL_SRC
     fixes/siegetowerfix.cpp
     fixes/smallfixes.cpp
     fixes/tricklebuildingfix.cpp
+	fixes/uprootingfix.cpp
     fixes/vietfix.cpp
     wkconverter.cpp
     third_party/miniz/miniz.c
