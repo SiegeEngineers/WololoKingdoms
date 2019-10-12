@@ -105,18 +105,16 @@ void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   // Iterate techs
   for (auto& techIt : aocDat->Effects) {
     // Iterate effects of each tech
-    for (auto techEffectsIt = techIt.EffectCommands.begin(),
-              end = techIt.EffectCommands.end();
-         techEffectsIt != end; ++techEffectsIt) {
-      switch (techEffectsIt->Type) {
+    for (auto& EffectCommand : techIt.EffectCommands) {
+      switch (EffectCommand.Type) {
       case 3: // upgrade unit (this ones uses 2 units hence the special case,
               // notice the absence of break)
-        swapId(&techEffectsIt->UnitClassID, id1, id2);
+        swapId(&EffectCommand.UnitClassID, id1, id2);
       case 0: // attribute modifier
       case 2: // enable/disable unit
       case 4: // attribute modifier (+/-)
       case 5: // attribute modifier (*)
-        swapId(&techEffectsIt->TargetUnit, id1, id2);
+        swapId(&EffectCommand.TargetUnit, id1, id2);
       }
     }
   }
@@ -124,18 +122,16 @@ void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   // Iterate tech tree ages
   for (auto& ageIt : aocDat->TechTree.TechTreeAges) {
     // Iterate connected units of each age
-    for (auto unitIt = ageIt.Units.begin(), end = ageIt.Units.end();
-         unitIt != end; ++unitIt) {
-      swapId(&(*unitIt), id1, id2);
+    for (int& Unit : ageIt.Units) {
+      swapId(&Unit, id1, id2);
     }
   }
 
   // Iterate tech tree buildings
   for (auto& buildingIt : aocDat->TechTree.BuildingConnections) {
     // Iterate connected units of each age
-    for (auto unitIt = buildingIt.Units.begin(), end = buildingIt.Units.end();
-         unitIt != end; ++unitIt) {
-      swapId(&(*unitIt), id1, id2);
+    for (int& Unit : buildingIt.Units) {
+      swapId(&Unit, id1, id2);
     }
     swapIdInCommon(&buildingIt.Common, id1, id2);
   }
@@ -144,9 +140,8 @@ void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   for (auto& unitIt : aocDat->TechTree.UnitConnections) {
     swapId(&unitIt.ID, id1, id2);
     // Iterate connected units of each unit
-    for (auto unitUnitIt = unitIt.Units.begin(), end = unitIt.Units.end();
-         unitUnitIt != end; ++unitUnitIt) {
-      swapId(&(*unitUnitIt), id1, id2);
+    for (int& Unit : unitIt.Units) {
+      swapId(&Unit, id1, id2);
     }
     swapIdInCommon(&unitIt.Common, id1, id2);
   }
@@ -154,27 +149,23 @@ void swapUnits(genie::DatFile* aocDat, int id1, int id2) {
   // Iterate tech tree researches
   for (auto& researchIt : aocDat->TechTree.ResearchConnections) {
     // Iterate connected units of each researches
-    for (auto researchUnitIt = researchIt.Units.begin(),
-              end = researchIt.Units.end();
-         researchUnitIt != end; ++researchUnitIt) {
-      swapId(&(*researchUnitIt), id1, id2);
+    for (int& Unit : researchIt.Units) {
+      swapId(&Unit, id1, id2);
     }
     swapIdInCommon(&researchIt.Common, id1, id2);
   }
 
   // Iterate through Civs Units to replace the dead unit graphic if necessary
   for (auto& civIt : aocDat->Civs) {
-    for (auto unitIt = civIt.Units.begin(), end = civIt.Units.end();
-         unitIt != end; ++unitIt) {
-      swapId(&unitIt->DeadUnitID, id1, id2);
+    for (auto& Unit : civIt.Units) {
+      swapId(&Unit.DeadUnitID, id1, id2);
     }
   }
 
   // Iterate through Unit commands (e.g. villagers hunting animals)
   for (auto& unitIt : aocDat->UnitHeaders) {
-    for (auto taskIt = unitIt.TaskList.begin(), end = unitIt.TaskList.end();
-         taskIt != end; ++taskIt) {
-      swapId(&taskIt->UnitID, id1, id2);
+    for (auto& taskIt : unitIt.TaskList) {
+      swapId(&taskIt.UnitID, id1, id2);
     }
   }
 }

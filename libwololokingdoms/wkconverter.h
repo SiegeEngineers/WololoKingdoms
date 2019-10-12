@@ -144,8 +144,8 @@ private:
         static_cast<int>(flags & WKSettings::IndexType::Terrain) != 0);
   }
   static void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
-  void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut,
-                           std::map<int, std::string>& langReplacement);
+  static void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut,
+                                  std::map<int, std::string>& langReplacement);
   void createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
   static void loadGameStrings(std::map<int, std::string>& langReplacement,
                               fs::path file);
@@ -181,7 +181,7 @@ private:
   void hotkeySetup();
   static void refreshSymlink(const fs::path& oldPath, const fs::path& newPath,
                              LinkType type, bool copyOldContents = false);
-  void symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
-                    bool dataMod = false);
+  static void symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
+                           bool dataMod = false);
   void setupFolders(fs::path xmlOutPathUP);
 };
