@@ -88,6 +88,7 @@ set(ALL_SRC
     fixes/khmerfix.cpp
     fixes/malayfix.cpp
     fixes/maliansfreeminingupgradefix.cpp
+	fixes/nomadsfix.cpp
     fixes/portuguesefix.cpp
     fixes/siegetowerfix.cpp
     fixes/smallfixes.cpp

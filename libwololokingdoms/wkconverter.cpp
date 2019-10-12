@@ -14,6 +14,7 @@
 #include "fixes/khmerfix.h"
 #include "fixes/malayfix.h"
 #include "fixes/maliansfreeminingupgradefix.h"
+#include "fixes/nomadsfix.h"
 #include "fixes/portuguesefix.h"
 #include "fixes/siegetowerfix.h"
 #include "fixes/smallfixes.h"
@@ -2492,6 +2493,7 @@ int WKConverter::run() {
         wololo::cuttingFix,
         wololo::ai900UnitIdFix,
 		wololo::uprootingFix,
+		wololo::nomadsFix,
 	};
 
     listener->setInfo("working$\n$workingPatches");
