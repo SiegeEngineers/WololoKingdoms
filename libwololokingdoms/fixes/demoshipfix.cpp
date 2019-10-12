@@ -16,7 +16,9 @@ void demoshipPatch(genie::DatFile* aocDat) {
 
   for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
     aocDat->Civs[civIndex].Units[demoRaftUnitId].Creatable.HeroMode = 96;
-    aocDat->Civs[civIndex].Units[demoShipUnitId].Creatable.HeroMode = 96;
+	// Hero mode for the demo ship must be 104 so that it's attack stance defaults to Defensive
+	// when a Demolition ship is placed in the scenario editor.
+    aocDat->Civs[civIndex].Units[demoShipUnitId].Creatable.HeroMode = 104;
     aocDat->Civs[civIndex].Units[heavyDemoShipUnitId].Creatable.HeroMode = 96;
   }
   /*genie::TechageEffect effect = genie::TechageEffect();
