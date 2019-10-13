@@ -34,8 +34,7 @@ bool isUniqueImperialAgeTech(genie::Tech& tech) {
 // instead of only two icons for Castle and Imperial Age techs, respectively.
 // Must be called before creating the queueable technologies.
 // Castle Age techs are given the ID `uniqueTechIdStartCastle + civId`.
-// Imperial Age techs are given the ID `TECH_ID_START_IMPERIAL + civId`.
-// @param df the dat file to modify
+// Imperial Age techs are given the ID `uniqueTechIdStartImperial + civId`.
 void splitUniqueTechIconsPatch(genie::DatFile* aocDat) {
 
   // The number of civilizations, not counting the gaia civilization.
