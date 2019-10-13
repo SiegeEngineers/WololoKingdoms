@@ -19,6 +19,7 @@
 #include "fixes/siegetowerfix.h"
 #include "fixes/slavteambonusfix.h"
 #include "fixes/smallfixes.h"
+#include "fixes/splituniquetechicons.h"
 #include "fixes/tricklebuildingfix.h"
 #include "fixes/uprootingfix.h"
 #include "fixes/vietfix.h"
@@ -2496,6 +2497,7 @@ int WKConverter::run() {
 		wololo::uprootingFix,
 		wololo::nomadsFix,
 		wololo::slavTeamBonusFix,
+        wololo::splitUniqueTechIcons,
 	};
 
     listener->setInfo("working$\n$workingPatches");

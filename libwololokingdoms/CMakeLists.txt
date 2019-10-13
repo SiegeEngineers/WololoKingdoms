@@ -93,6 +93,7 @@ set(ALL_SRC
     fixes/siegetowerfix.cpp
 	fixes/slavteambonusfix.cpp
     fixes/smallfixes.cpp
+	fixes/splituniquetechicons.cpp
     fixes/tricklebuildingfix.cpp
 	fixes/uprootingfix.cpp
     fixes/vietfix.cpp
