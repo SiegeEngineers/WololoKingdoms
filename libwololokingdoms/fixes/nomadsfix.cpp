@@ -30,22 +30,22 @@ void nomadsFixPatch(genie::DatFile * aocDat) {
   const size_t effectIdNew = 798;
 
   // Tech ID of a "New Research" technology.
-  const int techIdNew = 801;
+  const size_t techIdNew = 801;
 
   // Tech ID of the Imperial Age tech.
-  const int techIdAgeImperial = 103;
+  const size_t techIdAgeImperial = 103;
 
   // Tech ID for the Mongol Nomads unique tech.
-  const int techIdNomads = 487;
+  const size_t techIdNomads = 487;
 
   // Civilization ID of the Mongols.
-  const int civIdMongols = 12;
+  const size_t civIdMongols = 12;
 
   // The IDs for units that need to have their dead unit ID changed for the Nomads fix.
-  const int nomadsDeadUnitFixIds[] = {70, 463, 464, 465, 191, 192};
+  const size_t nomadsDeadUnitFixIds[] = {70, 463, 464, 465, 191, 192};
 
   // The dead unit ID of Rubble 2x2.
-  const int nomadsDeadUnitId= 144;
+  const size_t nomadsDeadUnitId = 144;
 
   for (auto & civ : aocDat->Civs) {
     auto house1 = civ.Units[unitIdHouseC];

@@ -7,16 +7,16 @@ void slavTeamBonusFixPatch(genie::DatFile* aocDat) {
 
 
   // Effect ID of the team bonus for the Slavs.
-  const int effectIdTeamBonusSlavs = 9;
+  const size_t effectIdTeamBonusSlavs = 9;
   
   // Tech ID of the Dark Age tech.
-  const int techIdAgeDark = 104;
+  const size_t techIdAgeDark = 104;
 
   // Civilization ID of the Slavs.
-  const int civIdSlavs = 23;
+  const size_t civIdSlavs = 23;
 
   // Tech ID of a "New Research" technology.
-  const int techIdNew = 801;
+  const size_t techIdNew = 801;
 
 
   // Duplicates Effect 9 (Slav Bonus).
