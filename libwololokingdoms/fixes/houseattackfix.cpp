@@ -13,6 +13,6 @@ void houseAttackFixPatch(genie::DatFile* aocDat) {
 
 DatPatch houseAttackFix = {
     &houseAttackFixPatch,
-    "Demolition ship scenario editor default attack stance defensive."};
+    "Stop houses from attacking adjacent units."};
 
 } // namespace wololo
