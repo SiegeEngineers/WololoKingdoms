@@ -17,6 +17,7 @@
 #include "fixes/nomadsfix.h"
 #include "fixes/portuguesefix.h"
 #include "fixes/siegetowerfix.h"
+#include "fixes/slavteambonusfix.h"
 #include "fixes/smallfixes.h"
 #include "fixes/tricklebuildingfix.h"
 #include "fixes/uprootingfix.h"
@@ -2494,6 +2495,7 @@ int WKConverter::run() {
         wololo::ai900UnitIdFix,
 		wololo::uprootingFix,
 		wololo::nomadsFix,
+		wololo::slavTeamBonusFix,
 	};
 
     listener->setInfo("working$\n$workingPatches");
