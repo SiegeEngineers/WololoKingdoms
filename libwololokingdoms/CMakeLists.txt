@@ -91,6 +91,7 @@ set(ALL_SRC
     fixes/maliansfreeminingupgradefix.cpp
 	fixes/nomadsfix.cpp
     fixes/portuguesefix.cpp
+	fixes/separateshipgraphics.cpp
     fixes/siegetowerfix.cpp
 	fixes/slavteambonusfix.cpp
     fixes/smallfixes.cpp

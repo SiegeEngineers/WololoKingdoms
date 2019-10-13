@@ -17,6 +17,7 @@
 #include "fixes/maliansfreeminingupgradefix.h"
 #include "fixes/nomadsfix.h"
 #include "fixes/portuguesefix.h"
+#include "fixes/separateshipgraphics.h"
 #include "fixes/siegetowerfix.h"
 #include "fixes/slavteambonusfix.h"
 #include "fixes/smallfixes.h"
@@ -2500,6 +2501,7 @@ int WKConverter::run() {
 		wololo::slavTeamBonusFix,
         wololo::splitUniqueTechIcons,
 		wololo::aztecBonusFix,
+		wololo::separateShipGraphics,
 	};
 
     listener->setInfo("working$\n$workingPatches");
