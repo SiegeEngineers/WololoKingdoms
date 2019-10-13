@@ -3,6 +3,7 @@
 #include "drs.h"
 #include "drs_creator.h"
 #include "fixes/ai900unitidfix.h"
+#include "fixes/aztecbonusfix.h"
 #include "fixes/berbersutfix.h"
 #include "fixes/burmesefix.h"
 #include "fixes/cuttingfix.h"
@@ -2498,6 +2499,7 @@ int WKConverter::run() {
 		wololo::nomadsFix,
 		wololo::slavTeamBonusFix,
         wololo::splitUniqueTechIcons,
+		wololo::aztecBonusFix,
 	};
 
     listener->setInfo("working$\n$workingPatches");

@@ -76,6 +76,7 @@ set(ALL_SRC
     drs_creator.cpp
     missing_strings.cpp
     fixes/ai900unitidfix.cpp
+	fixes/aztecbonusfix.cpp
     fixes/berbersutfix.cpp
     fixes/burmesefix.cpp
     fixes/cuttingfix.cpp
