@@ -2,6 +2,7 @@
 #include "caseless.h"
 #include "drs.h"
 #include "drs_creator.h"
+#include "fixes/addunits.h"
 #include "fixes/ai900unitidfix.h"
 #include "fixes/aztecbonusfix.h"
 #include "fixes/berbersutfix.h"
@@ -2502,6 +2503,7 @@ int WKConverter::run() {
         wololo::splitUniqueTechIcons,
 		wololo::aztecBonusFix,
 		wololo::separateShipGraphics,
+		wololo::addUnits,
 	};
 
     listener->setInfo("working$\n$workingPatches");

@@ -75,6 +75,7 @@ set(ALL_SRC
     zr_map_creator.cpp
     drs_creator.cpp
     missing_strings.cpp
+	fixes/addunits.cpp
     fixes/ai900unitidfix.cpp
 	fixes/aztecbonusfix.cpp
     fixes/berbersutfix.cpp
