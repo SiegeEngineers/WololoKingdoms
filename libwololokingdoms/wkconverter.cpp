@@ -2152,21 +2152,30 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
 int WKConverter::retryInstall() {
   listener->log("Retry installation with removing folders first");
   fs::path tempFolder = "retryTemp";
+
+  /// Copy a file or directory from path `from` to path `to`, if `from` exists.
+  auto copy_if = [](const auto& from, const auto& to, auto options) {
+    if (cfs::exists(from)) {
+      cfs::copy(from, to, options);
+    }
+  };
+
+  /// Copy a file from path `from` to path `to`, if `from` exists.
+  auto copy_file_if = [](const auto& from, const auto& to, auto options) {
+    if (cfs::exists(from)) {
+      cfs::copy_file(from, to, options);
+    }
+  };
+
   try {
     cfs::create_directories(tempFolder / "Scenario");
     cfs::create_directories(tempFolder / "SaveGame");
     cfs::create_directories(tempFolder / "Script.RM");
-    cfs::copy(installDir / "SaveGame", tempFolder / "SaveGame",
-              fs::copy_options::recursive | fs::copy_options::update_existing);
-    cfs::copy(installDir / "Script.RM", tempFolder / "Script.RM",
-              fs::copy_options::recursive | fs::copy_options::update_existing);
-    cfs::copy(installDir / "Scenario", tempFolder / "Scenario",
-              fs::copy_options::recursive | fs::copy_options::update_existing);
-    cfs::copy_file(installDir / "player.nfz", tempFolder / "player.nfz",
-                   fs::copy_options::update_existing);
-    if (cfs::exists(installDir / "player1.hki"))
-      cfs::copy_file(installDir / "player1.hki", tempFolder / "player1.hki",
-                     fs::copy_options::update_existing);
+    copy_if(installDir / "SaveGame", tempFolder / "SaveGame", fs::copy_options::recursive | fs::copy_options::update_existing);
+    copy_if(installDir / "Script.RM", tempFolder / "Script.RM", fs::copy_options::recursive | fs::copy_options::update_existing);
+    copy_if(installDir / "Scenario", tempFolder / "Scenario", fs::copy_options::recursive | fs::copy_options::update_existing);
+    copy_file_if(installDir / "player.nfz", tempFolder / "player.nfz", fs::copy_options::update_existing);
+    copy_file_if(installDir / "player1.hki", tempFolder / "player1.hki", fs::copy_options::update_existing);
   } catch (std::exception const& e) {
     listener->error(e);
     listener->log(e.what());
