@@ -2,6 +2,7 @@
 #include "wololo/datPatch.h"
 #include <cassert>
 #include <unordered_map>
+#include <cassert>
 
 using std::unordered_map;
 
@@ -143,6 +144,11 @@ const int16_t RESOURCE_ATTRIBUTES[] = {
     genie::EffectCommand::Attributes::StoneCosts
 };
 
+// Flag to indicate that this unit should not be shown in the editor.
+const int8_t HIDE_IN_EDITOR_FLAG = 1;
+// Flag to indicate that this unit is a queueable tech dummy.
+const int8_t QUEUEABLE_TECH_FLAG = 2;
+
 // Returns `true` if `techId` represents an age, `false` otherwise.
 // Ages are given by ids:
 //   * Dark Age     - 101
@@ -155,7 +161,7 @@ const int16_t RESOURCE_ATTRIBUTES[] = {
 // @param techId the technology id to check
 bool isAge(int techId) { return 101 <= techId && techId <= 104; }
 
-	/// Returns `true` if `techId` represents a mill technology (farm upgrade),
+/// Returns `true` if `techId` represents a mill technology (farm upgrade),
 /// `false` otherwise.
 bool isMillTech(int techId) {
   return techId == TECH_ID_HORSE_COLLAR || techId == TECH_ID_HEAVY_PLOW ||
@@ -252,6 +258,8 @@ void initializeUnit(genie::Unit& unit, int resId, genie::Tech& tech) {
   unit.LanguageDLLHelp = tech.LanguageDLLHelp;
   unit.LanguageDLLCreation = tech.LanguageDLLDescription;
   unit.TerrainRestriction = 0;
+  unit.Name = tech.Name + " (Queueable Dummy)";
+  unit.HideInEditor = HIDE_IN_EDITOR_FLAG | QUEUEABLE_TECH_FLAG;
 
   unit.Creatable.TrainTime = tech.ResearchTime;
   unit.Creatable.TrainLocationID = tech.ResearchLocation;
