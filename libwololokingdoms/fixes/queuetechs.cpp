@@ -1,5 +1,6 @@
 #include "queuetechs.h"
 #include "wololo/datPatch.h"
+#include <cassert>
 #include <unordered_map>
 
 using std::unordered_map;
@@ -531,8 +532,9 @@ void setDiscounts(genie::DatFile * df, unordered_map<int, int>& techIdToUnitId) 
         cmdNew.AttributeID = genie::EffectCommand::Attributes::GoldCosts;
         break;
       default:
-        assert(false, "Unit Class ID must be between 0 and 3, inclusive, to "
-                      "represent a resource cost.");
+        // Unit Class ID must be between 0 and 3, inclusive, to represent a
+        // resource cost.
+        assert(false);
         break;
       }
       cmdNew.Amount = cmd->Amount;
