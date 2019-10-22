@@ -179,31 +179,31 @@ bool skipId(int techId) {
 // @param locationId the location to filter
 bool filterLocation(int locationId) { return locationId == -1 || locationId == 0; }
 
-/// Returns `true` if `tech` is the Elite upgrade for a unique unit at the
-/// Castle.
-/// @param tech the technology to check
+// Returns `true` if `tech` is the Elite upgrade for a unique unit at the
+// Castle.
+// @param tech the technology to check
 bool isEliteUniqueUnitUpgrade(genie::Tech& tech) {
   return tech.ResearchLocation == LOCATION_CASTLE &&
          tech.ButtonID == BUTTON_ID_ELITE_UU;
 }
 
-/// Returns `true` if `tech` is the Elite upgrade for Caravels, Longboats, or
-/// Turtle Ships.
-/// @param tech the technology to check
+// Returns `true` if `tech` is the Elite upgrade for Caravels, Longboats, or
+// Turtle Ships.
+// @param tech the technology to check
 bool isEliteShipUpgrade(genie::Tech& tech) {
   return tech.ResearchLocation == LOCATION_DOCK &&
          tech.ButtonID == BUTTON_ID_ELITE_SHIP;
 }
 
-/// Returns `true` if `tech` is a Castle Age unique technology.
-/// @param tech the technology to check
+// Returns `true` if `tech` is a Castle Age unique technology.
+// @param tech the technology to check
 bool isUniqueCastleTech(genie::Tech& tech) {
   return tech.ResearchLocation == LOCATION_CASTLE &&
          tech.ButtonID == BUTTON_ID_CASTLE_UT;
 }
 
-/// Returns `true` if `tech` is an Imperial Age unique technology.
-/// @param tech the technology to check
+// Returns `true` if `tech` is an Imperial Age unique technology.
+// @param tech the technology to check
 bool isUniqueImpTech(genie::Tech& tech) {
   return tech.ResearchLocation == LOCATION_CASTLE &&
          tech.ButtonID == BUTTON_ID_IMP_UT;
