@@ -35,6 +35,11 @@ void addRoamingWolf(genie::DatFile * df) {
   auto taskId = 0;
   unit.Action.DefaultTaskID = taskId;
   taskList->insert(taskList->begin(), taskFly);
+  // Sets the task IDs equal to their position in the task list.
+  for (int i = 0; i != taskList->size(); ++i) {
+    auto task = &(*taskList)[i];
+    task->ID = i;
+  }
 
   for (auto& civ : df->Civs) {
     civ.Units.push_back(unit);
@@ -75,6 +80,11 @@ void addTransportSharkatzor(genie::DatFile * df) {
   auto taskUnload = genie::Task();
   taskUnload.ActionType = genie::Task::ActionTypes::UnloadBoat;
   taskList->push_back(taskUnload);
+  // Sets the task IDs equal to their position in the task list.
+  for (int i = 0; i != taskList->size(); ++i) {
+    auto task = &(*taskList)[i];
+    task->ID = i;
+  }
 
   for (auto& civ : df->Civs) {
     civ.Units.push_back(unit);
