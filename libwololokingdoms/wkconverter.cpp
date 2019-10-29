@@ -11,8 +11,8 @@
 #include "fixes/demoshipfix.h"
 #include "fixes/disablenonworkingunits.h"
 #include "fixes/ethiopiansfreepikeupgradefix.h"
-#include "fixes/houseattackfix.h"
 #include "fixes/hotkeysfix.h"
+#include "fixes/houseattackfix.h"
 #include "fixes/khmerfix.h"
 #include "fixes/malayfix.h"
 #include "fixes/maliansfreeminingupgradefix.h"
@@ -30,6 +30,7 @@
 #include "md5.h"
 #include "missing_strings.h"
 #include "platform.h"
+#include "slp.h"
 #include "string_helpers.h"
 #include "wk_xml.h"
 #include "wololo/datPatch.h"
@@ -51,7 +52,8 @@ const fs::path resolve_path(const fs::path& input) {
 #endif
 }
 
-void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement, fs::path file) {
+void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement,
+                                  fs::path file) {
   std::string line;
   std::ifstream translationFile(file);
   while (std::getline(translationFile, line)) {
@@ -69,8 +71,8 @@ void WKConverter::loadGameStrings(std::map<int, std::string>& langReplacement, f
 
 /**
  * Index files to be written into the drs into a map, with the ID the file
- * will have later as  the key, and the path it should be copied from as the
- * value
+ * will have later as the key, and the path it should be copied from as the
+ * value.
  *
  * @param src: The directory to iterate through. All .slp and .wav files in this
  * directory will be indexed
@@ -452,14 +454,16 @@ void WKConverter::makeDrs(std::ofstream& out) {
 
   listener->setInfo("working$\n$workingDrs2");
   drs.commit();
-  listener->increaseProgress(4);
+  listener->increaseProgress(2);
   out.close();
 }
 
-/** A method to add extra (slp) files to an already existing drs file.
- *  Reads the old files, changes the offsets where necessary and writes back to
- * a new file with changed offsets and the new files in: The stream of the old
- * drs file out: The stream of the new drs file
+/**
+ * A method to add extra (slp) files to an already existing drs file.
+ * Reads the old files, changes the offsets where necessary and writes back to
+ * a new file with changed offsets and the new files.
+ * in: The stream of the old drs file.
+ * out: The stream of the new drs file.
  */
 void WKConverter::editDrs(std::ifstream* in, std::ofstream* out) {
 
@@ -1149,14 +1153,14 @@ void WKConverter::transferHdDatElements(genie::DatFile* hdDat,
   terrainSwap(hdDat, aocDat, 41, 50, 15013); // acacia forest
   terrainSwap(hdDat, aocDat, 16, 49, 15025); // baobab forest
 
-  const std::array<std::tuple<int, std::string>, 7> newTerrainSlps = {{
-      {15012, "DLC_MANGROVEFOREST.slp"},
-      {15013, "ACACIA_FOREST.slp"},
-      {15025, "BAOBAB.slp"},
-      {15003, "15003.slp"},
-      {15032, "CRACKEDIT.slp"},
-      {15034, "ICE_SOLID.slp"},
-      {15020, "ICE_BEACH.slp"}}};
+  const std::array<std::tuple<int, std::string>, 7> newTerrainSlps = {
+      {{15012, "DLC_MANGROVEFOREST.slp"},
+       {15013, "ACACIA_FOREST.slp"},
+       {15025, "BAOBAB.slp"},
+       {15003, "15003.slp"},
+       {15032, "CRACKEDIT.slp"},
+       {15034, "ICE_SOLID.slp"},
+       {15020, "ICE_BEACH.slp"}}};
 
   for (auto& [id, name] : newTerrainSlps) {
     if (slpFiles[id].empty())
@@ -1946,20 +1950,119 @@ static void addOldMonkGraphics(std::map<int, fs::path>& slpFiles,
 }
 
 /**
+ * Adds repeats of the ship sinking animations to support multiple angles.
+ *
+ * @param slpFiles Map to which the modified SLP file paths are added.
+ * @param settings WololoKingdoms settings from which the HD files are obtained.
+ * @param newShipSinkingDir Output directory where the modified SLP files are written.
+ */
+static void convertShipSinkingGraphics(std::map<int, fs::path>& slpFiles,
+                                       const WKSettings& settings,
+                                       const fs::path& newShipSinkingDir) {
+  // Creates the directory if it does not exist.
+  if (!cfs::exists(newShipSinkingDir)) {
+    cfs::create_directory(newShipSinkingDir);
+  }
+
+  const int frame_index_start = 0; // inclusive
+  const int frame_index_end = 6;   // exclusive
+  const int num_duplicates = 8;
+  const int slp_numbers[] = {495, 692, 1834, 2116, 2753, 2778, 5175};
+  for (int slp_num : slp_numbers) {
+    // Reads in the original slp file.
+    const std::string filename = std::to_string(slp_num) + ",slp";
+    const fs::path input_path = settings.hdPath / "resources" / "_common" /
+                                "drs" / "graphics" / filename;
+    std::ifstream ifs(input_path, std::ios::binary);
+    slp slp_file = read_slp(ifs);
+
+    // Modifies the slp.
+    for (int _ = 0; _ != num_duplicates; ++_) {
+      for (int i = frame_index_start; i != frame_index_end; ++i) {
+        duplicate_frame(slp_file, i);
+	  }
+    }
+
+    // Writes the modified slp file to the directory.
+    const fs::path output_path = newShipSinkingDir / filename;
+    std::ofstream ofs(output_path, std::ios::binary);
+    write_slp(slp_file, ofs);
+
+    // Updates the slp file map with the new file.
+    slpFiles[slp_num] = output_path;
+  }
+}
+
+/**
+ * Adds repeats of the Castle Age and Imperial Age unique tech to the end of the
+ * technology icon slp to allow for different civs to have individual icons.
+ * The resulting frame for each civilization is given by an offset using the civ
+ * ID:
+ *   - Castle Age Icon Frame = 121 + Civ ID
+ *   - Imperial Age Icon Frame Index = 121 + 31 + Civ ID
+ * That is, there is one Castle Age frame for each civ appended at the end of
+ * the slp, followed by one Imperial Age frame for each civ.
+ *
+ * @param slpFiles Map to which the modified SLP file paths are added.
+ * @param settings WololoKingdoms settings from which the HD files are obtained.
+ * @param newUniqueTechDir Output directory where the modified SLP files are
+ * written.
+ */
+static void convertUniqueTechIcons(std::map<int, fs::path>& slpFiles,
+                                   const WKSettings& settings,
+                                   const fs::path& newUniqueTechDir) {
+
+  // Creates the output directory if it does not exist.
+  if (!cfs::exists(newUniqueTechDir)) {
+    cfs::create_directory(newUniqueTechDir);
+  }
+
+  // Reads in the original slp file.
+  const int icon_slp_number = 50729;
+  const std::string filename = std::to_string(icon_slp_number) + ".slp";
+  const fs::path icon_slp_path =
+      settings.hdPath / "resources" / "_common" / "drs" / "graphics" / filename;
+  std::ifstream ifs(icon_slp_path, std::ios::binary);
+  slp slp_file = read_slp(ifs);
+
+  // Modifies the slp.
+  const int frame_index_castle = 33;
+  const int frame_index_imp = 107;
+  const int num_civs = 31;
+  for (auto _ = 0; _ != num_civs; ++_) {
+    duplicate_frame(slp_file, frame_index_castle);
+  }
+  for (auto _ = 0; _ != num_civs; ++_) {
+    duplicate_frame(slp_file, frame_index_imp);
+  }
+
+  // Writes the modified slp file to the directory.
+  const fs::path output_path = newUniqueTechDir / filename;
+  std::ofstream ofs(output_path, std::ios::binary);
+  write_slp(slp_file, ofs);
+
+  // Updates the slp file map with the new file.
+  slpFiles[icon_slp_number] = output_path;
+}
+
+/**
  * Checks if a symlink exists already. If not, it removes a possibly existing
  * directory/file and creates a symlink.
  *
  * @param oldPath The directory/file the symlink references.
  * @param newPath The directory/file the symlink should be created in.
  * @param type Soft for files, Dir for directories
- * @param copyOldContents possible contents of the newPath folder are copied to oldPath before the symlink is created
+ * @param copyOldContents possible contents of the newPath folder are copied to
+ * oldPath before the symlink is created
  */
 void WKConverter::refreshSymlink(const fs::path& oldPath,
-                                 const fs::path& newPath, const LinkType type, bool copyOldContents) {
+                                 const fs::path& newPath, const LinkType type,
+                                 bool copyOldContents) {
   if (cfs::is_symlink(newPath))
     return;
   if (copyOldContents && cfs::exists(newPath))
-    cfs::copy(newPath, oldPath, cfs::copy_options::skip_existing | cfs::copy_options::recursive);
+    cfs::copy(newPath, oldPath,
+              cfs::copy_options::skip_existing | cfs::copy_options::recursive);
   cfs::remove_all(newPath);
   mklink(type, resolve_path(newPath), resolve_path(oldPath));
 }
@@ -2007,7 +2110,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     if (!vooblyDst) {
       refreshSymlink(oldDir / "SaveGame", newDir / "SaveGame", LinkType::Dir,
                      true);
-	}
+    }
     if (!vooblySrc) {
       refreshSymlink(oldDir / "Data" / "language_x1_p1.dll",
                      newDir / "Data" / "language_x1_p1.dll", LinkType::Soft);
@@ -2181,6 +2284,10 @@ int WKConverter::run() {
   newTerrainFiles.clear();
 
   // Installer Resources
+  fs::path newShipSinkingGraphicsDir =
+      resourceDir / "graphics" / "ship-sinking";
+  fs::path newUniqueTechIconsDir =
+      resourceDir / "graphics" / "unique-tech-icons";
   fs::path newMonkGraphicsDir = resourceDir / "graphics" / "monks";
   fs::path newTerrainGraphicsDir = resourceDir / "graphics" / "terrains";
   fs::path newArchitectureGraphicsDir =
@@ -2447,8 +2554,14 @@ int WKConverter::run() {
     }
     listener->increaseProgress(1); // 65
 
-    indexDrsFiles(newArchitectureGraphicsDir);
+    convertShipSinkingGraphics(slpFiles, settings, newShipSinkingGraphicsDir);
     listener->increaseProgress(1); // 66
+
+    convertUniqueTechIcons(slpFiles, settings, newUniqueTechIconsDir);
+    listener->increaseProgress(1); // 67
+
+    indexDrsFiles(newArchitectureGraphicsDir);
+    listener->increaseProgress(1); // 68
 
     listener->log("Opening DRS");
     std::ofstream drsOut(drsOutPath, std::ios::binary);
@@ -2486,7 +2599,7 @@ int WKConverter::run() {
         wololo::vietFix,
         wololo::malayFix,
         wololo::ethiopiansFreePikeUpgradeFix,
-		wololo::houseAttackFix,
+        wololo::houseAttackFix,
         wololo::hotkeysFix,
         wololo::maliansFreeMiningUpgradeFix,
         wololo::portugueseFix,
@@ -2498,15 +2611,15 @@ int WKConverter::run() {
         wololo::smallFixes,
         wololo::cuttingFix,
         wololo::ai900UnitIdFix,
-		wololo::uprootingFix,
-		wololo::nomadsFix,
-		wololo::slavTeamBonusFix,
+        wololo::uprootingFix,
+        wololo::nomadsFix,
+        wololo::slavTeamBonusFix,
         wololo::splitUniqueTechIcons,
-		wololo::aztecBonusFix,
-		wololo::separateShipGraphics,
-		wololo::addUnits,
-		wololo::queueTechs,
-	};
+        wololo::aztecBonusFix,
+        wololo::separateShipGraphics,
+        wololo::addUnits,
+        wololo::queueTechs,
+    };
 
     listener->setInfo("working$\n$workingPatches");
 
