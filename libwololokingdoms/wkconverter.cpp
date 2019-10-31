@@ -1965,12 +1965,16 @@ static void convertShipSinkingGraphics(std::map<int, fs::path>& slpFiles,
   }
 
   const int frame_index_start = 0; // inclusive
-  const int frame_index_end = 6;   // exclusive
-  const int num_duplicates = 8;
-  const int slp_numbers[] = {495, 692, 1834, 2116, 2753, 2778, 5175};
+  int frame_index_end = 6;   // exclusive
+  int num_duplicates = 8;
+  const int slp_numbers[] = {495, 692, 1834, 2116, 2753, 2778, 5175, 441};
   for (int slp_num : slp_numbers) {
+    if (slp_num == 441) {
+      frame_index_end = 5;
+      num_duplicates = 4;
+	}
     // Reads in the original slp file.
-    const std::string filename = std::to_string(slp_num) + ",slp";
+    const std::string filename = std::to_string(slp_num) + ".slp";
     const fs::path input_path = settings.hdPath / "resources" / "_common" /
                                 "drs" / "graphics" / filename;
     std::ifstream ifs(input_path, std::ios::binary);
@@ -2021,7 +2025,7 @@ static void convertUniqueTechIcons(std::map<int, fs::path>& slpFiles,
   const int icon_slp_number = 50729;
   const std::string filename = std::to_string(icon_slp_number) + ".slp";
   const fs::path icon_slp_path =
-      settings.hdPath / "resources" / "_common" / "drs" / "graphics" / filename;
+      settings.hdPath / "resources" / "_common" / "drs" / "gamedata_x2" / filename;
   std::ifstream ifs(icon_slp_path, std::ios::binary);
   slp slp_file = read_slp(ifs);
 
@@ -2562,6 +2566,10 @@ int WKConverter::run() {
 
     indexDrsFiles(newArchitectureGraphicsDir);
     listener->increaseProgress(1); // 68
+
+	for (const auto& [directory, index_type] : settings.drsModDirectories) {
+      indexDrsFiles(directory, index_type);
+    }
 
     listener->log("Opening DRS");
     std::ofstream drsOut(drsOutPath, std::ios::binary);
