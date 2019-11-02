@@ -2,7 +2,6 @@
 #include "wololo/datPatch.h"
 #include <cassert>
 #include <unordered_map>
-#include <cassert>
 
 using std::unordered_map;
 
