@@ -439,6 +439,9 @@ int processTech(genie::DatFile * df, int techId, bool reserveIds, int numSkipped
 
   // Appends the unit to every civilization.
   for (auto& civ : df->Civs) {
+    unit.ID = civ.Units.size();
+    unit.CopyID = civ.Units.size();
+    unit.BaseID = civ.Units.size();
     civ.Units.push_back(unit);
     civ.UnitPointers.push_back(1); // All Unit Pointers are 1.
   }
