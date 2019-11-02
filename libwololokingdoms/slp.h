@@ -247,7 +247,7 @@ struct slp {
   /// The outline table, command table, and drawing commands of each
   /// frame of the slp file, size must equal the number of frames
   /// specified by the header.
-  std::vector<frame_data> frame_data;
+  std::vector<::frame_data> frame_data;
 };
 
 /// Reads an slp file from `in` and returns a struct representing it.
