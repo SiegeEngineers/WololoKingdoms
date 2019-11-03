@@ -96,6 +96,9 @@ void write_header(slp_header* header, std::ostream& out) {
 
 /// The number of Bytes in an slp frame info struct.
 const int FRAME_INFO_NUM_BYTES = 32;
+// Same for the header
+const int HEADER_NUM_BYTES = 32;
+
 
 /// Represents information for a single slp frame.
 struct slp_frame_info {
@@ -310,4 +313,60 @@ void duplicate_frame(slp& slp_file, int i) {
 
   // Adds the additional frame to the header.
   ++slp_file.header.num_frames;
+}
+
+
+/// Copies all frames of source slp to the end of the destination slp
+/// @param src_slp the slp file which contains the frames to be copied to another file
+/// @param dst_slp the slp file into which the frames should be appended at the end
+void copy_all_frames(slp& src_slp, slp& dst_slp) {
+  
+  auto final_frame_info = dst_slp.frame_info[dst_slp.header.num_frames - 1];
+  auto final_frame = dst_slp.frame_data[dst_slp.header.num_frames - 1];
+  // We're adding the offsets of the two files, so we need to subtract header
+  // info once
+  auto outline_table_offset_adjust =
+      final_frame_info.cmd_table_offset + 4 * final_frame_info.height +
+      final_frame.remaining_bytes.size() - HEADER_NUM_BYTES;
+
+  // Creates space for the new frame information.
+  for (auto& info : dst_slp.frame_info) {
+    info.outline_table_offset += src_slp.header.num_frames*FRAME_INFO_NUM_BYTES;
+    info.cmd_table_offset += src_slp.header.num_frames*FRAME_INFO_NUM_BYTES;
+  }
+
+  // Adjusts the command table offsets to account for the new frame information.
+  for (auto& frame_data : dst_slp.frame_data) {
+    for (int i = 0; i != frame_data.command_table.size(); ++i) {
+      frame_data.command_table[i] +=
+          src_slp.header.num_frames * FRAME_INFO_NUM_BYTES;
+    }
+  }
+
+  // Adds the new frame information.
+  auto itFrameInfo = src_slp.frame_info.begin();
+  auto itFrameData = src_slp.frame_data.begin();
+
+  while (itFrameInfo != src_slp.frame_info.end() ||
+         itFrameData != src_slp.frame_data.end()) {
+    itFrameInfo->outline_table_offset += outline_table_offset_adjust;
+
+    auto cmd_offset_duplicate =
+        itFrameInfo->outline_table_offset + 4 * itFrameInfo->height;
+    auto cmd_offset_difference =
+        cmd_offset_duplicate - itFrameInfo->cmd_table_offset;
+    itFrameInfo->cmd_table_offset = cmd_offset_duplicate;
+    dst_slp.frame_info.push_back(*itFrameInfo);
+
+	for (int j = 0; j != itFrameData->command_table.size(); ++j) {
+      itFrameData->command_table[j] += cmd_offset_difference;
+    }
+    dst_slp.frame_data.push_back(*itFrameData);
+    ++itFrameInfo;
+    ++itFrameData;
+  }
+  
+
+  // Adds the additional frame to the header.
+  dst_slp.header.num_frames += src_slp.header.num_frames;
 }

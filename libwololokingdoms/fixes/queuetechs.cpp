@@ -66,9 +66,6 @@ const int BUTTON_ID_IMP_UT = 8;
 // Button ID of the elite unique ship upgrades at the dock.
 const int BUTTON_ID_ELITE_SHIP = 29;
 
-// The number of unit icons, plus a small buffer.
-const int ICON_ID_OFFSET = 258;
-
 // An ID that is not linked to any SLP, used to make invisible units.
 const int GRAPHICS_INVISIBLE_UNIT = 6401;
 
@@ -252,7 +249,7 @@ void initializeUnit(genie::Unit& unit, int resId, genie::Tech& tech) {
   unit.HitPoints = 0;
   unit.LineOfSight = 0;
   unit.Enabled = 0;
-  unit.IconID = tech.IconID + ICON_ID_OFFSET;
+  unit.IconID = tech.IconID + UNIT_ICON_ID_OFFSET;
   unit.LanguageDLLName = tech.LanguageDLLName;
   unit.LanguageDLLHelp = tech.LanguageDLLHelp;
   unit.LanguageDLLCreation = tech.LanguageDLLDescription;

@@ -2050,6 +2050,49 @@ static void convertUniqueTechIcons(std::map<int, fs::path>& slpFiles,
 }
 
 /**
+ * Adds the tech icons to the end of the unit icons file for queueable tech icons
+ *
+ * @param slpFiles Map to which the modified SLP file paths are added.
+ * @param settings WololoKingdoms settings from which the HD files are obtained.
+ * @param newUniqueTechDir Output directory where the modified SLP files are
+ * written.
+ */
+static void moveQueueTechIcons(std::map<int, fs::path>& slpFiles,
+                                   const WKSettings& settings,
+                                   const fs::path& queueTechDir) {
+
+  // Reads in the original slp file.
+  const int tech_icon_slp_number = 50729;
+  const int unit_icon_slp_number = 50730;
+  const std::string filename = std::to_string(unit_icon_slp_number) + ".slp";
+  const fs::path unit_icon_slp_path = slpFiles[unit_icon_slp_number];
+  const fs::path tech_icon_slp_path = slpFiles[tech_icon_slp_number];
+  std::ifstream ifs(unit_icon_slp_path, std::ios::binary);
+  slp unit_icon_slp_file = read_slp(ifs);
+  ifs.close();
+  //Fill a number of frames as a buffer for future unit icons to be added
+  const int num_buffer_frames =
+      UNIT_ICON_ID_OFFSET - unit_icon_slp_file.header.num_frames;
+  for (auto _ = 0; _ < num_buffer_frames; ++_) {
+    duplicate_frame(unit_icon_slp_file, 0);
+  }
+
+  //Copy all frames from the tech icon slp to the end of the unit icon slp
+  ifs = std::ifstream(tech_icon_slp_path, std::ios::binary);
+  slp tech_icon_slp_file = read_slp(ifs);
+
+  copy_all_frames(tech_icon_slp_file, unit_icon_slp_file);
+
+  // Writes the modified slp file to the directory.
+  const fs::path output_path = queueTechDir / filename;
+  std::ofstream ofs(output_path, std::ios::binary);
+  write_slp(unit_icon_slp_file, ofs);
+
+  // Updates the slp file map with the new file.
+  slpFiles[unit_icon_slp_number] = output_path;
+}
+
+/**
  * Checks if a symlink exists already. If not, it removes a possibly existing
  * directory/file and creates a symlink.
  *
@@ -2301,6 +2344,7 @@ int WKConverter::run() {
       resourceDir / "graphics" / "ship-sinking";
   fs::path newUniqueTechIconsDir =
       resourceDir / "graphics" / "unique-tech-icons";
+  fs::path queueTechIconsDir = resourceDir / "graphics";
   fs::path newMonkGraphicsDir = resourceDir / "graphics" / "monks";
   fs::path newTerrainGraphicsDir = resourceDir / "graphics" / "terrains";
   fs::path newArchitectureGraphicsDir =
@@ -2572,6 +2616,8 @@ int WKConverter::run() {
 
     convertUniqueTechIcons(slpFiles, settings, newUniqueTechIconsDir);
     listener->increaseProgress(1); // 67
+
+    moveQueueTechIcons(slpFiles, settings, queueTechIconsDir);
 
     indexDrsFiles(newArchitectureGraphicsDir);
     listener->increaseProgress(1); // 68
