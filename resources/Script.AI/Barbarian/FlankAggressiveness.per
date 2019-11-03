@@ -1,0 +1,153 @@
+#load-if-defined DARK-AGE-START
+#load-if-defined IMPERIAL-AGE-END
+#load-if-not-defined UP-POCKET-POSITION
+
+#load-if-not-defined TINY-MAP
+#load-if-defined UP-ALLY-IN-GAME
+(defrule
+	(game-time > 50)
+	(game-time < 60)
+	(strategic-number sn-nomad-style-start == 0)
+	(strategic-number sn-strategy-lock == 0)
+	(up-compare-goal gl-nothing-style-map != YES)
+	(up-players-in-game any >= preferred-player-number)
+	(up-compare-goal gl-strategy-aggressiveness-level <= LOW)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal SLING 0)
+	(goal POSITION FLANK)
+	(goal gl-rush-suitability-on-map GOOD)
+=>
+	(set-goal gl-strategy flush)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-feudal-infantry FLUSH-DEFENCE-MAA)
+	(set-goal gl-feudal-archery FLUSH-DEFENCE-ARCHER)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+)
+#end-if
+#end-if
+
+#end-if
+#end-if
+#end-if
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined INCAN-CIV
+(defrule
+	(or	(goal gl-strategy krush)
+		(goal gl-strategy knight-boom))
+	(up-compare-const gv-maximum-age == imperial-age)
+	(starting-age == dark-age)
+	(goal gl-current-age gv-dark)
+	(up-compare-goal gl-super-pocket != YES)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-strategy-lock == 0)
+=>
+	(set-goal gl-strategy knight-rush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC2)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined DARK-AGE-START
+#load-if-defined IMPERIAL-AGE-END
+#load-if-defined UP-POCKET-POSITION
+#load-if-defined UP-HUMAN-IN-GAME
+(defrule
+	(strategic-number sn-strategy-lock == 0)
+	(goal gl-current-age gv-dark)
+	(game-time > 65)
+	(game-time < 75)
+	(up-compare-goal gl-strategy != elephant-boom)
+	(goal gl-rush-suitability-on-map VERY-LOW)
+	(map-type black-forest)
+	(goal SLING 0)
+	(goal POSITION POCKET)
+=>
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy boom-strategy)
+	(set-strategic-number sn-strategy-lock 1)
+)
+#end-if
+#end-if
+
+(defrule
+	(goal gl-rush-suitability-on-map GOOD)
+	(up-compare-const camp-raid-time-variance < 777)
+	(up-compare-const scout-unit != eagle-warrior-line)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(strategic-number sn-strategy-lock == 0)
+	(goal gl-super-pocket YES)
+	(goal gl-current-age gv-dark)
+	(game-time > 65)
+	(game-time < 75)
+	(up-compare-goal gl-strategy != uu-boom)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal SLING 0)
+	(goal POSITION POCKET)
+=>
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy boom-strategy)
+	(set-strategic-number sn-strategy-lock 1)
+)
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined MONGOL-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SLAVIC-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+(defrule
+	(goal gl-strategy ranged-boom-strategy)
+	(strategic-number sn-strategy-lock == 0)
+	(or	(up-compare-goal gl-rush-suitability-on-map <= AVERAGE)
+		(goal gl-super-pocket YES))
+	(goal gl-current-age gv-dark)
+	(game-time > 65)
+	(game-time < 75)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal SLING 0)
+	(goal POSITION POCKET)
+=>
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy archery-boom)
+	(set-strategic-number sn-strategy-lock 1)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+

@@ -1,0 +1,32 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy regicide-strategy)
+	(disable-self)
+)
+
+(defrule
+	(or	(civ-selected persian)
+		(up-compare-const boom-type == paladin))
+=>
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy knight-boom)
+	(disable-self)
+)
+
+(defrule
+	(goal POSITION POCKET)
+	(or	(and	(player-valid any-human-enemy)
+			(or	(up-compare-const boom-type != paladin)
+				(up-compare-const gv-players-in-team >= 5)))
+		(goal gl-rush-suitability-on-map VERY-LOW))
+	(game-time < 10)
+=>
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy turkish-bombardment)
+	(disable-self)
+)

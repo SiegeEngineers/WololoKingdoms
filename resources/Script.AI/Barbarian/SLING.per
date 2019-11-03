@@ -1,0 +1,3159 @@
+#load-if-not-defined DEATH-MATCH
+#load-if-defined DARK-AGE-START
+#load-if-not-defined DEFEND-WONDER
+
+#load-if-not-defined UP-MICHI-STYLE
+#load-if-defined IMPERIAL-AGE-END
+(defrule
+	(or	(up-compare-goal gl-current-age >= gv-dark-up)
+		(or	(difficulty >= easy)
+			(or	(map-type migration)
+				(or	(or	(game-time < 20)
+						(population-cap < 170))
+					(goal gl-nothing-style-map YES)))))
+=>
+	(up-jump-rule 22)
+)
+
+; ======= INITIALIZING
+
+(defrule
+	(game-time > 30)
+=>
+	(up-jump-rule 5)
+)
+
+(defrule
+	(true)
+=>
+	(generate-random-number 4)
+	(up-get-fact resource-amount random-number gl-slinging)
+	(up-modify-goal gl-slinging c:+ 1000)
+	(disable-self)
+)
+
+(defrule
+	(not	(map-type black-forest))
+	(or	(civ-selected aztec)
+		(or	(civ-selected mayan)
+			(civ-selected hun))); For now
+	(nand	(goal POSITION FLANK)
+		(or	(up-compare-const gv-x-vs-one-challenge == 1)
+			(up-compare-const gv-players-in-team >= 3)))
+	(random-number >= 1)
+=>
+	(set-goal gl-slinging 1004)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-slinging 1001)
+	(up-compare-goal gl-strategy != knight-boom)
+	(up-compare-goal gl-strategy != turkish-fast-imp)
+	(or	(up-allied-goal any-computer-ally gl-slinging == 1001)
+		(or	(goal gl-strategy-aggressiveness-level VERY-LOW)
+			(or	(goal gl-strategy castle-push)
+				(or	(up-compare-goal gl-strategy-type <= controlled-flush)
+					(goal gl-strategy castle-drop)))))
+=>
+	(set-goal gl-slinging 1002)
+)
+
+(defrule
+	(goal gl-slinging 1001)
+	(or	(and	(up-compare-const gv-pocket-position == 0)
+			(or	(up-compare-const gv-x-vs-one-challenge == 1)
+				(up-compare-const gv-players-in-team >= 3)))
+		(false))
+=>
+	(set-goal gl-slinging 1002)
+)
+
+(defrule
+	(civ-selected mayan)
+	(random-number >= 1)
+	(random-number < 1)
+	(up-compare-goal gl-slinging < 1005)
+=>
+	(set-goal gl-slinging 1001)
+)
+
+; ============ DECIDING
+
+(defrule
+	(game-time > 180)
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal2 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(or	(and	(goal gl-slinging 1001)
+			(up-allied-goal focus-player gl-slinging == slinging))
+		(up-allied-goal focus-player gl-slinging == forced-sling))
+	(up-allied-goal focus-player gl-sling-target-player == my-player-number)
+=>
+	(set-goal gl-slinging shot)
+	(chat-to-allies "-> shot")
+	(set-goal SLING 3)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-slinging 1004)
+	(or	(up-allied-goal focus-player gl-my-flank1 == my-player-number)
+		(or	(up-allied-goal focus-player POSITION == POCKET)
+			(goal gl-super-pocket YES)))
+	(up-allied-goal focus-player gl-slinging == 1001)
+=>
+	(set-goal gl-slinging slinging)
+	(up-modify-goal gl-sling-target-player s:= sn-focus-player-number)
+	(chat-to-allies "-> slinging")
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(set-goal SLING 6)
+	(up-jump-rule 10000)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-slinging 1004)
+	(or	(up-allied-goal focus-player gl-my-flank1 == my-player-number)
+		(or	(up-allied-goal focus-player POSITION == POCKET)
+			(goal gl-super-pocket YES)))
+	(up-allied-goal focus-player gl-slinging == 1001)
+=>
+	(set-goal gl-slinging slinging)
+	(up-modify-goal gl-sling-target-player s:= sn-focus-player-number)
+	(chat-to-allies "-> slinging")
+	(set-goal SLING 4)
+	(disable-self)
+)
+
+(defrule
+	(player-valid focus-player)
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+)
+
+; =========== CHOICES
+
+(defrule
+	(or	(game-time < 30)
+		(or	(game-time > 600)
+			(and	(goal gl-slinging shot)
+				(strategic-number sn-strategy-lock == 1))))
+=>
+	(up-jump-rule 8)
+)
+
+(defrule
+	(taunt-detected any-human-ally 38)
+=>
+	(up-get-player-fact this-any-human-ally player-number 0 temporary-goal3)
+	(up-modify-goal gl-sling-target-player g:= temporary-goal3)
+	(set-goal gl-slinging slinging)
+	(set-goal SLING 6)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-slinging shot)
+	(civ-selected mayan)
+	(or	(up-compare-goal gl-rush-suitability-on-map <= AVERAGE)
+		(and	(map-type oasis)
+			(goal POSITION POCKET)))
+=>
+	(set-goal gl-strategy castle-drop)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal POSITION POCKET)
+	(goal gl-slinging shot)
+	(up-compare-const base-scout-unit == eagle-warrior)
+=>
+	(set-goal gl-strategy eew-strategy)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-eew-strategy-type boom)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal SLING 1)
+)
+
+(defrule
+	(goal gl-slinging slinging)
+=>
+	(chat-to-allies-using-id 22072)
+	(set-goal gl-strategy sling)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-feudal-archery 0)
+	(set-goal gl-feudal-infantry 0)
+	(set-strategic-number sn-sling-control 0)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-slinging shot)
+	(goal POSITION FLANK)
+	(or	(goal gl-strategy scrush)
+		(civ-selected spanish))
+=>
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy scrush)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal gl-slinging shot)
+	(goal POSITION FLANK)
+=>
+	(set-goal gl-strategy flush)
+	(set-goal gl-feudal-archery pure-archers)
+	(set-goal gl-feudal-infantry 0)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+)
+
+(defrule
+	(goal gl-slinging shot)
+	(goal POSITION FLANK)
+	(or	(goal gl-strategy scrush)
+		(civ-selected hun))
+	(up-compare-goal gl-target-player-distance < 90)
+	(not	(player-human target-player))
+=>
+	(set-goal gl-DRUSH YES)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy knight-rush)
+	(set-goal gl-strategy-type FC2)
+	(set-strategic-number sn-strategy-lock 1)
+)
+
+(defrule
+	(goal gl-slinging shot)
+	(nor	(goal gl-strategy grush)
+		(goal gl-strategy landing))
+	(strategic-number sn-minimum-water-body-size-for-dock == islands-map-water-style)
+=>
+	(set-goal gl-strategy war-galley-rush)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-strategic-number sn-dock-proximity-factor 200)
+)
+
+; ========== CASTLE SLING REQUEST
+
+(defrule
+	(or	(game-time > 1500)
+		(population-cap < 150))
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(map-type oasis)
+	(goal SLING 0)
+	(goal POSITION FLANK)
+	(goal gl-strategy castle-drop)
+	(building-type-count castle > 0)
+	(up-compare-const gv-wall-castle-push == 1)
+	(goal gl-castle-control placed-forward)
+=>
+;	(chat-to-allies "gimme res")
+	(set-goal gl-slinging 4001)
+	(disable-self)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal2 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(goal gl-slinging 4001)
+	(up-allied-goal focus-player gl-slinging == slinging)
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(up-allied-goal focus-player gl-sling-target-player == my-player-number)
+=>
+	(set-goal gl-slinging shot)
+;	(chat-to-allies "-> shot")
+	(set-goal SLING 2)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-slinging 1004)
+	(goal gl-strategy uu-boom)
+	(goal gl-current-age gv-castle)
+	(up-compare-const gv-castle-sling-civ == 1)
+	(building-type-count-total castle == 0)
+	(up-allied-goal focus-player gl-my-flank1 == my-player-number)
+	(up-allied-goal focus-player gl-slinging == 4001)
+	(up-allied-goal focus-player gl-identity == Barbarian)
+=>
+	(set-goal gl-slinging slinging)
+	(up-modify-goal gl-sling-target-player s:= sn-focus-player-number)
+;	(chat-to-allies "-> slinging")
+	(set-goal gl-strategy castle-sling)
+	(set-strategic-number sn-sling-control 0)
+;	(set-goal SLING 6)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(up-jump-rule 10000); Let ally gl-slinging update
+	(disable-self)
+)
+
+(defrule
+	(player-valid focus-player)
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+)
+
+#end-if
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined INDIAN-CIV
+
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KOREAN-CIV
+(defrule
+	(game-time < 60)
+	(goal gl-current-age gv-dark)
+	(up-allied-goal every-ally gl-identity == Barbarian)
+	(goal POSITION FLANK)
+	(taunt-detected any-ally 176)
+	(up-allied-goal every-ally gl-castle-sling-order > castle-sling-priority); We have the highest rated krush
+	(up-compare-goal gl-castle-sling-order <= 13)
+	(goal SLING 0)
+=>
+	(acknowledge-taunt this-any-ally 176)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy krush)
+	(set-goal gl-strategy-type FC2)
+	(chat-to-allies "I do")
+	(chat-to-player my-player-number "175")
+	(chat-to-player this-any-ally "175")
+	(set-goal SLING 2)
+)
+
+(defrule
+	(goal SLING 2)
+	(up-allied-goal any-computer-ally SLING == 5)
+=>
+	(set-goal SLING 3)
+	(set-goal gl-slinging shot)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(or	(game-time > 3300)
+		(or	(not	(taunt-detected any-ally 176))
+			(or	(game-time < 1500)
+				(or	(up-compare-goal gl-current-age <= gv-feudal)
+					(or	(goal gl-strategy sling)
+						(goal gl-strategy castle-sling))))))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(taunt-detected any-ally 96)
+	(population > 90)
+	(nor	(taunt-detected my-player-number 175)
+		(up-allied-goal any-computer-ally SLING == 2))
+	(or	(population < 180)
+		(strategic-number sn-allow-resource-spending < 6))
+	(goal SLING 0)
+=>
+	(acknowledge-taunt every-ally 96)
+	(chat-to-allies "I do")
+	(chat-to-player my-player-number "175")
+	(chat-to-player this-any-ally "175")
+	(set-goal SLING 2)
+)
+
+(defrule
+	(not	(taunt-detected my-player-number 97))
+	(taunt-detected any-ally 173)
+	(taunt-detected my-player-number 175)
+=>
+	(acknowledge-taunt every-ally 173)
+	(set-goal gl-strategy default)
+	(set-goal gl-slinging shot)
+	(chat-to-player this-any-ally "123")
+	(set-goal SLING 3)
+)
+
+(defrule
+	(taunt-detected any-ally 96)
+	(taunt-detected any-ally 176)
+	(not	(taunt-detected my-player-number 175))
+=>
+	(acknowledge-taunt every-ally 96)
+	(acknowledge-taunt every-ally 176)
+)
+#end-if
+
+#end-if
+#end-if
+
+(defrule
+	(goal SLING 3)
+	(goal gl-strategy eew-strategy)
+=>
+	(set-goal SLING 1)
+)
+
+(defrule
+	(goal SLING 1)
+	(up-compare-goal gl-strategy != eew-strategy)
+=>
+	(set-goal SLING 3)
+)
+
+(defrule
+	(population-cap >= 200)
+	(food-amount < 2000)
+	(wood-amount < 2000)
+	(gold-amount < 2000)
+	(or	(civilian-population < 100)
+		(or	(and	(goal gl-current-age gv-castle)
+				(and	(game-time < 3000)
+					(up-compare-const gv-maximum-age == imperial-age)))
+			(up-compare-goal gl-trade-unit-count-total < 25)))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(up-compare-goal gl-wonder-build-attempt-stage != saving-resources)
+	(game-time > 2400)
+	(current-age-time > 400)
+	(current-age >= castle-age)
+	(player-in-game any-ally)
+	(or	(taunt-detected any-ally 4)
+		(or	(taunt-detected any-ally 6)
+			(and	(current-age == gv-maximum-age)
+				(or	(food-amount > 2000)
+					(gold-amount > 1300)))))
+	(can-research ri-coinage)
+=>
+	(research ri-coinage)
+)
+
+(defrule
+	(up-compare-goal gl-wonder-build-attempt-stage != saving-resources)
+	(game-time > 2400)
+	(current-age-time > 500)
+	(current-age >= castle-age)
+	(or	(taunt-detected any-ally 4)
+		(or	(taunt-detected any-ally 6)
+			(and	(current-age == gv-maximum-age)
+				(or	(food-amount > 2000)
+					(gold-amount > 1300)))))
+	(can-research ri-banking)
+=>
+	(research ri-banking)
+	(enable-timer 4 34)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != sling)
+	(up-compare-goal gl-strategy != castle-sling)
+=>
+	(up-jump-rule 28)
+)
+
+(defrule
+	(up-compare-goal gl-sling-target-player > 0)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= gl-sling-target-player)
+)
+
+(defrule
+	(game-time > 210)
+	(up-compare-const gv-migration == 0); Migration has its own system that doesn't have specified shots
+	(up-compare-goal SLING > 3)
+	(up-compare-goal gl-sling-target-player > 0)
+	(or	(and	(player-computer focus-player)
+			(up-allied-goal focus-player gl-slinging != shot))
+		(not	(player-in-game focus-player)))
+=>
+	(set-goal gl-sling-target-player -1)
+	(set-goal gl-slinging 1002)
+	(set-goal gl-strategy default)
+	(set-goal gl-strategy-type default)
+	(set-strategic-number sn-age-up-castle 1)
+	(set-goal SLING 0)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(building-type-count town-center > 0)
+	(goal gl-strategy sling)
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total town-center < 3)
+	(stone-amount < 100)
+	(can-buy-commodity stone)
+=>
+	(buy-commodity stone)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(or	(up-compare-goal gl-my-villager-count-total > 85)
+		(or	(taunt-detected any-ally 107)
+			(up-compare-goal gl-current-age >= gv-feudal-up)))
+=>
+	(set-goal gl-strategy-type FC2)
+	(set-goal TC 1)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(or	(can-research ri-coinage)
+		(can-research ri-banking))
+=>
+	(research ri-coinage)
+	(research ri-banking)
+	(enable-timer 6 0)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(research-completed ri-coinage)
+	(game-time > 1200)
+	(or	(building-type-count-total mining-camp < 2)
+		(or	(building-type-count-total watch-tower > 1)
+			(up-compare-goal gl-rush-suitability-on-map < GOOD)))
+	(or	(building-type-count-total mining-camp < 3)
+		(game-time > 1600))
+	(building-type-count-total mining-camp < 5)
+	(resource-found gold)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(goal gl-current-age gv-dark-up)
+	(strategic-number sn-minimum-water-body-size-for-dock >= mixed-map-style)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 16)
+	(set-strategic-number sn-wood-gatherer-percentage 74)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+;	(or	(and	(goal SLING 4)
+;			(strategic-number sn-minimum-water-body-size-for-dock == land-map-style))
+		(map-type migration);)
+	(building-type-count-total market > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(goal SLING 4)
+	(building-type-count-total market > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(goal SLING 4)
+	(building-type-count-total market > 0)
+	(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 31)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(goal SLING 6)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(building-type-count-total market > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(or	(goal SLING 4)
+		(and	(goal SLING 6)
+			(current-age-time > 600)))
+	(current-age-time > 300)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(building-type-count-total market > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(current-age-time > 150)
+	(or	(goal SLING 6)
+		(or	(goal SLING 4)
+			(and	(map-type migration)
+				(game-time < 1500))))
+	(strategic-number sn-minimum-water-body-size-for-dock >= mixed-map-style); Will get overwritten unless we want to up
+	(building-type-count-total market > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 23)
+	(set-strategic-number sn-wood-gatherer-percentage 52)
+	(set-strategic-number sn-gold-gatherer-percentage 21)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(current-age-time > 550)
+	(or	(goal SLING 6)
+		(goal SLING 4))
+	(unit-type-count-total fishing-ship < 6)
+	(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style)
+	(building-type-count-total market > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 33)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(goal SLING 6)
+	(current-age-time > 5)
+	(or	(current-age-time > 90)
+		(food-amount > 150))
+	(up-compare-const gv-migration == 0)
+	(up-compare-goal gl-strategy-type <= controlled-flush)
+	(strategic-number sn-minimum-water-body-size-for-dock >= islands-map-landing-style)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 10)
+	(set-strategic-number sn-wood-gatherer-percentage 64)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(map-type migration)
+	(game-time > 1500)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 1)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 2)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 4)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(goal gl-current-age gv-feudal)
+	(current-age-time < 270)
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-compare-goal gl-strategy-type >= FC)
+	(or	(not	(research-completed ri-banking))
+		(or	(and	(building-type-count-total town-center < 3)
+				(up-compare-const gv-migration == 0))
+			(and	(up-research-status c: ri-caravan < research-pending)
+				(and	(up-research-status c: ri-cartography != research-pending)
+					(unit-type-count-total trade-cart > 9)))))
+=>
+	(up-jump-rule 5)
+)
+
+(defrule
+	(or	(and	(goal gl-strategy sling)
+			(research-completed ri-coinage))
+		(goal SLING 5))
+	(timer-triggered 6)
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(food-amount > 80)
+=>
+	(tribute-to-player focus-player food 10000)
+)
+
+(defrule
+	(game-time > 1500)
+	(up-compare-goal gl-migration-progress < 8)
+	(map-type migration)
+	(unit-type-count-total transport-ship < 1)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(or	(and	(goal gl-strategy sling)
+			(research-completed ri-coinage))
+		(goal SLING 5))
+	(timer-triggered 6)
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(nand	(wood-amount < 160)
+		(current-age-time < 360))
+	(wood-amount > 110); Have some resources for camps etc
+=>
+	(tribute-to-player focus-player wood 10000)
+)
+
+(defrule
+	(research-completed ri-coinage)
+	(or	(and	(goal gl-strategy sling)
+			(up-compare-goal gl-sling-towers g:>= gl-sling-camp-total))
+		(and	(goal SLING 5)
+			(building-type-count-total castle > 0)))
+	(timer-triggered 6)
+=>
+	(tribute-to-player focus-player stone 10000)
+)
+
+(defrule
+	(or	(and	(goal gl-strategy sling)
+			(research-completed ri-coinage))
+		(and	(goal SLING 5)
+			(gold-amount > 100))); For trade
+	(timer-triggered 6)
+=>
+	(tribute-to-player focus-player gold 10000)
+	(enable-timer 6 34)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(up-allied-goal every-ally gl-identity == Barbarian)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(taunt-detected any-ally 97)
+=>
+	(set-goal gl-strategy castle-sling)
+	(set-goal gl-slinging slinging)
+	(up-get-player-fact this-any-ally player-number 0 temporary-goal2)
+	(up-modify-goal gl-sling-target-player g:= temporary-goal2)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-class special-class)
+	(set-goal gl-fixed-eco-balancing YES)
+	(disable-timer 3)
+)
+
+(defrule
+	(goal gl-strategy sling)
+	(game-time > 1200)
+	(or	(game-time > 3600)
+		(or	(and	(strategic-number sn-minimum-water-body-size-for-dock >= islands-map-landing-style)
+				(game-time > islands-sling-stop-time))
+			(taunt-detected any-human-ally 33)))
+=>
+	(chat-to-allies "96I stop slinging now")
+	(set-goal gl-strategy default)
+	(set-goal gl-strategy-type default)
+	(set-strategic-number sn-age-up-castle 1)
+)
+
+(defrule
+	(up-compare-goal gl-sling-target-player > 0)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+#load-if-defined DARK-AGE-START
+#load-if-not-defined MIGRATION-MAP
+(defrule
+	(or	(game-time > 2400)
+		(or	(up-compare-goal gl-strategy != krush)
+			(or	(up-compare-const gv-pocket-position == 0)
+				(or	(game-time < 1680)
+					(or	(not	(up-allied-goal any-computer-ally gl-identity == Barbarian))
+						(or	(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)
+							(up-compare-goal gl-current-age != gv-castle)))))))
+=>
+	(up-jump-rule 15)
+)
+#else
+(defrule
+	(or	(game-time > 2400)
+		(or	(up-compare-const gv-pocket-position == 0)
+			(or	(game-time < 90)
+				(or	(goal gl-strategy sling)
+					(goal gl-super-pocket YES)))))
+=>
+	(up-jump-rule 15)
+)
+#end-if
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank1)
+	(up-get-focus-fact allied-goal gl-identity temporary-goal4)
+	(up-get-focus-fact allied-goal gl-military-percentage temporary-goal5)
+	(up-get-focus-fact allied-goal gl-military-percentage2 temporary-goal6)
+	(up-get-focus-fact population 0 temporary-goal7)
+	(up-get-focus-fact current-age 0 temporary-goal8)
+	(up-get-focus-fact allied-goal gl-identity gl-remote-last)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank2)
+	(up-get-focus-fact allied-goal gl-identity gl-remote-total)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal2 5)
+	(set-goal temporary-goal3 0)
+	(up-get-fact player-number 0 gl-local-last)
+	(up-get-focus-fact player-number 0 gl-local-total)
+)
+
+#load-if-not-defined MIGRATION-MAP
+(defrule
+	(true)
+=>
+	(do-nothing)
+)
+
+(defrule
+	(true)
+=>
+	(do-nothing)
+)
+
+
+(defrule
+	(strategic-number sn-focus-player-number == 1)
+=>
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank1)
+	(up-get-focus-fact allied-goal gl-castle-sling-order gl-object-point-x)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+;	(or	(and	(up-allied-goal focus-player gl-castle-sling-order g:>= gl-object-point-x); No cross-sling if our flank is a good candidate
+;			(goal gl-remote-total Barbarian))
+	(or	(and	(strategic-number sn-focus-player-number g:!= gl-my-flank1); No cross-sling for now
+			(up-compare-goal gl-super-pocket != YES)); Unless we're super pocket
+		(or	(goal gl-retargeting to-pocket)
+			(up-compare-const gv-players-in-team == 3))); Pocket should be able to support both flanks in 3 player team
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(or	(and	(players-population focus-player >= 180)
+			(up-allied-sn focus-player sn-allow-resource-spending > 5))
+		(or	(up-compare-goal gl-castle-sling-order < max-castle-sling-priority)
+			(or	(up-allied-goal focus-player gl-castle-sling-order >= 6)
+				(or	(up-allied-goal focus-player SLING != 0)
+					(or	(goal gl-defending-ally YES)
+						(up-compare-goal temporary-goal8 <= 1))))))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(players-population focus-player > 100)
+	(stance-toward focus-player ally)
+	(or	(up-allied-goal focus-player gl-enemy-units-in-town < 5)
+		(or	(up-allied-goal focus-player TSA >= 1)
+			(and	(or	(up-allied-goal focus-player gl-military-percentage > 70)
+					(and	(players-unit-type-count focus-player knight-line > 8)
+						(up-allied-goal focus-player gl-military-percentage > 40)))
+				(up-allied-sn focus-player sn-threat-level <= 0))))
+	(up-allied-goal focus-player gl-castle-sling-order g:< temporary-goal2)
+=>
+	(up-get-focus-fact allied-goal gl-castle-sling-order temporary-goal2)
+	(up-modify-goal temporary-goal3 s:= sn-focus-player-number)
+)
+
+(defrule
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(or	(up-allied-goal focus-player gl-strategy == sling)
+		(or	(up-allied-goal focus-player gl-strategy == castle-sling)
+			(and	(up-allied-goal focus-player gl-castle-sling-order g:> gl-castle-sling-order)
+				(up-allied-goal focus-player POSITION == POCKET))))
+=>
+	(set-goal temporary-goal3 0)
+	(up-jump-rule 2)
+)
+#else
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(or	(and	(up-allied-goal focus-player gl-identity == Barbarian)
+			(and	(goal gl-remote-last Barbarian); We have Barbarian flank in 4 player team -> go land
+				(and	(strategic-number sn-barbarian-count == 3)
+					(up-compare-const gv-players-in-team == 4))))
+		(up-compare-const gv-players-in-team == 3))
+=>
+	(set-goal gl-super-pocket YES)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(up-allied-goal focus-player gl-castle-sling-order g:<= gl-castle-sling-order)
+	(or	(up-allied-goal focus-player gl-castle-sling-order g:< gl-castle-sling-order)
+		(up-compare-goal gl-local-last g:< gl-local-total))
+	(goal gl-remote-last Barbarian)
+	(goal gl-remote-total Barbarian)
+	(strategic-number sn-barbarian-count >= 5)
+	(up-allied-goal focus-player gl-super-pocket != YES)
+	(up-allied-goal focus-player POSITION == POCKET)
+=>
+	(up-get-focus-fact allied-goal gl-my-flank1 gl-other-side-flank)
+	(up-modify-goal gl-other-pocket-player g:= gl-my-flank2)
+	(set-goal gl-strategy sling)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(up-compare-goal gl-strategy != sling)
+	(up-compare-const gv-players-in-team == 5)
+	(goal gl-remote-last Barbarian)
+	(goal gl-remote-total Barbarian)
+	(strategic-number sn-barbarian-count == 4)
+=>
+	(up-modify-goal gl-other-pocket-player g:= gl-my-flank2)
+	(up-modify-goal gl-other-side-flank g:= gl-my-flank2)
+	(set-goal gl-strategy sling)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(up-compare-const gv-players-in-team == 5)
+	(goal gl-remote-last Barbarian)
+	(goal gl-remote-total Barbarian)
+	(strategic-number sn-barbarian-count == 4)
+	(strategic-number sn-focus-player-number g:!= gl-my-flank1)
+	(strategic-number sn-focus-player-number g:!= gl-my-flank2)
+	(up-allied-goal focus-player POSITION == FLANK)
+=>
+	(up-modify-goal gl-other-side-flank s:= sn-focus-player-number)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(up-allied-goal focus-player gl-castle-sling-order g:<= gl-castle-sling-order)
+	(or	(up-allied-goal focus-player gl-castle-sling-order g:< gl-castle-sling-order)
+		(up-compare-goal gl-local-last g:< gl-local-total))
+	(goal gl-remote-last Barbarian)
+	(up-compare-goal gl-remote-total != Barbarian)
+	(strategic-number sn-barbarian-count == 4)
+	(up-allied-goal focus-player POSITION == POCKET)
+=>
+	(up-get-focus-fact allied-goal gl-my-flank1 gl-other-side-flank)
+	(up-modify-goal gl-other-pocket-player s:= sn-focus-player-number)
+	(set-goal gl-strategy sling)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+)
+
+(defrule
+	(strategic-number sn-focus-player-number != my-player-number)
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(up-allied-goal focus-player gl-strategy == sling)
+	(strategic-number sn-barbarian-count == 4)
+	(goal gl-remote-last Barbarian)
+	(or	(up-compare-goal gl-remote-total != Barbarian)
+		(up-compare-const gv-players-in-team == 4))
+	(goal POSITION POCKET)
+	(up-allied-goal focus-player POSITION == POCKET)
+=>
+	(set-goal gl-super-pocket YES)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(up-allied-goal focus-player gl-castle-sling-order g:<= gl-castle-sling-order)
+	(or	(up-allied-goal focus-player gl-castle-sling-order g:< gl-castle-sling-order)
+		(up-compare-goal gl-local-last g:< gl-local-total))
+	(strategic-number sn-barbarian-count == 4)
+	(up-compare-const gv-players-in-team == 4)
+	(up-allied-goal focus-player POSITION == POCKET)
+=>
+	(up-get-focus-fact allied-goal gl-my-flank1 gl-other-side-flank)
+	(up-modify-goal gl-other-pocket-player s:= sn-focus-player-number)
+	(set-goal gl-strategy sling)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+)
+#end-if
+(defrule
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-get-focus-fact player-number 0 gl-local-total)
+	(up-jump-rule -8)
+)
+
+(defrule
+	(up-compare-goal temporary-goal3 g:!= gl-my-flank1)
+	(up-compare-goal temporary-goal3 > 0)
+	(or	(and	(goal temporary-goal4 Barbarian)
+			(or	(up-compare-goal temporary-goal5 < 80)
+				(up-compare-goal temporary-goal6 < 60)))
+		(or	(up-compare-goal gl-pair-player-military < 25)
+			(up-compare-goal temporary-goal7 < 90)))
+=>
+	(set-goal temporary-goal3 0)
+)
+
+(defrule
+	(up-compare-goal temporary-goal3 > 0)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal3)
+)
+
+(defrule
+	(goal SLING 0)
+	(goal CASTLE 0)
+	(up-allied-goal every-ally gl-identity == Barbarian)
+	(up-compare-goal temporary-goal3 > 0)
+	(civilian-population > 75)
+	(up-compare-goal gl-enemy-units-in-town < 4)
+	(food-amount < 800)
+=>
+	(acknowledge-taunt every-ally 175)
+	(acknowledge-taunt every-ally 33)
+	(acknowledge-taunt every-ally 97)
+	(acknowledge-taunt every-ally 123)
+	(enable-timer 28 10)
+	(chat-to-player focus-player "176")
+	(chat-to-player focus-player "96")
+	(chat-to-allies "172Does anyone want sling?")
+	(disable-self)
+)
+
+(defrule
+	(taunt-detected my-player-number 172)
+	(taunt-detected any-ally 175)
+=>
+	(set-goal gl-strategy castle-sling)
+	(set-goal gl-slinging slinging)
+	(up-get-player-fact this-any-ally player-number 0 temporary-goal2)
+	(up-modify-goal gl-sling-target-player g:= temporary-goal2)
+	(set-goal gl-strategy-class special-class)
+	(set-goal gl-fixed-eco-balancing YES)
+	(set-goal CASTLE 0)
+	(disable-timer 3)
+)
+
+(defrule
+	(taunt-detected my-player-number 172)
+	(timer-triggered 28)
+=>
+	(acknowledge-taunt my-player-number 172)
+	(disable-timer 28)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-strategy != castle-sling)
+=>
+	(up-jump-rule 26)
+)
+
+(defrule
+	(strategic-number sn-allow-resource-spending > 0)
+	(not	(research-completed ri-banking))
+=>
+	(set-strategic-number sn-allow-resource-spending 0)
+)
+
+(defrule
+	(up-compare-goal threat-time < 10000)
+	(strategic-number sn-allow-resource-spending == 0)
+	(research-completed ri-banking)
+=>
+	(set-strategic-number sn-allow-resource-spending 1)
+)
+
+(defrule
+	(building-type-count-total market < 1)
+=>
+	(up-modify-goal gl-market-build-priority c:max 1000)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(up-compare-goal gl-my-villager-count-total > 45)
+=>
+	(set-goal temporary-goal 150)
+	(up-get-fact soldier-count 0 temporary-goal2)
+	(up-modify-goal temporary-goal g:- temporary-goal2)
+	(up-modify-goal temporary-goal c:max 120)
+	(research ri-coinage)
+)
+
+(defrule
+	(up-compare-goal threat-time < 7000)
+	(up-compare-goal gl-enemy-units-in-town > 0)
+	(or	(up-compare-goal gl-my-UU-count-total < 4)
+		(game-time > 1600))
+	(up-compare-goal gl-my-UU-count-total < 6)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(game-time > 2500)
+	(building-type-count-total town-center < 4)
+	(can-build-with-escrow town-center)
+=>
+	(set-strategic-number sn-town-center-placement 0)
+	(release-escrow wood)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-set-placement-data my-player-number -1 c: 0)
+	(up-modify-sn sn-placement-zone-size g:= gl-my-maximum-town-size)
+	(up-build place-control 0 c: town-center)
+	(chat-to-player my-player-number TC-chat)
+)
+
+(defrule
+	(or	(building-type-count-total town-center == 1)
+		(building-type-count-total town-center == 3))
+	(can-build-with-escrow town-center)
+=>
+	(up-modify-sn sn-camp-max-distance g:= gl-my-town-size)
+	(set-strategic-number sn-town-center-placement mining-camp)
+	(release-escrow wood)
+	(build town-center)
+	(chat-to-player my-player-number TC-chat)
+)
+
+(defrule
+	(building-type-count-total town-center == 2)
+	(can-build-with-escrow town-center)
+=>
+	(up-modify-sn sn-camp-max-distance g:= gl-my-town-size)
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(release-escrow wood)
+	(build town-center)
+	(chat-to-player my-player-number TC-chat)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(building-type-count-total market > 0)
+		(wood-amount >= 235))
+	(or	(research-completed ri-horse-collar)
+		(current-age-time g:> gl-current-age-time-for-farms))
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(up-compare-goal gl-my-villager-count-total > 45)
+	(can-research ri-banking)
+=>
+	(research ri-banking)
+	(enable-timer 4 34)
+	(enable-timer 6 0)
+	(set-strategic-number sn-target-evaluation-ally-proximity 9999)
+	(chat-to-allies "I'm getting banking!")
+)
+
+(defrule
+	(or	(building-type-count-total town-center > 2)
+		(map-type migration))
+	(building-type-count town-center > 0)
+	(up-compare-goal gl-my-villager-count-total > 40)
+	(research-completed ri-banking)
+=>
+	(set-goal SLING 5)
+	(set-strategic-number sn-enable-training-queue 1)
+	(enable-timer 4 0)
+	(enable-timer 6 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(game-time > 1200)
+	(or	(and	(taunt-detected any-ally 97)
+			(up-compare-goal gl-pair-player-military >= 20))
+		(taunt-detected any-human-ally 33))
+=>
+	(acknowledge-taunt every-ally 1)
+	(acknowledge-taunt every-ally 33)
+	(acknowledge-taunt every-ally 97)
+	(acknowledge-taunt every-ally 123)
+	(enable-timer 28 10)
+	(chat-to-allies "176I stop slinging you now, does anyone else want res?")
+	(chat-to-player every-ally "96")
+	(chat-to-player my-player-number "172")
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(taunt-detected my-player-number 172)
+	(game-time > 1200)
+	(taunt-detected any-computer-ally 175)
+=>
+	(acknowledge-taunt every-ally 1)
+	(acknowledge-taunt every-ally 175)
+	(acknowledge-taunt every-ally 123)
+	(disable-timer 28)
+	(chat-to-player this-any-ally "173")
+	(up-get-player-fact this-any-computer-ally player-number 0 temporary-goal)
+	(up-modify-goal gl-sling-target-player g:= temporary-goal)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(taunt-detected my-player-number 172)
+	(game-time > 1200)
+	(taunt-detected any-human-ally 1)
+=>
+	(acknowledge-taunt every-ally 1)
+	(acknowledge-taunt every-ally 175)
+	(acknowledge-taunt every-ally 123)
+	(disable-timer 28)
+	(chat-to-player this-any-ally "173")
+	(up-get-player-fact this-any-human-ally player-number 0 temporary-goal)
+	(up-modify-goal gl-sling-target-player g:= temporary-goal)
+)
+
+(defrule
+	(or	(timer-triggered 28)
+		(or	(game-time > 3900)
+			(up-compare-goal gl-current-age >= gv-castle-up)))
+=>
+	(chat-to-player every-ally "I stop slinging now")
+	(chat-to-player my-player-number "I stop slinging now")
+	(set-goal gl-strategy default)
+	(set-goal SLING 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-my-villager-count-total > 140)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(not	(can-research-with-escrow ri-hand-cart))
+	(up-compare-goal gl-trade-unit-count-total < 15)
+	(population < 185)
+	(or	(up-compare-goal gl-my-villager-count-total < 50)
+		(up-compare-goal gl-my-villager-count-total g:< temporary-goal))
+	(can-train villager)
+=>
+	(train villager)
+)
+
+(defrule
+	(building-type-count-total town-center > 2)
+	(goal SLING 5)
+	(up-compare-goal gl-my-villager-count-total > 90)
+	(or	(can-research ri-gold-shaft-mining)
+		(can-research ri-stone-shaft-mining))
+=>
+	(research ri-gold-shaft-mining)
+	(research ri-stone-shaft-mining)
+)
+
+(defrule
+	(up-pending-objects c: mining-camp < 1)
+	(building-type-count-total town-center > 3)
+	(game-time > 2100)
+	(building-type-count-total mining-camp < 5)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+; ================ ECO
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+)
+
+(defrule
+	(up-compare-goal gl-my-villager-count-total < 40)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(building-type-count-total castle == 0)
+	(stone-amount < castle-stone)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 5)
+	(set-strategic-number sn-stone-gatherer-percentage 29)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(stone-amount >= 650)
+			(goal gl-current-age gv-feudal-up))
+		(building-type-count-total castle > 0))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 36)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 8)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total town-center > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total town-center > 2)
+	(up-compare-goal gl-my-villager-count > 45)
+	(research-completed ri-banking)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total town-center > 2)
+	(up-compare-goal gl-my-villager-count > 100)
+	(research-completed ri-banking)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 5)
+	(building-type-count-total town-center > 3)
+	(game-time > 2000)
+	(population > 130)
+	(unit-type-count trade-cart > 0)
+	(research-completed ri-cartography)
+	(building-type-count-total market < 4)
+	(players-building-type-count any-ally market > 0)
+	(building-type-count town-center > 0)
+	(can-build market)
+=>
+	(up-set-placement-data my-player-number -1 c: -100)
+	(up-build place-control 0 c: market)
+	(set-strategic-number sn-object-repair-level 20611)
+	(set-strategic-number sn-placement-fail-delta -1)
+)
+
+#end-if; DM
+
+(defrule
+	(building-type-count market == 0)
+=>
+	(up-jump-rule 11)
+)
+
+(defrule
+	(or	(wood-amount > 300)
+		(building-type-count-total town-center > 2))
+	(wood-amount > 100)
+	(taunt-detected any-ally 4)
+	(taunt-detected any-ally 99)
+=>
+	(tribute-to-player this-any-ally wood 275)
+	(acknowledge-taunt every-ally 99)
+	(acknowledge-taunt every-ally 4)
+)
+
+(defrule
+	(stone-amount > 120)
+	(taunt-detected any-ally 6)
+	(taunt-detected any-ally 99)
+=>
+	(tribute-to-player this-any-ally stone 100)
+	(acknowledge-taunt every-ally 99)
+	(acknowledge-taunt every-ally 6)
+)
+
+(defrule
+	(or	(current-age != gv-maximum-age)
+		(or	(goal gl-wonder-build-attempt-stage saving-resources)
+			(or	(game-time < auto-sling-time)
+				(or	(strategic-number sn-allow-resource-spending < 6)
+					(or	(not	(research-completed tribute-tech))
+						(up-timer-status 15 == timer-running))))))
+=>
+	(up-jump-rule 8)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal2 0)
+)
+
+(defrule
+	(up-allied-goal focus-player gl-identity == Barbarian)
+	(or	(up-allied-goal focus-player gl-strategy == sling)
+		(up-allied-goal focus-player gl-strategy == castle-sling))
+=>
+	(up-jump-rule 4)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(players-building-type-count focus-player town-center > 0)
+	(players-population focus-player > 40)
+	(or	(not	(up-allied-goal focus-player gl-enemy-units-in-town > 5))
+		(players-population focus-player > 130))
+	(up-allied-resource-amount focus-player food < 1000)
+	(up-compare-goal gl-available-food-amount > 2200)
+=>
+	(tribute-to-player focus-player food 1000)
+	(set-goal temporary-goal2 1)
+	(chat-to-player my-player-number "Tribute 1000 food to ally.")
+	(enable-timer 11 180)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(players-building-type-count focus-player town-center > 0)
+	(players-population focus-player > 40)
+	(or	(not	(up-allied-goal focus-player gl-enemy-units-in-town > 5))
+		(players-population focus-player > 130))
+	(up-allied-resource-amount focus-player wood < 1000)
+	(up-compare-goal gl-available-wood-amount > 2200)
+=>
+	(tribute-to-player focus-player wood 1000)
+	(set-goal temporary-goal2 1)
+	(chat-to-player my-player-number "Tribute 1000 wood to ally.")
+	(enable-timer 11 180)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(players-building-type-count focus-player town-center > 0)
+	(players-population focus-player > 40)
+	(or	(not	(up-allied-goal focus-player gl-enemy-units-in-town > 5))
+		(players-population focus-player > 130))
+	(up-allied-resource-amount focus-player gold < 1000)
+	(up-compare-goal gl-available-gold-amount > 2200)
+=>
+	(tribute-to-player focus-player gold 1000)
+	(set-goal temporary-goal2 1)
+	(chat-to-player my-player-number "Tribute 1000 gold to ally.")
+	(enable-timer 11 180)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(players-building-type-count focus-player town-center > 0)
+	(players-population focus-player > 170)
+	(up-allied-resource-amount focus-player stone < 650)
+	(nand	(up-compare-goal CASTLE != 0)
+		(and	(building-type-count-total castle < 3)
+			(stone-amount < 1700)))
+	(stone-amount > 1150); Failing to place castle
+=>
+	(tribute-to-player focus-player stone 400)
+	(set-goal temporary-goal2 1)
+	(chat-to-player my-player-number "Tribute 400 stone to ally.")
+	(enable-timer 11 180)
+)
+
+(defrule
+	(up-compare-goal temporary-goal2 != 1)
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -6)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+(defrule
+	(up-compare-goal gl-slinging != shot)
+	(up-compare-goal SLING != 1)
+	(up-compare-goal SLING != 3)
+=>
+	(up-jump-rule 9)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal3 0)
+)
+
+(defrule
+	(or	(up-allied-goal focus-player gl-slinging == slinging)
+		(up-allied-goal focus-player gl-slinging == forced-sling))
+	(up-allied-goal focus-player gl-sling-target-player == my-player-number)
+=>
+	(set-goal temporary-goal3 1)
+)
+
+(defrule
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+(defrule
+	(population >= 180)
+	(food-amount > 2300)
+	(gold-amount > 1300)
+	(wood-amount > 500)
+=>
+	(set-goal SLING 0)
+	(set-goal gl-slinging 1002)
+)
+
+(defrule
+	(population >= 195)
+	(nand	(current-age == imperial-age)
+		(and	(civ-selected gothic)
+			(population < 205)))
+=>
+	(enable-timer 4 150)
+	(chat-to-player my-player-number "95")
+	(disable-self)
+)
+
+(defrule
+	(or	(game-time > 2700)
+		(and	(goal temporary-goal3 0)
+			(and	(not	(taunt-detected any-human-ally 48))
+				(game-time > 60))))
+=>
+	(set-goal SLING 0)
+	(set-goal gl-slinging 1002)
+)
+
+(defrule
+	(game-time > 1200)
+	(or	(and	(timer-triggered 4)
+			(taunt-detected my-player-number 95))
+		(or	(civilian-population < 25)
+			(building-type-count-total town-center == 0)))
+=>
+	(set-goal SLING 0)
+	(set-goal gl-slinging 1002)
+	(acknowledge-taunt my-player-number 95)
+)
+
+(defrule
+	(game-time > 1200)
+	(population > 170)
+=>
+	(chat-to-allies "107")
+	(disable-self)
+)
+
+; end of jump
+
+(defrule
+	(or	(goal SLING 4)
+		(goal SLING 6))
+	(up-compare-goal gl-current-age >= gv-dark-up)
+=>
+	(set-strategic-number sn-target-evaluation-ally-proximity 9999)
+)
+
+(defrule
+	(up-compare-goal SLING <= 3)
+	(not	(taunt-detected my-player-number 94))
+	(strategic-number sn-target-evaluation-ally-proximity == 9999)
+=>
+	(set-strategic-number sn-target-evaluation-ally-proximity 20)
+)
+
+(defrule
+	(or	(research-completed ri-caravan)
+		(and	(goal gl-current-age gv-castle)
+			(and	(up-compare-goal gl-strategy != sling)
+				(and	(up-compare-goal gl-strategy != castle-sling)
+					(and	(food-amount > 500)
+						(and	(gold-amount > 400)
+							(research-available imperial-age)))))))
+=>
+	(up-jump-rule 3)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(player-in-game any-ally)
+	(or	(nand	(not	(goal MILITARY 1))
+			(and	(up-compare-goal gl-current-age <= gv-castle)
+				(game-time < 2520)))
+		(strategic-number sn-maximum-town-size == 255))
+	(game-time > 2520)
+	(can-research ri-cartography)
+=>
+	(research ri-cartography)
+)
+
+(defrule
+	(or	(up-compare-const gv-aofe-game == 1)
+		(and	(game-time > 1800)
+			(map-type migration)))
+	(nor	(goal gl-strategy sling)
+		(goal gl-strategy castle-sling))
+	(can-research ri-cartography)
+=>
+	(research ri-cartography)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(unit-type-count-total trade-cart > 3)
+		(or	(and	(up-compare-goal gl-current-age >= gv-castle-up)
+				(unit-type-count-total trade-cart > 0))
+			(or	(unit-type-count-total trade-cog > 3)
+				(up-compare-flag gl-flag == trade-sling))))
+=>
+	(research ri-cartography)
+	(research ri-caravan)
+)
+
+(defrule
+	(or	(strategic-number sn-nomad-style-start == 0)
+		(or	(goal gl-pocket-check 1)
+			(or	(game-time < 5)
+				(or	(up-compare-const gv-team-together == 0)
+					(or	(players-building-type-count any-ally lumber-camp == 0)
+						(building-type-count lumber-camp == 0))))))
+=>
+	(up-jump-rule 12)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-get-fact players-in-game ally temporary-goal3)
+	(set-goal gl-saved-point-x 0)
+	(set-goal gl-saved-point-y 0)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(players-building-type-count focus-player lumber-camp > 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: lumber-camp c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(goal gl-remote-total 0)
+	(players-building-type-count focus-player lumber-camp > 0)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-jump-rule 9); Ally's lumber camp is not finished
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(goal gl-remote-total 1)
+	(players-building-type-count focus-player lumber-camp > 0)
+=>
+	(up-modify-goal gl-point-x g:/ temporary-goal3)
+	(up-modify-goal gl-point-y g:/ temporary-goal3)
+	(up-add-point gl-saved-point-x gl-point-x c: 1)
+)
+
+(defrule
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal2 100000)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal6 100000)
+	(up-copy-point gl-temporary-point-x gl-saved-point-x)
+	(up-add-point gl-temporary-point-x gl-position-center-x c: -1)
+	(up-add-point gl-saved-point-x gl-temporary-point-x c: -100)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(players-building-type-count focus-player lumber-camp > 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: lumber-camp c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-get-point-distance gl-point-x gl-saved-point-x temporary-goal3)
+;	(up-chat-data-to-all "distance %d" g: temporary-goal3)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(up-compare-goal temporary-goal3 g:< temporary-goal2)
+=>
+	(up-modify-goal temporary-goal2 g:= temporary-goal3)
+	(up-modify-goal temporary-goal5 g:= temporary-goal4)
+	(up-modify-goal temporary-goal4 s:= sn-focus-player-number)
+;	(up-chat-data-to-all "New record (%d)" g: temporary-goal3)
+;	(up-chat-data-to-all "Player %d" g: temporary-goal4)
+;	(up-chat-data-to-all "Previous champion %d" g: temporary-goal5)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(up-compare-goal temporary-goal3 g:< temporary-goal6)
+	(up-compare-goal temporary-goal3 g:>= temporary-goal2)
+=>
+	(up-modify-goal temporary-goal6 g:= temporary-goal3)
+	(up-modify-goal temporary-goal5 s:= sn-focus-player-number)
+;	(up-chat-data-to-all "New 2nd best result (%d)" g: temporary-goal3)
+;	(up-chat-data-to-all "Player %d" g: temporary-goal5)
+)
+
+(defrule
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(up-compare-goal temporary-goal4 != my-player-number)
+	(up-compare-goal temporary-goal5 != my-player-number)
+=>
+	(set-goal POSITION POCKET)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(set-goal gl-pocket-check 1)
+)
+
+(defrule
+	(game-time > ally-help-time)
+	(or	(game-time > max-ally-help-time)
+		(or	(up-compare-goal gl-current-age != gv-imperial)
+			(strategic-number sn-threat-level > 0)))
+	(up-compare-goal gl-defending-ally != YES)
+	(up-compare-goal gl-attacking-with-ally != YES)
+=>
+	(up-jump-rule 65)
+)
+
+(defrule
+	(up-compare-goal gl-super-pocket != -1)
+=>
+	(up-jump-rule 11)
+)
+
+(defrule
+	(game-time > 5)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-get-point position-opposite gl-point-x)
+	(set-goal temporary-goal3 200)
+	(set-goal temporary-goal2 200)
+	(set-goal gl-point2-x 0)
+	(set-goal gl-point2-y 0)
+	(up-add-point gl-point2-x gl-position-self-x c: 1)
+)
+
+(defrule
+	(game-time > 5)
+	(stance-toward focus-player ally)
+	(strategic-number sn-focus-player-number != my-player-number)
+=>
+	(up-get-point position-focus gl-saved-point-x)
+	(up-get-point-distance gl-saved-point-x gl-point-x temporary-goal2)
+	(up-add-point gl-point2-x gl-saved-point-x c: 1)
+)
+
+(defrule
+	(game-time > 5)
+	(up-compare-const gv-michi-style == 0)
+	(up-compare-const gv-team-together == 1)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(up-compare-goal temporary-goal3 g:> temporary-goal2)
+=>
+	(up-modify-goal temporary-goal3 g:= temporary-goal2)
+)
+
+(defrule
+	(game-time > 5)
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(game-time > 5)
+	(strategic-number sn-nomad-style-start == 0)
+	(up-compare-const gv-5-player-team == 1)
+	(up-compare-goal temporary-goal3 > super-pocket-distance)
+=>
+	(set-goal gl-super-pocket YES)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-modify-goal gl-point2-x c:/ gv-players-in-team)
+	(up-modify-goal gl-point2-y c:/ gv-players-in-team)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 5)
+	(goal gl-super-pocket -1)
+=>
+	(set-goal gl-super-pocket 0)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-modify-goal gl-point2-x c:/ gv-players-in-team)
+	(up-modify-goal gl-point2-y c:/ gv-players-in-team)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 5)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-goal temporary-goal3 24733)
+	(up-find-player ally find-closest gl-my-flank1)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank1)
+	(up-get-focus-fact allied-goal POSITION temporary-goal6)
+	(up-get-point position-focus gl-point-x)
+;	(up-get-point position-mirror gl-object-point-x)
+	(up-find-player ally find-closest gl-my-flank2)
+	(up-find-next-player ally find-closest gl-my-flank2)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank2)
+	(up-get-focus-fact allied-goal POSITION temporary-goal7)
+	(up-get-point position-focus gl-saved-point-x)
+;	(up-get-point-distance gl-point-x gl-object-point-x temporary-goal2)
+;	(up-get-point-distance gl-saved-point-x gl-object-point-x temporary-goal4)
+	(up-get-point-distance gl-point-x gl-point2-x temporary-goal2)
+	(up-get-point-distance gl-saved-point-x gl-point2-x temporary-goal4)
+	(disable-self)
+)
+
+(defrule
+	(strategic-number sn-nomad-style-start == 0)
+	(goal temporary-goal3 24733)
+;	(up-compare-goal temporary-goal6 != FLANK)
+;	(goal temporary-goal7 FLANK)
+	(up-compare-goal temporary-goal2 g:< temporary-goal4)
+	(up-compare-const gv-pocket-position == 1)
+=>
+	(set-goal temporary-goal3 0)
+	(up-modify-goal temporary-goal4 g:= gl-my-flank1)
+	(up-modify-goal gl-my-flank1 g:= gl-my-flank2)
+	(up-modify-goal gl-my-flank2 g:= temporary-goal4)
+	(disable-self)
+)
+
+(defrule
+	(strategic-number sn-nomad-style-start == 0)
+	(goal temporary-goal3 24733)
+	(goal temporary-goal6 FLANK)
+	(goal temporary-goal7 POCKET)
+	(up-compare-const gv-pocket-position == 0)
+=>
+	(up-modify-goal gl-my-flank1 g:= gl-my-flank2)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal3 24733)
+	(up-compare-const gv-pocket-position == 0)
+=>
+	(set-goal temporary-goal3 0)
+	(set-goal gl-my-flank2 0)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 5)
+=>
+;	(up-chat-data-to-player my-player-number "My pair is player %d." g: gl-my-flank1)
+;	(up-chat-data-to-player chat-recipient "My pair is player %d." g: gl-my-flank1)
+	(set-goal temporary-goal3 0)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-defending-ally YES)
+	(up-compare-goal TSA >= 1)
+	(or	(timer-triggered 39)
+		(soldier-count < 5))
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 731 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point gl-position-self-x action-stop -1 -1)
+	(disable-timer 39)
+	(set-goal gl-defending-ally NO)
+	(set-goal gl-ally-under-attack -1)
+)
+
+(defrule
+	(goal gl-defending-ally YES)
+	(goal TSA 0)
+	(or	(timer-triggered 39)
+		(soldier-count < 5))
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 731 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point gl-position-self-x action-stop -1 -1)
+	(up-retreat-now)
+	(disable-timer 39)
+	(set-goal gl-defending-ally NO)
+	(set-goal gl-ally-under-attack -1)
+)
+
+(defrule
+	(goal gl-attacking-with-ally YES)
+	(goal TSA 1)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 731 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point gl-position-self-x action-stop -1 -1)
+	(set-goal gl-attacking-with-ally NO)
+	(set-goal gl-attacking-ally -1)
+)
+
+(defrule
+	(goal gl-attacking-with-ally YES)
+	(or	(soldier-count < 5)
+		(or	(up-compare-goal gl-enemy-units-in-town > 5)
+			(timer-triggered 39)))
+=>
+	(up-reset-unit c: -1)
+	(set-goal gl-attacking-with-ally NO)
+	(set-goal gl-attacking-ally -1)
+	(set-goal gl-fixed-target-player NO)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include cmdid-monk -1 731 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point gl-position-self-x action-stop -1 -1)
+	(up-retreat-now)
+)
+
+(defrule
+	(taunt-detected any-human-ally 12)
+=>
+	(up-modify-sn sn-ally-defence c:- 1)
+	(up-modify-sn sn-ally-defence c:* -1)
+	(up-chat-data-to-player this-any-human-ally "Ally defence: %d" s: sn-ally-defence)
+	(acknowledge-taunt this-any-human-ally 12)
+)
+
+(defrule
+	(up-compare-const gv-x-vs-one-challenge == 1)
+	(goal TSA 1)
+	(players-building-type-count target-player stone-wall-line == 0)
+	(players-building-type-count target-player palisade-wall < 5)
+	(or	(players-building-type-count target-player castle == 0)
+		(unit-type-count battering-ram > 2))
+	(or	(players-building-type-count target-player watch-tower == 0)
+		(or	(current-age >= castle-age)
+			(soldier-count > 35)))
+=>
+	(up-jump-rule 46)
+)
+
+(defrule
+	(goal gl-defending-ally YES)
+	(nor	(up-projectile-detected projectile-castle < 30000)
+		(up-projectile-detected projectile-town-center < 10000))
+	(up-timer-status 16 != timer-running)
+=>
+	(up-jump-rule 3)
+)
+
+(defrule
+	(or	(and	(soldier-count < 6)
+			(or	(unit-type-count-total knight-line < 4)
+				(soldier-count < 5)))
+		(or	(and	(up-compare-const gv-players-in-team <= 2)
+				(death-match-game))
+			(or	(strategic-number sn-ally-defence != 1)
+				(or	(up-projectile-detected projectile-town-center < 10000)
+					(up-projectile-detected projectile-castle < 30000)))))
+=>
+	(up-jump-rule 44)
+)
+
+(defrule
+	(or	(up-compare-goal gl-gathering-inside != NO)
+		(or	(goal gl-early-raid YES)
+			(or	(and	(current-age < castle-age)
+					(nand	(up-compare-const gv-pocket-position == 0)
+						(players-current-age focus-player <= feudal-age)))
+				(or	(up-compare-goal gl-target-player-distance < 40)
+					(up-timer-status 44 == timer-running)))))
+=>
+	(up-jump-rule 43)
+)
+
+(defrule
+	(or	(players-military-population every-enemy < 4)
+		(or	(up-timer-status 39 == timer-running)
+			(or	(up-compare-goal gl-my-flank1 <= 0)
+				(or	(and	(up-compare-goal gl-enemy-units-in-town > 5)
+						(up-compare-goal TSA != 1))
+					(or	(goal gl-patrol-defence patrol-on)
+						(and	(up-compare-goal gl-enemy-units-in-town > 1)
+							(soldier-count < 10)))))))
+=>
+	(up-jump-rule 42)
+)
+
+(defrule
+	(up-compare-goal gl-defending-ally != YES)
+=>
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank1)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: town-center c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(set-goal gl-units-in-ally-town 0)
+	(enable-timer 39 5)
+)
+
+(defrule
+	(goal gl-defending-ally YES)
+	(up-compare-goal gl-my-flank1 g:!= gl-ally-under-attack); We're helping flank2, so ignore flank1 for a while
+=>
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(set-goal gl-units-in-ally-town 0)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal gl-defending-ally YES)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank1)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include -1 -1 -1 on-mainland)
+	(up-find-remote c: town-center c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+)
+
+(defrule
+	(or	(not	(player-in-game focus-player))
+		(game-time > 3100))
+=>
+	(up-jump-rule 37)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-modify-goal temporary-goal6 s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-get-focus-fact current-age 0 temporary-goal7)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal6)
+	(up-modify-goal gl-ally-under-attack s:= sn-focus-player-number)
+	(up-get-fact soldier-count 0 temporary-goal5)
+	(up-get-fact unit-type-count knight-line temporary-goal6)
+	(up-modify-goal temporary-goal5 c:* 5)
+	(up-modify-goal temporary-goal5 c:/ 3)
+	(up-modify-goal temporary-goal6 c:/ 3)
+	(up-modify-goal temporary-goal5 g:+ temporary-goal6)
+	(up-get-focus-fact military-population 0 temporary-goal2)
+	(up-modify-goal temporary-goal2 c:/ 2)
+	(up-modify-goal temporary-goal2 c:+ 3)
+	(set-goal temporary-goal6 0)
+)
+
+(defrule
+	(up-compare-const gv-pocket-position == 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-modify-goal temporary-goal5 c:- 2)
+	(up-modify-goal temporary-goal2 c:+ 1)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(game-time < 1500)
+	(players-current-age focus-player <= feudal-age)
+	(up-compare-goal temporary-goal2 > 5)
+=>
+	(set-goal gl-local-last 1)
+	(up-modify-goal gl-local-last c:+ gv-pocket-position)
+	(up-modify-goal temporary-goal5 g:* gl-local-last)
+	(set-goal temporary-goal2 5)
+)
+
+(defrule
+	(goal gl-defending-ally YES)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-modify-goal temporary-goal5 c:* 8)
+	(up-modify-goal temporary-goal5 c:/ 7)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(current-age == imperial-age)
+	(soldier-count > 30)
+	(population > pop-to-stop-full-pop-attack)
+	(strategic-number sn-threat-level < 0)
+=>
+	(up-modify-goal temporary-goal5 c:* 10)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(current-age <= castle-age)
+	(goal temporary-goal7 3); Imperial
+=>
+	(up-modify-goal temporary-goal5 c:/ 2)
+)
+
+(defrule
+	(up-compare-const gv-pocket-position == 1)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-modify-goal temporary-goal2 c:min 10)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-store-player-name focus-player)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal gl-remote-total 0)
+	(set-goal gl-object-point-x 0)
+	(up-reset-search 1 1 1 1)
+	(up-filter-include -1 -1 -1 -1)
+	(set-goal temporary-goal3 24735)
+	(up-filter-distance c: -1 c: 35)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(player-valid focus-player)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: wall-class c: 7)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(or	(up-compare-goal gl-remote-total > 6)
+		(and	(player-valid focus-player)
+			(and	(stance-toward focus-player enemy)
+				(or	(up-find-remote c: castle c: 1)
+					(or	(up-find-remote c: bombard-tower c: 1)
+						(up-find-remote c: watch-tower c: 3))))))
+=>
+	(set-goal temporary-goal3 0)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(player-valid focus-player)
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+=>
+	(up-modify-goal gl-temporary-point-y g:= temporary-goal7)
+	(set-goal gl-saved-point-x 0)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-reset-search 1 1 1 1)
+	(up-filter-include -1 -1 -1 -1)
+	(up-filter-distance c: -1 c: 35)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(player-valid focus-player)
+	(stance-toward focus-player enemy)
+=>
+	(up-find-remote c: warship-class c: 1)
+	(up-find-remote c: all-units-class g: temporary-goal2)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal gl-units-in-ally-town g:max gl-remote-last)
+)
+
+(defrule
+	(player-valid focus-player)
+	(stance-toward focus-player enemy)
+	(strategic-number sn-focus-player-number g:!= temporary-goal); Not same player as old focus
+	(up-compare-goal gl-remote-last > 0)
+=>
+	(up-get-focus-fact military-population 0 gl-object-point-y)
+	(up-modify-goal gl-object-point-x g:max gl-object-point-y)
+	(up-get-focus-fact current-age 0 gl-temporary-point-x)
+	(up-modify-goal gl-saved-point-x g:max gl-temporary-point-x)
+)
+
+(defrule
+	(player-valid focus-player)
+	(stance-toward focus-player enemy)
+	(up-compare-goal gl-remote-last > 0)
+	(up-compare-goal temporary-goal7 != 3); 3 = imperial
+	(up-compare-goal temporary-goal7 != 13)
+=>
+	(up-get-focus-fact current-age 0 temporary-goal7)
+	(up-modify-goal temporary-goal7 c:+ 10)
+)
+
+(defrule
+	(player-valid focus-player)
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(goal temporary-goal7 13)
+	(or	(current-age != imperial-age)
+		(strategic-number sn-threat-level > 0))
+=>
+	(up-modify-goal temporary-goal5 c:/ 2)
+)
+
+(defrule
+	(or	(current-age != imperial-age)
+		(strategic-number sn-threat-level > 0))
+	(up-compare-goal gl-temporary-point-y g:< gl-saved-point-x)
+=>
+	(up-modify-goal gl-object-point-x c:* 2)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+=>
+	(up-get-search-state gl-local-total)
+	(set-goal gl-remote-last 0)
+	(set-goal gl-point2-x 0)
+;	(up-chat-data-to-all "Found %d stuff" g: gl-remote-total)
+;	(up-chat-data-to-all "Required %d stuff" g: temporary-goal2)
+;	(up-chat-data-to-all "Enemy1 army %d" g: gl-toughest-fought-enemy-military)
+;	(up-chat-data-to-all "Enemy2 army %d" g: gl-object-point-x)
+;	(up-chat-data-to-all "Enemy max army %d" g: temporary-goal5)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(up-set-target-object search-remote g: gl-remote-last)
+	(current-age >= castle-age)
+	(or	(up-object-data object-data-range > 5)
+		(and	(up-object-data object-data-maxhp > 50)
+			(and	(up-object-data object-data-type != scout-cavalry-line)
+				(up-object-data object-data-type != militiaman-line))))
+=>
+	(set-goal gl-point2-x 1)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(up-set-target-object search-remote g: gl-remote-last)
+	(or	(up-object-data object-data-class == warship-class)
+		(and	(current-age <= feudal-age)
+			(or	(up-object-data object-data-range > 5)
+				(or	(up-object-data object-data-maxhp > 50)
+					(up-object-data object-data-type == eagle-warrior-line)))))
+=>
+	(set-goal temporary-goal3 0)
+	(enable-timer 39 0)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(up-set-target-object search-remote g: gl-remote-last)
+=>
+	(up-modify-goal gl-remote-last c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(up-set-target-object search-remote g: gl-remote-last)
+	(current-age >= castle-age)
+	(players-current-age focus-player <= feudal-age)
+	(goal gl-point2-x 0); No unit in ally's town was particularly dangerous
+	(or	(and	(up-compare-goal gl-enemy-spearman-count < 7)
+			(unit-type-count-total knight-line > 4))
+		(up-compare-goal gl-eagle-warrior-count-total > 5))
+	(up-compare-goal gl-enemy-skirmisher-count > 10)
+	(or	(up-compare-goal gl-enemy-archer-count < 8)
+		(up-research-status c: ri-scale-barding >= research-pending))
+=>
+	(up-modify-goal temporary-goal5 c:* 2)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(up-set-target-object search-remote g: gl-remote-last)
+	(current-age >= castle-age)
+	(or	(goal gl-point2-x 0); No unit in ally's town was particularly dangerous
+		(and	(current-age == castle-age); More limitations in ally defending
+			(and	(up-compare-goal gl-enemy-eew-count > 7)
+				(and	(up-compare-goal gl-enemy-spearman-count < 8); Defend allies against pure EEW with massed knights
+					(unit-type-count-total knight-line > 14)))))
+=>
+	(up-modify-goal temporary-goal5 c:* 4)
+	(up-modify-goal temporary-goal5 c:/ 3)
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(goal gl-defending-ally YES)
+	(up-compare-goal gl-toughest-fought-enemy-military g:<= temporary-goal5)
+	(up-compare-goal gl-object-point-x g:<= temporary-goal5)
+	(up-compare-goal gl-remote-total > 0)
+	(up-timer-status 39 == timer-running)
+	(up-timer-status 16 != timer-running)
+=>
+	(set-goal temporary-goal6 1)
+	(up-reset-search 1 1 0 0)
+	(up-reset-filters)
+	(up-filter-exclude -1 actionid-explore orderid-attack -1)
+	(set-goal temporary-goal3 24736)
+	(enable-timer 16 30)
+	(chat-to-allies "Sending more units.")
+)
+
+(defrule
+	(goal temporary-goal3 24735)
+	(up-compare-goal gl-toughest-fought-enemy-military g:<= temporary-goal5)
+	(up-compare-goal gl-object-point-x g:<= temporary-goal5)
+	(up-compare-goal gl-remote-total g:>= temporary-goal2)
+	(up-compare-goal gl-defending-ally != YES)
+=>
+	(set-goal temporary-goal6 1)
+	(up-reset-search 1 1 0 0)
+	(up-reset-filters)
+	(set-goal temporary-goal3 24736)
+	(set-goal gl-defending-ally YES)
+	(enable-timer 16 30)
+	(enable-timer 39 300)
+	(up-chat-data-to-player my-player-number "I'll help you, %s!" c: 7031232)
+	(up-chat-data-to-player every-ally "I'll help you, %s!" c: 7031232)
+	(set-goal 492 1); Reset monks later
+)
+
+(defrule
+	(goal temporary-goal3 24736)
+	(goal gl-defending-ally YES)
+	(goal temporary-goal6 1)
+=>
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: siege-weapon-class c: 240)
+	(up-find-local c: infantry-class c: 240)
+	(up-find-local c: archery-class c: 240)
+	(up-find-local c: archery-cannon-class c: 240)
+	(up-find-local c: cavalry-class c: 240)
+	(up-find-local c: scout-cavalry-class c: 240)
+	(up-find-local c: cavalry-archer-class c: 240)
+	(up-find-local c: cavalry-cannon-class c: 240)
+	(up-find-local c: scorpion-class c: 240)
+	(up-filter-exclude -1 actionid-convert 731 -1)
+	(up-find-local c: monk c: 240)
+	(up-target-objects 0 action-patrol -1 -1)
+)
+
+(defrule
+	(up-compare-goal temporary-goal4 != 24736)
+	(up-compare-goal temporary-goal3 != 24736)
+	(up-compare-goal gl-my-flank2 > 0)
+=>
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 24736)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank2)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: town-center c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-jump-rule -29)
+)
+
+(defrule
+	(or	(and	(goal temporary-goal3 24735)
+			(goal gl-remote-total 0))
+		(and	(strategic-number sn-focus-player-number g:== gl-ally-under-attack)
+			(players-building-type-count focus-player town-center == 0)))
+	(goal gl-defending-ally YES)
+	(up-timer-status 39 == timer-running)
+=>
+	(enable-timer 39 0)
+)
+
+(defrule
+	(or	(goal gl-defending-ally YES)
+		(or	(goal gl-strategy-aggressiveness-level VERY-LOW)
+			(or	(game-time > 2400)
+				(or	(soldier-count < 6)
+					(or	(goal gl-super-pocket YES)
+						(or	(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)
+							(goal TSA 1)))))))
+=>
+	(up-jump-rule 7)
+	(set-goal gl-attacking-with-ally NO)
+)
+
+(defrule
+	(goal gl-early-raid direct-raid)
+=>
+	(up-jump-rule 6)
+	(set-goal gl-attacking-with-ally NO)
+)
+
+(defrule
+	(up-compare-goal gl-attacking-ally g:!= gl-my-flank2)
+	(up-compare-const gv-pocket-position == 1)
+	(up-compare-goal temporary-goal3 != 24736)
+	(up-compare-goal gl-my-flank1 > 0)
+=>
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank1)
+)
+
+(defrule
+	(up-compare-goal gl-attacking-ally g:!= gl-my-flank2)
+	(up-compare-const gv-pocket-position == 1)
+	(up-compare-goal temporary-goal3 != 24736)
+	(up-compare-goal gl-my-flank1 > 0)
+	(up-allied-goal focus-player gl-attack-in-progress == 1)
+	(up-allied-goal focus-player gl-strategy-cooperation == enabled)
+	(up-allied-sn focus-player sn-target-player-number > 0)
+=>
+	(up-get-focus-fact allied-sn sn-target-player-number temporary-goal2)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(up-get-point position-focus gl-point-x)
+	(set-goal temporary-goal3 24737)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 -1 731 -1)
+)
+
+(defrule
+	(up-compare-goal gl-attacking-ally g:!= gl-my-flank2)
+	(up-compare-const gv-pocket-position == 1)
+	(goal temporary-goal3 24737)
+	(up-compare-goal gl-my-flank1 > 0)
+=>
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point gl-point-x action-patrol -1 -1)
+	(set-goal temporary-goal4 24736)
+	(set-goal gl-attacking-with-ally YES)
+	(up-modify-goal gl-attacking-ally g:= gl-my-flank1)
+	(chat-to-allies "Joining ally's attack.")
+	(set-goal gl-fixed-target-player YES)
+	(up-modify-sn sn-target-player-number s:= sn-focus-player-number)
+	(enable-timer 39 15)
+	(enable-timer 23 60)
+)
+
+(defrule
+	(up-compare-goal gl-attacking-ally g:!= gl-my-flank1)
+	(up-compare-const gv-3-player-team == 1)
+	(up-compare-const gv-pocket-position == 1)
+	(up-compare-goal temporary-goal3 != 24736)
+	(up-compare-goal gl-my-flank2 > 0)
+=>
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank2)
+)
+
+(defrule
+	(up-compare-goal gl-attacking-ally g:!= gl-my-flank1)
+	(up-compare-const gv-pocket-position == 1)
+	(up-compare-goal temporary-goal3 != 24736)
+	(up-compare-goal gl-my-flank2 > 0)
+	(up-allied-goal focus-player gl-attack-in-progress == 1)
+	(up-allied-goal focus-player gl-strategy-cooperation == enabled)
+	(up-allied-sn focus-player sn-target-player-number > 0)
+=>
+	(up-get-focus-fact allied-sn sn-target-player-number temporary-goal2)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(up-get-point position-focus gl-point-x)
+	(set-goal temporary-goal3 24737)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 -1 731 -1)
+)
+
+(defrule
+	(up-compare-goal gl-attacking-ally g:!= gl-my-flank1)
+	(up-compare-const gv-pocket-position == 1)
+	(goal temporary-goal3 24737)
+	(up-compare-goal gl-my-flank2 > 0)
+=>
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point gl-point-x action-patrol -1 -1)
+	(set-goal temporary-goal4 24736)
+	(set-goal gl-attacking-with-ally YES)
+	(up-modify-goal gl-attacking-ally g:= gl-my-flank2)
+	(chat-to-allies "Joining ally's attack.")
+	(set-goal gl-fixed-target-player YES)
+	(up-modify-sn sn-target-player-number s:= sn-focus-player-number)
+	(enable-timer 39 15)
+	(enable-timer 23 60)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+)
+
+(defrule
+	(goal gl-defending-ally YES)
+	(up-compare-goal TSA >= 1)
+=>
+	(enable-timer 7 20)
+	(set-goal TSA 0)
+	(set-goal MILITARY 0)
+	(set-goal gl-enemy-units-in-town 0)
+	(set-strategic-number sn-retreating 0)
+	(set-strategic-number sn-unit-spreading2 0)
+	(set-strategic-number sn-maximum-town-size 15)
+	(up-update-targets)
+)
+
+#load-if-not-defined DEATH-MATCH
+(defrule
+	(or	(difficulty >= moderate)
+		(or	(and	(up-compare-goal SLING != 0)
+				(goal gl-fixed-target-player YES))
+			(or	(not	(town-under-attack))
+				(or	(building-type-count town-center == 0)
+					(or	(population >= almost-full-pop)
+						(players-military-population every-ally <= 10))))))
+=>
+	(up-jump-rule 3)
+)
+
+(defrule
+	(goal MILITARY 0)
+	(up-timer-status 4 != timer-running)
+	(up-timer-status 38 != timer-running)
+	(up-compare-goal gl-enemy-units-in-town > 8)
+	(or	(and	(soldier-count g:< gl-enemy-units-in-town)
+			(or	(up-compare-goal gl-military-percentage < 75)
+				(game-time < 2400)))
+		(and	(up-compare-goal gl-enemy-units-in-town > 25)
+			(game-time < 2400)))
+=>
+	(chat-to-allies "222")
+	(enable-timer 4 60)
+)
+
+(defrule
+	(taunt-detected my-player-number 222)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= threat-player)
+	(up-set-target-point gl-position-self-x)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 s: sn-maximum-town-size)
+	(up-find-remote c: all-units-class c: 1)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+(defrule
+	(taunt-detected my-player-number 222)
+	(up-set-target-object search-remote c: 0)
+=>
+	(chat-to-allies "I need some help here.")
+	(up-get-point position-object gl-object-point-x)
+	(up-send-flare gl-object-point-x)
+	(acknowledge-taunt my-player-number 222)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(goal SLING 3)
+	(not	(map-type migration))
+	(or	(strategic-number sn-minimum-water-body-size-for-dock == islands-map-landing-style)
+		(strategic-number sn-minimum-water-body-size-for-dock == islands-map-water-style))
+	(building-type-count-total university < 1)
+=>
+	(up-modify-goal gl-university-build-priority c:max 1007)
+)
+
+(defrule
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(building-type-count-total barracks < 2)
+			(goal gl-eagles flush-counter-eagles)))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal SLING 1)
+	(building-type-count-total barracks < 5)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 1006)
+)
+
+#load-if-not-defined SPANISH-CIV
+(defrule
+	(goal SLING 3)
+	(goal gl-strategy xbow-rush)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total archery-range < 5)
+=>
+	(up-modify-goal gl-range-build-priority c:max 1005)
+)
+#end-if
+
+#end-if; DM
+
+(defrule
+	(goal gl-my-villager-count-total 0)
+	(building-type-count town-center > 0)
+=>
+	(up-jump-rule 17)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal gl-remote-last 0)
+	(set-goal temporary-goal5 1)
+)
+
+(defrule
+	(or	(up-compare-goal gl-trade-unit-count-total >= max-carts)
+		(or	(game-time < time-to-trade); 300 in DM, otherwise 1400
+			(or	(and	(or	(unit-type-count dead-cart1 >= 3)
+						(unit-type-count dead-cart2 >= 3))
+					(unit-type-count trade-cart < 13))
+				(and	(building-type-count-total town-center < 3)
+					(and	(up-compare-goal gl-my-villager-count < 45)
+						(up-compare-goal gl-trade-unit-count-total >= 7))))))
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(or	(and	(game-time < 2100)
+			(or	(and	(up-compare-goal gl-target-player-distance < 40)
+					(soldier-count < 30))
+				(map-type migration)))
+		(and	(goal gl-nothing-style-map YES)
+			(game-time < 2300)))
+=>
+	(up-jump-rule 5)
+)
+
+(defrule
+	(population-cap >= 150)
+	(building-type-count-total town-center < 3)
+	(up-compare-goal gl-my-villager-count < 45)
+	(or	(up-compare-goal gl-trade-unit-count-total >= 2)
+		(up-compare-goal gl-my-villager-count < 10))
+	(up-compare-goal gl-trade-unit-count-total >= 7)
+	(wood-amount < 375)
+=>
+	(up-jump-rule 4)
+)
+
+(defrule
+	(or	(and	(up-research-status c: ri-banking < research-pending)
+			(or	(and	(goal gl-strategy sling)
+					(up-compare-goal gl-strategy-type >= FC))
+				(goal gl-strategy castle-sling)))
+		(and	(up-research-status c: ri-caravan < research-pending)
+			(and	(unit-type-count-total trade-cart > 9)
+				(up-compare-goal gl-current-age >= gv-castle))))
+=>
+	(up-jump-rule 3)
+)
+
+(defrule
+	(strategic-number sn-focus-player-number != my-player-number)
+	(stance-toward focus-player ally)
+	(players-building-type-count any-ally market > 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include -1 -1 -1 on-mainland)
+	(up-find-remote c: market c: 1)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(goal gl-remote-last 0)
+	(players-building-type-count any-ally market > 0)
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(or	(and	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+			(population-cap > 65))
+		(and	(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style)
+			(and	(map-type migration)
+				(game-time > 2160))))
+=>
+	(set-goal gl-remote-last 1)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+(defrule
+	(or	(game-time < trade-time); 1800 in RM, 0 in DM
+		(or	(building-type-count market == 0)
+			(or	(population-cap < 65)
+				(or	(building-type-count town-center == 0)
+					(and	(or	(unit-type-count dead-cart1 >= 3)
+							(unit-type-count dead-cart2 >= 3))
+						(unit-type-count trade-cart < 13))))))
+=>
+	(up-jump-rule 7)
+)
+
+(defrule
+	(or	(up-compare-goal gl-current-age != gv-castle)
+		(or	(goal gl-strategy sling)
+			(goal gl-strategy castle-drop)))
+	(strategic-number sn-enable-training-queue == 0)
+	(or	(up-compare-goal TSA >= 1)
+		(up-compare-goal gl-enemy-units-in-town < 5))
+	(nand	(unit-type-count-total trade-cart > 7)
+		(up-research-status c: ri-caravan < research-pending))
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+	(set-goal temporary-goal2 4157)
+	(set-goal temporary-goal5 2)
+)
+
+(defrule
+	(strategic-number sn-allow-resource-spending >= 0)
+	(up-compare-goal gl-nothing-style-map != YES)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(unit-type-count-total trade-cart > 2)
+	(nand	(goal gl-current-age gv-castle)
+		(research-available imperial-age)); There's other rule to research this at castle age
+	(or	(can-research-with-escrow ri-cartography)
+		(can-research-with-escrow ri-caravan))
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-cartography)
+	(research ri-caravan)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != castle-sling)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(soldier-count > 20)
+	(or	(soldier-count > 40)
+		(up-compare-goal gl-pair-player-military > 35))
+	(civilian-population > 85)
+	(up-pending-objects c: trade-cart g:< temporary-goal5)
+	(building-type-count town-center >= trade-TCs)
+	(up-compare-goal gl-current-age >= gv-current-age-for-mail)
+	(players-building-type-count any-ally market > 0)
+	(goal gl-remote-last 1)
+	(up-compare-goal gl-trade-unit-count-total < max-carts)
+	(unit-type-count-total trade-cart < 30)
+=>
+	(up-modify-escrow wood c:max 100)
+	(up-modify-escrow gold c:max 50)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != castle-sling)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(nand	(research-available ri-guilds)
+		(up-compare-const gv-michi-style == 1))
+	(or	(escrow-amount wood != 100)
+		(escrow-amount gold != 50))
+	(up-compare-goal gl-current-age >= gv-current-age-for-mail)
+	(players-building-type-count any-ally market > 0)
+	(goal gl-remote-last 1)
+	(up-compare-goal gl-trade-unit-count-total < max-carts)
+	(can-train-with-escrow trade-cart)
+=>
+	(up-train gl-escrow-state c: trade-cart); No interfering if escrowing for something else
+)
+
+(defrule
+	(up-compare-goal gl-strategy != castle-sling)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(nand	(research-available ri-guilds)
+		(up-compare-const gv-michi-style == 1))
+	(escrow-amount wood == 100)
+	(escrow-amount gold == 50)
+	(up-compare-goal gl-current-age >= gv-current-age-for-mail)
+	(players-building-type-count any-ally market > 0)
+	(goal gl-remote-last 1)
+	(up-compare-goal gl-trade-unit-count-total < max-carts)
+	(can-train-with-escrow trade-cart)
+=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(train trade-cart)
+)
+
+(defrule
+	(goal temporary-goal2 4157)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+	(set-goal temporary-goal2 0)
+)
+
+(defrule
+	(players-building-type-count any-ally market > 0)
+	(or	(and	(or	(building-type-count-total town-center >= trade-TCs)
+				(cc-players-unit-type-count 0 gold-mine < large-number-deer))
+			(up-compare-goal gl-current-age >= gv-current-age-for-mail))
+		(and	(goal gl-strategy sling)
+			(up-compare-goal threat-time > 25000)))
+	(goal gl-remote-last 1)
+	(up-compare-goal gl-trade-unit-count-total < max-carts)
+	(unit-type-count-total trade-cart < difficulty-cart-cap)
+	(can-train trade-cart)
+=>
+	(train trade-cart)
+)
+
+#load-if-not-defined TEAM-ISLANDS-MAP
+(defrule
+	(goal gl-remote-last 0)
+	(players-building-type-count any-ally dock > 0)
+	(game-time > 2200)
+	(or	(warboat-count > 30)
+		(population > 130))
+	(warboat-count > 15)
+	(up-compare-goal gl-gathering-inside != EVEN-CASTLE)
+	(or	(strategic-number sn-minimum-water-body-size-for-dock >= islands-map-landing-style)
+		(map-type archipelago))
+	(up-compare-goal gl-trade-unit-count-total < max-carts)
+	(unit-type-count-total trade-cog < max-ti-carts)
+	(unit-type-count-total trade-cog < 20)
+	(can-train trade-cog)
+=>
+	(train trade-cog)
+)
+#end-if
+
+(defrule
+	(up-compare-flag gl-flag != trade-sling)
+=>
+	(up-jump-rule 8)
+)
+
+(defrule
+	(up-research-status c: ri-banking <= research-available)
+	(or	(can-research ri-banking)
+		(can-research ri-coinage))
+=>
+	(research ri-coinage)
+	(research ri-banking)
+	(enable-timer 4 34)
+)
+
+(defrule
+	(up-pending-objects c: trade-cart < 1)
+	(up-pending-objects c: trade-cog < 1)
+	(commodity-buying-price wood <= 140)
+	(unit-type-count-total trade-cog < max-ti-carts)
+	(unit-type-count-total trade-cog < 15)
+	(unit-type-count-total trade-cart < max-carts)
+	(wood-amount < 100)
+	(housing-headroom > 0)
+	(can-buy-commodity wood)
+=>
+	(buy-commodity wood)
+)
+
+(defrule
+	(commodity-buying-price food <= 140)
+	(or	(unit-type-count-total trade-cart >= max-carts)
+		(unit-type-count-total trade-cart >= 15))
+	(food-amount < 200)
+	(or	(research-available ri-coinage)
+		(and	(current-age >= castle-age)
+			(or	(research-available ri-banking)
+				(or	(research-available ri-cartography)
+					(research-available ri-caravan)))))
+	(can-buy-commodity food)
+=>
+	(buy-commodity food)
+)
+
+(defrule
+	(not	(map-type team-islands))
+	(players-building-type-count any-ally dock > 0)
+	(or	(strategic-number sn-minimum-water-body-size-for-dock >= islands-map-landing-style)
+		(map-type archipelago))
+	(up-compare-goal gl-trade-unit-count-total < max-carts)
+	(unit-type-count-total trade-cog < max-ti-carts)
+	(unit-type-count-total trade-cog < 15)
+	(can-train-with-escrow trade-cog)
+=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(train trade-cog)
+)
+
+(defrule
+	(unit-type-count-total dead-cart1 < 3)
+	(unit-type-count-total dead-cart2 < 3)
+	(players-building-type-count any-ally market > 0)
+	(or	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+		(map-type team-islands))
+	(up-compare-goal gl-trade-unit-count-total < max-carts)
+	(unit-type-count-total trade-cart < max-carts)
+	(can-train-with-escrow trade-cart)
+=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(train trade-cart)
+)
+
+(defrule
+	(gold-amount >= 150)
+	(up-research-status c: ri-coinage != research-pending)
+	(up-research-status c: ri-banking != research-pending)
+	(nand	(research-available ri-caravan)
+		(food-amount >= 200))
+	(nand	(research-available ri-coinage)
+		(food-amount >= 150))
+	(nand	(research-available ri-banking)
+		(food-amount >= 200))
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally stone 5000)
+	(tribute-to-player this-any-ally gold 50)
+)
+
+(defrule
+	(food-amount > 0)
+	(up-research-status c: ri-coinage != research-pending)
+	(up-research-status c: ri-coinage != research-available)
+	(up-research-status c: ri-banking != research-pending)
+	(up-research-status c: ri-banking != research-available)
+	(up-research-status c: ri-caravan != research-pending)
+	(up-research-status c: ri-caravan != research-available)
+	(up-research-status c: ri-cartography != research-pending)
+	(or	(up-research-status c: ri-cartography != research-available)
+		(current-age == feudal-age))
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally food 5000)
+)
+
+(defrule
+	(wood-amount >= 1500)
+	(up-research-status c: ri-coinage != research-pending)
+	(up-research-status c: ri-banking != research-pending)
+	(nand	(research-available ri-coinage)
+		(food-amount >= 150))
+	(nand	(research-available ri-banking)
+		(food-amount >= 200))
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally wood 200)
+)
+
+
+

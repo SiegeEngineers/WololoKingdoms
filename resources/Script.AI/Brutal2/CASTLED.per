@@ -1,0 +1,1319 @@
+; Dark Age Stuff
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(game-time < 5) ; start of game
+=>
+	(set-strategic-number sn-castle-age-strategy castled)
+	(set-goal gl-fast-castle 1)
+	(disable-self)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == castled)
+=>
+	(set-strategic-number sn-maximum-food-drop-distance 10)
+	(set-strategic-number sn-maximum-wood-drop-distance 10)
+	(set-strategic-number sn-maximum-gold-drop-distance 10)
+	(disable-self)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total town-center > 0)
+	(current-age >= dark-age)
+	(housing-headroom < 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total town-center > 0)
+	(building-type-count-total castle > 0)
+	(housing-headroom < 6)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total town-center > 0)
+	(building-type-count-total castle > 0)
+	(housing-headroom < 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 2)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total town-center >= 3)
+	(housing-headroom < 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 3)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total town-center >= 3)
+	(housing-headroom < 6)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 2)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total town-center >= 3)
+	(housing-headroom < 12)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager < 11)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager >= 11)
+	(up-research-status c: ri-loom < research-pending)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager >= 11)
+	(food-amount < 500)
+	(unit-type-count-total villager < 28)
+	(up-research-status c: ri-loom >= research-pending)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count-total villager >= 25)
+	(or(food-amount >= 500)
+	   (unit-type-count-total villager >= 28))
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == feudal-age)
+	(game-time < 920)
+	(food-amount < 650)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count-total villager >= 28)
+	(can-research feudal-age)
+=>
+	(research feudal-age)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(can-research castle-age)
+=>
+	(research castle-age)
+	(set-goal gl-enable-tsa 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(or(food-amount < 50)
+	   (and(civ-selected mayan)(housing-headroom == 0)))
+	(not(can-train villager))
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count-total villager >= 10)
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(or(unit-type-count-total villager < 10)
+	(or(up-research-status c: ri-loom >= research-pending)
+	   (dropsite-min-distance live-boar < 10)))
+	(unit-type-count-total villager < 28)
+	(unit-type-count villager < 28)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(food-amount < 500)
+	(up-research-status c: ri-loom >= research-pending)
+	(unit-type-count-total villager < 30)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(game-time > 10)
+	(or(unit-type-count villager > 7)
+	(or(unit-type-count 120 > 0) ; male forager
+	   (unit-type-count 354 > 0))) ; female forager 
+	(building-type-count-total mill == 0)
+	(can-build mill)
+	(or(resource-found food)
+	   (game-time > 300))
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mill)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(housing-headroom > 3)
+	(building-type-count-total mill > 0)
+	(game-time > 10)
+	(building-type-count-total lumber-camp == 0)
+	(can-build lumber-camp)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build lumber-camp)
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+	(building-type-count-total mining-camp < 1)
+=>
+	(set-strategic-number sn-stone-dropsite-distance 3)
+	(set-strategic-number sn-gold-dropsite-distance 254)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+	(building-type-count-total mining-camp == 1)
+=>
+	(set-strategic-number sn-stone-dropsite-distance 254)
+	(set-strategic-number sn-gold-dropsite-distance 3)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+	(building-type-count-total mining-camp >= 2)
+=>
+	(set-strategic-number sn-stone-dropsite-distance 3)
+	(set-strategic-number sn-gold-dropsite-distance 3)
+)
+(defrule	
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total mill > 0)
+	(strategic-number sn-stone-gatherer-percentage > 0)
+	(building-type-count-total mining-camp < 1)
+	(resource-found stone)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-strategic-number sn-dropsite-separation-distance 3)
+	(build mining-camp)
+)
+(defrule	
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total mill > 0)
+	(strategic-number sn-gold-gatherer-percentage > 0)
+	(building-type-count-total mining-camp < 2)
+	(resource-found gold)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(set-strategic-number sn-dropsite-separation-distance 3)
+	(build mining-camp)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total mining-camp > 0)
+	(building-type-count-total mill > 0)
+	(game-time > 360)
+	(idle-farm-count < 1)
+	(building-type-count-total farm < 4)
+	(up-pending-objects c: farm < 1)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total mining-camp > 0)
+	(building-type-count-total mill > 0)
+	(sheep-and-forage-too-far)
+	(game-time > 360)
+	(idle-farm-count < 1)
+	(building-type-count-total farm < 8)
+	(up-pending-objects c: farm < 1)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager < 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-food-gatherer-percentage 100)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 8)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 15)
+	(set-strategic-number sn-food-gatherer-percentage 85)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 9)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 75)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 10)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 11)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 12)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 13)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 63)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 14)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-food-gatherer-percentage 58)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 15)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-food-gatherer-percentage 61)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 16)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 63)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 17)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 23)
+	(set-strategic-number sn-food-gatherer-percentage 72)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 18)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 11)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 19)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 21)
+	(set-strategic-number sn-food-gatherer-percentage 69)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 20)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 65)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 21)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-food-gatherer-percentage 64)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 9)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 22)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 9)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 23)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 61)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 8)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 24)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-food-gatherer-percentage 59)
+	(set-strategic-number sn-gold-gatherer-percentage 4)
+	(set-strategic-number sn-stone-gatherer-percentage 8)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 25)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-food-gatherer-percentage 56)
+	(set-strategic-number sn-gold-gatherer-percentage 8)
+	(set-strategic-number sn-stone-gatherer-percentage 8)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 26)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-food-gatherer-percentage 56)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager == 27)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(unit-type-count villager >= 28)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+)
+; feudal age stuff
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(can-research castle-age)
+=>
+	(research castle-age)
+	(set-goal gl-enable-tsa 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total market == 0)
+	(can-build market)
+=>
+	(up-assign-builders c: market c: 2)
+	(set-goal gl-pause-tsa 1)
+	(build market)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total blacksmith == 0)
+	(can-build blacksmith)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build blacksmith)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(food-amount >= 850)
+	(current-age == feudal-age)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == feudal-age)
+	(unit-type-count villager == 29)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-food-gatherer-percentage 53)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == feudal-age)
+	(unit-type-count villager >= 30)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 23)
+	(set-strategic-number sn-food-gatherer-percentage 51)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 13)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == feudal-age)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: feudal-age >= research-pending)
+	(dropsite-min-distance wood > 3)
+	(building-type-count-total lumber-camp < 2)
+	(can-build lumber-camp)
+=>
+	(build lumber-camp)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age >= research-pending)
+	(building-type-count-total lumber-camp < 2)
+	(can-build lumber-camp)
+=>
+	(build lumber-camp)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age >= research-pending)
+	(can-research ri-double-bit-axe)
+=>
+	(research ri-double-bit-axe)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age >= research-pending)
+	(up-pending-objects c: farm < 1)
+	(idle-farm-count < 1)
+	(building-type-count-total farm < 8)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal position-goal == flank)
+	(up-research-status c: castle-age >= research-pending)
+	(stone-amount < 650)
+	(building-type-count-total castle == 0)
+	(can-research ri-stone-mining)
+=>
+	(research ri-stone-mining)
+)
+; castle age stuff
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == castle-age)
+	(can-research ri-wheel-barrow)
+=>
+	(research ri-wheel-barrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total castle == 0)
+	(can-build castle)
+=>
+	(up-assign-builders c: castle c: 4)
+	(set-goal gl-pause-tsa 1)
+	(set-strategic-number sn-placement-zone-size 1)
+	(up-set-placement-data my-player-number town-center g: gl-new-town-size) 
+	(chat-to-player my-player-number "Defense castle.")
+	(up-build place-control 1 c: castle)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(or(up-compare-goal gl-unique-unit-type == archery-type)
+	   (or(players-unit-type-count focus-player archer-line > 0)
+	      (players-unit-type-count focus-player skirmisher-line > 0)))
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(or(up-compare-goal gl-unique-unit-type == archery-type)
+	   (or(players-unit-type-count focus-player archer-line > 0)
+	      (players-unit-type-count focus-player skirmisher-line > 0)))
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(up-compare-goal gl-unique-unit-type == archery-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-padded-archer-armor)
+
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(up-compare-goal gl-unique-unit-type == archery-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(or(players-unit-type-count any-enemy elite-skirmisher > 0)
+	   (players-unit-type-count any-enemy knight-line > 0))
+	(can-research ri-leather-archer-armor)
+
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == infantry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-scale-mail)
+
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == infantry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-chain-mail)
+
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == infantry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-forging)
+
+=>
+	(research ri-forging)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == infantry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+
+=>
+	(research ri-iron-casting)
+)
+; cav
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == cavalry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-scale-barding)
+
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == cavalry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-chain-barding)
+
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == cavalry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-forging)
+
+=>
+	(research ri-forging)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == cavalry-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+
+=>
+	(research ri-iron-casting)
+)
+; gunpowder
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == gunpowder-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-padded-archer-armor)
+
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(military-population > 4)
+	(up-compare-goal gl-unique-unit-type == gunpowder-type)
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(can-research ri-leather-archer-armor)
+
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: imperial-age < research-pending)
+	(up-pending-objects c: villager >= 1)
+	(not(civ-selected hun))	    
+	(soldier-count < 30)
+	(can-train my-unique-unit-line)
+
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(strategic-number sn-castle-age-strategy == castled)
+	(or(up-compare-goal gl-map-style == OPEN)
+	   (up-compare-goal gl-map-style == GOLD-RUSH))
+	(up-research-status c: imperial-age < research-pending)
+	(up-pending-objects c: villager >= 1)
+	(not(civ-selected hun))	    
+	(or(unit-type-count-total my-unique-unit-line < 30)
+	   (military-population g:< gl-data-enemy-military-population))
+	(can-train my-unique-unit-line)
+
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(up-compare-goal gl-map-style == OPEN)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: imperial-age < research-pending)
+	(soldier-count < 30)
+	(up-pending-objects c: villager >= 1)
+	(can-train my-unique-unit-line)
+
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(up-compare-goal gl-map-style == OPEN)
+	(strategic-number sn-castle-age-strategy == castled)
+	(civ-selected gothic)
+	(players-unit-type-count any-enemy knight-line > 0)
+	(building-type-count-total barracks == 0)
+	(can-build barracks)
+
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(up-compare-goal gl-map-style == OPEN)
+	(strategic-number sn-castle-age-strategy == castled)
+	(civ-selected gothic)
+	(up-pending-objects c: villager >= 1)
+	(players-unit-type-count any-enemy knight-line > 0)
+	(can-research ri-pikeman)
+
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(up-compare-goal gl-map-style == OPEN)
+	(strategic-number sn-castle-age-strategy == castled)
+	(civ-selected gothic)
+	(players-unit-type-count any-enemy knight-line > 0)
+	(up-pending-objects c: villager >= 1)
+	(unit-type-count-total spearman-line < 12)
+	(can-train spearman-line)
+
+=>
+	(train spearman-line)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1) 
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total castle < 1)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1) 
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total castle >= 1)
+	(building-type-count-total town-center < 3)
+	(stone-amount < 100)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1) 
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total castle >= 1)
+	(building-type-count-total town-center < 3)
+	(stone-amount >= 100)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1) 
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total castle >= 1)
+	(building-type-count-total town-center >= 3)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 23)
+	(set-strategic-number sn-food-gatherer-percentage 53)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1) 
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total castle >= 1)
+	(building-type-count-total town-center >= 3)
+	(food-amount >= 400)
+	(gold-amount < 500)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 41)
+	(set-strategic-number sn-gold-gatherer-percentage 24)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule
+	(up-compare-goal gl-castle-civ == 1)
+	(strategic-number sn-castle-age-strategy == castled)
+	(can-build castle)
+=>
+	(up-assign-builders c: castle c: 4)
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: castle-age >= research-pending)
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(can-research ri-bow-saw)
+=>
+	(research ri-bow-saw)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-heavy-plow)
+=>
+	(research ri-heavy-plow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: ri-heavy-plow >= research-pending)
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(or(up-research-status c: ri-gold-mining >= research-pending)
+	   (game-time > 1680))
+	(can-research ri-hand-cart)
+=>
+	(research ri-hand-cart)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(can-research imperial-age)
+=>
+	(research imperial-age)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == castle-age)
+	(up-research-status c: imperial-age < research-pending)
+	(unit-type-count-total villager < 124)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(food-amount < 500)
+	(building-type-count-total town-center > 1)
+	(idle-farm-count < 1)
+	(building-type-count-total farm < 16)
+	(up-pending-objects c: farm < 1)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(food-amount < 500)
+	(building-type-count-total town-center > 2)
+	(idle-farm-count < 2)
+	(up-pending-objects c: farm < 2)
+	(can-build farm)
+=>
+	(build farm)
+)
+
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total farm >= 26)
+	(building-type-count-total mill < 3)
+	(can-build mill)
+=>
+	(build mill)
+)
+
+
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(up-timer-status 2 != timer-running)
+	(up-pending-objects c: lumber-camp < 1)
+	(building-type-count-total town-center >= 3)
+	(can-build lumber-camp)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build lumber-camp)
+	(enable-timer 2 240)
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(building-type-count-total town-center >= 3)
+	(or(dropsite-min-distance gold > 3)
+	   (dropsite-min-distance stone > 3))
+	(up-pending-objects c: mining-camp < 1)
+	(can-build mining-camp)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mining-camp)
+	;(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total mining-camp < 8)
+	(up-pending-objects c: mining-camp < 1)
+	(can-build mining-camp)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mining-camp)
+	;(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-castle-civ == 1)
+	(building-type-count-total castle > 0)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total siege-workshop == 0)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-castle-civ == 1)
+	(building-type-count-total castle > 0)
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total university == 0)
+	(can-build university)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build university)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(or(up-compare-goal gl-map-style == ARENA)
+	   (game-time > 1440))
+	(building-type-count-total castle > 0)
+	(building-type-count-total monastery == 0)
+	(can-build monastery)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build monastery)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-heavy-plow)
+=>
+	(research ri-heavy-plow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age >= castle-age)
+	(or(up-research-status c: imperial-age >= research-pending)
+	   (and(game-time > 2100)(up-research-status c: imperial-age < research-pending)))
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-gold-shaft-mining)
+=>
+	(research ri-gold-shaft-mining)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(or(town-under-attack)
+	   (up-research-status c: my-unique-unit-upgrade >= research-pending))
+	(or(players-unit-type-count focus-player knight-line > 0)
+	(or(players-unit-type-count focus-player camel-line > 0)
+	(or(players-unit-type-count focus-player war-elephant-line > 0)
+	   (unit-type-count-total monk < 1))))
+	(or(military-population < 30)
+	   (unit-type-count-total monk < 1))
+	(can-train monk)
+=>
+	(train monk)
+)
+(defrule	
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-castle-civ == 1)
+	(building-type-count-total castle > 0)
+	(up-research-status c: imperial-age < research-pending)
+	(unit-type-count-total battering-ram-line < 4)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age-time > 120)
+	(can-research ri-two-man-saw)
+=>
+	(research ri-two-man-saw)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age-time > 120)
+	(can-research ri-crop-rotation)
+=>
+	(research ri-crop-rotation)
+)
+
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age < research-pending)
+	(gold-amount >= 330)
+	(commodity-buying-price food <= 130)
+	(food-amount < 800)
+	(can-buy-commodity food)
+=>
+	(chat-local-to-self "buy food (wall-boom)")
+	(buy-commodity food)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age < research-pending)
+	(gold-amount >= 333)
+	(commodity-buying-price food <= 133)
+	(food-amount < 800)
+	(can-buy-commodity food)
+=>
+	(chat-local-to-self "buy food (wall-boom)")
+	(buy-commodity food)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age < research-pending)
+	(gold-amount >= 335)
+	(commodity-buying-price food <= 135)
+	(food-amount < 800)
+	(can-buy-commodity food)
+=>
+	(chat-local-to-self "buy food (wall-boom)")
+	(buy-commodity food)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == castle-age)
+	;(up-compare-goal gl-castle-civ == 1)
+	(up-research-status c: imperial-age < research-pending)
+	(food-amount < 200)
+	(gold-amount >= 200) ; was 400
+	(commodity-buying-price food <= 200)
+	(can-buy-commodity food)
+=>
+	(chat-local-to-self "buy food castle age (wall-boom)")
+	(buy-commodity food)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == castle-age)
+	(up-compare-goal gl-castle-civ == 1)
+	(up-research-status c: imperial-age < research-pending)
+	(food-amount >= 400)
+	(gold-amount < 400)
+	(commodity-buying-price food > 130)
+	(can-sell-commodity food)
+=>
+	(chat-local-to-self "sell food castle age (wall-boom)")
+	(sell-commodity food)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-research-status c: castle-age < research-pending)
+	(food-amount >= 900)
+	(gold-amount < 200)
+	(can-sell-commodity food)
+=>
+	(chat-local-to-self "sell food (wall-boom)")
+	(sell-commodity food)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(current-age == castle-age)
+	(building-type-count-total town-center < 3)
+	(commodity-buying-price wood < 200)
+	(wood-amount < 300)
+	(gold-amount > 300)
+	(can-buy-commodity wood)
+=>
+	(buy-commodity wood)
+	(chat-local-to-self "buy wood for town center (wallboom)")
+)
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age < castle-transit)
+	(strategic-number sn-military-level > 0)
+	;(building-type-count-total archery-range >= 3)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age == castle-transit)
+	(building-type-count-total archery-range >= 3)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age != castle-transit)
+	;(building-type-count-total archery-range >= 3)
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-map-style != WATER)
+	(players-building-type-count focus-player castle < 1)
+	(or(strategic-number sn-enemy-current-age >= castle-transit)
+	   (strategic-number sn-military-level > 0))
+	(up-compare-goal gl-enemy-strategy == fast-castle)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age != castle-transit)
+	(players-building-type-count focus-player castle > 0)
+	(unit-type-count battering-ram-line < 3)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age != castle-transit)
+	(players-building-type-count focus-player castle > 0)
+	(unit-type-count battering-ram-line >= 3)
+	(strategic-number sn-military-level > 0)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == castle-age)
+	(strategic-number sn-castle-age-strategy == castled)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age < castle-transit)
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+
+(defrule
+	(strategic-number sn-castle-age-strategy == castled)
+	(or(taunt-detected any-human 250)
+	   (taunt-detected my-player-number 250))
+=>
+	(chat-to-allies "Hi! I'm BruteForce v3.1 Created by CheeseOnToast")
+	(chat-to-allies "Going to castle drop and train unique units")
+	(acknowledge-taunt this-any-human 250)
+	(acknowledge-taunt my-player-number 250)
+)

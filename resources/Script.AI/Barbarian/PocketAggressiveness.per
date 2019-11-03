@@ -1,0 +1,94 @@
+#load-if-not-defined TINY-MAP
+#load-if-not-defined UP-GROUPED-BY-TEAM
+(defrule
+	(or	(game-time > 70)
+		(or	(and	(up-compare-const gv-pocket-position == 0)
+				(up-compare-const gv-2-player-team == 0))
+			(or	(up-compare-goal SLING != 0)
+				(or	(up-compare-goal gl-strategy-aggressiveness-level >= AVERAGE)
+					(or	(strategic-number sn-strategy-lock == 1)
+						(strategic-number sn-minimum-water-body-size-for-dock != land-map-style))))))
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-goal temporary-goal2 0)
+	(set-goal temporary-goal4 0)
+	(up-get-fact players-in-game any temporary-goal2)
+	(up-modify-goal temporary-goal4 g:= gl-max-coordinate-value)
+	(up-modify-goal temporary-goal4 g:* gl-max-coordinate-value)
+	(up-modify-goal temporary-goal4 g:/ temporary-goal2)
+)
+
+(defrule
+	(game-time > 55)
+	(game-time < 65)
+	(goal gl-rush-suitability-on-map GOOD)
+;	(up-allied-goal any-computer-ally gl-strategy-cooperation == enabled); 419 == 3453
+=>
+	(up-find-player ally find-closest temporary-goal3)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal3)
+	(set-goal temporary-goal2 21853)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 65)
+	(goal temporary-goal2 21853)
+;	(or	(not	(up-allied-goal focus-player gl-strategy-cooperation == enabled))
+;		(or	(not	(up-allied-goal focus-player POSITION == FLANK))
+;			(and	(up-compare-const gv-3-player-team == 1); Check both flanks in 3v3
+;				(not	(up-allied-goal focus-player gl-strategy-aggressiveness-level == HIGH)))))
+=>
+	(up-find-player ally find-closest temporary-goal3)
+	(up-find-next-player ally find-closest temporary-goal3)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal3)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 65)
+	(goal temporary-goal2 21853)
+	(up-compare-goal temporary-goal4 <= 12000)
+	(strategic-number sn-strategy-lock == 0)
+;	(up-allied-goal focus-player gl-strategy-cooperation == enabled)
+;	(up-allied-goal focus-player gl-strategy-aggressiveness-level == HIGH); 418 == 24
+	(up-compare-const gl-strategy != castle-drop)
+	(up-compare-const scout-unit == eagle-warrior-line)
+;	(goal gl-eew-strategy-type boom)
+;	(up-allied-goal focus-player POSITION == FLANK)
+=>
+	(set-goal gl-strategy ew-boom)
+	(set-goal gl-strategy-aggressiveness-level HIGH); Well...
+	(set-goal gl-strategy-type FC2)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(game-time < 65)
+	(goal temporary-goal2 21853)
+	(up-compare-goal temporary-goal4 <= 12000)
+	(strategic-number sn-strategy-lock == 0)
+;	(up-allied-goal focus-player gl-strategy-cooperation == enabled)
+;	(up-allied-goal focus-player gl-strategy-aggressiveness-level == HIGH); 418 == 24
+;	(goal gl-strategy krush)
+	(up-compare-const scout-unit != eagle-warrior-line)
+;	(up-allied-goal focus-player POSITION == FLANK)
+=>
+	(set-goal gl-strategy knight-rush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC2)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+#end-if
+#end-if
+

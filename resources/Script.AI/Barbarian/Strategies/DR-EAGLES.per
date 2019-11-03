@@ -1,0 +1,73 @@
+(load "Barbarian\Strategies\DR-ARCH")
+
+(defrule
+	(game-time > 1200)
+=>
+	(up-jump-rule 5)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal 0)
+	(up-modify-goal temporary-goal3 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-set-target-point gl-position-self-x)
+	(up-filter-distance c: -1 c: 31)
+	(up-find-remote c: wild-boar c: 3)
+	(up-find-remote c: javelina c: 3)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal temporary-goal2 g:= gl-remote-total)
+	(up-modify-goal temporary-goal2 g:+ gl-boar-eaten)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal3)
+)
+
+(defrule
+	(or	(up-compare-goal temporary-goal2 < 2)
+		(or	(goal POSITION POCKET)
+			(or	(up-compare-const gv-x-vs-one-challenge == 1)
+				(or	(strategic-number sn-strategy-lock == 1)
+					(or	(game-time > 540)
+						(goal gl-front-gold -1))))))
+=>
+	(up-jump-rule 3)
+)
+
+(defrule
+	(or	(and	(up-compare-goal gl-front-gold > 0)
+			(or	(up-compare-goal gl-target-player-distance >= 90)
+				(up-compare-goal temporary-goal2 < 3)))
+		(or	(player-human target-player)
+			(up-compare-const gv-meso-civ-enemy == 1)))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(or	(game-time > 540)
+		(or	(strategic-number sn-sheep-count < 7)
+			(or	(up-compare-goal gl-strategy-type >= FC)
+				(or	(up-compare-goal gl-current-age != gv-dark)
+					(or	(strategic-number sn-lumber-camp-max-distance > 17)
+						(or	(game-time < 120)
+							(up-compare-goal gl-rush-suitability-on-map != GOOD)))))))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal gl-DRUSH YES)
+	(up-compare-const gv-maximum-age >= castle-age)
+	(or	(and	(or	(goal gl-boar-stealing -2)
+				(goal gl-boar-stealing 2))
+			(up-compare-goal temporary-goal2 > 2))
+		(up-compare-goal gl-front-gold <= 0))
+=>
+	(set-goal gl-strategy eagle-rush)
+	(set-goal gl-strategy-type FC)
+	(set-strategic-number sn-strategy-lock 1)
+	(chat-to-allies "Going drush FC.")
+	(disable-self)
+)

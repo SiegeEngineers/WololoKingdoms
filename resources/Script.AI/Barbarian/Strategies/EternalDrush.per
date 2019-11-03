@@ -1,0 +1,53 @@
+#load-if-defined TINY-MAP
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined INDIAN-CIV
+(defrule
+	(goal gl-DRUSH YES)
+	(current-age == dark-age)
+	(strategic-number sn-strategy-lock == 0)
+	(players-building-count any-enemy > 0)
+	(game-time > 120)
+	(game-time < 640)
+	(goal SLING 0)
+=>
+	(set-goal gl-strategy eternal-drush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-eternal-drush YES)
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-DRUSH YES)
+	(current-age == dark-age)
+	(strategic-number sn-strategy-lock == 0)
+	(goal gl-strategy eternal-drush)
+	(game-time < 640)
+	(building-type-count-total barracks < 2)
+	(unit-type-count-total militiaman-line < 6)
+	(dropsite-min-distance deer-hunting >= 27)
+	(building-type-count-total mill < 2)
+=>
+	(set-goal gl-disable-eternal-drush YES)
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(goal gl-strategy eternal-drush)
+	(current-age == dark-age)
+	(goal gl-current-age gv-dark-up)
+	(game-time < 1100)
+=>
+	(set-goal gl-strategy flush)
+	(set-goal gl-feudal-infantry FLUSH-DEFENCE-MAA)
+	(set-goal gl-feudal-archery FLUSH-DEFENCE-ARCHER)
+	(set-goal gl-eternal-drush NO)
+	(set-goal gl-strategy-type basic-flush)
+	(disable-self)
+)
+

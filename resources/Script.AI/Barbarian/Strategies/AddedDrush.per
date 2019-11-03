@@ -1,0 +1,60 @@
+#load-if-not-defined TURBO-RANDOM-MAP
+#load-if-defined DARK-AGE-START
+#load-if-not-defined REGICIDE
+#load-if-not-defined UP-MICHI-STYLE
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined YUCATAN-MAP
+(defrule
+	(or	(game-time > 300)
+		(strategic-number sn-strategy-lock != 0))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(current-age == dark-age)
+	(goal gl-feudal-infantry 0)
+	(strategic-number sn-nomad-style-start == 0)
+	(cc-players-unit-type-count 0 gold-mine > 20)
+	(cc-players-unit-type-count 0 sheep > large-number-deer)
+	(cc-players-unit-type-count 0 forage-bush > 7)
+	(strategic-number sn-boars-on-map != NONE)
+	(game-time < 10)
+	(building-type-count-total town-center < 2)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal gl-new-scouting-style 1)
+	(goal POSITION FLANK)
+	(goal gl-rush-suitability-on-map GOOD)
+=>
+	(set-goal gl-DRUSH YES)
+	(set-strategic-number sn-allow-new-build-order 4)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 240)
+	(goal gl-DRUSH YES)
+	(goal POSITION FLANK)
+	(up-compare-const gv-maximum-age >= feudal-age)
+	(goal gl-current-age gv-dark)
+	(or	(strategic-number sn-sheep-count < 6)
+		(or	(up-gaia-type-count c: forage-bush < 4)
+			(and	(up-gaia-type-count g: gl-boar-unit < 1)
+				(up-compare-goal gl-boar-eaten < 1))))
+	(building-type-count-total barracks == 0)
+=>
+	(set-goal gl-DRUSH NO)
+	(set-strategic-number sn-allow-new-build-order 1)
+	(disable-self)
+)
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if

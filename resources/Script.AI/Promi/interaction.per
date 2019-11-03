@@ -1,0 +1,2453 @@
+
+(defrule
+(or	(game-time >= 42)
+(or	(taunt-detected my-player-number 250)
+(or	(taunt-detected any-ally 250)
+	(taunt-detected any-enemy 250))))
+=>
+	(chat-to-player my-player-number "Promi 1.55c")
+	(chat-to-player every-ally "Promi 1.55c")
+	(chat-to-player every-enemy "Promi 1.55c")
+;	(acknowledge-taunt my-player-number 250)
+;	(acknowledge-taunt every-ally 250); strat
+	(acknowledge-taunt every-enemy 250)
+	(disable-self))
+(defrule
+	(game-time >= 10)
+=>
+	(chat-to-all "gl hf")
+	(disable-self))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(game-time <= 69)
+	(up-compare-goal strategylocked != yes)
+=>
+	(chat-to-player my-player-number text-still-selecting-strategy)
+	(chat-to-player every-ally text-still-selecting-strategy)
+	(disable-self))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy drush)
+=>
+	(chat-to-player my-player-number text-attempt-drush)
+	(chat-to-player every-ally text-attempt-drush)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy r-flush)
+	(up-compare-goal sk-var == yes)
+=>
+	(chat-to-player my-player-number text-attempt-r-sk)
+	(chat-to-player every-ally text-attempt-r-sk)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy r-flush)
+	(up-compare-goal sk-var == no)
+=>
+	(chat-to-player my-player-number text-attempt-r-flush)
+	(chat-to-player every-ally text-attempt-r-flush)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy s-flush)
+=>
+	(chat-to-player my-player-number text-attempt-s-flush)
+	(chat-to-player every-ally text-attempt-s-flush)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy a-rush)
+=>
+	(chat-to-player my-player-number text-attempt-a-rush)
+	(chat-to-player every-ally text-attempt-a-rush)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy ca-rush)
+=>
+	(chat-to-player my-player-number text-attempt-ca-rush)
+	(chat-to-player every-ally text-attempt-ca-rush)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+(or	(building-type-count-total town-center < 3)
+	(building-type-count-total stable < 2))
+	(goal strategy krush)
+	(up-compare-goal kr-var <= 1)
+=>
+	(chat-to-player my-player-number text-krush-stables1)
+	(chat-to-player every-ally text-krush-stables1))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+(or	(building-type-count-total town-center < 3)
+	(building-type-count-total stable < 2))
+	(goal strategy krush)
+	(up-compare-goal kr-var >= 2)
+=>
+	(chat-to-player my-player-number text-krush-stables2)
+	(chat-to-player every-ally text-krush-stables2))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy krush)
+;	(up-compare-goal kr-var <= 1)
+=>
+	(chat-to-player my-player-number text-attempt-krush)
+	(chat-to-player every-ally text-attempt-krush)
+;	(chat-to-player my-player-number text-krush-stables1)
+;	(chat-to-player every-ally text-krush-stables1)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+;(defrule
+;(or	(taunt-detected my-player-number 250)
+;	(taunt-detected any-ally 250))
+;(or	(game-time >= 70)
+;	(goal strategylocked yes))
+;	(goal strategy krush)
+;	(up-compare-goal kr-var >= 2)
+;=>
+;	(chat-to-player my-player-number text-attempt-krush)
+;	(chat-to-player every-ally text-attempt-krush)
+;;	(chat-to-player my-player-number text-krush-stables2)
+;;	(chat-to-player every-ally text-krush-stables2)
+;	(acknowledge-taunt my-player-number 250)
+;	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy castledrop)
+=>
+	(chat-to-player my-player-number text-attempt-castledrop)
+	(chat-to-player every-ally text-attempt-castledrop)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy stonewall)
+=>
+	(chat-to-player my-player-number text-attempt-eew)
+	(chat-to-player every-ally text-attempt-eew)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy sling)
+=>
+	(chat-to-player my-player-number text-attempt-sling)
+	(chat-to-player every-ally text-attempt-sling)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal strategy grush)
+=>
+	(chat-to-player my-player-number text-attempt-grush)
+	(chat-to-player every-ally text-attempt-grush)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(goal milunits no)
+	(up-compare-goal strategy != stonewall)
+	(up-compare-goal strategy != sling)
+=>
+	(chat-to-player my-player-number text-attempt-boom)
+	(chat-to-player every-ally text-attempt-boom)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+(or	(goal milunits yes)
+	(goal milunits 101))
+=>
+	(chat-to-player my-player-number text-attempt-adapt)
+	(chat-to-player every-ally text-attempt-adapt)
+	(disable-self))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+(or	(goal milunits yes)
+	(goal milunits 101))
+=>
+	(chat-to-player my-player-number text-no-aggressive-strategy)
+	(chat-to-player every-ally text-no-aggressive-strategy)
+;	(chat-to-player my-player-number text-attempt-adapt)
+;	(chat-to-player every-ally text-attempt-adapt)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+(defrule
+(or	(game-time >= 70)
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250)))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+	(up-compare-goal strategy-type <= feudal-war)
+	(up-compare-goal maa-var == yes)
+	(strategic-number sn-current-age <= feudal)
+	(strategic-number sn-current-age >= dfeudal)
+=>
+	(chat-to-player my-player-number text-attempt-add-maa)
+	(chat-to-player every-ally text-attempt-add-maa)
+	(disable-self))
+(defrule
+(or	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+(or	(game-time >= 70)
+	(goal strategylocked yes))
+=>
+	(chat-to-player my-player-number text-i-have-no-idea)
+	(chat-to-player every-ally text-i-have-no-idea)
+	(acknowledge-taunt my-player-number 250)
+	(acknowledge-taunt every-ally 250))
+
+(defrule
+	(taunt-detected any-human-ally 249)
+=>
+	(up-get-fact wood-amount 0 temporary-goal); this-any-human-ally
+	(up-chat-data-to-player every-ally text-249wood g: temporary-goal); "Wood: %d"
+	(up-get-fact food-amount 0 temporary-goal)
+	(up-chat-data-to-player every-ally text-249food g: temporary-goal); "Food: %d"
+	(up-get-fact gold-amount 0 temporary-goal)
+	(up-chat-data-to-player every-ally text-249gold g: temporary-goal); "Gold: %d"
+	(up-get-fact stone-amount 0 temporary-goal)
+	(up-chat-data-to-player every-ally text-249stone g: temporary-goal); "Stone: %d"
+	(up-get-fact population 0 temporary-goal)
+	(up-chat-data-to-player every-ally text-249pop g: temporary-goal); "Population: %d"
+	(acknowledge-taunt every-ally 249))
+
+(defrule
+	(game-time >= 72)
+=>
+	(up-jump-rule 13))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy drush)
+=>
+	(chat-to-player my-player-number text-attempt-drush)
+	(chat-to-player every-ally text-attempt-drush)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy r-flush)
+	(goal sk-var no)
+=>
+	(chat-to-player my-player-number text-attempt-r-flush)
+	(chat-to-player every-ally text-attempt-r-flush)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy r-flush)
+	(goal sk-var yes)
+=>
+	(chat-to-player my-player-number text-attempt-r-sk)
+	(chat-to-player every-ally text-attempt-r-sk)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy s-flush)
+=>
+	(chat-to-player my-player-number text-attempt-s-flush)
+	(chat-to-player every-ally text-attempt-s-flush)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy a-rush)
+=>
+	(chat-to-player my-player-number text-attempt-a-rush)
+	(chat-to-player every-ally text-attempt-a-rush)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy ca-rush)
+=>
+	(chat-to-player my-player-number text-attempt-ca-rush)
+	(chat-to-player every-ally text-attempt-ca-rush)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy krush)
+=>
+	(chat-to-player my-player-number text-attempt-krush)
+	(chat-to-player every-ally text-attempt-krush)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy castledrop)
+=>
+	(chat-to-player my-player-number text-attempt-castledrop)
+	(chat-to-player every-ally text-attempt-castledrop)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy stonewall)
+=>
+	(chat-to-player my-player-number text-attempt-eew)
+	(chat-to-player every-ally text-attempt-eew)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy sling)
+=>
+	(chat-to-player my-player-number text-attempt-sling)
+	(chat-to-player every-ally text-attempt-sling)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy grush)
+=>
+	(chat-to-player my-player-number text-attempt-grush)
+	(chat-to-player every-ally text-attempt-grush)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal milunits no)
+	(up-compare-goal strategy != stonewall)
+	(up-compare-goal strategy != sling)
+=>
+	(chat-to-player my-player-number text-attempt-boom)
+	(chat-to-player every-ally text-attempt-boom)
+	(disable-self))
+(defrule
+	(game-time >= 66)
+	(game-time < 70)
+(nor	(taunt-detected my-player-number 250)
+	(taunt-detected any-ally 250))
+	(goal strategy usual)
+	(goal milunits yes)
+=>
+	(chat-to-player my-player-number text-attempt-adapt)
+	(chat-to-player every-ally text-attempt-adapt)
+	(disable-self)); end jump
+
+
+
+(defrule
+	(game-time >= 15)
+=>	
+	(chat-to-player my-player-number text-civ)
+	(chat-to-player every-ally text-civ)
+	(disable-self))
+
+
+
+#load-if-not-defined WONDER-RACE
+#load-if-not-defined UP-POCKET-POSITION
+(defrule
+	(game-time < 1080)
+	(player-in-game any-human-ally)
+	(players-building-count target-player >= 1)
+=>
+	(up-full-reset-search)
+	(up-get-point scouting-type point-x)
+	(up-get-point position-target saved-point-x)); distance from the scouting point to the enemy
+(defrule
+	(game-time < 1080)
+	(player-in-game any-human-ally)
+	(players-building-count target-player >= 1)
+(or	(up-point-distance point-x saved-point-x < 40)
+	(players-building-count every-enemy >= 1))
+=>
+	(up-get-point position-target point-x)
+	(up-send-flare point-x)
+	(up-store-player-name target-player)
+	(up-chat-data-to-player every-ally text-enemy-located-here c: 7031232); "%s is located in this area."
+	(disable-self))
+#else ; Pocket
+(defrule
+(or	(not	(player-in-game any-human-ally))
+	(game-time >= 1080))
+=>
+	(up-jump-rule 6))
+(defrule
+	(timer-triggered embassy) ; 10
+; 30	(timer-triggered MSuperiority)
+	(goal pocketcheck 9)
+=>
+	(set-goal pocketcheck 0))
+(defrule
+	(goal pocketcheck 0)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1))
+(defrule
+	(goal pocketcheck 0)
+	(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+=>
+	(up-full-reset-search)
+	(up-get-point scouting-type point-x)
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 c: 40)
+	(up-find-remote c: building-class c: 1)
+	(up-get-search-state local-total))
+(defrule
+	(goal pocketcheck 0)
+	(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+	(up-compare-goal remote-total >= 1)
+=>
+	(up-modify-goal pocketcheck s:= sn-focus-player-number)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object point-x)
+	(up-send-flare point-x)
+	(up-store-player-name focus-player)
+	(up-chat-data-to-player every-ally text-enemy-located-here c: 7031232); "%s is located in this area."
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(disable-self))
+(defrule
+	(goal pocketcheck 0)
+(or	(up-compare-goal remote-total < 1)
+	(stance-toward focus-player ally))
+	(strategic-number sn-focus-player-number < 8)
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3))
+(defrule
+	(goal pocketcheck 0)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(set-goal pocketcheck 9)); disable for a while to avoid possible lag by constant checking
+#end-if
+
+(defrule
+	(game-time >= 120)
+(or	(game-time >= 180)
+	(up-compare-goal landnomad != yes))
+	(goal nomad yes)
+	(building-type-count-total town-center > 0)
+=>
+	(up-full-reset-search)
+	(up-filter-include -1 actionid-build -1 -1)
+	(up-find-local c: villager-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-send-flare temporary-point-x)
+	(chat-to-allies text-nomad-position); "I'm here."
+	(disable-self))
+
+
+(defrule
+	(wood-amount < 175)
+	(taunt-detected any-human-ally 40)
+=>
+	(chat-to-allies text-no-wood-market)
+	(acknowledge-taunt every-ally 40))
+
+(defrule
+	(goal underattack yes)
+	(taunt-detected any-human-ally 222)
+=>
+	(chat-to-allies text-under-attack-ask-later)
+	(acknowledge-taunt every-ally 222)
+	(up-jump-rule 11))
+
+(defrule
+	(players-unit-type-count every-ally 274 == 0)
+(nor	(taunt-detected any-human-ally 40)
+	(taunt-detected any-human-ally 222))
+	(up-timer-status market-flare-timer == timer-disabled)
+	(up-timer-status unit-control-flare-timer == timer-disabled)
+	(up-compare-goal market-flare != 2)
+	(up-compare-goal unit-flare != 2)
+=>
+	(up-jump-rule 10))
+(defrule
+	(up-pending-objects c: market >= 2)
+;	(players-unit-type-count any-human-ally flare >= 1)
+	(taunt-detected any-human-ally 40)
+=>
+	(acknowledge-taunt every-ally 40)
+;	(disable-timer market-flare-timer)
+;	(set-goal market-flare 0)
+	(chat-to-allies text-already-constructing-market))
+(defrule
+	(up-pending-objects c: market < 2)
+	(taunt-detected any-human-ally 40)
+	(up-compare-goal market-flare != 2)
+=>
+	(enable-timer market-flare-timer 10)
+	(set-goal market-flare 2)
+	(chat-to-allies text-market-placement-allowed)
+	(chat-to-allies text-flare-market)
+	(up-reset-placement c: market))
+(defrule
+	(timer-triggered market-flare-timer)
+=>
+	(chat-to-allies text-10-seconds-have-passed)
+	(disable-timer market-flare-timer)
+	(set-goal market-flare 0)
+	(acknowledge-taunt every-ally 40))
+(defrule
+	(taunt-detected any-human-ally 40)
+;	(up-pending-objects c: market < 2)
+	(players-unit-type-count any-human-ally flare >= 1)
+	(can-build market)
+=>
+	(set-strategic-number sn-placement-zone-size 3); 4
+	(up-set-placement-data this-any-human-ally flare c: 0)
+	(up-build place-control 0 c: market)
+	(acknowledge-taunt every-ally 40)
+	(disable-timer market-flare-timer)
+	(set-goal market-flare 0)
+	(chat-to-allies text-market-placement-attempt))
+(defrule
+	(taunt-detected any-human-ally 222)
+	(up-compare-goal unit-flare != 2)
+=>
+	(enable-timer unit-control-flare-timer 10)
+	(set-goal gatherinside no)
+	(set-goal unit-flare 2)
+	(chat-to-allies text-unit-control-allowed)
+	(chat-to-allies text-flare-unit-control))
+(defrule
+	(timer-triggered unit-control-flare-timer)
+=>
+	(chat-to-allies text-10-seconds-have-passed)
+	(disable-timer unit-control-flare-timer)
+	(set-goal unit-flare 0)
+	(acknowledge-taunt every-ally 222))
+(defrule
+	(players-unit-type-count any-human-ally flare >= 1)
+	(taunt-detected any-human-ally 222)
+=>
+	(set-strategic-number sn-disable-defend-groups 1)
+	(set-strategic-number sn-gather-defense-units 0)
+	(disable-timer spread)
+	(set-goal retreat no)
+	(set-goal reset no)
+	(enable-timer unit-control-flare-timer2 210) ; 240
+	(disable-timer unit-control-flare-timer)
+	(chat-to-allies text-unit-movement-attempt))
+(defrule
+	(players-unit-type-count any-human-ally flare >= 1)
+	(taunt-detected any-human-ally 222)
+=>
+; test	(up-reset-unit c: -1)
+	(up-find-player-flare any-ally unit-flare-point-x)
+	(up-full-reset-search)
+	(up-set-target-point unit-flare-point-x)
+	(up-filter-distance c: 8 c: -1)
+	(up-filter-exclude -1 -1 -1 -1)
+	(up-filter-range -1 -1 -1 -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point 0 action-patrol -1 stance-aggressive);-defensive
+	(acknowledge-taunt every-ally 222))
+(defrule
+	(up-timer-status unit-control-flare-timer2 == timer-running)
+	(up-timer-status twentysec == timer-triggered)
+=>
+; test	(up-reset-unit c: -1)
+	(up-full-reset-search)
+	(up-set-target-point unit-flare-point-x)
+	(up-filter-distance c: 8 c: -1)
+	(up-filter-exclude -1 -1 -1 -1)
+	(up-filter-range -1 -1 -1 -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1);
+	(up-find-local c: all-units-class c: 240);
+	(up-target-point 0 action-patrol -1 stance-aggressive);-defensive
+	(chat-to-player my-player-number text-resending-units))
+(defrule
+	(timer-triggered unit-control-flare-timer2)
+=>
+	(chat-to-allies text-taking-control-again)
+	(disable-timer unit-control-flare-timer2)
+	(up-reset-unit c: -1)
+	(set-strategic-number sn-disable-defend-groups 0)
+	(set-strategic-number sn-gather-defense-units 1)
+	(enable-timer spread 90)
+	(set-goal retreat yes)
+	(set-goal reset yes)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 22)
+=>
+	(chat-to-allies text-taking-control-again)
+	(disable-timer unit-control-flare-timer2)
+	(acknowledge-taunt every-ally 22)
+	(up-reset-unit c: -1)
+	(set-strategic-number sn-disable-defend-groups 0)
+	(set-strategic-number sn-gather-defense-units 1)
+	(enable-timer spread 90)
+	(set-goal retreat yes)
+	(set-goal reset yes))
+
+(defrule
+	(goal underattack yes)
+	(up-timer-status unit-control-flare-timer2 != timer-disabled)
+(or	(strategic-number sn-disable-defend-groups >= 1)
+	(strategic-number sn-gather-defense-units <= 0))
+=>
+	(chat-to-allies text-attacked-taking-control-again)
+	(disable-timer unit-control-flare-timer2)
+	(up-reset-unit c: -1)
+	(set-strategic-number sn-disable-defend-groups 0)
+	(set-strategic-number sn-gather-defense-units 1)
+	(enable-timer spread 180)
+	(set-goal retreat yes)
+	(set-goal reset yes))
+
+(defrule
+	(building-type-count market >= 1)
+	(taunt-detected any-human-ally 147)
+=>
+	(acknowledge-taunt every-ally 147)
+	(delete-building market)
+	(chat-to-allies text-deleting-market))
+
+#load-if-not-defined ARENA-MAP
+#load-if-not-defined FORTRESS-MAP
+#load-if-not-defined ISLANDS-MAP
+#load-if-not-defined TEAM-ISLANDS-MAP
+#load-if-not-defined REGICIDE
+#load-if-not-defined UP-MICHI-STYLE
+
+#load-if-not-defined GOLD-RUSH-MAP; noes
+(defrule
+(or	(taunt-detected my-player-number 21)
+	(taunt-detected any-ally 21))
+; hm	(goal position-goal flank)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 21)
+	(acknowledge-taunt every-ally 21)
+	(set-strategic-number sn-gather-defense-units 0)
+	(set-strategic-number sn-home-exploration-time 300);	(up-modify-sn sn-home-exploration-time c:max 300)
+	(set-goal strategy drush)
+	(set-goal milunits yes)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-drush)
+	(set-goal strategylocked yes))
+#end-if
+(defrule
+(or	(taunt-detected my-player-number 24)
+	(taunt-detected any-ally 24))
+	(goal position-goal flank)
+(or	(game-time < 180)
+	(strategic-number sn-current-age <= dark))
+=>
+	(acknowledge-taunt my-player-number 24)
+	(acknowledge-taunt every-ally 24)
+	(set-goal maa-var yes)
+;	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-add-maa)
+;	(set-goal strategylocked yes)
+)
+
+(defrule
+(or	(taunt-detected my-player-number 17)
+	(taunt-detected any-ally 17))
+; tl	(up-compare-goal strategy != r-flush)
+	(goal islands no)
+	(goal position-goal flank)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 17)
+	(acknowledge-taunt every-ally 17)
+;	(set-strategic-number sn-home-exploration-time 450)
+	(set-goal strategy r-flush)
+	(set-goal milunits r-flush)
+	(set-goal sk-var no)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-r-flush)
+	(set-goal strategylocked yes))
+(defrule
+(or	(taunt-detected my-player-number 18)
+	(taunt-detected any-ally 18))
+; tl	(up-compare-goal sk-var != yes)
+	(goal islands no)
+	(goal position-goal flank)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 18)
+	(acknowledge-taunt every-ally 18)
+;	(set-strategic-number sn-home-exploration-time 450)
+	(set-goal strategy r-flush)
+	(set-goal milunits r-flush)
+	(set-goal sk-var yes)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-r-sk)
+	(set-goal strategylocked yes))
+
+#load-if-not-defined SPANISH-CIV
+(defrule
+(or	(taunt-detected my-player-number 19)
+	(taunt-detected any-ally 19))
+	(up-compare-goal strategy != a-rush)
+	(goal islands no)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 19)
+	(acknowledge-taunt every-ally 19)
+	(set-goal strategy a-rush)
+	(set-goal milunits a-rush)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-a-rush)
+	(set-goal strategylocked yes))
+#end-if
+
+#load-if-not-defined INCAN-CIV ;
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined SLAVIC-CIV
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+;#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined MAYAN-CIV
+;#load-if-not-defined MONGOL-CIV
+#load-if-not-defined PERSIAN-CIV
+;#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined VIKING-CIV; Huns, Saracens, Mongols
+(defrule
+(or	(taunt-detected my-player-number 20)
+	(taunt-detected any-ally 20))
+	(up-compare-goal strategy != ca-rush)
+	(goal islands no)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 20)
+	(acknowledge-taunt every-ally 20)
+	(set-goal strategy ca-rush)
+	(set-goal milunits ca-rush)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-ca-rush)
+	(set-goal strategylocked yes))
+;#end-if
+;#end-if
+;#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined AZTEC-CIV
+(defrule
+(or	(taunt-detected my-player-number 23)
+	(taunt-detected any-ally 23))
+	(up-compare-goal strategy != s-flush)
+	(goal islands no)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 23)
+	(acknowledge-taunt every-ally 23)
+;	(set-strategic-number sn-home-exploration-time 450)
+	(set-goal strategy s-flush)
+	(set-goal milunits s-flush)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-s-flush)
+	(set-goal strategylocked yes))
+
+#load-if-not-defined INDIAN-CIV
+(defrule
+(or	(taunt-detected my-player-number 28)
+	(taunt-detected any-ally 28))
+;	(up-compare-goal strategy != krush)
+	(goal islands no)
+;(or	(goal position-goal pocket)
+;	(goal Multiplayer no))
+	(game-time < 180)
+=>
+	(set-goal kr-var 2)
+	(acknowledge-taunt my-player-number 28)
+	(acknowledge-taunt every-ally 28)
+	(set-goal strategy krush)
+	(set-goal milunits krush)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-krush)
+	(chat-to-allies text-krush-stables2)
+	(set-goal strategylocked yes))
+(defrule
+(or	(taunt-detected my-player-number 128)
+	(taunt-detected any-ally 128))
+;	(up-compare-goal strategy != krush)
+	(goal islands no)
+;(or	(goal position-goal pocket)
+;	(goal Multiplayer no))
+	(game-time < 180)
+=>
+	(set-goal kr-var 1)
+	(acknowledge-taunt my-player-number 128)
+	(acknowledge-taunt every-ally 128)
+	(set-goal strategy krush)
+	(set-goal milunits krush)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-krush)
+	(chat-to-allies text-krush-stables1)
+	(set-goal strategylocked yes))
+#end-if
+
+#end-if
+#end-if
+#end-if
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+(or	(taunt-detected my-player-number 29)
+	(taunt-detected any-ally 29))
+	(up-compare-goal strategy != castledrop)
+;	(goal islands no)
+;(or	(goal position-goal pocket)
+;	(goal Multiplayer no))
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 29)
+	(acknowledge-taunt every-ally 29)
+	(set-goal strategy castledrop)
+	(set-goal milunits castledrop)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-castledrop)
+	(set-goal strategylocked yes))
+
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined SLAVIC-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined MONGOL-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined VIKING-CIV ; meso
+(defrule
+(or	(game-time >= 180)
+(or	(up-compare-goal != nomad no)
+(or	(up-compare-goal != landnomad no)
+	(up-compare-goal map != land))))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(taunt-detected my-player-number 42)
+	(taunt-detected any-ally 42))
+	(up-compare-goal strategy != stonewall)
+;	(goal milunits yes)
+	(military-population >= 1)
+	(goal position-goal pocket)
+=>
+	(acknowledge-taunt my-player-number 42)
+	(acknowledge-taunt every-ally 42)
+	(set-goal strategy stonewall)
+	(set-goal milunits no)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-eew)
+	(set-goal strategylocked yes))
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+(or	(current-age >= imperial-age); castle-age
+(or	(game-time >= 180)
+	(up-compare-goal nomad != no)))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(taunt-detected my-player-number 38)
+	(taunt-detected any-ally 38))
+	(up-compare-goal strategy != sling)
+	(goal position-goal pocket);
+=>
+	(acknowledge-taunt my-player-number 38)
+;	(acknowledge-taunt every-ally 38)
+	(set-goal strategy sling)
+	(set-goal milunits no)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-sling)
+	(set-goal strategylocked yes))
+(defrule
+(or	(taunt-detected my-player-number 33)
+	(taunt-detected any-ally 33))
+	(up-compare-goal strategy == sling)
+=>
+	(acknowledge-taunt my-player-number 33)
+	(acknowledge-taunt every-ally 33)
+	(acknowledge-taunt my-player-number 38)
+	(acknowledge-taunt every-ally 38)
+	(set-goal strategy usual)
+	(set-goal milunits no); yes
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-stop-slinging)
+	(set-goal strategylocked no))
+
+
+
+
+(defrule
+(or	(taunt-detected my-player-number 36)
+	(taunt-detected any-ally 36))
+	(up-compare-goal strategy != usual)
+=>
+	(acknowledge-taunt my-player-number 36)
+	(acknowledge-taunt every-ally 36)
+	(set-goal milunits yes)
+	(set-goal strategy usual)
+	(set-goal attackprioritychange yes)
+	(set-goal strategylocked no);
+	(chat-to-allies text-understood)
+	(chat-to-allies text-reset-strategy))
+
+(defrule
+(or	(taunt-detected my-player-number 34)
+	(taunt-detected any-ally 34))
+	(up-compare-goal strategy-type2 != water)
+	(goal map water)
+;	(goal fleet yes)
+;;	(goal fishing yes)
+	(strategic-number sn-current-age <= castlea)
+=>
+	(set-goal strategy-type2 water)
+	(set-goal milunits grush)
+	(set-goal strategy grush)
+	(set-goal attackprioritychange yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-grush)
+	(disable-self)); hm
+(defrule
+(or	(taunt-detected my-player-number 34)
+	(taunt-detected any-ally 34))
+	(goal fleet no)
+=>
+	(set-goal map water)
+	(set-goal fleet yes)
+	(chat-to-allies text-start-creating-fleet)
+	(acknowledge-taunt my-player-number 34)
+	(acknowledge-taunt this-any-ally 34))
+
+(defrule
+(or	(taunt-detected my-player-number 35)
+	(taunt-detected any-ally 35))
+	(up-compare-goal strategy-type2 == water)
+=>
+	(set-goal milunits yes)
+;	(set-goal attacking no)
+	(set-goal strategy usual)
+	(set-goal attackprioritychange yes)
+	(set-goal map land);
+	(set-goal fleet no);
+	(chat-to-allies text-reset-strategy)
+	(chat-to-allies text-stop-creating-fleet))
+(defrule
+(or	(taunt-detected my-player-number 35)
+	(taunt-detected any-ally 35))
+	(goal fleet yes)
+=>
+	(set-goal map land)
+	(set-goal fleet no)
+	(chat-to-allies text-stop-creating-fleet)
+	(acknowledge-taunt my-player-number 35)
+	(acknowledge-taunt this-any-ally 35))
+
+(defrule
+(or	(taunt-detected my-player-number 32)
+	(taunt-detected any-ally 32))
+	(goal milunits no)
+	(up-compare-goal strategy != stonewall)
+=>
+	(acknowledge-taunt my-player-number 32)
+	(acknowledge-taunt this-any-ally 32)
+	(set-goal milunits yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-stop-boom))
+
+(defrule
+(or	(taunt-detected my-player-number 33)
+	(taunt-detected any-ally 33))
+;	(up-compare-goal position-goal != flank)
+	(strategic-number sn-current-age < imperial)
+=>
+	(acknowledge-taunt my-player-number 33)
+	(acknowledge-taunt this-any-ally 33)
+	(set-goal milunits no)
+	(set-goal strategy usual)
+	(set-goal strategylocked yes)
+	(chat-to-allies text-understood)
+	(chat-to-allies text-attempt-boom))
+
+(defrule
+(or	(taunt-detected any-ally 32)
+(or	(taunt-detected any-ally 33)
+(or	(taunt-detected any-ally 34)
+	(taunt-detected any-ally 35))))
+=>
+	(acknowledge-taunt this-any-ally 32)
+	(acknowledge-taunt this-any-ally 33)
+	(acknowledge-taunt this-any-ally 34)
+	(acknowledge-taunt this-any-ally 35))
+
+
+
+
+
+
+
+
+(defrule
+	(up-compare-goal threat-time < 16000)
+(or	(strategic-number sn-military-superiority <= -1)
+	(up-enemy-units-in-town g:> my-mpop))
+	(goal underattack yes)
+	(goal defendchat yes)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= attacking-enemy)
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-modify-goal temporary-goal2 s:= sn-maximum-town-size)
+	(up-modify-goal temporary-goal2 c:max 16)
+	(up-filter-distance c: -1 g: temporary-goal2)
+	(up-find-remote c: all-units-class c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal threat-time < 16000)
+(or	(strategic-number sn-military-superiority <= -1)
+	(up-enemy-units-in-town g:> my-mpop))
+	(goal underattack yes)
+	(goal defendchat yes)
+	(up-compare-goal remote-total >= 1)
+=>
+	(up-get-point position-object temporary-point-x)
+	(up-send-flare temporary-point-x)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal))
+(defrule
+(or	(strategic-number sn-military-superiority <= -1)
+	(up-enemy-units-in-town g:> my-mpop))
+	(goal underattack yes)
+	(goal defendchat yes)
+=>
+	(chat-to-player every-ally text-31);	(chat-to-allies text-31)
+	(chat-to-player every-ally text-222help);	(chat-to-allies text-222help)
+;	(chat-to-player my-player-number text-222); test
+;	(acknowledge-taunt my-player-number 222)
+	(set-goal defendchat no)
+	(enable-timer defend-timer 150)); 120
+(defrule
+	(timer-triggered defend-timer)
+=>
+	(disable-timer defend-timer)
+	(set-goal defendchat yes))
+
+
+
+(defrule
+	(taunt-detected my-player-number 234)
+=>
+	(up-send-flare position-self-x)
+	(acknowledge-taunt my-player-number 234))
+
+
+(defrule
+	(goal attackStart yes)
+=>
+	(enable-timer attack-chat 0))
+(defrule
+(or	(taunt-detected my-player-number 31)
+(or	(taunt-detected any-ally 31)
+(or	(taunt-detected my-player-number 222)
+	(taunt-detected any-computer-ally 222))))
+	(goal attacking yes)
+=>
+	(acknowledge-taunt my-player-number 31)
+	(acknowledge-taunt every-ally 31)
+	(acknowledge-taunt my-player-number 222)
+	(acknowledge-taunt this-any-computer-ally 222)
+	(up-store-player-name target-player)
+;	(up-chat-data-to-player every-ally text-already-attacking c: 7031232); ; "Already attacking %s."
+;	(up-chat-data-to-self text-already-attacking c: 7031232); ; "Already attacking %s."
+	(up-chat-data-to-player every-ally text-attacking c: 7031232); ; "Attacking %s."
+	(up-chat-data-to-self text-attacking c: 7031232); ; "Attacking %s."
+	(enable-timer attack-chat 240))
+(defrule
+(or	(taunt-detected my-player-number 31)
+(or	(taunt-detected any-ally 31)
+(or	(taunt-detected my-player-number 222)
+	(taunt-detected any-computer-ally 222))))
+	(goal attacking no)
+=>
+	(acknowledge-taunt my-player-number 31)
+	(acknowledge-taunt every-ally 31)
+	(acknowledge-taunt my-player-number 222)
+	(acknowledge-taunt this-any-computer-ally 222)
+	(chat-to-allies text-attacking-not-ready))
+(defrule
+	(player-in-game any-ally)
+	(timer-triggered attack-chat)
+	(goal attacking yes)
+=>
+	(chat-to-player every-ally text-31);	(chat-to-allies text-31)
+	(up-store-player-name target-player)
+	(up-chat-data-to-player every-ally text-attacking c: 7031232); ; "Attacking %s."
+	(up-chat-data-to-self text-attacking c: 7031232); ; "Attacking %s."
+	(enable-timer attack-chat 240))
+
+
+(defrule
+(nor	(taunt-detected any-human-ally 231)
+(or	(taunt-detected any-human-ally 232)
+(or	(taunt-detected any-human-ally 233)
+(or	(taunt-detected any-human-ally 234)
+(or	(taunt-detected any-human-ally 235)
+(or	(taunt-detected any-human-ally 236)
+(or	(taunt-detected any-human-ally 237)
+	(taunt-detected any-human-ally 238))))))))
+=>
+	(up-jump-rule 8))
+(defrule
+	(taunt-detected any-human-ally 231)
+(nor	(stance-toward 1 ally)
+	(player-number 1))
+	(player-in-game 1)
+	(players-building-count 1 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 1)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 231))
+(defrule
+	(taunt-detected any-human-ally 232)
+(nor	(stance-toward 2 ally)
+	(player-number 2))
+	(player-in-game 2)
+	(players-building-count 2 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 2)
+	(set-strategic-number sn-focus-player-number 2)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 232))
+(defrule
+	(taunt-detected any-human-ally 233)
+(nor	(stance-toward 3 ally)
+	(player-number 3))
+	(player-in-game 3)
+	(players-building-count 3 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 3)
+	(set-strategic-number sn-focus-player-number 3)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 233))
+(defrule
+	(taunt-detected any-human-ally 234)
+(nor	(stance-toward 4 ally)
+	(player-number 4))
+	(player-in-game 4)
+	(players-building-count 4 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 4)
+	(set-strategic-number sn-focus-player-number 4)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 234))
+(defrule
+	(taunt-detected any-human-ally 235)
+(nor	(stance-toward 5 ally)
+	(player-number 5))
+	(player-in-game 5)
+	(players-building-count 5 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 5)
+	(set-strategic-number sn-focus-player-number 5)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 235))
+(defrule
+	(taunt-detected any-human-ally 236)
+(nor	(stance-toward 6 ally)
+	(player-number 6))
+	(player-in-game 6)
+	(players-building-count 6 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 6)
+	(set-strategic-number sn-focus-player-number 6)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 236))
+(defrule
+	(taunt-detected any-human-ally 237)
+(nor	(stance-toward 7 ally)
+	(player-number 7))
+	(player-in-game 7)
+	(players-building-count 7 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 7)
+	(set-strategic-number sn-focus-player-number 7)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 237))
+(defrule
+	(taunt-detected any-human-ally 238)
+(nor	(stance-toward 8 ally)
+	(player-number 8))
+	(player-in-game 8)
+	(players-building-count 8 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 8)
+	(set-strategic-number sn-focus-player-number 8)
+	(set-goal retargetenemy 5); block retargeting
+	(chat-to-allies text-targetting-this-enemy-10)
+	(chat-to-allies text-if-i-dont-kill-him-faster)
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 238))
+
+(defrule; not an enemy / not alive / ...
+(or	(taunt-detected any-human-ally 231)
+(or	(taunt-detected any-human-ally 232)
+(or	(taunt-detected any-human-ally 233)
+	(taunt-detected any-human-ally 234))))
+=>
+	(chat-to-allies text-not-a-valid-target)
+	(acknowledge-taunt every-ally 231)
+	(acknowledge-taunt every-ally 232)
+	(acknowledge-taunt every-ally 233)
+	(acknowledge-taunt every-ally 234))
+(defrule; not an enemy / not alive / ...
+(or	(taunt-detected any-human-ally 235)
+(or	(taunt-detected any-human-ally 236)
+(or	(taunt-detected any-human-ally 237)
+	(taunt-detected any-human-ally 238))))
+=>
+	(chat-to-allies text-not-a-valid-target)
+	(acknowledge-taunt every-ally 235)
+	(acknowledge-taunt every-ally 236)
+	(acknowledge-taunt every-ally 237)
+	(acknowledge-taunt every-ally 238))
+
+(defrule
+	(timer-triggered human-coop-timer)
+=>
+	(disable-timer human-coop-timer)
+	(chat-to-allies text-select-target-myself)
+	(set-goal retargetenemy yes)); allow retargeting
+
+
+
+;(defrule
+;	(up-compare-goal escrowing != no)
+;(or	(taunt-detected any-ally 3)
+;(or	(taunt-detected any-ally 4)
+;(or	(taunt-detected any-ally 5)
+;	(taunt-detected any-ally 6))))
+;=>
+;	(chat-to-allies text-sorry-no-resources)
+;	(acknowledge-taunt every-ally 3)
+;	(acknowledge-taunt every-ally 4)
+;	(acknowledge-taunt every-ally 5)
+;	(acknowledge-taunt every-ally 6)
+;	(up-jump-rule 12))
+(defrule
+(nor	(taunt-detected any-ally 3)
+(or	(taunt-detected any-ally 4)
+(or	(taunt-detected any-ally 5)
+	(taunt-detected any-ally 6))))
+=>
+	(up-jump-rule 11))
+(defrule
+	(building-type-count market <= 0)
+(or	(taunt-detected any-ally 3)
+(or	(taunt-detected any-ally 4)
+(or	(taunt-detected any-ally 5)
+	(taunt-detected any-ally 6))))
+=>
+	(chat-to-allies text-sorry-no-market)
+	(acknowledge-taunt every-ally 3)
+	(acknowledge-taunt every-ally 4)
+	(acknowledge-taunt every-ally 5)
+	(acknowledge-taunt every-ally 6)
+	(up-jump-rule 10))
+
+(defrule
+	(taunt-detected any-ally 3)
+	(up-compare-goal excessFood >= 5000)
+	(research-completed ri-banking)
+	(strategic-number sn-current-age >= imperial)
+=>
+	(acknowledge-taunt this-any-ally 3)
+	(tribute-to-player this-any-ally food 1000)
+	(chat-to-player this-any-ally text-here-is-food)
+	(chat-local-to-self text-tributing-1000food))
+(defrule
+	(taunt-detected any-ally 4)
+	(up-compare-goal excessWood >= 5000)
+	(research-completed ri-banking)
+	(strategic-number sn-current-age >= imperial)
+=>
+	(acknowledge-taunt this-any-ally 4)
+	(tribute-to-player this-any-ally wood 1000)
+	(chat-to-player this-any-ally text-here-is-wood)
+	(chat-local-to-self text-tributing-1000wood))
+(defrule
+	(taunt-detected any-ally 5)
+	(up-compare-goal excessGold >= 5000)
+	(research-completed ri-banking)
+	(strategic-number sn-current-age >= imperial)
+=>
+	(acknowledge-taunt this-any-ally 5)
+	(tribute-to-player this-any-ally gold 1000)
+	(chat-to-player this-any-ally text-here-is-gold)
+	(chat-local-to-self text-tributing-1000gold))
+
+(defrule
+	(taunt-detected any-ally 3)
+	(up-compare-goal excessFood >= 1400)
+(or	(research-completed ri-banking)
+	(and	(research-completed ri-coinage)
+		(up-compare-goal excessFood >= 1800)))
+	(strategic-number sn-current-age >= imperial)
+=>
+	(acknowledge-taunt this-any-ally 3)
+	(tribute-to-player this-any-ally food 400)
+	(chat-to-player this-any-ally text-here-is-food)
+	(chat-local-to-self text-tributing-400food))
+(defrule
+	(taunt-detected any-ally 4)
+(or	(up-compare-goal excessWood >= 1400)
+	(and	(players-building-type-count any-ally town-center <= 0)
+		(up-compare-goal excessWood >= 300))); 500
+(or	(research-completed ri-banking)
+	(and	(research-completed ri-coinage)
+		(up-compare-goal excessWood >= 1800)))
+	(strategic-number sn-current-age >= imperial)
+=>
+	(acknowledge-taunt this-any-ally 4)
+	(tribute-to-player this-any-ally wood 400)
+	(chat-to-player this-any-ally text-here-is-wood)
+	(chat-local-to-self text-tributing-400wood))
+(defrule
+	(taunt-detected any-ally 5)
+(or	(up-compare-goal excessGold >= 1800)
+	(and	(goal researchplan yes)
+		(up-compare-goal excessGold >= 1400)))
+(or	(research-completed ri-banking)
+	(and	(research-completed ri-coinage)
+		(up-compare-goal excessGold >= 1800)))
+	(strategic-number sn-current-age >= imperial)
+=>
+	(acknowledge-taunt this-any-ally 5)
+	(tribute-to-player this-any-ally gold 400)
+	(chat-to-player this-any-ally text-here-is-gold)
+	(chat-local-to-self text-tributing-400gold))
+
+(defrule
+	(taunt-detected any-ally 3)
+(or	(up-compare-goal excessFood >= 1100)
+(or	(research-completed ri-coinage)
+	(strategic-number sn-current-age >= imperial)))
+	(up-compare-goal excessFood >= 400)
+=>
+	(acknowledge-taunt this-any-ally 3)
+	(tribute-to-player this-any-ally food 100)
+	(chat-to-player this-any-ally text-here-is-food)
+	(chat-local-to-self text-tributing-100food))
+(defrule
+	(taunt-detected any-ally 4)
+(or	(up-compare-goal excessWood >= 550)
+(or	(players-building-type-count any-ally town-center <= 0)
+(or	(research-completed ri-coinage)
+	(and	(up-compare-goal excessWood >= 400)
+		(strategic-number sn-current-age >= imperial)))))
+=>
+	(acknowledge-taunt this-any-ally 4)
+	(tribute-to-player this-any-ally wood 100)
+	(chat-to-player this-any-ally text-here-is-wood)
+	(chat-local-to-self text-tributing-100wood))
+(defrule
+	(taunt-detected any-ally 5)
+(or	(up-compare-goal excessGold >= 800)
+	(and	(goal researchplan yes)
+		(up-compare-goal excessGold >= 400)))
+(or	(research-completed ri-banking)
+	(up-compare-goal excessGold >= 1100))
+=>
+	(acknowledge-taunt this-any-ally 5)
+	(tribute-to-player this-any-ally gold 100)
+	(chat-to-player this-any-ally text-here-is-gold)
+	(chat-local-to-self text-tributing-100gold))
+(defrule
+	(taunt-detected any-ally 6)
+(or	(up-compare-goal excessStone >= 1100)
+(or	(research-completed ri-coinage)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count town-center >= 1)
+(or	(up-compare-goal excessStone >= 750)
+(or	(building-type-count-total castle >= 3)
+	(players-building-type-count any-ally town-center <= 0)))
+;	(up-compare-goal excessStone >= 225);
+=>
+	(acknowledge-taunt this-any-ally 6)
+	(tribute-to-player this-any-ally stone 100)
+	(chat-to-player this-any-ally text-here-is-stone)
+	(chat-local-to-self text-tributing-100stone)); end jump
+
+
+
+(defrule
+(or	(up-compare-goal strategy != sling)
+(or	(up-compare-goal escrowing != no);
+(or	(up-research-status c: ri-coinage == research-available)
+(or	(up-research-status c: ri-coinage == research-pending)
+(or	(up-research-status c: ri-banking == research-available)
+	(up-research-status c: ri-banking == research-pending))))))
+=>
+	(up-jump-rule 8))
+(defrule
+(or	(taunt-detected any-ally 3)
+	(up-compare-goal excessFood >= 150))
+(or	(taunt-detected any-ally 3)
+(or	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38))))
+=>
+	(acknowledge-taunt every-ally 3)
+	(tribute-to-player this-any-ally food 100)
+	(chat-to-player this-any-ally text-here-is-food)
+	(chat-local-to-self text-tributing-100food))
+
+(defrule
+(or	(taunt-detected any-ally 4)
+	(up-compare-goal excessWood >= 110))
+(or	(taunt-detected any-ally 4)
+(or	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38))))
+=>
+	(acknowledge-taunt every-ally 4)
+	(tribute-to-player this-any-ally wood 100)
+	(chat-to-player this-any-ally text-here-is-wood)
+	(chat-local-to-self text-tributing-100wood))
+(defrule
+(or	(taunt-detected any-ally 5)
+	(up-compare-goal excessGold >= 100))
+(or	(taunt-detected any-ally 5)
+(or	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38))))
+=>
+	(acknowledge-taunt every-ally 5)
+	(tribute-to-player this-any-ally gold 100)
+	(chat-to-player this-any-ally text-here-is-gold)
+	(chat-local-to-self text-tributing-100gold))
+(defrule
+(or	(taunt-detected any-ally 6)
+	(up-compare-goal excessStone >= 225))
+(or	(taunt-detected any-ally 6)
+(or	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38))))
+=>
+	(acknowledge-taunt every-ally 6)
+	(tribute-to-player this-any-ally stone 100)
+	(chat-to-player this-any-ally text-here-is-stone)
+	(chat-local-to-self text-tributing-100stone))
+(defrule
+	(up-compare-goal excessFood >= 150)
+(nor	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38)))
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally food 100)
+	(chat-to-player this-any-ally text-here-is-food)
+	(chat-local-to-self text-tributing-100food))
+
+(defrule
+	(up-compare-goal excessWood >= 110)
+(nor	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38)))
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally wood 100)
+	(chat-to-player this-any-ally text-here-is-wood)
+	(chat-local-to-self text-tributing-100wood))
+(defrule
+	(up-compare-goal excessGold >= 100)
+(nor	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38)))
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally gold 100)
+	(chat-to-player this-any-ally text-here-is-gold)
+	(chat-local-to-self text-tributing-100gold))
+(defrule
+	(up-compare-goal excessStone >= 225)
+(nor	(taunt-detected any-ally 121)
+(or	(taunt-detected any-ally 123)
+	(taunt-detected any-ally 38)))
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally stone 100)
+	(chat-to-player this-any-ally text-here-is-stone)
+	(chat-local-to-self text-tributing-100stone))
+
+
+
+
+(defrule
+	(taunt-detected any-ally 3)
+=>
+	(chat-to-allies text-sorry-no-food)
+	(acknowledge-taunt every-ally 3))
+(defrule
+	(taunt-detected any-ally 4)
+=>
+	(chat-to-allies text-sorry-no-wood)
+	(acknowledge-taunt every-ally 4))
+(defrule
+	(taunt-detected any-ally 5)
+=>
+	(chat-to-allies text-sorry-no-gold)
+	(acknowledge-taunt every-ally 5))
+(defrule
+	(taunt-detected any-ally 6)
+=>
+	(chat-to-allies text-sorry-no-stone)
+	(acknowledge-taunt every-ally 6))
+
+(defrule
+(or	(and	(goal strategy sling)
+		(and	(building-type-count-total town-center >= 1)
+			(unit-type-count-total villager >= 1)))
+(or	(up-timer-status tribute-timer == timer-running)
+(or	(not	(player-in-game any-ally))
+	(players-building-type-count every-ally market <= 0))))
+=>
+	(up-jump-rule 15))
+(defrule
+(not	(taunt-detected my-player-number 6))
+	(building-type-count-total town-center <= 0)
+	(stone-amount < 100)
+	(unit-type-count-total villager >= 1)
+	(players-building-type-count any-ally town-center >= 1)
+	(up-allied-resource-amount any-ally stone > 0)
+=>
+	(chat-to-allies text-need-stone-town-center)
+	(enable-timer tribute-timer 40)
+	(acknowledge-taunt my-player-number 6)
+	(up-jump-rule 1))
+(defrule
+(not	(taunt-detected my-player-number 6))
+	(up-pending-objects c: town-center == 0)
+	(building-type-count-total town-center < 3); 5
+(or	(building-type-count-total town-center <= 0)
+	(goal underattack yes))
+	(military-population < 12)
+	(players-military-population any-ally >= 25)
+	(unit-type-count-total villager >= 1)
+	(stone-amount < 100)
+=>
+	(chat-to-allies text-need-stone-town-center)
+	(enable-timer tribute-timer 40)
+	(acknowledge-taunt my-player-number 6))
+(defrule
+(not	(taunt-detected my-player-number 4))
+	(building-type-count-total town-center <= 0)
+	(wood-amount < 275)
+	(unit-type-count-total villager >= 1)
+	(players-building-type-count any-ally town-center >= 1)
+	(up-allied-resource-amount any-ally wood > 0)
+=>
+	(chat-to-allies text-need-wood-town-center)
+	(enable-timer tribute-timer 40)
+	(acknowledge-taunt my-player-number 4)
+	(up-jump-rule 1))
+(defrule
+(not	(taunt-detected my-player-number 4))
+	(up-pending-objects c: town-center == 0)
+	(building-type-count-total town-center < 3); 5
+(or	(building-type-count-total town-center <= 0)
+	(goal underattack yes))
+	(military-population < 12)
+	(players-military-population any-ally >= 25)
+	(unit-type-count-total villager >= 1)
+	(wood-amount < 275)
+=>
+	(chat-to-allies text-need-wood-town-center)
+	(enable-timer tribute-timer 40)
+	(acknowledge-taunt my-player-number 4))
+(defrule
+(not	(taunt-detected my-player-number 3))
+	(goal underattack no)
+	(building-type-count town-center >= 1)
+	(unit-type-count-total villager < 40)
+	(players-unit-type-count any-ally villager >= 65)
+	(food-amount < 50)
+	(housing-headroom >= 1)
+	(civilian-population < up-max-civ)
+	(population < max-civ-pop)
+	(up-allied-resource-amount any-ally food > 100)
+=>
+	(chat-to-allies text-need-food-villagers)
+	(enable-timer tribute-timer 50)
+	(acknowledge-taunt my-player-number 3))
+
+(defrule
+(not	(taunt-detected my-player-number 4))
+(or	(wood-amount < 100)
+	(up-compare-goal excessWood <= 0))
+(or	(unit-type-count-total villager >= 1)
+	(building-type-count town-center >= 1))
+	(up-allied-resource-amount any-ally wood > 500)
+=>
+	(chat-to-allies text-need-wood))
+(defrule
+(not	(taunt-detected my-player-number 3))
+(or	(food-amount < 100)
+	(up-compare-goal excessFood <= 0))
+(or	(unit-type-count-total villager >= 1)
+	(building-type-count town-center >= 1))
+	(up-allied-resource-amount any-ally food > 500)
+=>
+	(chat-to-allies text-need-food))
+(defrule
+(not	(taunt-detected my-player-number 5))
+(or	(gold-amount < 100)
+	(up-compare-goal excessGold <= 0))
+(or	(unit-type-count-total villager >= 1)
+	(building-type-count town-center >= 1))
+	(up-allied-resource-amount any-ally gold > 500)
+=>
+	(chat-to-allies text-need-gold))
+(defrule
+(not	(taunt-detected my-player-number 6))
+	(strategic-number sn-current-age >= imperial); dreitc yes
+	(building-available castle)
+	(unit-type-count villager-stone <= 0)
+(or	(stone-amount < castle-stone)
+	(up-compare-goal excessStone <= 0))
+	(building-type-count-total castle <= 0)
+(or	(unit-type-count-total villager >= 1)
+	(building-type-count town-center >= 1))
+	(players-building-type-count any-ally castle >= 1)
+	(up-allied-resource-amount any-ally stone > 0)
+=>
+	(chat-to-allies text-need-stone))
+
+(defrule
+(not	(taunt-detected my-player-number 4))
+	(wood-amount < 200)
+(or	(unit-type-count-total villager >= 1)
+	(building-type-count town-center >= 1))
+	(up-allied-resource-percent any-ally amount-tribute-inefficiency < 25)
+	(up-allied-resource-amount any-ally wood > 2000)
+=>
+	(chat-to-allies text-need-wood))
+(defrule
+(not	(taunt-detected my-player-number 3))
+	(food-amount < 200)
+(or	(unit-type-count-total villager >= 1)
+	(building-type-count town-center >= 1))
+	(up-allied-resource-percent any-ally amount-tribute-inefficiency < 25)
+	(up-allied-resource-amount any-ally food > 2000)
+=>
+	(chat-to-allies text-need-food))
+(defrule
+(not	(taunt-detected my-player-number 5))
+	(gold-amount < 200)
+(or	(unit-type-count-total villager >= 1)
+	(building-type-count town-center >= 1))
+	(up-allied-resource-percent any-ally amount-tribute-inefficiency < 25)
+	(up-allied-resource-amount any-ally gold > 2000)
+=>
+	(chat-to-allies text-need-gold))
+(defrule
+(not	(taunt-detected my-player-number 4))
+	(wood-amount < 100)
+	(unit-type-count-total 178 <= 0); Dead trade cart (empty)
+	(unit-type-count-total 205 <= 0); Dead trade cart (full)
+	(unit-type-count villager <= 0)
+	(building-type-count town-center <= 0)
+	(building-type-count market >= 1)
+	(housing-headroom >= 1)
+	(up-allied-resource-amount any-ally wood > 400)
+	(strategic-number teamsuperiority >= 0); relatively safe for carts?
+=>
+	(chat-to-allies text-need-wood-trade-carts))
+(defrule
+(not	(taunt-detected my-player-number 5))
+	(gold-amount < 50)
+	(unit-type-count-total 178 <= 0); Dead trade cart (empty)
+	(unit-type-count-total 205 <= 0); Dead trade cart (full)
+	(unit-type-count villager <= 0)
+	(building-type-count town-center <= 0)
+	(building-type-count market >= 1)
+	(housing-headroom >= 1)
+	(up-allied-resource-amount any-ally gold > 400)
+	(strategic-number teamsuperiority >= 0); relatively safe for carts?
+=>
+	(chat-to-allies text-need-gold-trade-carts))
+(defrule
+(not	(taunt-detected my-player-number 5))
+	(gold-amount < 100)
+	(unit-type-count villager <= 0)
+	(building-type-count town-center <= 0)
+	(building-type-count monastery >= 1)
+	(housing-headroom >= 1)
+	(up-allied-resource-amount any-ally gold > 400)
+	(strategic-number teamsuperiority >= 0); relatively safe
+=>
+	(chat-to-allies text-need-gold-monk)) ; End jump
+
+
+(defrule
+(or	(taunt-detected my-player-number 3)
+(or	(taunt-detected my-player-number 4)
+(or	(taunt-detected my-player-number 5)
+	(taunt-detected my-player-number 6))))
+	(up-timer-status tribute-timer != timer-running)
+=>
+	(acknowledge-taunt my-player-number 3)
+	(acknowledge-taunt my-player-number 4)
+	(acknowledge-taunt my-player-number 5)
+	(acknowledge-taunt my-player-number 6)
+	(enable-timer tribute-timer 150))
+
+(defrule
+(or	(building-type-count market <= 0)
+	(up-timer-status threesec == timer-running))
+=>
+	(up-jump-rule 8)); 7
+(defrule
+(or	(not	(player-in-game any-ally))
+(or	(strategic-number sn-current-age < imperial)
+(or	(and	(food-amount < 2400)
+		(and	(wood-amount < 2400)
+			(gold-amount < 2400)))
+(or	(goal underattack yes)
+	(up-research-status c: ri-banking < research-complete)))))
+=>
+	(up-jump-rule 7)); 6
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal2 0))
+(defrule
+	(up-compare-goal excessWood >= 2400)
+	(players-population focus-player > 35)
+(or	(players-unit-type-count focus-player villager >= 25)
+	(players-building-type-count focus-player town-center >= 1))
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(up-allied-resource-amount focus-player wood < 1000)
+=>
+	(tribute-to-player focus-player wood 1000)
+	(chat-to-player focus-player text-here-is-wood)
+	(chat-local-to-self text-tributing-1000wood)
+	(set-goal temporary-goal2 1))
+(defrule
+	(up-compare-goal excessFood >= 2400)
+	(players-population focus-player > 35)
+(or	(players-unit-type-count focus-player villager >= 25)
+	(players-building-type-count focus-player town-center >= 1))
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(up-allied-resource-amount focus-player food < 1000)
+=>
+	(tribute-to-player focus-player food 1000)
+	(chat-to-player focus-player text-here-is-food)
+	(chat-local-to-self text-tributing-1000food)
+	(set-goal temporary-goal2 1))
+(defrule
+	(up-compare-goal excessGold >= 2400)
+	(players-population focus-player > 35)
+(or	(players-unit-type-count focus-player villager >= 25)
+	(players-building-type-count focus-player town-center >= 1))
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(up-allied-resource-amount focus-player gold < 1000)
+=>
+	(tribute-to-player focus-player gold 1000)
+	(chat-to-player focus-player text-here-is-gold)
+	(chat-local-to-self text-tributing-1000gold)
+	(set-goal temporary-goal2 1))
+(defrule
+	(up-compare-goal excessStone >= 1260); 260
+	(building-type-count-total castle >= 5)
+	(players-population focus-player > 35)
+(or	(players-unit-type-count focus-player villager >= 25)
+	(players-building-type-count focus-player town-center >= 1))
+	(stance-toward focus-player ally)
+	(player-in-game focus-player)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(up-allied-resource-amount focus-player stone < 100)
+=>
+	(tribute-to-player focus-player stone 100)
+	(chat-to-player focus-player text-here-is-stone)
+	(chat-local-to-self text-tributing-100stone)
+	(set-goal temporary-goal2 1))
+(defrule
+	(up-compare-goal temporary-goal2 != 1)
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -5)); 4
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)); end jump
+
+
+(defrule
+	(game-time > 600)
+	(unit-type-count villager <= 0)
+	(building-type-count town-center <= 0)
+	(building-type-count market >= 1)
+	(up-compare-goal excessGold >= 500)
+(or	(housing-headroom <= 0)
+(or	(gold-amount >= 1200)
+	(up-compare-goal tradeunits >= 15)))
+	(players-building-type-count any-ally town-center >= 1)
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally gold 400)
+	(chat-to-player this-any-ally text-here-is-gold)
+	(chat-local-to-self text-tributing-400gold))
+(defrule
+	(game-time > 600)
+	(unit-type-count villager <= 0)
+	(building-type-count town-center <= 0)
+	(building-type-count market >= 1)
+(or	(up-compare-goal excessFood >= 1)
+	(up-compare-goal excessStone >= 1))
+	(players-building-type-count any-ally town-center >= 1)
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally food 99999)
+	(tribute-to-player this-any-ally stone 99999)
+	(chat-to-player this-any-ally text-here-is-food)
+	(chat-to-player this-any-ally text-here-is-stone)
+	(chat-local-to-self text-tributing-1000food)
+	(chat-local-to-self text-tributing-1000stone)
+	(disable-self))
+
+
+(defrule ; large amounts of res required so that it doesn't chat every 60 seconds
+(or	(players-tribute-memory any-human-ally wood >= 4001); 5001
+(or	(players-tribute-memory any-human-ally food >= 4001); 5001
+(or	(players-tribute-memory any-human-ally gold >= 4001); 5001
+	(players-tribute-memory any-human-ally stone >= 1301)))); 1951
+=>
+	(chat-to-allies text-thank-you-tributes) ; this-any-human-ally
+	(clear-tribute-memory this-any-human-ally wood)
+	(clear-tribute-memory this-any-human-ally food)
+	(clear-tribute-memory this-any-human-ally gold)
+	(clear-tribute-memory this-any-human-ally stone))
+
+
+
+
+
+#load-if-not-defined TEAMS-LOCKED
+#load-if-not-defined UP-2-PLAYER-GAME
+(defrule
+	(players-stance any-computer-ally neutral)
+=>
+	(chat-to-player this-any-computer-ally text-regrettable-decision)
+	(set-stance this-any-computer-ally neutral))
+(defrule
+	(players-stance any-computer-ally enemy)
+=>
+	(chat-to-player this-any-computer-ally text-regrettable-decision)
+	(set-stance this-any-computer-ally enemy))
+(defrule
+	(players-stance any-computer-neutral enemy)
+=>
+	(chat-to-player this-any-computer-neutral text-regrettable-decision)
+	(set-stance this-any-computer-neutral enemy))
+
+(defrule
+(or	(players-stance any-ally neutral)
+	(players-stance any-ally enemy))
+	(goal stanceg no)
+=>
+	(chat-to-player this-any-ally text-allied-betrayal)
+	(chat-to-player this-any-ally text-change-your-mind)
+	(set-stance this-any-ally neutral)
+	(enable-timer stance 20)
+	(set-goal stanceg yes))
+
+(defrule
+	(players-stance any-human-neutral ally)
+	(goal request no)
+	(goal stanceg no)
+=>
+	(chat-to-player this-any-human-neutral text-tribute-800-gold)
+	(set-goal request yes))
+(defrule
+	(players-stance any-human-enemy ally)
+	(goal request no)
+	(goal stanceg no)
+=>
+	(chat-to-player this-any-human-enemy text-tribute-1000-gold)
+	(set-goal request yes))
+
+(defrule
+	(players-tribute-memory any-human-neutral gold >= 800)
+	(goal request yes)
+=>
+	(chat-to-player this-any-human-neutral text-welcome-ally)
+	(set-stance this-any-human-neutral ally)
+	(clear-tribute-memory this-any-human-neutral gold)
+	(set-goal request no))
+(defrule
+	(players-tribute-memory any-human-enemy gold >= 1000)
+	(goal request yes)
+=>
+	(chat-to-player this-any-human-enemy text-welcome-ally)
+	(set-stance this-any-human-enemy ally)
+	(clear-tribute-memory this-any-human-enemy gold)
+	(set-goal request no))
+
+(defrule
+	(timer-triggered stance)
+	(goal stanceg yes)
+	(players-stance any-neutral ally)
+=>
+	(chat-to-player this-any-neutral text-wise-decision)
+	(set-stance this-any-neutral ally)
+	(disable-timer stance)
+	(set-goal stanceg no))
+
+(defrule
+	(timer-triggered stance)
+	(goal stanceg yes)
+(or	(players-stance any-neutral neutral)
+	(players-stance any-neutral enemy))
+=>
+	(chat-to-player this-any-neutral text-regrettable-decision)
+	(set-stance this-any-neutral enemy)
+	(disable-timer stance)
+	(set-goal stanceg no))
+#end-if
+#end-if
+
+#end-if
+;===================================================================
+; Chats
+;===================================================================
+#load-if-defined UP-HUMAN-IN-GAME
+(defrule
+;	(up-timer-status wrongchat == timer-disabled)
+	(up-timer-status embassy == timer-running)
+=>
+	(up-jump-rule 31))
+
+(defrule
+	(players-current-age-time target-player < 10)
+	(players-current-age-time target-player > 0); for more realism?
+	(players-current-age target-player >= imperial-age)
+	(game-time > 60)
+	(up-compare-goal strategy != sling)
+	(current-age <= feudal-age)
+=>
+	(chat-to-all text-ohh); "Ohh... :'"
+	(disable-self))
+(defrule
+	(game-time < 600)
+(or	(unit-type-count 449 >= 1)
+	(unit-type-count 754 >= 1))
+	(current-age <= dark-age)
+	(military-population <= 0)
+	(players-military-population every-enemy == 1)
+	(players-current-age every-enemy <= dark-age)
+=>
+	(chat-to-all text-that-was-mean); "That was mean... :'"
+	(disable-self))
+(defrule
+	(game-time < 600)
+(not	(death-match-game))
+	(goal defend yes)
+	(players-military-population any-enemy >= 2)
+	(military-population <= 1)
+	(players-current-age every-enemy <= dark-age)
+	(current-age <= dark-age)
+=>
+	(chat-to-all text-dot); "..."
+	(disable-self))
+(defrule
+	(game-time < 600)
+(not	(death-match-game))
+;	(goal defend yes)
+	(players-military-population every-enemy == 1)
+	(military-population <= 1)
+(or	(unit-type-count-total 217 >= 1)
+	(unit-type-count-total 227 >= 1))
+	(players-current-age every-enemy <= dark-age)
+	(current-age <= dark-age)
+=>
+	(chat-to-all text-im-so-bad); "I'm so bad at this game... ;_;"
+	(disable-self))
+(defrule; 5
+	(game-time >= 5555); 4444
+	(strategic-number sn-current-age >= imperial)
+	(strategic-number teamsuperiority <= 0); 1
+	(strategic-number sn-military-superiority <= 0); 1
+	(strategic-number teamsuperiority >= 0); -1
+	(strategic-number sn-military-superiority >= 0); -1
+	(population > up-max-civ)
+=>
+	(chat-to-all text-what-a-game); "Great game!"
+	(disable-self))
+(defrule
+	(game-time >= 1470); 1111
+	(player-in-game any-human-ally)
+	(strategic-number sn-current-age < imperial)
+	(strategic-number sn-military-superiority <= -1)
+	(strategic-number target-civilian-superiority <= -12); -6
+	(strategic-number teamsuperiority >= 1)
+(or	(civilian-population >= 24)
+	(civilian-population >= up-max-civ))
+	(population < max-civ-pop); del-civ-pop
+	(up-compare-goal threat-time > 24000)
+	(up-compare-goal strategy != sling)
+=>
+	(chat-to-allies text-sorry-team); "Sorry, i haven't been doing well so far... :'"
+	(chat-to-allies text-ill-do-better); "I'll do my best to be useful asap!"
+	(disable-self))
+(defrule
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == Barbarian)
+	(up-compare-goal gl-random-number <= 13)
+=>
+	(chat-to-all text-hey-barbie); "Hey Barbie, it's awesome to have you in my team!"
+	(chat-to-all text-hey-barbie-2); "Let's win this together. <3"
+	(disable-self))
+(defrule
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == Juggernaut)
+	(taunt-detected any-computer-ally 125)
+	(up-compare-goal gl-random-number >= 14)
+	(up-compare-goal gl-random-number <= 25)
+=>
+	(chat-to-all text-hey-jugger); "Hey Jugger, with you in my team i'm confident that we can win!"
+	(disable-self))
+(defrule
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == Promi)
+	(up-compare-goal gl-random-number >= 26)
+	(up-compare-goal gl-random-number <= 38)
+=>
+	(chat-to-all text-hey-promi); "Hey fellow Promi, i'm really happy to have you in my team. <3"
+	(disable-self))
+(defrule; 10
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == Horde)
+	(up-compare-goal gl-random-number >= 39)
+	(up-compare-goal gl-random-number <= 50)
+=>
+	(chat-to-all text-hey-horde); "Hello Horde, it's great to have you on my side."
+	(chat-to-all text-hey-horde-2); "Let's defeat our enemies together!"
+	(disable-self))
+(defrule
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == Unknown)
+	(up-compare-goal gl-random-number >= 51)
+	(up-compare-goal gl-random-number <= 63)
+=>
+	(chat-to-all text-hey-unknown); "Hey Unknown, i don't know what you will do but i hope it works!"
+	(chat-to-all text-hey-horde-2); "Let's defeat our enemies together!"
+	(disable-self))
+(defrule
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == BruteForce)
+	(up-compare-goal gl-random-number >= 64)
+	(up-compare-goal gl-random-number <= 75)
+=>
+	(chat-to-all text-hey-brute); "Bruty! I'm happy to be allied with you! :)"
+	(disable-self))
+(defrule
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == Illuminati)
+	(up-compare-goal gl-random-number >= 76)
+	(up-compare-goal gl-random-number <= 88)
+=>
+	(chat-to-all text-hey-illuminati); "Confirmed."
+	(disable-self))
+(defrule
+	(game-time >= 19)
+	(up-allied-goal any-computer-ally identity == TRiBaL)
+	(up-compare-goal gl-random-number >= 89)
+	(up-compare-goal gl-random-number <= 100)
+=>
+	(chat-to-all text-hey-TRiBaL); "TRiBaL, let's show them what real warriors look like!"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 6999);
+	(up-compare-goal gl-random-number <= 70)
+(or	(player-number 1)
+	(not	(taunt-detected any-human 200)))
+	(game-time >= 86)
+=>
+	(up-change-name "scripter16")
+	(up-jump-rule 1);
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 6999);
+	(up-compare-goal gl-random-number <= 70)
+(or	(player-number 1)
+	(not	(taunt-detected any-human 200)))
+	(game-time >= 88)
+=>
+	(chat-to-all text-kitties); "Kitties are sooo cuuute!!"
+	(up-change-name "Promi")
+	(disable-self))
+(defrule; 15
+	(up-compare-goal gl-random-number >= 71)
+	(up-compare-goal gl-random-number <= 72)
+	(game-time > 600)
+(or	(goal defend yes)
+	(goal underattack yes))
+	(strategic-number sn-military-superiority <= -1)
+	(strategic-number target-civilian-superiority <= -4)
+	(population < up-max-civ)
+(or	(not	(player-in-game any-computer-enemy))
+	(strategic-number teamsuperiority <= -1))
+	(up-compare-goal strategy != sling)
+=>
+	(chat-to-all text-youre-good); "You're strong!"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 73)
+	(up-compare-goal gl-random-number <= 74)
+	(strategic-number sn-military-superiority <= -3)
+	(building-type-count town-center >= 1)
+	(goal underattack yes)
+=>
+	(chat-to-all text-turn-this-on); "how do you turn this on"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 75)
+	(up-compare-goal gl-random-number <= 76)
+	(goal attacking yes)
+	(game-time > 420)
+(or	(unit-type-count archery-class >= 50)
+	(unit-type-count cavalry-archer-class >= 50))
+=>
+	(chat-to-all text-free-arrows); "I'm giving away free arrows today, meet my archers to collect them!"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 77)
+	(up-compare-goal gl-random-number <= 78)
+(or	(goal patrolhelp yes)
+(or	(taunt-detected any-ally 222)
+(or	(up-timer-status unit-control-flare-timer2 == timer-running)
+	(up-allied-goal any-computer-ally underattack == 1))))
+	(strategic-number sn-military-superiority >= 0)
+	(up-compare-goal threat-time > 25000)
+	(strategic-number teamsuperiority <= -1)
+=>
+	(chat-to-all text-hey-look-cookies); "Hey look... I'll give you some of my fav cookies"
+	(chat-to-all text-but-leave-friend-alone); "please just don't attack my friend... or me"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 79)
+	(up-compare-goal gl-random-number <= 80)
+	(game-time > 468)
+=>
+	(chat-to-all text-binary-heart); "00111100 00110011" <3
+	(disable-self))
+(defrule; 20
+	(up-compare-goal gl-random-number >= 81)
+	(up-compare-goal gl-random-number <= 82)
+	(strategic-number sn-military-superiority <= -1)
+	(strategic-number teamsuperiority <= 0)
+	(goal underattack yes)
+=>
+	(chat-to-all text-cant-we-talk); "Can't we talk about this? :<"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 83)
+	(up-compare-goal gl-random-number <= 84)
+	(game-time >= 333)
+=>
+	(chat-to-all text-thanks-for-playing); "Thanks for playing with me!"
+	(chat-to-all text-nice-to-play-with-hoomans); "It's always nice to play with hoomans. <3"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 85)
+	(up-compare-goal gl-random-number <= 86)
+	(game-time < 2400)
+	(goal underattack yes)
+	(strategic-number sn-military-superiority <= -1)
+	(strategic-number teamsuperiority >= -2)
+	(population < max-civ-pop)
+=>
+	(chat-to-all text-have-to-defend); "I have to defend this..."
+	(chat-to-all text-GLaDOS); "Else i'll get scolded by mother GLaDOS again... :'"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 87)
+	(up-compare-goal gl-random-number <= 88)
+	(players-current-age every-enemy >= castle-age)
+	(current-age <= feudal-age)
+	(strategic-number sn-military-superiority <= -1)
+	(strategic-number teamsuperiority <= 0)
+	(up-compare-goal strategy != sling)
+=>
+	(chat-to-all text-not-my-best-game); "Not my best game... :'"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 89)
+	(up-compare-goal gl-random-number <= 90)
+	(goal attacking yes)
+	(players-military-population target-player <= 17)
+	(military-population >= 34)
+=>
+	(chat-to-all text-actually-doing-well); "I'm actually doing well so far!"
+	(chat-to-all text-keep-concentrating-Promi); "Keep concentrating Promi, you can do it!"
+	(disable-self))
+(defrule; 25
+	(up-compare-goal gl-random-number >= 91)
+	(up-compare-goal gl-random-number <= 92)
+	(goal underattack yes)
+(or	(goal Multiplayer no)
+	(not	(player-in-game every-ally)))
+	(population < up-max-civ)
+	(players-population any-enemy > max-civ-pop)
+=>
+	(chat-to-all-using-range 22301 21); 22300 22
+	(chat-to-all text-save-and-exit); "Please save and exit!"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 93)
+	(up-compare-goal gl-random-number <= 94)
+	(game-time > 660)
+	(food-amount < 50)
+=>
+	(chat-to-all text-cheese-steak); "cheese steak jimmy's"
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 95)
+	(up-compare-goal gl-random-number <= 96)
+	(up-compare-goal strategy-type == feudal-war)
+	(current-age == feudal-age)
+	(current-age-time >= 35)
+=>
+	(chat-to-all text-scorpion-bluff); "They certainly won't expect my scorpion rush! >:D"
+	(chat-to-allies text-krush-bluff-3); "Or am i just bluffing..? :p"
+	(enable-timer wrongchat 5)
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 97)
+	(up-compare-goal gl-random-number <= 98)
+	(strategic-number sn-current-age == dark)
+;	(up-compare-goal strategy != drush)
+	(up-compare-goal threat-time > 25000)
+	(current-age-time >= 510)
+	(player-in-game any-ally)
+	(goal underattack no)
+=>
+	(chat-to-all text-drush-bluff); "Alright, now we take our militias and attack!"
+	(enable-timer wrongchat 5)
+	(disable-self))
+(defrule
+	(up-compare-goal gl-random-number >= 99)
+;	(up-compare-goal gl-random-number <= 100)
+;	(up-compare-goal strategy != krush)
+	(unit-type-count-total knight-line <= 1)
+	(strategic-number sn-current-age >= castlea)
+	(current-age-time >= 90)
+	(goal attacking no)
+	(game-time < 1500)
+	(goal underattack no)
+(nor	(civ-selected aztec)
+(or	(civ-selected incan)
+	(civ-selected mayan)))
+=>
+	(chat-to-all text-krush-bluff); "The best of my knights are already on their way to your base."
+	(chat-to-all text-krush-bluff-2); "Be wise and resign now to end this peacefully!"
+	(chat-to-allies text-krush-bluff-3); "Or am i just bluffing..? :p"
+	(disable-self)); end jump
+(defrule
+	(timer-triggered wrongchat)
+=>
+	(disable-timer wrongchat)
+	(chat-to-all text-wrong-chat)); "Oops, i accidentally wrote that to everyone..."
+#end-if; hooman ingame

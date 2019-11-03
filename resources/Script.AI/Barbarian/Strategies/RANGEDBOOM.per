@@ -1,0 +1,19 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy regicide-strategy)
+	(disable-self)
+)
+
+(defrule
+	(goal POSITION POCKET)
+	(goal gl-rush-suitability-on-map VERY-LOW)
+	(game-time < 10)
+=>
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy archery-boom)
+	(disable-self)
+)

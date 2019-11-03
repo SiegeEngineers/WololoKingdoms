@@ -1,0 +1,155 @@
+(defconst super-traitor-chat-id 2310); Your petty offerings will not sway my determination to crush your empire!
+(defconst traitor-chat-id 22100); Your lands and your gold shall soon be mine!
+(defconst betrayed-chat-id 22102); Beware the sword of justice!
+(defconst wonder-game-time 4100)
+(defconst camp-raid-time-variance 511)
+(defconst nomad-tc-up-chat "I'm here")
+(defconst gg-chat "gg, well played")
+
+#load-if-defined UP-GAME-WK
+(defconst sara-chat "No longer do I have a navy...")
+#else
+(defconst sara-chat "Prepare to face my navy!")
+#end-if
+
+#load-if-not-defined UP-SCENARIO-GAME
+
+(defrule
+	(not	(map-type black-forest))
+	(up-compare-goal TSA >= 1)
+	(starting-age <= imperial-age)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(research-completed my-unique-unit-upgrade)
+	(research-completed my-unique-research)
+	(civ-selected saracen)
+=>
+	(chat-to-all sara-chat)
+	(disable-self)
+)
+
+#load-if-defined VIKING-CIV
+#load-if-defined UP-MICHI-STYLE
+(defrule
+	(game-time > 34)
+=>
+	(chat-to-all "michi :S")
+	(disable-self)
+)
+#end-if
+#end-if
+
+#load-if-not-defined WONDER-RACE
+#load-if-not-defined KING-OF-THE-HILL
+#load-if-not-defined TURBO-RANDOM-MAP
+#load-if-defined DARK-AGE-START
+#load-if-defined DIFFICULTY-HARD
+(defrule
+	(game-time < 1500)
+	(goal MILITARY 0)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(players-current-age target-player == imperial-age)
+	(players-current-age-time target-player < 10)
+=>
+	(chat-to-all "hax")
+	(disable-self)
+)
+
+(defrule
+	(goal MILITARY 0)
+	(soldier-count < 10)
+	(current-age-time > 360)
+	(current-age == imperial-age)
+	(unit-type-count-total villager < 40)
+=>
+	(chat-to-all "24 24")
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(game-time < 700)
+	(up-compare-goal gl-DRUSH != YES)
+	(up-compare-const gv-maximum-age >= feudal-age)
+	(goal gl-rush-suitability-on-map GOOD)
+	(goal threat-source scout-cavalry-class)
+	(goal threat-source infantry-class)
+	(goal threat-target villager-class)
+	(up-compare-goal threat-time < 7000)
+	(players-military-population focus-player > 3)
+	(players-current-age focus-player == dark-age)
+=>
+	(chat-to-all "Git.")
+	(disable-self)
+)
+
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(up-compare-goal victory-time > 300)
+	(up-compare-goal victory-time < 900)
+	(not	(hold-relics))
+	(players-building-type-count every-ally wonder == 0)
+	(players-building-type-count my-player-number wonder == 0)
+	(or	(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+	(goal MILITARY 1)
+	(population > almost-full-pop)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(unit-type-count trebuchet-set > 4)
+=>
+	(chat-to-all "You don't leave me with many options.")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 6)
+=>
+	(chat-to-all "gg")
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(game-time > 37)
+	(up-compare-const gv-x-vs-one-challenge == 1)
+	(player-in-game any-human-enemy)
+=>
+	(up-store-player-name this-any-human-enemy)
+	(up-chat-data-to-all "Is it the real %s?" c: 7031232)
+	(disable-self)
+)
+
+(defrule
+	(population-cap >= 200)
+	(goal SLING 0)
+	(players-population focus-player >= almost-full-pop)
+	(population > 80)
+	(population < 120)
+	(town-under-attack)
+	(game-time > 3000)
+=>
+	(chat-to-all "hmm")
+	(disable-self)
+)
+
+(defrule
+	(strategic-number sn-nomad-style-start == 0)
+	(up-compare-goal threat-time > 300000)
+	(player-valid 4)
+	(game-time < 2400)
+	(up-compare-goal TSA >= 1)
+	(goal gl-strategy knight-boom)
+	(or	(research-completed ri-paladin)
+		(research-completed ri-imperial-camel))
+	(game-time > 150)
+	(difficulty <= hard)
+	(up-compare-const gv-x-vs-one-challenge == 1)
+=>
+	(chat-to-all "Now, bring it!")
+	(disable-self)
+)
+#end-if

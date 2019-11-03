@@ -1,0 +1,20 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy regicide-strategy)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(goal gl-current-age gv-dark)
+	(up-compare-goal gl-rush-suitability-on-map <= LOW)
+=>
+	(set-goal gl-strategy scorpion-boom)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+

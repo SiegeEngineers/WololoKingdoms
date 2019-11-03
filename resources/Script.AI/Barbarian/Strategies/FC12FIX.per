@@ -1,0 +1,18 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy xbow-boom)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(up-compare-goal gl-rush-suitability-on-map != GOOD)
+=>
+	(set-goal gl-strategy regicide-strategy)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)

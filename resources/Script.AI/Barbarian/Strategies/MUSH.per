@@ -1,0 +1,47 @@
+#load-if-defined TINY-MAP
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy flush)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-feudal-infantry FLUSH-DEFENCE-MAA)
+	(set-goal gl-feudal-archery FLUSH-DEFENCE-ARCHER)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(building-type-count town-center == 1)
+	(or	(and	(up-compare-const mush-strength >= mush-resistance)
+			(up-compare-const mush-resistance < 100))
+		(up-compare-goal gl-rush-suitability-on-map < GOOD))
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+=>
+	(set-goal gl-strategy fi-monk-rush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI2)
+	(disable-self)
+)
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy flush)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-feudal-infantry FLUSH-DEFENCE-MAA)
+	(set-goal gl-feudal-archery FLUSH-DEFENCE-ARCHER)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(building-type-count town-center == 1)
+=>
+	(set-goal gl-strategy fi-monk-rush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI2)
+	(disable-self)
+)
+#end-if

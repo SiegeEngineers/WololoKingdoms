@@ -1,0 +1,949 @@
+(defrule
+	(goal escrowing no)
+(or	(up-compare-goal cost-wood >= 1)
+(or	(up-compare-goal cost-food >= 1)
+(or	(up-compare-goal cost-gold >= 1)
+	(up-compare-goal cost-stone >= 1))))
+=>
+;	;(chat-to-player my-player-number "Debugging escrow.t")
+	(set-goal cost-wood 0)
+	(set-goal cost-food 0)
+	(set-goal cost-gold 0)
+	(set-goal cost-stone 0)
+	(set-goal temporary-goal 48353))
+(defrule
+	(goal temporary-goal 48353)
+=>
+	(up-reset-cost-data cost-food)
+	(set-escrow-percentage wood 0)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(set-escrow-percentage stone 0)
+	(up-release-escrow)
+	(set-goal escrow-flag 0)
+	(set-goal escrow-flag2 0))
+;================================================================
+; Stone excess
+;================================================================
+(defrule
+	(building-type-count-total castle >= 3)
+(or	(goal uugoal no)
+	(building-type-count-total castle >= 5))
+	(building-type-count-total town-center >= 3)
+	(strategic-number sn-military-superiority <= -2)
+	(population < max-civ-pop)
+	(military-population < 22)
+	(goal underattack yes)
+	(gold-amount < 100)
+	(commodity-selling-price stone >= 200)
+	(can-sell-commodity stone)
+=>
+	;(chat-local-to-self text-selling-stone)
+	(sell-commodity stone))
+;================================================================
+(defrule
+	(up-compare-goal excessStone >= 2600)
+(or	(goal uugoal no)
+	(up-compare-goal excessStone >= 3900))
+	(gold-amount < 1000)
+	(commodity-selling-price stone >= 125); 67
+	(can-sell-commodity stone)
+=>
+	;(chat-local-to-self text-selling-stone)
+	(sell-commodity stone))
+;================================================================
+; Buying stone
+;================================================================
+#load-if-not-defined WONDER-RACE
+(defrule
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
+(or	(up-compare-goal excessGold >= 400)
+(or	(unit-type-count villager-wood <= 0)
+	(building-type-count-total lumber-camp <= 0)))
+	(wood-amount < 275)
+;	(stone-amount >= 100)
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood-town-center)
+	(buy-commodity wood))
+;================================================================
+(defrule
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
+(or	(up-compare-goal excessGold >= 400)
+(or	(unit-type-count villager-stone <= 0)
+	(building-type-count-total mining-camp <= 0)))
+	(wood-amount >= 275)
+	(stone-amount < 100)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-town-center)
+	(buy-commodity stone))
+;================================================================
+(defrule
+(or	(up-research-status c: ri-elite-eagle-warrior < research-pending)
+	(gold-amount < 1200))
+	(goal strategy stonewall)
+=>
+	(up-jump-rule 9))
+
+(defrule; okay in max age ends too
+(or	(current-age-time >= 60); 180
+(or	(goal uugoal yes)
+	(unit-type-count villager-stone <= 0))); (strategic-number sn-military-superiority >= 2); 1
+;	(goal underattack no)
+;	(goal escrowing no)
+	(building-type-count-total castle == 0)
+	(stone-amount < castle-stone)
+	(up-compare-goal excessGold >= 300)
+	(strategic-number sn-current-age >= imperial)
+(or	(current-age >= imperial-age)
+	(up-compare-goal excessGold >= 1100))
+;	(building-available castle)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-castle)
+	(buy-commodity stone))
+(defrule
+	(goal uugoal yes)
+	(goal underattack no)
+	(goal escrowing no)
+	(building-type-count-total castle < 3)
+(or	(building-type-count-total castle < 2)
+	(up-compare-goal excessGold >= 1200))
+	(stone-amount < castle-stone)
+	(up-compare-goal excessGold >= 900); 300 in the rule above
+	(strategic-number sn-current-age >= imperial)
+	(building-available castle)
+	(commodity-buying-price stone < 600)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-castle)
+	(buy-commodity stone))
+;================================================================
+(defrule
+(or	(not	(building-available town-center))
+(or	(and	(building-type-count-total town-center >= 3)
+		(and	(up-research-status c: ri-bow-saw == research-available)
+			(up-research-status c: ri-heavy-plow == research-available)))
+	(stone-amount >= 100)))
+=>
+	(up-jump-rule 4))
+(defrule
+(or	(building-type-count-total town-center >= 5)
+(or	(and	(building-type-count-total town-center >= 4)
+		(up-compare-goal milunits != no))
+(or	(population >= max-civ-pop)
+(or	(civilian-population >= up-max-civ)
+(or	(goal underattack yes)
+	(unit-type-count villager-stone >= 1))))))
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(up-compare-goal excessGold >= 1000)
+	(strategic-number sn-military-superiority >= 1))
+(or	(up-compare-goal excessGold >= 1000)
+(or	(up-compare-flag escrow-flag2 == 524288); town-center
+	(goal dreitc no)))
+	(building-type-count-total town-center < 3)
+	(wood-amount >= tc-wood); 315
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-town-center)
+	(buy-commodity stone)
+	(up-jump-rule 2))
+(defrule
+(or	(unit-type-count villager-wood >= 27)
+(or	(wood-amount >= tc-wood)
+(or	(up-compare-flag escrow-flag2 == 524288); town-center
+	(building-type-count-total town-center < 3))))
+(or	(up-compare-flag escrow-flag2 == 524288); town-center
+(or	(up-compare-goal milunits <= yes);(or	(goal milunits yes);(or	(goal milunits no)
+	(goal dreitc no)));)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-town-center)
+	(buy-commodity stone)
+	(up-jump-rule 1))
+(defrule
+(or	(up-compare-goal strategy != stonewall)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending));	(up-research-status c: my-unique-research >= research-pending))
+(or	(goal milunits no)
+	(and	(building-type-count-total farm g:>= maxfarms)
+		(up-research-status c: imperial-age >= research-available))); pending?
+(or	(unit-type-count villager-wood >= 27)
+(or	(wood-amount >= tc-wood)
+	(up-research-status c: ri-heavy-plow >= research-pending)))
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-town-center)
+	(buy-commodity stone)); end mini jump
+;================================================================
+(defrule
+	(goal underattack no)
+	(strategic-number sn-military-superiority >= 0)
+	(building-type-count-total castle < 5)
+	(stone-amount < castle-stone)
+(or	(up-compare-goal excessGold >= 8000)
+	(and	(up-compare-goal tradeunits >= 15)
+		(up-compare-goal excessGold >= 5000)))
+;	(building-available castle)
+	(commodity-buying-price stone < 666)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-castle)
+	(buy-commodity stone))
+;================================================================
+(defrule
+	(goal underattack no)
+;	(strategic-number sn-military-superiority >= 0)
+	(building-type-count-total castle < 10)
+	(stone-amount < castle-stone)
+(or	(up-compare-goal excessGold >= 10200)
+	(and	(or	(up-compare-goal tradeunits >= 20)
+			(up-compare-goal relic-count >= 3))
+		(up-compare-goal excessGold >= 5500)))
+;	(building-available castle)
+	(commodity-buying-price stone < 666)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-castle)
+	(buy-commodity stone))
+;================================================================ ; end jump
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(commodity-buying-price stone >= 300)
+	(unit-type-count villager-stone >= 3)
+=>
+	(up-jump-rule 2))
+;================================================================
+(defrule
+	(goal wwonder yes)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total wonder < 1)
+	(players-building-type-count any-ally wonder == 0)
+	(wood-amount >= 1100); 1000
+	(gold-amount >= 1300)
+	(stone-amount < 1000)
+	(goal underattack no)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-wonder)
+	(buy-commodity stone))
+;================================================================
+(defrule
+	(goal nomad no)
+	(goal landnomad no)
+(or	(building-type-count-total wonder >= 1)
+	(and	(hold-relics)
+		(up-compare-goal relic-count >= 5)))
+	(wall-completed-percentage 2 < 100)
+	(up-compare-goal excessGold >= 200)
+	(stone-amount < 100)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-walls)
+	(buy-commodity stone))
+#end-if
+;================================================================
+(defrule
+	(goal escrowing no)
+	(stone-amount < 125)
+	(up-compare-goal excessGold >= 600)
+(or	(up-compare-goal relic-count >= 3)
+	(up-compare-goal tradeunits >= 15))
+	(commodity-buying-price stone < 150)
+	(building-available bombard-tower)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone)
+	(buy-commodity stone))
+;================================================================
+(defrule
+	(goal escrowing no)
+	(stone-amount < castle-stone)
+	(up-compare-goal excessGold >= 600)
+(or	(and	(up-compare-goal tradeunits >= 10)
+		(commodity-buying-price stone < 30))
+(or	(up-compare-goal tradeunits >= 30)
+	(up-compare-goal relic-count >= 3)))
+	(commodity-buying-price stone < 60)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone)
+	(buy-commodity stone))
+;================================================================
+(defrule
+	(up-compare-goal total-stone-amount g:< cost-stone)
+	(unit-type-count villager-stone <= 0)
+	(up-compare-goal excessStone <= 0)
+	(up-compare-goal excessGold >= 25)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone)
+	(buy-commodity stone))
+;================================================================
+; Food excess
+;================================================================
+(defrule
+	(up-compare-goal excessFood >= 700)
+	(gold-amount < 100)
+(or	(commodity-selling-price food > 35)
+	(up-compare-goal excessFood >= 900))
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food)
+	(sell-commodity food))
+;================================================================
+(defrule
+	(up-compare-goal excessFood >= 800)
+(or	(commodity-selling-price food > 150)
+	(up-compare-goal excessFood >= 1200))
+	(gold-amount < 200)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food)
+	(sell-commodity food))
+;================================================================
+(defrule
+	(up-compare-goal excessFood >= 1500)
+	(gold-amount < 300)
+(or	(cc-players-unit-type-count 0 gold-mine < 1)
+	(commodity-selling-price food > 35))
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food)
+	(sell-commodity food))
+;================================================================
+(defrule
+(or	(and	(up-compare-goal excessFood >= 4300)
+		(gold-amount < 600))
+	(and	(up-compare-goal excessFood >= 11000)
+		(game-time < 1800))); test
+(or	(cc-players-unit-type-count 0 gold-mine < 1)
+	(commodity-selling-price food > 45))
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food)
+	(sell-commodity food))
+;================================================================
+(defrule
+	(up-compare-goal excessFood >= 400)
+	(gold-amount < 200)
+	(wood-amount < 100)
+	(cc-players-unit-type-count 0 tree-class < 30)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food)
+	(sell-commodity food))
+;================================================================
+(defrule
+	(up-compare-goal excessFood >= 100)
+	(gold-amount < 200)
+	(wood-amount < 60)
+(or	(cc-players-unit-type-count 0 tree-class < 20)
+	(dropsite-min-distance wood > 25))
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food)
+	(sell-commodity food))
+;================================================================
+(defrule
+	(gold-amount g:< cost-gold)
+	(unit-type-count villager-gold <= 0)
+	(up-compare-goal excessGold <= 0)
+	(up-compare-goal excessFood >= 300); 17
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food)
+	(sell-commodity food))
+;================================================================
+; Buying food
+;================================================================
+(defrule
+	(up-compare-goal excessGold >= 1000)
+(or	(food-amount < 100)
+	(up-compare-goal excessGold >= 1800))
+(or	(food-amount < 200)
+	(up-compare-goal excessGold >= 2500))
+	(food-amount < 300)
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food)
+	(buy-commodity food))
+;================================================================
+(defrule
+	(goal underattack no)
+	(food-amount < 4100)
+(or	(up-compare-goal excessGold >= 10000)
+	(and	(or	(up-compare-goal tradeunits >= 15)
+			(up-compare-goal relic-count >= 3))
+		(up-compare-goal excessGold >= 5200)))
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food)
+	(buy-commodity food))
+;================================================================
+(defrule
+	(food-amount < 200)
+	(up-compare-goal excessGold >= 1200)
+(or	(up-compare-goal relic-count >= 3)
+(or	(players-building-type-count any-ally market >= 1)
+	(players-building-type-count any-ally dock >= 1)))
+(or	(up-compare-goal relic-count >= 3)
+	(up-compare-goal tradeunits >= 15))
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food)
+	(buy-commodity food))
+;================================================================
+(defrule
+	(goal escrowing no)
+	(food-amount < 200)
+	(up-compare-goal excessGold >= 600)
+(or	(and	(up-compare-goal tradeunits >= 10)
+		(commodity-buying-price food < 30))
+(or	(up-compare-goal tradeunits >= 30)
+	(up-compare-goal relic-count >= 3)))
+	(commodity-buying-price food < 60)
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food)
+	(buy-commodity food))
+;================================================================
+(defrule
+	(up-compare-goal total-food-amount g:< cost-food)
+	(unit-type-count villager-food <= 0)
+	(up-compare-goal excessFood <= 0)
+	(up-compare-goal excessGold >= 25)
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food)
+	(buy-commodity food))
+;================================================================
+; Wood excess
+;================================================================
+(defrule
+(or	(cc-players-unit-type-count 0 tree-class > 150)
+	(dropsite-min-distance wood < 5))
+(or	(cc-players-unit-type-count 0 tree-class > 300)
+	(dropsite-min-distance wood < 10))
+	(up-compare-goal excessWood >= 700)
+	(gold-amount < 100)
+(or	(commodity-selling-price wood > 35)
+	(up-compare-goal excessWood >= 900))
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood)
+	(sell-commodity wood))
+;================================================================
+(defrule
+(or	(cc-players-unit-type-count 0 tree-class > 150)
+	(dropsite-min-distance wood < 5))
+(or	(cc-players-unit-type-count 0 tree-class > 300)
+	(dropsite-min-distance wood < 10))
+(or	(up-compare-goal excessWood >= 1100)
+	(commodity-selling-price wood > 150))
+	(up-compare-goal excessWood >= 800)
+	(gold-amount < 200)
+	(commodity-selling-price wood > 45)
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood)
+	(sell-commodity wood))
+;================================================================
+(defrule
+(or	(cc-players-unit-type-count 0 tree-class > 150)
+	(dropsite-min-distance wood < 5))
+(or	(cc-players-unit-type-count 0 tree-class > 300)
+	(dropsite-min-distance wood < 10))
+	(up-compare-goal excessWood >= 1500)
+	(gold-amount < 300)
+(or	(cc-players-unit-type-count 0 gold-mine < 1)
+	(commodity-selling-price wood > 50))
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood)
+	(sell-commodity wood))
+;================================================================
+(defrule
+(or	(cc-players-unit-type-count 0 tree-class > 150)
+	(dropsite-min-distance wood < 5))
+(or	(cc-players-unit-type-count 0 tree-class > 300)
+	(dropsite-min-distance wood < 10))
+	(up-compare-goal excessWood >= 11000)
+	(game-time < 1800); test
+(or	(cc-players-unit-type-count 0 gold-mine < 1)
+	(commodity-selling-price wood > 45))
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood)
+	(sell-commodity wood))
+;================================================================
+(defrule
+(or	(cc-players-unit-type-count 0 tree-class > 150)
+	(dropsite-min-distance wood < 5))
+(or	(cc-players-unit-type-count 0 tree-class > 300)
+	(dropsite-min-distance wood < 10))
+	(up-compare-goal excessWood >= 1500)
+	(food-amount < 50)
+	(gold-amount < 250)
+	(population < max-civ-pop)
+	(civilian-population < up-max-civ)
+;(or	(cc-players-unit-type-count 0 gold-mine < 1)
+;	(commodity-selling-price wood > 45))
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood)
+	(sell-commodity wood))
+;================================================================
+(defrule
+	(gold-amount g:< cost-gold)
+	(unit-type-count villager-gold <= 0)
+	(up-compare-goal excessGold <= 0)
+	(up-compare-goal excessWood >= 300); 17
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood)
+	(sell-commodity wood))
+;================================================================
+; Buying wood
+;================================================================
+(defrule
+(or	(and	(gold-amount < castle-gs)
+		(research-available castle-age))
+	(and	(gold-amount < imperial-gs)
+		(research-available imperial-age)))
+=>
+	(up-jump-rule 6))
+;================================================================
+;(defrule
+;	(wood-amount < 60)
+;(or	(cc-players-unit-type-count 0 tree-class < 175)
+;	(dropsite-min-distance wood > 20))
+;	(can-buy-commodity wood)
+;=>
+;	;(chat-local-to-self text-buying-wood)
+;	(buy-commodity wood))
+;================================================================
+(defrule
+	(wood-amount < 100)
+; hm	(up-compare-goal excessGold >= 100)
+(or	(cc-players-unit-type-count 0 tree-class < 175)
+	(dropsite-min-distance wood > 20))
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood)
+	(buy-commodity wood))
+;================================================================
+(defrule
+	(wood-amount < 200)
+(or	(and	(up-compare-goal excessGold >= 300)
+		(or	(cc-players-unit-type-count 0 tree-class < 175)
+			(dropsite-min-distance wood > 20)))
+(or	(up-compare-goal excessGold >= 1600)
+	(up-compare-goal excessFood >= 6000))); sell food instead
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood)
+	(buy-commodity wood))
+;================================================================
+;(defrule
+;	(wood-amount < 200)
+;	(up-compare-goal excessGold >= 700)
+;	(can-buy-commodity wood)
+;=>
+;	;(chat-local-to-self text-buying-wood)
+;	(buy-commodity wood))
+;================================================================
+;(defrule
+;	(wood-amount < 300)
+;	(up-compare-goal excessGold >= 1200)
+;	(can-buy-commodity wood)
+;=>
+;	;(chat-local-to-self text-buying-wood)
+;	(buy-commodity wood))
+;================================================================
+(defrule
+	(goal underattack no)
+	(wood-amount < 4100)
+(or	(up-compare-goal excessGold >= 10000)
+	(and	(or	(up-compare-goal tradeunits >= 15)
+			(up-compare-goal relic-count >= 3))
+		(up-compare-goal excessGold >= 5200)))
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood)
+	(buy-commodity wood))
+;================================================================
+(defrule
+	(wood-amount < 200)
+	(up-compare-goal excessGold >= 1200)
+(or	(up-compare-goal relic-count >= 3)
+(or	(players-building-type-count any-ally market >= 1)
+	(players-building-type-count any-ally dock >= 1)))
+(or	(up-compare-goal relic-count >= 3)
+	(up-compare-goal tradeunits >= 15))
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood)
+	(buy-commodity wood))
+;================================================================
+(defrule
+	(goal escrowing no)
+	(wood-amount < 200)
+	(up-compare-goal excessGold >= 600)
+(or	(and	(up-compare-goal tradeunits >= 10)
+		(commodity-buying-price wood < 30))
+(or	(up-compare-goal tradeunits >= 30)
+	(up-compare-goal relic-count >= 3)))
+	(commodity-buying-price wood < 60)
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood)
+	(buy-commodity wood))
+;================================================================
+(defrule
+	(unit-type-count villager <= 0)
+	(building-type-count town-center <= 0)
+	(building-type-count market >= 1)
+	(player-in-game any-ally)
+	(players-building-type-count any-ally market >= 1)
+	(wood-amount < 100)
+; nn	(up-compare-goal excessGold >= 300);
+	(housing-headroom >= 1)
+	(unit-type-count-total 178 <= 0); Dead trade cart (empty)
+	(unit-type-count-total 205 <= 0); Dead trade cart (full)
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood)
+	(buy-commodity wood)); end jump
+;================================================================
+(defrule
+	(wood-amount g:< cost-wood)
+	(unit-type-count villager-wood <= 0)
+	(up-compare-goal excessWood <= 0)
+	(up-compare-goal excessGold >= 25)
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood)
+	(buy-commodity wood))
+;================================================================
+; Trading to accomplish important goals
+;================================================================
+(defrule
+;	(strategic-number sn-current-age == feudal)
+	(building-type-count town-center >= 1)
+;	(building-type-count blacksmith >= 1)
+	(up-compare-goal total-food-amount < castle-food)
+	(gold-amount >= castle-gs)
+	(research-available castle-age)
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food-next-age)
+	(buy-commodity food))
+;================================================================
+(defrule
+;	(strategic-number sn-current-age == feudal)
+	(building-type-count town-center >= 1)
+;	(building-type-count blacksmith >= 1)
+	(gold-amount < castle-gold)
+	(up-compare-goal total-food-amount >= castle-fs)
+	(research-available castle-age)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food-next-age)
+	(sell-commodity food))
+;================================================================
+(defrule
+;	(strategic-number sn-current-age == feudal)
+	(building-type-count town-center >= 1)
+;	(building-type-count blacksmith >= 1)
+(or	(up-compare-goal total-food-amount >= castle-f2)
+	(wood-amount >= 440)); test
+(or	(gold-amount < castle-gold)
+	(up-compare-goal total-food-amount < castle-food))
+	(wood-amount >= 100)
+	(research-available castle-age)
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood-next-age)
+	(sell-commodity wood))
+;================================================================
+(defrule
+;	(goal underattack no)
+;	(strategic-number sn-current-age == castlea)
+	(building-type-count town-center >= 1)
+;	(goal dreitc yes)
+(or	(population >= up-max-civ)
+	(up-compare-flag escrow-flag == 2))
+	(food-amount >= imperial-fs)
+	(gold-amount < imperial-gold)
+	(research-available imperial-age)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food-next-age)
+	(sell-commodity food))
+;================================================================
+(defrule
+;	(goal underattack no)
+;	(strategic-number sn-current-age == castlea)
+	(building-type-count town-center >= 1)
+;	(goal dreitc yes)
+(or	(population >= up-max-civ)
+	(up-compare-flag escrow-flag == 2))
+	(food-amount < imperial-food); 901
+	(gold-amount >= imperial-gs)
+	(research-available imperial-age)
+	(can-buy-commodity food)
+;(or
+;	(up-research-status c: ri-hand-cart >= research-pending)
+;	(wood-amount <= 100))
+=>
+	;(chat-local-to-self text-buying-food-next-age)
+	(buy-commodity food))
+;================================================================
+(defrule
+;	(goal underattack no)
+;	(strategic-number sn-current-age == castlea)
+	(building-type-count town-center >= 1)
+;	(goal dreitc yes)
+(or	(population >= up-max-civ)
+	(up-compare-flag escrow-flag == 2))
+	(food-amount < imperial-food)
+(or	(food-amount >= imperial-f2); 1000
+	(wood-amount >= 715)); test
+	(gold-amount < imperial-gold)
+	(wood-amount >= 100); 300
+	(research-available imperial-age)
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood-next-age)
+	(sell-commodity wood))
+;================================================================
+(defrule
+(or	(and	(up-compare-goal escrowing != no)
+		(and	(up-compare-flag escrow-flag != 4)
+			(and	(up-compare-flag escrow-flag != 32768)
+				(up-compare-flag escrow-flag != 4096))))
+	(goal underattack yes))
+=>
+	(up-jump-rule 10))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(unit-type-count-total my-unique-unit-line >= 8)
+	(goal uugoal yes))
+	(population >= up-max-civ)
+	(gold-amount < uu-gold)
+	(food-amount > uu-food)
+	(food-amount >= 300)
+(or	(commodity-selling-price food > 23)
+	(food-amount >= 1400))
+	(current-age >= imperial-age)
+	(building-type-count castle >= 1)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food-elite-X)
+	(sell-commodity food))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(unit-type-count-total my-unique-unit-line >= 8)
+	(goal uugoal yes))
+	(population >= up-max-civ)
+	(gold-amount > uu-gold2)
+	(food-amount < uu-food2)
+(or	(commodity-buying-price food < 150)
+	(gold-amount >= 1400))
+	(current-age >= imperial-age)
+	(building-type-count castle >= 1)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food-elite-X)
+	(buy-commodity food))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(unit-type-count-total my-unique-unit-line >= 8)
+	(goal uugoal yes))
+	(population >= up-max-civ)
+	(gold-amount < uu-gold)
+	(wood-amount > uu-wood)
+	(wood-amount >= 300)
+(or	(commodity-selling-price wood > 23)
+	(wood-amount >= 1400))
+	(current-age >= imperial-age)
+	(building-type-count castle >= 1)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood-elite-X)
+	(sell-commodity wood))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(unit-type-count-total my-unique-unit-line >= 8)
+	(goal uugoal yes))
+	(population >= up-max-civ)
+	(gold-amount > uu-gold2)
+	(wood-amount < uu-wood2)
+(or	(commodity-buying-price wood < 150)
+	(gold-amount >= 1400))
+	(current-age >= imperial-age)
+	(building-type-count castle >= 1)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood-elite-X)
+	(buy-commodity wood))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(and	(unit-type-count-total knight-line >= 18)
+		(up-research-status c: ri-bloodlines >= research-pending))
+	(goal palagoal yes))
+	(gold-amount < 750)
+	(food-amount >= 1400)
+	(research-completed ri-cavalier)
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(research-available ri-paladin)
+	(building-type-count stable >= 1)
+	(up-research-status c: ri-paladin < research-pending)
+	(current-age >= imperial-age)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food-palas)
+	(sell-commodity food))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(and	(unit-type-count-total knight-line >= 18)
+		(up-research-status c: ri-bloodlines >= research-pending))
+	(goal palagoal yes))
+	(gold-amount >= 950); 900
+	(food-amount < 1300)
+	(research-completed ri-cavalier)
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(research-available ri-paladin)
+	(building-type-count stable >= 1)
+	(up-research-status c: ri-paladin < research-pending)
+	(current-age >= imperial-age)
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food-palas)
+	(buy-commodity food))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(and	(unit-type-count-total knight-line >= 18)
+		(up-research-status c: ri-bloodlines >= research-pending))
+	(goal palagoal yes))
+	(research-completed ri-cavalier)
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(research-available ri-paladin)
+	(building-type-count stable >= 1)
+	(up-research-status c: ri-paladin < research-pending)
+	(food-amount >= 800)
+	(gold-amount < 750)
+	(wood-amount >= 300)
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood-palas)
+	(sell-commodity wood))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(unit-type-count-total two-handed-swordsman >= 5)
+	(goal champgoal yes))
+	(gold-amount < 350)
+	(food-amount >= 850)
+	(research-completed ri-two-handed-swordsman)
+	(up-research-status c: ri-scale-mail >= research-pending); for now
+	(research-available ri-champion)
+	(building-type-count barracks >= 1)
+	(up-research-status c: ri-champion < research-pending)
+	(current-age >= imperial-age)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food-champs)
+	(sell-commodity food))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(unit-type-count-total two-handed-swordsman >= 5)
+	(goal champgoal yes))
+	(gold-amount >= 550); 500
+	(food-amount < 750)
+	(research-completed ri-two-handed-swordsman)
+	(up-research-status c: ri-scale-mail >= research-pending); for now
+	(research-available ri-champion)
+	(building-type-count barracks >= 1)
+	(up-research-status c: ri-champion < research-pending)
+	(current-age >= imperial-age)
+	(can-buy-commodity food)
+=>
+	;(chat-local-to-self text-buying-food-champs)
+	(buy-commodity food))
+;================================================================
+(defrule
+; j	(goal underattack no)
+(or	(unit-type-count-total two-handed-swordsman >= 5)
+	(goal champgoal yes))
+	(current-age >= imperial-age)
+	(research-completed ri-two-handed-swordsman)
+	(up-research-status c: ri-scale-mail >= research-pending); for now
+	(research-available ri-champion)
+	(building-type-count barracks >= 1)
+	(up-research-status c: ri-champion < research-pending)
+	(food-amount >= 450)
+	(gold-amount < 350)
+	(wood-amount >= 300)
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood-champs)
+	(sell-commodity wood))
+#else; WR
+(defrule
+	(gold-amount >= 1200)
+	(stone-amount < 1000)
+	(current-age >= imperial-age)
+	(can-buy-commodity stone)
+=>
+	;(chat-local-to-self text-buying-stone-wonder)
+	(buy-commodity stone))
+(defrule
+	(gold-amount < 1000)
+	(stone-amount >= 1100)
+	(current-age >= imperial-age)
+	(can-sell-commodity stone)
+=>
+	;(chat-local-to-self text-selling-stone-wonder)
+	(sell-commodity stone))
+(defrule
+	(gold-amount >= 1200)
+	(wood-amount < 1000)
+	(current-age >= imperial-age)
+	(can-buy-commodity wood)
+=>
+	;(chat-local-to-self text-buying-wood-wonder)
+	(buy-commodity wood))
+(defrule
+	(gold-amount < 1000)
+	(wood-amount >= 1100)
+	(current-age >= imperial-age)
+	(can-sell-commodity wood)
+=>
+	;(chat-local-to-self text-selling-wood-wonder)
+	(sell-commodity wood))
+(defrule
+	(food-amount >= 200)
+	(current-age >= imperial-age)
+	(can-sell-commodity food)
+=>
+	;(chat-local-to-self text-selling-food-wonder)
+	(sell-commodity food))
+#end-if

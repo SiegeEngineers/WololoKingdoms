@@ -1,0 +1,19 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy krush)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(or	(goal gl-rush-suitability-on-map VERY-LOW)
+		(goal gl-super-pocket YES))
+=>
+	(set-goal gl-strategy regicide-strategy)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)

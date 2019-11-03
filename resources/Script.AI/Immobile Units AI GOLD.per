@@ -1,0 +1,195 @@
+;This Ai file has been created by Zanzard Lothar.
+;Email: zanzard@hotmail.com
+;
+;Installation: Just unzip the two files in the AI subfolder of the AOK main folder.
+;
+;This file should work properly in AOK and in AOK:TC.
+;
+;The author would like to thank the Rasher, Herodotus, Magnus and Ingo Van Thiel for
+;the help they provided in making the first Immobile Units AI.
+;
+;This Ai is supposed to make the Ai's villagers and military units stand still doing nothing.
+;
+;If enemy units come near the military units of the AI, the military units will move and attack the enemy
+;units and then stand still again if the enemy units leave their sight or are vanquished. Military boats
+;also should behave like this.
+;
+;Kings, villagers and transport ships of the AI will stand still and will try to run away if attacked.
+;Units of the AI will execute orders given to them by triggers (at least most of the time).
+;
+;Feel free to use this AI in any scenario of AOK, and feel free to edit it to suit your needs.
+;The author is not responsible for any problems created by edited version of this AI file.
+;
+;The Immobile Units AI comes with an extra feature: you can choose one of the 8 different
+;kinds of behavior that the AI units will have about ranged units. To choose one of these,
+;go to the "Terrain" tab of the map editor and under "Ai map type" choose one of the following:
+;
+;Archipelago: Ranged units tend to fight in a hit-and-run manner.
+;Baltic: Units try to dodge enemy missiles that are shot against them.
+;Black forest: Units try to do both of these 50% of the time.
+;Coastal: Ranged units tend to fight in a hit-and-run manner and units try to dodge
+;enemy missiles that are shot against them 50% of the time.
+;Continental: Ranged units tend to fight in a hit-and-run manner 50% of the time amd units
+;try to dodge missiles that are shot against them.
+;Fortress: Ranged units tend to fight in a hit-and-run manner 50% of the time.
+;Gold Rush: Units try to dodge enemy missiles that are shot against them 50% of the time.
+;Highland: Units will always try to do both of these things.
+;Any other map: Units will mostly not try to do neither of these.
+;
+;If the units are set to try to dodge enemy missiles shot at them, they will probably succeed
+;more with slow shots, like trebuchets and mangonels, than with fast ones, like archers.
+;
+;The TRUE map type does not matter with the Immobile Units AI. For example, you can create a
+;water-based map and choose the "black Forest" setting for the AI type without any problems,
+;just as you can create a land-based map and choose the "archipelago" setting for the AI.
+;
+;What Immobile Units AI GOLD cannot provide:
+;-Immobile fish boats (fish boats will not tend to stand still).
+;-Immobile trade carts (to keep them still, make sure the player with the trade-cart has
+;no markets, or that this player has no markets to trade with).
+;-Trade cogs will behave just like trade carts, though they trade with docks.
+;-Monks will pick up relics provided that they have a monk and a monastery and they can see the relic.
+;-If the computer player has a single villager, the villager will not stand still.
+;-If the computer player has a king and a building that can be garrisoned, then the king will
+;try to garrison at this building, regardless of how far the building is from the king.
+;
+;If you find any other bugs or observations about the AI, post them as a comment on the
+;description page of this AI file on AOKH blacksmith.
+;
+;Thank you for your interest in the Immobile Units AI GOLD!
+
+
+;villagers
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-maximum-food-drop-distance 0)
+	(set-strategic-number sn-maximum-wood-drop-distance 0)
+	(set-strategic-number sn-maximum-gold-drop-distance 0)
+	(set-strategic-number sn-maximum-stone-drop-distance 0)
+	(set-strategic-number sn-maximum-hunt-drop-distance 0)
+	(set-strategic-number sn-food-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-percent-civilian-explorers 0) 
+	(disable-self)
+)
+
+;military
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-percent-enemy-sighted-response 100)
+	(set-strategic-number sn-hits-before-alliance-change 25)
+	(set-strategic-number sn-number-explore-groups 0)
+	(set-strategic-number sn-percent-attack-soldiers 0)
+	(set-strategic-number sn-task-ungrouped-soldiers 0)
+	(set-strategic-number sn-number-attack-groups 0)
+	(set-strategic-number sn-enemy-sighted-response-distance 10)
+	(set-strategic-number sn-total-number-explorers 0)
+	(set-strategic-number sn-relic-return-distance 0)
+	(disable-self)
+)
+
+;map-type-changes
+
+#load-if-defined ARCHIPELAGO-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-maintain-distance 0)
+	(set-difficulty-parameter ability-to-dodge-missiles 100)
+	(disable-self)
+)
+
+#end-if
+
+#load-if-defined BALTIC-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-maintain-distance 100)
+	(set-difficulty-parameter ability-to-dodge-missiles 0)
+	(disable-self)
+)
+
+#end-if
+
+#load-if-defined BLACK-FOREST-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-maintain-distance 50)
+	(set-difficulty-parameter ability-to-dodge-missiles 50)
+	(disable-self)
+)
+
+#end-if
+
+#load-if-defined COASTAL-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-maintain-distance 0)
+	(set-difficulty-parameter ability-to-dodge-missiles 50)
+	(disable-self)
+)
+
+#end-if
+
+
+#load-if-defined CONTINENTAL-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-maintain-distance 50)
+	(set-difficulty-parameter ability-to-dodge-missiles 0)
+	(disable-self)
+)
+
+#end-if
+
+#load-if-defined FORTRESS-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-maintain-distance 50)
+	(set-difficulty-parameter ability-to-dodge-missiles 100)
+	(disable-self)
+)
+
+#end-if
+
+#load-if-defined GOLD-RUSH-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-maintain-distance 100)
+	(set-difficulty-parameter ability-to-dodge-missiles 50)
+	(disable-self)
+
+)
+
+#end-if
+
+#load-if-defined HIGHLAND-MAP
+
+(defrule
+	(true)
+=>
+	(set-difficulty-parameter ability-to-dodge-missiles 0)
+	(set-difficulty-parameter ability-to-maintain-distance 0)
+	(disable-self)
+)
+
+#end-if

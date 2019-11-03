@@ -1,0 +1,3539 @@
+
+(defrule
+	(true)
+=>
+	(set-goal gl-group-state-flag 0)
+	(set-goal gl-group0-state-flag 0)
+	(set-goal gl-group1-state-flag 0)
+	(set-goal gl-group2-state-flag 0)
+	(enable-timer 43 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age != gv-feudal)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-flag gl-group0-state-flag != group-active)
+	(up-group-size c: 0 == 0)
+	(goal TSA 0)
+	(up-compare-goal gl-military-percentage > 80)
+	(up-compare-goal threat-time > 30000)
+	(players-building-type-count target-player wall-class < 3)
+	(unit-type-count archer-line > 5)
+	(up-research-status c: ri-fletching >= research-pending)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: archer-line c: 6)
+	(up-modify-flag gl-group0-state-flag c:+ suicide-enabled)
+	(up-create-group 0 0 c: 0)
+	(up-modify-group-flag 1 c: 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-flag gl-group1-state-flag != group-active)
+	(up-group-size c: 1 == 0)
+	(goal TSA 0)
+	(goal gl-SCRUSH-CONTROL SCOUTS-DONE)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: scout-cavalry-line c: 7)
+	(up-modify-flag gl-group1-state-flag c:+ suicide-enabled);test
+	(up-modify-flag gl-group1-state-flag c:+ melee-group)
+	(up-modify-flag gl-group1-state-flag c:+ fast-group)
+	(up-create-group 0 0 c: 1)
+	(up-modify-group-flag 1 c: 0)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 2400)
+=>
+	(set-goal gl-group-state-flag 0)
+	(set-goal gl-group0-state-flag 0)
+	(set-goal gl-group1-state-flag 0)
+	(set-goal gl-group2-state-flag 0)
+)
+
+(defrule
+	(goal gl-group0-state-flag 0)
+	(goal gl-group1-state-flag 0)
+	(goal gl-group2-state-flag 0)
+	(goal gl-early-raid DUC-system)
+=>
+	(set-goal gl-early-raid NO)
+)
+
+(defrule
+	(goal gl-group0-state-flag 0)
+	(goal gl-group1-state-flag 0)
+	(goal gl-group2-state-flag 0)
+	(or	(goal TSA 0)
+		(or	(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)
+			(goal target-system siege)))
+=>
+	(set-goal gl-group-state-flag 0)
+	(up-modify-goal temporary-goal12 s:= sn-focus-player-number)
+	(set-goal temporary-goal13 -2)
+	(up-jump-rule 42)
+)
+
+(defrule
+	(game-time > 2200)
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(up-compare-flag gl-group1-state-flag == group-active)
+	(up-compare-flag gl-group1-state-flag != melee-group)
+	(up-compare-flag gl-group1-state-flag != fast-group)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal TSA 1)
+	(up-compare-flag gl-group0-state-flag != group-active)
+	(up-group-size c: 0 == 0)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-remove-objects search-local object-data-group-flag >= 0)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-speed < 80)
+	(up-create-group 0 0 c: 0)
+)
+
+(defrule
+	(goal TSA 1)
+	(up-compare-flag gl-group0-state-flag == group-active)
+	(up-compare-flag gl-group0-state-flag == suicide-enabled)
+	(up-compare-flag gl-group1-state-flag != group-active)
+	(up-group-size c: 1 == 0)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-remove-objects search-local object-data-group-flag >= 0)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-speed < 80)
+	(up-create-group 0 0 c: 1)
+)
+
+(defrule
+	(goal TSA 1)
+	(up-compare-flag gl-group1-state-flag != group-active)
+	(up-group-size c: 1 == 0)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-remove-objects search-local object-data-group-flag >= 0)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-modify-flag gl-group1-state-flag c:+ fast-group)
+	(up-create-group 0 0 c: 1)
+)
+
+(defrule
+	(goal TSA 1)
+	(up-compare-flag gl-group2-state-flag != group-active)
+	(up-group-size c: 2 == 0)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-remove-objects search-local object-data-group-flag >= 0)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed < 115)
+)
+
+(defrule
+	(goal TSA 1)
+	(up-compare-flag gl-group2-state-flag != group-active)
+	(up-group-size c: 2 == 0)
+	(up-set-target-object search-local c: 1)
+=>
+	(up-modify-flag gl-group2-state-flag c:+ melee-group)
+	(up-modify-flag gl-group2-state-flag c:+ fast-group)
+	(up-create-group 0 0 c: 2)
+)
+
+(defrule
+	(up-compare-flag gl-group2-state-flag == group-active)
+	(up-compare-flag gl-group2-state-flag == melee-group)
+	(up-compare-flag gl-group2-state-flag == fast-group)
+	(or	(and	(research-completed ri-chain-barding)
+			(unit-type-count knight-line > 0))
+		(research-completed ri-elite-eagle-warrior))
+=>
+	(up-modify-flag gl-group2-state-flag c:+ ignore-structures)
+)
+
+(defrule
+	(up-compare-flag gl-group0-state-flag == group-active)
+	(up-compare-flag gl-group0-state-flag != melee-group)
+	(up-compare-flag gl-group0-state-flag != fast-group)
+	(up-group-size c: 0 > 20)
+	(research-completed ri-elite-skirmisher)
+	(unit-type-count skirmisher-line > 15)
+	(unit-type-count archer-line < 9)
+=>
+	(up-modify-flag gl-group0-state-flag c:+ ignore-structures)
+)
+
+(defrule
+	(up-compare-flag gl-group0-state-flag == group-active)
+	(up-compare-flag gl-group0-state-flag != melee-group)
+	(up-compare-flag gl-group0-state-flag != fast-group)
+	(up-compare-flag gl-group0-state-flag == ignore-structures)
+	(not	(research-completed ri-leather-archer-armor))
+	(or	(unit-type-count skirmisher-line < 10)
+		(up-group-size c: 0 < 10))
+=>
+	(up-modify-flag gl-group0-state-flag c:- ignore-structures)
+)
+
+(defrule
+	(goal target-system siege)
+=>
+	(set-goal gl-group0-state-flag 0)
+	(set-goal gl-group1-state-flag 0)
+	(set-goal gl-group2-state-flag 0)
+	(up-reset-unit c: -1); Reset possible patrollers
+	(up-reset-group c: 0)
+	(up-reset-group c: 1)
+	(up-reset-group c: 2)
+	(up-set-attack-stance -1 c: aggressive)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal12 s:= sn-focus-player-number)
+	(set-goal temporary-goal 0)
+	(set-goal temporary-goal2 gl-group0-state-flag); first group
+	(set-goal temporary-goal13 -1)
+	(set-goal temporary-goal5 0)
+	(up-modify-goal temporary-goal2 g:+ temporary-goal); set to selected group's state flags
+	(up-get-indirect-goal g: temporary-goal2 temporary-goal3)
+)
+
+(defrule
+	(up-compare-flag temporary-goal3 == group-active)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: temporary-goal)
+	(up-remove-objects search-local object-data-status != 2)
+	(up-create-group 0 0 g: temporary-goal)
+	(up-get-search-state gl-local-total)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point-x)
+)
+
+(defrule
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-compare-flag temporary-goal3 != initializing)
+	(up-group-size g: temporary-goal == 0); ...
+=>
+	(up-set-indirect-goal g: temporary-goal2 c: 0); reset all flags
+;	(set-goal gl-attack-target-id -1)
+;	(set-goal gl-old-target-id -1)
+;	(set-goal gl-old-target2-id -1)
+	(up-reset-group g: temporary-goal)
+	(up-modify-group-flag 0 g: temporary-goal)
+)
+
+(defrule
+	(up-timer-status 15 != timer-running)
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-compare-flag temporary-goal3 == fast-group)
+	(up-compare-flag temporary-goal3 != melee-group)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 13)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-index >= 40)
+)
+
+(defrule
+	(up-timer-status 15 != timer-running)
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-compare-flag temporary-goal3 != fast-group)
+	(up-compare-flag temporary-goal3 != melee-group)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 13)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-speed < 80)
+	(up-remove-objects search-local object-data-index >= 40)
+)
+
+(defrule
+	(up-timer-status 15 != timer-running)
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-compare-flag temporary-goal3 == fast-group)
+	(up-compare-flag temporary-goal3 == melee-group)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 13)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-index >= 40)
+)
+
+(defrule
+	(up-timer-status 15 != timer-running)
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-compare-flag temporary-goal3 != fast-group)
+	(up-compare-flag temporary-goal3 == melee-group)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 13)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-speed < 80)
+	(up-remove-objects search-local object-data-index >= 40)
+)
+
+(defrule
+	(up-timer-status 15 != timer-running)
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-remove-objects search-local object-data-group-flag >= 0); must be changed if groups always are tagged
+	(up-get-search-state gl-local-total)
+	(set-goal temporary-goal5 1)
+)
+
+(defrule
+	(up-timer-status 15 != timer-running)
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-compare-flag temporary-goal3 != suicide-enabled); test
+	(goal temporary-goal5 1)
+	(up-group-size g: temporary-goal g:!= gl-local-total)
+=>
+	(up-create-group 0 0 g: temporary-goal)
+	(up-modify-flag gl-group1-state-flag c:+ size-increase)
+;	(chat-to-all "crrrr")
+)
+
+(defrule
+	(up-compare-goal temporary-goal < 2)
+=>
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-modify-goal temporary-goal2 c:+ 1)
+	(set-goal temporary-goal5 0)
+	(up-get-indirect-goal g: temporary-goal2 temporary-goal3)
+	(up-jump-rule -9)
+)
+
+(defrule
+	(up-timer-status 9 == timer-running)
+=>
+	(up-jump-rule 20)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(set-goal temporary-goal 0)
+	(set-goal temporary-goal2 gl-group0-state-flag); first group
+	(set-goal temporary-goal6 gl-attacking0-target-id)
+	(up-modify-goal temporary-goal2 g:+ temporary-goal); set to selected group's state flags
+	(up-modify-goal temporary-goal6 g:+ temporary-goal)
+	(up-get-indirect-goal g: temporary-goal2 temporary-goal3)
+	(up-get-indirect-goal g: temporary-goal6 temporary-goal7)
+	(set-goal temporary-goal4 0)
+	(set-goal temporary-goal9 0)
+	(set-strategic-number sn-number-tasked-units 1)
+	(up-reset-filters)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+)
+
+(defrule
+	(up-compare-flag temporary-goal3 == group-active)
+	(up-compare-flag temporary-goal3 != retreating-mode)
+	(up-compare-flag temporary-goal3 != initializing)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-set-group search-local g: temporary-goal)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-copy-point gl-point2-x gl-position-self-x)
+	(up-copy-point gl-point3-x gl-point-x)
+	(up-copy-point gl-point4-x gl-point-x)
+	(up-find-remote c: town-center c: 1)
+	(up-find-remote c: watch-tower c: 1)
+	(set-goal temporary-goal4 1)
+	(up-filter-include cmdid-military actionid-move -1 -1)
+)
+
+(defrule
+	(timer-triggered 43)
+=>
+	(up-filter-include cmdid-military -1 -1 -1)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-point position-object gl-point2-x)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+=>
+	(up-cross-tiles gl-point3-x gl-point2-x c: 35)
+	(up-cross-tiles gl-point4-x gl-point2-x c: -35)
+	(up-get-point-distance gl-point4-x gl-position-self-x temporary-goal5)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-point-distance gl-position-self-x gl-point3-x g:< temporary-goal5)
+=>
+	(up-copy-point gl-point3-x gl-point4-x)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-compare-flag temporary-goal3 != combat-mode)
+=>
+;	(up-reset-search 1 1 1 1)
+	(up-copy-point gl-point7-x gl-point-x)
+;	(up-set-group search-local g: temporary-goal)
+	(up-set-target-object search-local c: 1)
+	(up-get-point position-object gl-point5-x)
+	(up-set-target-object search-local c: 2)
+	(up-get-point position-object gl-point6-x)
+	(up-add-point gl-point7-x gl-point5-x c: 1)
+	(up-add-point gl-point7-x gl-point6-x c: 1)
+	(up-modify-goal gl-point7-x c:/ 3)
+	(up-modify-goal gl-point7-y c:/ 3)
+	(up-set-target-point gl-point7-x)
+	(up-remove-objects search-local object-data-distance < 8)
+	(up-target-point gl-point7-x action-move -1 no-attack)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-compare-flag temporary-goal3 == fast-group)
+	(up-compare-flag temporary-goal3 != melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-remove-objects search-local object-data-action == actionid-explore)
+	(up-set-target-point gl-point3-x)
+	(up-target-point 0 action-patrol -1 aggressive)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-compare-flag temporary-goal3 == fast-group)
+	(up-compare-flag temporary-goal3 != melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: 45)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-target-point gl-point-x action-patrol -1 aggressive)
+	(set-goal temporary-goal4 2)
+)
+
+(defrule
+	(goal temporary-goal4 2)
+	(up-set-target-by-id g: temporary-goal7)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-distance c: 8 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action != actionid-attack)
+	(up-remove-objects search-local object-data-target != building-class)
+	(up-remove-objects search-local object-data-target-id g:== temporary-goal7)
+	(up-target-objects 1 action-default -1 aggressive)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-compare-flag temporary-goal3 != fast-group)
+	(up-compare-flag temporary-goal3 != melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-remove-objects search-local object-data-action == actionid-explore)
+	(up-set-target-point gl-point3-x)
+	(up-target-point 0 action-patrol -1 aggressive)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-compare-flag temporary-goal3 != fast-group)
+	(up-compare-flag temporary-goal3 != melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: 45)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-target-point gl-point-x action-patrol -1 aggressive)
+	(set-goal temporary-goal4 3)
+)
+
+(defrule
+	(goal temporary-goal4 3)
+	(up-set-target-by-id g: temporary-goal7)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-distance c: 8 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-range < 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action != actionid-attack)
+	(up-remove-objects search-local object-data-target != building-class)
+	(up-remove-objects search-local object-data-target-id g:== temporary-goal7)
+	(up-target-objects 1 action-default -1 aggressive)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-compare-flag temporary-goal3 == fast-group)
+	(up-compare-flag temporary-goal3 == melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-remove-objects search-local object-data-action == actionid-explore)
+	(up-set-target-point gl-point3-x)
+	(up-target-point 0 action-patrol -1 aggressive)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(up-compare-flag temporary-goal3 == fast-group)
+	(up-compare-flag temporary-goal3 == melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: 45)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-target-point gl-point-x action-patrol -1 aggressive)
+	(set-goal temporary-goal4 4)
+)
+
+(defrule
+	(goal temporary-goal4 4)
+	(up-set-target-by-id g: temporary-goal7)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-distance c: 8 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed < 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action != actionid-attack)
+	(up-remove-objects search-local object-data-target != building-class)
+	(up-remove-objects search-local object-data-target-id g:== temporary-goal7)
+	(up-target-objects 1 action-default -1 aggressive)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+	(goal temporary-goal9 0)
+;	(up-compare-flag temporary-goal3 != fast-group); test
+;	(up-compare-flag temporary-goal3 == melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-remove-objects search-local object-data-action == actionid-explore)
+	(up-set-target-point gl-point3-x)
+	(up-target-point 0 action-patrol -1 aggressive)
+)
+
+(defrule
+;	(goal temporary-goal4 1)
+	(up-compare-goal temporary-goal4 > 1)
+	(goal temporary-goal9 0)
+;	(up-compare-flag temporary-goal3 != fast-group)
+;	(up-compare-flag temporary-goal3 == melee-group)
+	(up-compare-flag temporary-goal3 != suicide-enabled)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: 45)
+	(up-find-local c: -1 c: 240)
+	(up-clean-search search-local -1 search-order-asc)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-target-point gl-point-x action-patrol -1 aggressive)
+	(set-goal temporary-goal4 5)
+)
+
+(defrule
+	(goal temporary-goal4 5)
+	(goal temporary-goal9 0)
+	(up-set-target-by-id g: temporary-goal7)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-distance c: 8 c: -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-remove-objects search-local object-data-speed >= 115)
+	(up-remove-objects search-local object-data-formation-id >= 0)
+	(up-remove-objects search-local object-data-action != actionid-attack)
+	(up-remove-objects search-local object-data-target != building-class)
+	(up-remove-objects search-local object-data-target-id g:== temporary-goal7)
+	(up-target-objects 1 action-default -1 aggressive)
+	(set-goal temporary-goal9 1)
+)
+
+(defrule
+	(up-compare-goal temporary-goal < 2)
+=>
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-modify-goal temporary-goal2 c:+ 1)
+	(up-modify-goal temporary-goal6 g:+ temporary-goal)
+	(up-get-indirect-goal g: temporary-goal2 temporary-goal3)
+	(up-get-indirect-goal g: temporary-goal6 temporary-goal7)
+	(set-goal temporary-goal4 0)
+	(up-filter-distance c: -1 c: -1)
+	(up-filter-include cmdid-military actionid-move -1 -1)
+	(up-jump-rule -19)
+)
+
+(defrule
+	(timer-triggered 9)
+	(goal gl-early-raid DUC-system)
+	(up-timer-status 43 != timer-running)
+=>
+	(enable-timer 43 40)
+)
+
+(defrule
+	(goal temporary-goal13 -1)
+=>
+	(up-modify-goal gl-group-state-flag g:= gl-group0-state-flag)
+	(up-copy-point gl-candidate1-point-x gl-group0-1-x)
+	(up-copy-point gl-candidate2-point-x gl-group0-2-x)
+	(up-copy-point gl-candidate3-point-x gl-group0-3-x)
+	(up-copy-point gl-candidate4-point-x gl-group0-4-x)
+	(up-copy-point gl-march-point-x gl-group0-5-x)
+	(up-modify-goal gl-group-initializing-time g:= gl-group0-initializing-time)
+	(up-modify-goal gl-attack-target-id g:= gl-attacking0-target-id)
+	(up-modify-goal gl-old-target-id g:= gl-old0-target-id)
+	(up-modify-goal gl-old-target2-id g:= gl-old0-target2-id)
+	(up-modify-goal gl-ancient-target-id g:= gl-ancient-target0-id)
+	(set-goal temporary-goal13 0)
+	(set-strategic-number sn-number-tasked-units 40)
+)
+
+(defrule
+	(or	(and	(up-compare-flag gl-group-state-flag == group-active)
+			(up-compare-flag gl-group-state-flag == combat-mode))
+		(up-group-size g: temporary-goal13 == 0))
+=>
+	(up-jump-rule 58)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(set-strategic-number sn-target-point-adjustment adjust-middle)
+	(set-goal gl-remote-total 0)
+	(set-goal gl-local-total 25)
+	(set-goal temporary-goal9 0)
+	(set-goal temporary-goal11 -1)
+	(up-full-reset-search)
+	(up-find-local c: villager-class c: 1)
+	(up-set-group search-local g: temporary-goal13)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-compare-flag gl-group-state-flag == 32768); navy group
+=>
+	(up-remove-objects search-local object-data-class == villager-class)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-id temporary-goal10)
+	(up-get-point position-object gl-point6-x)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-compare-flag gl-group-state-flag != 32768); land group
+=>
+	(up-remove-objects search-local object-data-class == villager-class)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-id temporary-goal10)
+	(up-get-point position-object gl-point6-x)
+	(up-set-target-point gl-point6-x)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state5)
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(or	(not	(up-set-target-by-id g: gl-attack-target-id))
+		(and	(up-set-target-by-id g: gl-attack-target-id)
+			(up-object-data object-data-hitpoints <= 0)))
+=>
+	(up-modify-flag gl-group-state-flag c:+ march-state2)
+	(up-modify-flag gl-group-state-flag c:- march-state5)
+)
+
+(defrule
+	(or	(not	(up-set-target-by-id g: gl-attack-target-id))
+		(up-compare-flag gl-group-state-flag == retreating-mode))
+=>
+	(set-goal gl-attack-target-id -1)
+	(set-goal gl-drush-waypoint-required 0)
+)
+
+(defrule
+	(not	(up-set-target-by-id g:  gl-ancient-target-id))
+	(up-set-target-by-id g: gl-attack-target-id)
+=>
+	(up-modify-goal gl-ancient-target-id g:= gl-attack-target-id)
+)
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag == retreating-mode)
+		(up-compare-flag gl-group-state-flag == 524288)); partial-retreat
+	(up-compare-flag gl-group-state-flag == initializing)
+=>
+	(up-modify-flag gl-group-state-flag c:- initializing)
+	(up-modify-flag gl-group-state-flag c:- march-state1)
+	(up-modify-flag gl-group-state-flag c:+ march-state2)
+	(up-modify-flag gl-group-state-flag c:- march-state3)
+	(up-modify-flag gl-group-state-flag c:- march-state4)
+	(up-modify-flag gl-group-state-flag c:- march-state5)
+	(set-goal gl-drush-waypoint-required 10)
+;	(chat-to-all "initial")
+)
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag == retreating-mode)
+		(up-compare-flag gl-group-state-flag == 524288)); partial-retreat
+=>
+	(up-copy-point gl-march-point-x gl-position-self-x)
+	(up-copy-point gl-candidate3-point-x gl-march-point-x)
+	(up-copy-point gl-candidate4-point-x gl-march-point-x)
+	(set-goal temporary-goal9 8365)
+	(set-goal gl-remote-last 1)
+	(set-goal gl-local-total 15)
+	(up-jump-rule 3)
+)
+
+(defrule
+	(up-set-target-by-id g: gl-attack-target-id)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target-id)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target2-id)
+=>
+	(up-get-object-data object-data-id temporary-goal11)
+	(up-get-point position-object gl-march-point-x)
+)
+
+(defrule
+	(up-set-target-by-id g: gl-attack-target-id)
+;	(up-object-data object-data-type != lumber-camp)
+;	(up-object-data object-data-type != mining-camp)
+;	(up-object-data object-data-type != mill)
+;	(up-object-data object-data-type != farm)
+	(up-object-data object-data-type == town-center)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target-id)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target2-id)
+=>
+	(up-get-point position-object gl-march-point-x)
+	(up-lerp-tiles gl-march-point-x gl-point6-x c: 11)
+	(up-cross-tiles gl-march-point-x gl-point6-x c: 14)
+)
+
+(defrule
+	(up-set-target-by-id g: gl-attack-target-id)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target-id)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target2-id)
+	(up-compare-flag gl-group-state-flag != 65536); route-reset
+=>
+	(set-goal temporary-goal9 8365)
+	(up-get-object-data object-data-id temporary-goal11)
+	(set-goal gl-remote-last 1)
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-saved-point-x)
+	(set-goal gl-drush-waypoint-required 0)
+;	(chat-to-all "retain")
+	(up-jump-rule 12)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-flag gl-group-state-flag c:- 65536); route-reset
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 1)
+	(up-find-remote c: watch-tower c: 1)
+	(up-find-remote c: house c: 1)
+	(up-find-remote c: barracks c: 1)
+	(up-find-remote c: stable c: 1)
+	(up-find-remote c: archery-range c: 1)
+	(up-find-remote c: farm c: 1)
+	(up-find-remote c: building-class c: 1)
+	(up-find-remote c: wall-class c: 1)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-point position-object gl-point2-x)
+	(up-set-target-point gl-point2-x)
+	(up-full-reset-search)
+	(up-find-remote c: lumber-camp c: 20)
+	(up-find-remote c: mining-camp c: 20)
+	(up-clean-search search-remote object-data-distance search-order-desc)
+	(up-remove-objects search-remote object-data-id g:== gl-old-target-id)
+	(up-remove-objects search-remote object-data-id g:== gl-old-target2-id)
+)
+
+(defrule
+	(not	(up-set-target-object search-remote g: gl-remote-total))
+=>
+	(up-find-remote c: mill c: 1)
+;	(up-find-remote c: farm c: 1)
+	(up-find-remote c: town-center c: 1)
+	(up-find-remote c: building-class c: 1)
+;	(chat-to-all "try")
+;	(up-clean-search search-remote object-data-distance search-order-desc)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+	(up-set-target-object search-remote g: gl-remote-total)
+=>
+	(up-get-object-data object-data-id temporary-goal11)
+	(up-get-point position-object gl-march-point-x)
+	(up-copy-point gl-candidate3-point-x gl-march-point-x)
+	(up-copy-point gl-candidate4-point-x gl-march-point-x)
+	(set-goal temporary-goal9 8365)
+	(set-goal gl-remote-last 1)
+	(up-modify-goal gl-drush-waypoint-required c:+ 10)
+;	(up-chat-data-to-all "target found! (%d)" g: temporary-goal11)
+;	(up-send-flare gl-march-point-x)
+)
+
+(defrule
+	(up-set-target-object search-remote g: gl-remote-total)
+;	(up-object-data object-data-type != lumber-camp)
+;	(up-object-data object-data-type != mining-camp)
+;	(up-object-data object-data-type != mill)
+;	(up-object-data object-data-type != farm)
+	(up-object-data object-data-type == town-center)
+=>
+;	(up-lerp-tiles gl-march-point-x gl-position-self-x c: -9)
+	(up-lerp-tiles gl-march-point-x gl-point6-x c: 11)
+	(up-cross-tiles gl-march-point-x gl-point6-x c: 14)
+	(up-copy-point gl-candidate3-point-x gl-march-point-x)
+	(up-copy-point gl-candidate4-point-x gl-march-point-x)
+;	(chat-to-all "testing TC")
+)
+
+(defrule
+	(goal temporary-goal9 8365)
+=>
+	(up-set-target-by-id g: temporary-goal11)
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 1)
+	(up-find-remote c: watch-tower c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-saved-point-x)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(or	(up-compare-flag gl-group-state-flag == march-state2)
+		(or	(up-compare-flag gl-group-state-flag == march-state3)
+			(or	(up-compare-flag gl-group-state-flag == march-state4)
+				(up-compare-flag gl-group-state-flag == march-state5))))
+	(goal temporary-goal9 8365)
+=>
+	(set-goal gl-local-total 12)
+)
+
+(defrule
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(goal temporary-goal9 8365)
+=>
+	(up-cross-tiles gl-candidate3-point-x gl-saved-point-x g: gl-local-total); 25
+	(up-get-point-distance gl-candidate3-point-x gl-point6-x gl-local-last)
+	(up-modify-goal gl-local-total c:* -1)
+	(up-cross-tiles gl-candidate4-point-x gl-saved-point-x g: gl-local-total); -25
+	(up-modify-goal gl-local-total c:* -1)
+;	(up-send-flare gl-candidate3-point-x)
+;	(up-send-flare gl-candidate4-point-x)
+)
+
+(defrule
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(goal temporary-goal9 8365)
+	(up-point-distance gl-candidate4-point-x gl-point6-x g:> gl-local-last)
+=>
+	(up-copy-point gl-candidate4-point-x gl-candidate3-point-x)
+	(up-modify-goal gl-local-total c:* -1)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+	(goal gl-drush-waypoint-required 20)
+	(goal temporary-goal9 8365)
+=>
+	(up-add-point gl-candidate4-point-x gl-march-point-x c: 1)
+	(up-add-point gl-candidate4-point-x gl-saved-point-x c: -1)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+	(up-compare-flag gl-group-state-flag != group-active)
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(up-compare-goal temporary-goal9 >= 8365)
+=>
+;	(up-copy-point gl-candidate1-point-x gl-candidate4-point-x)
+;	(up-add-point gl-candidate1-point-x gl-march-point-x c: -1)
+;	(up-add-point gl-candidate1-point-x gl-point6-x c: 1)
+;	(up-lerp-percent gl-candidate1-point-x gl-candidate4-point-x c: 40)
+	(up-copy-point gl-candidate1-point-x gl-point6-x)
+	(up-cross-tiles gl-candidate1-point-x gl-saved-point-x g: gl-local-total)
+	(up-get-point-distance gl-candidate4-point-x gl-point6-x gl-local-last)
+	(up-modify-goal gl-local-last c:- 6)
+)
+
+(defrule
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(up-compare-goal gl-local-last > 10)
+	(up-point-distance gl-candidate1-point-x gl-candidate4-point-x > 15)
+	;(or	(up-point-distance gl-candidate1-point-x gl-point6-x < 6); 16
+		(up-point-distance gl-candidate1-point-x gl-candidate4-point-x g:> gl-local-last);)
+=>
+	(up-lerp-tiles gl-candidate1-point-x gl-candidate4-point-x c: 5)
+	(up-modify-goal 495 c:+ 1)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(goal gl-remote-last 1)
+	(goal temporary-goal9 8365)
+=>
+	(up-copy-point gl-point3-x gl-point6-x)
+	(up-copy-point gl-point4-x gl-candidate1-point-x)
+)
+
+(defrule
+	(up-compare-goal gl-remote-last < 4)
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+=>
+	(up-get-point-distance gl-point6-x gl-march-point-x temporary-goal8)
+	(up-modify-goal temporary-goal8 c:- 3)
+	(up-modify-goal temporary-goal8 c:max 5)
+)
+
+(defrule
+	(up-compare-goal gl-remote-last < 4)
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(up-point-distance gl-point4-x gl-point6-x g:> temporary-goal8)
+	(up-point-distance gl-point4-x gl-point6-x > 5)
+=>
+	(up-lerp-tiles gl-point4-x gl-point6-x c: 3)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(or	(up-compare-goal gl-remote-last < 3)
+		(up-point-distance gl-point4-x gl-saved-point-x < 9))
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(up-point-distance gl-point4-x gl-saved-point-x > 0)
+	(up-point-distance gl-point4-x gl-saved-point-x < 14)
+	(up-point-distance gl-saved-point-x gl-march-point-x > 5)
+=>
+	(up-lerp-tiles gl-point4-x gl-saved-point-x c: -3)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(up-point-distance gl-point4-x gl-position-center-x > 5)
+	(or	(up-compare-goal gl-point4-x g:>= gl-max-coordinate-value)
+		(or	(up-compare-goal gl-point4-y g:>= gl-max-coordinate-value)
+			(or	(up-compare-goal gl-point4-x < 0)
+				(or	(up-compare-goal gl-point4-y < 0)
+					(or	(up-point-contains gl-point4-x c: tree-class)
+						(up-point-terrain gl-point4-x == terrain-water-beach))))))
+=>
+	(up-lerp-tiles gl-point4-x gl-position-center-x c: 3)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(up-compare-goal gl-remote-last < 5)
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(up-point-distance gl-point4-x gl-position-center-x > 5)
+	(up-set-target-by-id g: temporary-goal10)
+=>
+	(up-get-path-distance gl-point4-x 0 temporary-goal8)
+	(up-get-point position-object gl-point2-x)
+	(up-get-point-distance gl-point2-x gl-point4-x temporary-goal)
+	(up-modify-goal temporary-goal8 c:- 20)
+	(up-modify-goal temporary-goal8 g:- temporary-goal)
+)
+
+(defrule
+	(up-compare-goal gl-remote-last < 5)
+	(up-compare-goal gl-drush-waypoint-required >= 10)
+	(up-point-distance gl-point4-x gl-position-center-x > 5)
+	(up-set-target-by-id g: temporary-goal10)
+	(up-compare-goal temporary-goal8 > 0)
+=>
+	(up-lerp-tiles gl-point4-x gl-position-center-x c: 3)
+;	(up-chat-data-to-all "delta-20: %d" g: temporary-goal8)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag == retreating-mode)
+		(or	(and	(up-compare-goal gl-remote-last < 2)
+				(or	(up-compare-flag gl-group-state-flag == march-state2)
+					(or	(up-compare-flag gl-group-state-flag == march-state3)
+						(or	(up-compare-flag gl-group-state-flag == march-state4)
+							(up-compare-flag gl-group-state-flag == march-state5)))))
+			(up-compare-flag gl-group-state-flag == 524288))); partial-retreat
+=>
+	(up-reset-search 1 1 1 1)
+	(up-jump-rule 15)
+)
+
+(defrule
+	(true)
+=>
+	(up-copy-point gl-point-x gl-point3-x)
+	(up-copy-point gl-point2-x gl-point4-x)
+	(up-lerp-tiles gl-point-x gl-point2-x c: -6)
+	(up-lerp-tiles gl-point2-x gl-point-x c: -6)
+;	(up-send-flare gl-point3-x)
+;	(up-send-flare gl-point4-x)
+	(set-goal temporary-goal7 0)
+	(set-strategic-number sn-focus-player-number 1)
+	(up-full-reset-search)
+)
+
+(defrule
+	(true)
+=>
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(up-copy-point gl-object-point-x gl-point-x)
+	(up-cross-tiles gl-saved-point-x gl-point2-x c: 10)
+	(up-cross-tiles gl-object-point-x gl-point2-x c: -10)
+	(up-copy-point gl-point8-x gl-point2-x)
+	(set-goal temporary-goal2 1)
+)
+
+(defrule
+	(up-compare-goal gl-object-point-x g:== gl-saved-point-x)
+=>
+	(up-modify-goal temporary-goal5 g:= gl-point8-x)
+	(up-modify-goal temporary-goal5 g:- gl-object-point-x)
+;	(up-modify-goal temporary-goal5 c:max -1)
+;	(up-modify-goal temporary-goal5 c:min 1)
+;	(up-chat-data-to-all "x1x2parity: %d" g: temporary-goal5)
+	(up-jump-rule 2)
+)
+
+(defrule
+	(true)
+=>
+	(up-copy-point gl-point7-x gl-saved-point-x)
+	(up-add-point gl-point7-x gl-object-point-x c: -1)
+	(up-modify-goal temporary-goal3 g:= gl-point7-y)
+	(up-modify-goal temporary-goal3 g:%/ gl-point7-x)
+	(up-modify-goal temporary-goal4 g:= gl-saved-point-y)
+	(up-modify-goal temporary-goal4 c:* 100)
+	(up-modify-goal temporary-goal5 g:= gl-saved-point-x)
+	(up-modify-goal temporary-goal5 g:* temporary-goal3)
+	(up-modify-goal temporary-goal4 g:- temporary-goal5)
+;	(up-chat-data-to-all "k: %d" g: temporary-goal3)
+;	(up-chat-data-to-all "c: %d" g: temporary-goal4)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal5 g:= gl-point8-y)
+	(up-modify-goal temporary-goal5 c:* 100)
+	(up-modify-goal temporary-goal6 g:= gl-point8-x)
+	(up-modify-goal temporary-goal6 g:* temporary-goal3)
+	(up-modify-goal temporary-goal5 g:- temporary-goal6)
+	(up-modify-goal temporary-goal5 g:- temporary-goal4)
+	(up-modify-goal temporary-goal5 c:max -1)
+	(up-modify-goal temporary-goal5 c:min 1)
+;	(up-chat-data-to-all "parity: %d" g: temporary-goal5)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+	(player-valid focus-player)
+	(not	(stance-toward focus-player ally))
+=>
+	(up-find-remote c: bombard-tower c: 40)
+	(up-find-remote c: castle c: 40)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+	(player-valid focus-player)
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(not	(stance-toward focus-player ally))
+=>
+	(up-find-remote c: watch-tower c: 40)
+	(up-find-remote c: town-center c: 40)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(up-compare-goal gl-object-point-x g:== gl-saved-point-x)
+	(up-set-target-object search-remote g: temporary-goal7)
+=>
+	(up-get-point position-object gl-temporary-point-x)
+	(up-modify-goal gl-temporary-point-x g:- gl-object-point-x)
+	(up-modify-goal gl-temporary-point-x g:* temporary-goal5)
+	(up-modify-goal gl-temporary-point-y g:= gl-temporary-point-x)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-set-target-object search-remote g: temporary-goal7)
+=>
+	(up-get-point position-object gl-temporary-point-x)
+	(up-modify-goal gl-temporary-point-y c:* 100)
+	(up-modify-goal gl-temporary-point-x g:* temporary-goal3)
+	(up-modify-goal gl-temporary-point-y g:- gl-temporary-point-x)
+	(up-modify-goal gl-temporary-point-y g:- temporary-goal4)
+	(up-modify-goal gl-temporary-point-y g:* temporary-goal5)
+;	(up-chat-data-to-all "g: %d" g: gl-temporary-point-y)
+)
+
+(defrule
+	(up-set-target-object search-remote g: temporary-goal7)
+	(up-compare-goal gl-temporary-point-y < 0)
+=>
+	(up-remove-objects search-remote object-data-index g:== temporary-goal7)
+	(up-get-point position-object gl-temporary-point-x)
+;	(up-send-flare gl-temporary-point-x)
+;	(chat-to-all "remove")
+	(up-jump-rule -3)
+)
+
+(defrule
+	(up-set-target-object search-remote g: temporary-goal7)
+=>
+	(up-modify-goal temporary-goal7 c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal temporary-goal2 2)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(up-copy-point gl-object-point-x gl-point2-x)
+	(up-cross-tiles gl-saved-point-x gl-point2-x c: -10)
+	(up-cross-tiles gl-object-point-x gl-point-x c: 10)
+	(set-goal temporary-goal7 0)
+	(up-jump-rule -11)
+)
+
+(defrule
+	(goal temporary-goal2 2)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal temporary-goal2 3)
+	(up-copy-point gl-point8-x gl-point-x)
+	(up-copy-point gl-saved-point-x gl-point2-x)
+	(up-copy-point gl-object-point-x gl-point2-x)
+	(up-cross-tiles gl-saved-point-x gl-point-x c: 10)
+	(up-cross-tiles gl-object-point-x gl-point-x c: -10)
+	(set-goal temporary-goal7 0)
+	(up-jump-rule -12)
+)
+
+(defrule
+	(goal temporary-goal2 3)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal temporary-goal2 4)
+	(up-copy-point gl-saved-point-x gl-point2-x)
+	(up-copy-point gl-object-point-x gl-point-x)
+	(up-cross-tiles gl-saved-point-x gl-point-x c: -10)
+	(up-cross-tiles gl-object-point-x gl-point2-x c: 10)
+	(set-goal temporary-goal7 0)
+	(up-jump-rule -13)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+	(up-compare-goal temporary-goal9 >= 8365)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal temporary-goal9 8364)
+;	(set-goal gl-attack-target-id -1)
+	(set-goal gl-remote-last 0)
+	(set-goal gl-drush-waypoint-required 0)
+	(up-modify-goal gl-remote-total c:+ 1)
+;	(up-chat-data-to-all "obstacle found (%d)" g: temporary-goal13)
+	(up-jump-rule -36)
+)
+
+(defrule
+	(goal gl-remote-last 1)
+	(goal temporary-goal9 8365)
+=>
+	(set-goal gl-remote-last 2)
+	(up-copy-point gl-candidate1-point-x gl-point4-x)
+	(up-copy-point gl-candidate2-point-x gl-candidate1-point-x)
+	(up-lerp-percent gl-candidate2-point-x gl-candidate4-point-x c: 30)
+	(up-copy-point gl-point3-x gl-candidate1-point-x)
+	(up-copy-point gl-point4-x gl-candidate2-point-x)
+	(up-jump-rule -24)
+)
+
+(defrule
+	(goal gl-remote-last 2)
+	(goal temporary-goal9 8365)
+=>
+	(set-goal gl-remote-last 3)
+	(up-copy-point gl-candidate2-point-x gl-point4-x)
+	(up-copy-point gl-candidate3-point-x gl-candidate1-point-x)
+	(up-lerp-percent gl-candidate3-point-x gl-candidate4-point-x c: 65)
+	(up-copy-point gl-point3-x gl-candidate2-point-x)
+	(up-copy-point gl-point4-x gl-candidate3-point-x)
+	(up-jump-rule -25)
+)
+
+(defrule
+	(goal gl-remote-last 3)
+	(goal temporary-goal9 8365)
+=>
+	(set-goal gl-remote-last 4)
+	(up-copy-point gl-candidate3-point-x gl-point4-x)
+	(up-copy-point gl-point3-x gl-candidate3-point-x)
+	(up-copy-point gl-point4-x gl-candidate4-point-x)
+	(up-jump-rule -26)
+)
+
+(defrule
+	(goal gl-remote-last 4)
+	(goal temporary-goal9 8365)
+=>
+	(set-goal gl-remote-last 5)
+	(up-copy-point gl-candidate4-point-x gl-point4-x)
+	(up-copy-point gl-point3-x gl-candidate4-point-x)
+	(up-copy-point gl-point4-x gl-march-point-x)
+	(up-jump-rule -24); n-3
+)
+
+(defrule
+	(up-compare-goal temporary-goal9 <= 8364)
+	(up-set-target-by-id g: gl-attack-target-id)
+	(up-compare-flag gl-group-state-flag == march-state5)
+=>
+	(up-get-point position-object gl-march-point-x)
+	(up-copy-point gl-candidate4-point-x gl-march-point-x)
+	(up-copy-point gl-candidate3-point-x gl-march-point-x)
+	(up-copy-point gl-candidate2-point-x gl-march-point-x)
+	(up-copy-point gl-candidate1-point-x gl-march-point-x)
+	(set-goal temporary-goal9 8365)
+;	(chat-to-all "!!!")
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal gl-remote-last 5)
+	(up-compare-goal temporary-goal9 >= 8365)
+	(up-set-target-by-id g: temporary-goal11)
+=>
+	(up-modify-goal gl-attack-target-id g:= temporary-goal11)
+	(set-goal gl-early-raid DUC-system)
+;	(up-chat-data-to-all "successful (%d)" g: gl-attack-target-id)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-set-target-by-id g: gl-old-target-id)
+	(up-compare-goal temporary-goal9 <= 8364)
+=>
+	(set-goal gl-remote-last 0)
+	(set-goal gl-drush-waypoint-required 0)
+	(up-modify-goal gl-old-target-id g:= gl-old-target2-id)
+	(set-goal gl-old-target2-id -1)
+	(set-goal gl-remote-total 0)
+;	(chat-to-all "try old")
+	(up-jump-rule -43)
+)
+
+(defrule
+	(true)
+=>
+	(up-copy-point gl-point-x gl-position-self-x)
+	(up-lerp-tiles gl-point-x gl-march-point-x c: 12)
+	(up-set-target-point gl-point-x)
+)
+
+(defrule
+	(up-compare-goal temporary-goal9 >= 8365)
+	(up-compare-flag gl-group-state-flag != group-active)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local g: temporary-goal13)
+	(up-target-point gl-point-x action-move formation-stagger stand-ground)
+	(up-get-fact game-time 0 gl-group-initializing-time)
+	(up-modify-goal gl-group-initializing-time c:+ 13)
+	(up-modify-flag gl-group-state-flag c:+ initializing)
+)
+
+(defrule
+	(or	(game-time g:> gl-group-initializing-time)
+		(up-group-size g: temporary-goal13 == 0))
+	(up-compare-flag gl-group-state-flag == initializing)
+=>
+	(up-target-point 0 action-none -1 stand-ground)
+	(up-modify-flag gl-group-state-flag c:- initializing)
+)
+
+(defrule
+	(up-compare-goal temporary-goal9 >= 8365)
+	(up-group-size g: temporary-goal13 > 0)
+	(up-compare-flag gl-group-state-flag != group-active)
+=>
+	(up-modify-flag gl-group-state-flag c:+ group-active)
+	(up-modify-flag gl-group-state-flag c:+ march-state1)
+	(up-modify-flag gl-group-state-flag c:- march-state2)
+	(up-modify-flag gl-group-state-flag c:- march-state3)
+	(up-modify-flag gl-group-state-flag c:- march-state4)
+	(up-modify-flag gl-group-state-flag c:- march-state5)
+;	(chat-to-all "activate")
+)
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag == initializing)
+		(or	(up-compare-flag gl-group-state-flag != group-active)
+			(up-group-size g: temporary-goal13 == 0)))
+=>
+	(up-jump-rule 24)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal11 0)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 3)
+	(up-find-remote c: watch-tower c: 2)
+	(up-find-remote c: castle c: 1)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-point position-object gl-point3-x)
+	(up-set-target-object search-remote c: 1)
+	(up-get-point position-object gl-object-point-x)
+	(up-set-target-object search-remote c: 2)
+	(up-get-point position-object gl-temporary-point-x)
+	(up-set-target-object search-remote c: 3)
+	(up-get-point position-object gl-point6-x)
+	(up-set-target-object search-remote c: 4)
+	(up-get-point position-object gl-point7-x)
+	(up-set-target-object search-remote c: 5)
+	(up-get-point position-object gl-point8-x)
+	(set-goal temporary-goal11 1)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal9 0)
+	(set-goal temporary-goal10 32)
+	(up-copy-point gl-point2-x gl-position-self-x)
+	(up-full-reset-search)
+	(up-set-group search-local g: temporary-goal13)
+	(up-get-group-size g: temporary-goal13 temporary-goal4)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-object-data object-data-move-x gl-point-x)
+	(up-get-object-data object-data-move-y gl-point-y)
+	(up-get-point position-object gl-point2-x)
+	(up-set-target-point gl-point2-x)
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 c: 15)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-get-search-state gl-local-total)
+	(up-full-reset-search)
+	(up-set-group search-local g: temporary-goal13)
+	(up-modify-goal temporary-goal4 g:= gl-local-total)
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-point2-x gl-point3-x < 20)
+=>
+	(set-goal temporary-goal10 17)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state3)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-copy-point gl-point5-x gl-point2-x)
+	(up-lerp-tiles gl-point5-x gl-candidate3-point-x c: 12)
+	(up-get-path-distance gl-point5-x 0 temporary-goal9)
+	(up-modify-goal temporary-goal9 g:- temporary-goal10)
+;	(up-chat-data-to-all "!!! (%d)" g: temporary-goal9)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state4)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-copy-point gl-point5-x gl-point2-x)
+	(up-lerp-tiles gl-point5-x gl-candidate4-point-x c: 12)
+	(up-get-path-distance gl-point5-x 0 temporary-goal9)
+	(up-modify-goal temporary-goal9 g:- temporary-goal10)
+;	(up-chat-data-to-all "! (%d)" g: temporary-goal9)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state5)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-copy-point gl-point5-x gl-point2-x)
+	(up-lerp-tiles gl-point5-x gl-march-point-x c: 12)
+	(up-get-path-distance gl-point5-x 0 temporary-goal9)
+	(up-modify-goal temporary-goal9 g:- temporary-goal10)
+;	(up-chat-data-to-all "!! (%d)" g: temporary-goal9)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-set-target-point gl-point2-x)
+	(set-goal temporary-goal6 -1)
+	(set-goal temporary-goal7 0)
+	(up-reset-search 0 0 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 10)
+	(set-goal gl-remote-total 0)
+)
+
+(defrule
+	(goal TSA 0)
+	(current-age == feudal-age)
+	(up-compare-flag gl-group-state-flag == fast-group)
+=>
+	(set-goal temporary-goal6 spearman-line)
+)
+
+(defrule
+	(player-valid focus-player)
+	(not	(stance-toward focus-player ally))
+=>
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 -1 -1 warship-class)
+	(up-find-remote g: temporary-goal6 c: 40)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-remote g: temporary-goal6 c: 40)
+	(up-filter-include -1 -1 -1 -1)
+	(up-find-remote c: villager-class c: 2)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal temporary-goal5 g:= gl-remote-total)
+)
+
+(defrule
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(goal temporary-goal6 spearman-line)
+=>
+	(up-clean-search search-remote object-data-maxhp search-order-desc)
+
+)
+
+(defrule
+	(goal temporary-goal6 spearman-line)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-maxhp > 40)
+	(up-compare-flag gl-group-state-flag != 524288)
+	(or	(and	(up-set-target-object search-remote c: 1)
+			(up-object-data object-data-maxhp > 40))
+		(up-group-size g: temporary-goal13 < 4))
+	(up-group-size g: temporary-goal13 < 8)
+=>
+	(up-modify-flag gl-group-state-flag c:+ 524288); partial-retreat
+	(up-modify-flag gl-group-state-flag c:- combat-mode)
+	(up-get-fact game-time 0 gl-group-initializing-time)
+	(up-modify-goal gl-group-initializing-time c:+ 15)
+	(up-modify-flag gl-group-state-flag c:+ initializing)
+	(chat-to-player my-player-number "spears")
+)
+
+(defrule
+	(goal temporary-goal6 spearman-line)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal6 -1)
+	(up-jump-rule -5)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-class == villager-class)
+=>
+	(up-set-target-point gl-point3-x)
+	(up-remove-objects search-remote object-data-distance < 7)
+	(up-set-target-point gl-object-point-x)
+	(up-remove-objects search-remote object-data-distance < 7)
+	(up-set-target-point gl-temporary-point-x)
+	(up-remove-objects search-remote object-data-distance < 7)
+	(up-set-target-point gl-point6-x)
+	(up-remove-objects search-remote object-data-distance < 7)
+	(up-set-target-point gl-point7-x)
+	(up-remove-objects search-remote object-data-distance < 7)
+	(up-set-target-point gl-point8-x)
+	(up-remove-objects search-remote object-data-distance < 7)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-precise-move-x gl-saved-point-x)
+	(up-get-object-data object-data-precise-move-y gl-saved-point-y)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-target-id >= 0)
+=>
+	(up-get-object-data object-data-target-id gl-object-point-x)
+	(up-set-target-by-id g: gl-object-point-x)
+	(up-get-object-data object-data-precise-x gl-saved-point-x)
+	(up-get-object-data object-data-precise-y gl-saved-point-y)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-point position-object gl-point3-x)
+	(up-get-object-data object-data-precise-x gl-object-point-x)
+	(up-get-object-data object-data-precise-y gl-object-point-y)
+	(up-add-point gl-saved-point-x gl-object-point-x c: -1)
+	(set-goal gl-point7-x 0)
+	(set-goal gl-point7-y 0)
+	(up-get-point-distance gl-point7-x gl-saved-point-x temporary-goal6)
+	(up-add-point gl-saved-point-x gl-saved-point-x c: 99)
+	(up-modify-goal gl-saved-point-x g:/ temporary-goal6)
+	(up-modify-goal gl-saved-point-y g:/ temporary-goal6)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-precise-x gl-object-point-x)
+	(up-get-object-data object-data-precise-y gl-object-point-y)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-precise-x gl-point7-x)
+	(up-get-object-data object-data-precise-y gl-point7-y)
+	(up-add-point gl-point7-x gl-object-point-x c: -1)
+	(set-goal gl-object-point-x 0)
+	(set-goal gl-object-point-y 0)
+	(up-get-point-distance gl-object-point-x gl-point7-x temporary-goal6)
+	(up-add-point gl-point7-x gl-point7-x c: 99)
+	(up-modify-goal gl-point7-x g:/ temporary-goal6)
+	(up-modify-goal gl-point7-y g:/ temporary-goal6)
+	(up-add-point gl-saved-point-x gl-point7-x c: -1)
+	(up-get-point-distance gl-object-point-x gl-saved-point-x temporary-goal6)
+;	(up-chat-data-to-all "Vector delta: %d" g: temporary-goal6)
+)
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag != melee-group); Placeholder
+		(and	(up-set-target-object search-remote c: 0)
+			(up-object-data object-data-hitpoints > 80)))
+=>
+	(up-modify-goal temporary-goal7 g:= gl-remote-total)
+	(up-remove-objects search-remote object-data-class == villager-class)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal temporary-goal3 g:= gl-remote-total)
+	(up-modify-goal temporary-goal3 c:* 3)
+	(up-modify-goal temporary-goal3 c:/ 4); 2/3 ; switch according to tech/unit advantage
+	(up-modify-goal temporary-goal8 g:= gl-remote-total)
+	(up-modify-goal temporary-goal8 c:* 2)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == melee-group)
+=>
+	(up-modify-goal temporary-goal7 g:= gl-remote-total)
+	(up-remove-objects search-remote object-data-class == villager-class)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal temporary-goal3 g:= gl-remote-total)
+	(up-modify-goal temporary-goal3 c:* 13)
+	(up-modify-goal temporary-goal3 c:/ 20); 1/2 ; switch according to tech/unit advantage
+	(up-modify-goal temporary-goal8 g:= gl-remote-total)
+	(up-modify-goal temporary-goal8 c:* 2)
+)
+
+(defrule
+;	(nand	(up-compare-flag gl-group-state-flag == suicide-enabled)
+;		(and	(up-set-target-object search-remote c: 0)
+;			(up-object-data object-data-class == villager-class)))
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(goal TSA 0); test
+	(or	(up-compare-goal temporary-goal3 g:> temporary-goal4)
+		(and	(goal TSA 0)
+			(up-compare-flag gl-group-state-flag != suicide-enabled)))
+=>
+	(up-modify-flag gl-group-state-flag c:+ retreating-mode)
+	(up-modify-flag gl-group-state-flag c:- combat-mode)
+	(up-get-fact game-time 0 gl-group-initializing-time)
+	(up-modify-goal gl-group-initializing-time c:+ 10)
+	(chat-to-player my-player-number "retreat")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == size-increase)
+=>
+	(up-modify-flag gl-group-state-flag c:- size-increase)
+	(set-goal gl-point-x -5000)
+	(set-goal gl-point-y -5000)
+;	(chat-to-all "size inc")
+)
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag == combat-mode)
+		(up-compare-flag gl-group-state-flag != group-active))
+=>
+	(up-jump-rule 18)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag == 524288); partial-retreat
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target-id)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target2-id)
+	(game-time g:>= gl-group-initializing-time)
+=>
+	(up-modify-flag gl-group-state-flag c:- 524288); partial-retreat
+	(up-modify-flag gl-group-state-flag c:- march-state2)
+	(up-modify-flag gl-group-state-flag c:+ march-state3)
+	(up-modify-flag gl-group-state-flag c:- march-state4)
+	(up-modify-flag gl-group-state-flag c:- march-state5)
+	(up-modify-flag gl-group-state-flag c:+ 65536); route-reset
+	(up-modify-goal gl-old-target2-id g:= gl-old-target-id)
+	(up-modify-goal gl-old-target-id g:= gl-attack-target-id)
+	(chat-to-player my-player-number "=> return to raiding")
+	(up-jump-rule 17)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target-id)
+	(up-compare-goal gl-attack-target-id g:!= gl-old-target2-id)
+	(up-compare-flag gl-group-state-flag == empty-retarget)
+	(up-compare-flag gl-group-state-flag == march-state5)
+=>
+	(up-modify-flag gl-group-state-flag c:- empty-retarget)
+	(up-modify-flag gl-group-state-flag c:+ march-state2); if changed, completed4 must be updated as well
+	(up-modify-flag gl-group-state-flag c:- march-state5)
+	(chat-to-player my-player-number "=> go new")
+	(up-jump-rule 16)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+	(up-compare-goal temporary-goal5 < 2)
+	(or	(up-compare-goal temporary-goal5 < 1)
+		(up-point-distance gl-point2-x gl-point3-x > 5))
+	(up-compare-goal gl-old-target2-id g:!= gl-ancient-target-id)
+	(up-compare-flag gl-group-state-flag == march-state5)
+	(up-point-distance gl-point2-x gl-march-point-x < 5)
+=>
+	(up-modify-goal gl-old-target2-id g:= gl-old-target-id)
+	(up-modify-goal gl-old-target-id g:= gl-attack-target-id)
+	(up-modify-flag gl-group-state-flag c:+ empty-retarget)
+	(chat-to-player my-player-number "empty target")
+;	(chat-to-all "empty target")
+)
+
+(defrule
+	(up-compare-goal temporary-goal7 > 0)
+	(game-time g:> gl-group-initializing-time)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+	(nand	(up-compare-goal temporary-goal8 g:>= temporary-goal4)
+		(up-compare-flag gl-group-state-flag == retreating-mode))
+	(or	(up-compare-goal temporary-goal7 > 1)
+		(or	(up-compare-goal temporary-goal6 < 70)
+			(up-point-distance gl-point2-x gl-point3-x < 5)))
+=>
+	(up-modify-flag gl-group-state-flag c:+ combat-mode)
+	(up-chat-data-to-player my-player-number "enter combat mode (%d)" g: temporary-goal7)
+	(up-jump-rule 14)
+)
+
+(defrule
+	(game-time g:< gl-group-initializing-time)
+	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != 524288); partial-retreat
+=>
+	(up-jump-rule 13)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state1)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-candidate1-point-x gl-point2-x < 10)
+=>
+	(up-modify-flag gl-group-state-flag c:- march-state1)
+	(up-modify-flag gl-group-state-flag c:+ march-state2)
+;	(chat-to-all "completed1")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state1)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-candidate1-point-x gl-point-x > 2)
+=>
+	(set-goal gl-point6-x -1)
+	(set-goal gl-point6-y -1)
+	(up-target-point gl-point6-x action-move formation-line -1)
+	(up-target-point gl-candidate1-point-x action-move formation-line no-attack)
+;	(chat-to-all "move 1")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state2)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-candidate2-point-x gl-point2-x < 10)
+=>
+	(up-modify-flag gl-group-state-flag c:- march-state2)
+	(up-modify-flag gl-group-state-flag c:+ march-state3)
+;	(chat-to-all "completed2")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state2)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-candidate2-point-x gl-point-x > 2)
+=>
+	(set-goal gl-point6-x -1)
+	(set-goal gl-point6-y -1)
+	(up-target-point gl-point6-x action-move formation-line -1)
+	(up-target-point gl-candidate2-point-x action-move formation-line no-attack)
+;	(chat-to-all "move 2")
+)
+
+(defrule
+	(up-compare-goal temporary-goal9 > 0)
+=>
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-reset-search 0 0 1 1)
+	(up-reset-filters)
+	(up-copy-point gl-point5-x gl-point2-x)
+	(up-lerp-tiles gl-point5-x gl-march-point-x c: 6)
+	(up-set-target-point gl-point5-x)
+	(up-filter-distance c: -1 c: 7)
+	(up-find-remote c: building-class c: 20)
+	(up-find-remote c: wall-class c: 20)
+	(up-find-remote c: gate-class c: 20)
+	(up-set-target-point gl-point2-x)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != 131072); dive-in
+	(up-compare-flag gl-group-state-flag != 262144); full-dive-in
+	(up-compare-goal temporary-goal9 > 0)
+	(up-object-data object-data-action != actionid-attack)
+	(up-set-target-object search-remote c: 0)
+	(timer-triggered 15)
+=>
+	(up-get-point position-object gl-point5-x)
+	(up-lerp-tiles gl-point5-x gl-point2-x c: 2)
+	(up-target-point gl-point5-x action-move formation-line defensive)
+)
+
+
+(defrule
+	(up-compare-goal temporary-goal9 > 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state3)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-candidate3-point-x gl-point2-x < 10)
+=>
+	(up-modify-flag gl-group-state-flag c:- march-state3)
+	(up-modify-flag gl-group-state-flag c:+ march-state4)
+;	(chat-to-all "completed3")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state3)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-candidate3-point-x gl-point-x > 2)
+=>
+	(set-goal gl-point6-x -1)
+	(set-goal gl-point6-y -1)
+	(up-target-point gl-point6-x action-move formation-line -1)
+	(up-target-point gl-candidate3-point-x action-move formation-line no-attack)
+;	(chat-to-all "move 3")
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(or	(and	(up-compare-flag gl-group-state-flag == march-state4)
+			(up-point-distance gl-candidate4-point-x gl-point2-x < 10))
+		(and	(up-point-distance gl-march-point-x gl-point-x < 8)
+			(or	(up-compare-flag gl-group-state-flag == march-state2)
+				(up-compare-flag gl-group-state-flag == march-state4))))
+=>
+	(up-modify-flag gl-group-state-flag c:- march-state2)
+	(up-modify-flag gl-group-state-flag c:- march-state3)
+	(up-modify-flag gl-group-state-flag c:- march-state4)
+	(up-modify-flag gl-group-state-flag c:+ march-state5)
+;	(chat-to-all "completed4")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state4)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance gl-candidate4-point-x gl-point-x > 2)
+=>
+	(set-goal gl-point6-x -1)
+	(set-goal gl-point6-y -1)
+	(up-target-point gl-point6-x action-move formation-line -1)
+	(up-target-point gl-candidate4-point-x action-move formation-line no-attack)
+;	(chat-to-all "move 4")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state5)
+	(up-set-target-object search-local c: 0)
+	(nand	(up-object-data object-data-action == actionid-attack)
+		(up-path-distance gl-march-point-x 0 == 65535)); Waller
+	(up-compare-flag gl-group-state-flag != melee-group)
+	(up-point-distance gl-march-point-x gl-point-x > 0)
+	(or	(up-point-distance gl-march-point-x gl-point-x > 2)
+		(up-compare-goal gl-old-target2-id g:!= gl-ancient-target-id))
+=>
+	(set-goal gl-point6-x -1)
+	(set-goal gl-point6-y -1)
+	(up-target-point gl-point6-x action-move formation-line -1)
+	(up-target-point gl-march-point-x action-move formation-line stand-ground)
+	(up-jump-rule 1)
+;	(chat-to-all "move f")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == march-state5)
+	(up-set-target-object search-local c: 0)
+	(nand	(up-object-data object-data-action == actionid-attack)
+		(up-path-distance gl-march-point-x 0 == 65535))
+	(up-point-distance gl-march-point-x gl-point-x > 0)
+	(or	(up-point-distance gl-march-point-x gl-point-x > 2)
+		(up-compare-goal gl-old-target2-id g:!= gl-ancient-target-id))
+=>
+	(set-goal gl-point6-x -1)
+	(set-goal gl-point6-y -1)
+	(up-target-point gl-point6-x action-move formation-line -1)
+	(up-target-point gl-march-point-x action-move formation-line defensive)
+;	(chat-to-all "move f")
+)
+
+;
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag == initializing)
+		(or	(up-compare-flag gl-group-state-flag != group-active)
+			(or	(up-compare-flag gl-group-state-flag == retreating-mode)
+				(or	(up-compare-flag gl-group-state-flag == 524288); partial-retreat
+					(game-time g:< gl-group-initializing-time)))))
+=>
+	(up-jump-rule 16)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal3 town-center)
+	(set-goal temporary-goal4 0)
+	(set-goal temporary-goal5 850)
+	(set-goal gl-local-total 0)
+	(set-goal gl-remote-total 0)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-full-reset-search)
+	(up-set-group search-local g: temporary-goal13)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point2-x)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal11 0)
+	(set-goal temporary-goal2 1000)
+	(up-reset-search 0 0 1 1)
+	(up-set-target-point gl-point2-x)
+	(up-find-remote g: temporary-goal3 c: 3)
+	(up-remove-objects search-remote object-data-distance > 17)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id gl-remote-last)
+	(set-goal temporary-goal11 1)
+	(up-get-point position-object gl-point3-x)
+	(up-set-target-object search-remote c: 1)
+	(up-get-point position-object gl-object-point-x)
+	(up-set-target-object search-remote c: 2)
+	(up-get-point position-object gl-temporary-point-x)
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-set-target-point gl-point3-x)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-precise-move-x gl-point6-x)
+	(up-get-object-data object-data-precise-move-y gl-point6-y)
+	(up-get-point position-object gl-point2-x)
+	(up-get-object-data object-data-precise-distance temporary-goal)
+	(up-modify-goal temporary-goal2 g:min temporary-goal)
+	(up-set-target-point gl-object-point-x)
+	(up-get-object-data object-data-precise-distance temporary-goal)
+	(up-modify-goal temporary-goal2 g:min temporary-goal)
+	(up-set-target-point gl-temporary-point-x)
+	(up-get-object-data object-data-precise-distance temporary-goal)
+	(up-modify-goal temporary-goal2 g:min temporary-goal)
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(up-compare-goal temporary-goal2 g:< temporary-goal5)
+=>
+	(up-copy-point gl-point4-x gl-point3-x)
+	(up-add-point gl-point4-x gl-object-point-x c: 1)
+	(up-add-point gl-point4-x gl-temporary-point-x c: 1)
+	(up-modify-goal gl-point4-x c:/ 3)
+	(up-modify-goal gl-point4-y c:/ 3)
+	(up-copy-point gl-point5-x gl-point2-x)
+	(up-lerp-tiles gl-point5-x gl-point4-x c: -12)
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(up-compare-goal temporary-goal2 g:< temporary-goal5)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-precise-x gl-point2-x)
+	(up-get-object-data object-data-precise-y gl-point2-y)
+	(up-set-target-by-id g: gl-remote-last)
+	(up-get-object-data object-data-precise-x gl-point3-x)
+	(up-get-object-data object-data-precise-y gl-point3-y)
+	(up-get-point-distance gl-point2-x gl-point3-x temporary-goal7)
+	(up-get-point-distance gl-point2-x gl-point6-x gl-point4-x)
+	(up-add-point gl-point3-x gl-point2-x c: -1)
+	(up-add-point gl-point6-x gl-point2-x c: -1)
+	(up-modify-goal gl-point3-x g:* gl-point4-x)
+	(up-modify-goal gl-point3-y g:* gl-point4-x)
+	(up-modify-goal gl-point3-x g:/ temporary-goal7)
+	(up-modify-goal gl-point3-y g:/ temporary-goal7)
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(up-compare-goal temporary-goal2 g:< temporary-goal5)
+=>
+	(up-add-point gl-point3-x gl-point6-x c: -1)
+	(up-add-point gl-point3-x gl-point3-x c: 99)
+	(set-goal gl-point6-x 0)
+	(set-goal gl-point6-y 0)
+	(up-get-point-distance gl-point3-x gl-point6-x gl-point4-y)
+	(up-modify-goal gl-point4-y g:/ gl-point4-x)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point2-x)
+	(up-get-object-data object-data-move-x gl-point6-x)
+	(up-get-object-data object-data-move-y gl-point6-y)
+	(up-lerp-tiles gl-point2-x gl-point6-x c: 12)
+	(up-get-path-distance gl-point2-x 0 temporary-goal7)
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(up-compare-goal temporary-goal2 g:< temporary-goal5)
+	(game-time g:> gl-group-initializing-time)
+	(up-group-size g: temporary-goal13 > 6)
+	(or	(up-group-size g: temporary-goal13 > 12)
+		(up-compare-goal gl-point4-y > 180))
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(up-compare-goal gl-point4-y > 150)
+	(up-compare-goal temporary-goal7 < 16)
+	(up-compare-goal temporary-goal4 < 2)
+	(up-compare-goal gl-enemy-tower-count < 2)
+	(up-compare-flag gl-group-state-flag != 131072); dive-in
+=>
+	(up-modify-flag gl-group-state-flag c:+ 131072); dive-in, reset by 6 second timer
+;	(up-chat-data-to-player my-player-number "Path: %d" g: temporary-goal7)
+;	(up-chat-data-to-player my-player-number "Vector delta: %d" g: gl-point4-y)
+	(chat-to-player my-player-number "Dive in")
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(up-compare-goal temporary-goal2 g:< temporary-goal5)
+	(game-time g:> gl-group-initializing-time)
+	(up-group-size g: temporary-goal13 > 30)
+	(up-compare-goal gl-military-percentage2 > 230)
+	(up-compare-goal temporary-goal4 < 2)
+	(up-compare-goal gl-point4-y > 150)
+	(up-compare-goal gl-enemy-tower-count < 5)
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(up-compare-flag gl-group-state-flag != 262144); full-dive-in
+=>
+	(up-modify-flag gl-group-state-flag c:+ 262144); full-dive-in, reset by one minute timer
+	(chat-to-player my-player-number "Full dive in")
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(or	(goal temporary-goal4 2)
+		(or	(up-compare-flag gl-group-state-flag != ignore-structures)
+			(goal gl-local-total 3535453)))
+	(up-compare-flag gl-group-state-flag != 131072); dive-in
+	(up-compare-flag gl-group-state-flag != 262144); full-dive-in
+	(up-compare-goal temporary-goal2 g:< temporary-goal5)
+=>
+	(up-set-target-point gl-point5-x)
+	(up-target-point 0 action-move -1 no-attack)
+	(up-modify-flag gl-group-state-flag c:- combat-mode)
+	(up-modify-flag gl-group-state-flag c:+ 65536); route-reset
+	(up-modify-flag gl-group-state-flag c:- march-state1)
+	(up-modify-flag gl-group-state-flag c:- march-state2)
+	(up-modify-flag gl-group-state-flag c:+ march-state3);test
+)
+
+(defrule
+	(goal temporary-goal11 1)
+	(or	(goal temporary-goal4 2)
+		(or	(up-compare-flag gl-group-state-flag != ignore-structures)
+			(goal gl-local-total 3535453)))
+	(up-compare-flag gl-group-state-flag != 131072); dive-in
+	(up-compare-flag gl-group-state-flag != 262144); full-dive-in
+	(up-compare-goal temporary-goal2 g:< temporary-goal5)
+=>
+	(up-modify-flag gl-group-state-flag c:- march-state4)
+	(up-get-fact game-time 0 gl-group-initializing-time)
+	(up-modify-goal gl-group-initializing-time c:+ 7)
+	(up-modify-flag gl-group-state-flag c:- march-state5)
+	(chat-to-player my-player-number "out of TC")
+	(up-jump-rule 5)
+)
+
+(defrule
+	(goal temporary-goal4 0)
+=>
+	(up-get-group-size g: temporary-goal13 temporary-goal6)
+	(up-modify-goal temporary-goal6 c:- 20)
+	(up-modify-goal temporary-goal6 c:max 0)
+	(up-modify-goal temporary-goal6 c:min 1)
+	(up-filter-garrison g: temporary-goal6 c: -1)
+	(set-goal temporary-goal3 watch-tower)
+	(set-goal temporary-goal4 1)
+	(set-goal temporary-goal5 1000)
+	(up-jump-rule -11)
+)
+
+(defrule
+	(goal temporary-goal4 1)
+=>
+	(up-filter-garrison c: -1 c: -1)
+	(set-goal temporary-goal3 castle)
+	(set-goal temporary-goal4 2)
+	(set-goal temporary-goal5 1000)
+	(up-jump-rule -12)
+)
+
+(defrule
+	(up-set-target-object search-local g: gl-local-total)
+=>
+	(up-get-object-data object-data-attacker-id gl-remote-last)
+)
+
+(defrule
+	(up-set-target-object search-local g: gl-local-total)
+	(up-set-target-by-id g: gl-remote-last)
+	(or	(up-object-data object-data-type == castle)
+		(or	(up-object-data object-data-type == bombard-tower)	
+			(and	(or	(up-object-data object-data-type == town-center)
+					(up-object-data object-data-class == tower-class))
+				(up-compare-flag gl-group-state-flag != ignore-structures))))
+=>
+	(set-goal temporary-goal11 1)
+	(set-goal gl-local-total 3535453)
+	(set-goal temporary-goal5 850000)
+	(up-jump-rule -10)
+)
+
+(defrule
+	(up-set-target-object search-local g: gl-local-total)
+=>
+	(up-modify-goal gl-local-total c:+ 1)
+	(up-jump-rule -3)
+)
+
+;
+
+(defrule
+	(game-time g:>= gl-group-initializing-time)
+	(up-compare-flag gl-group-state-flag == march-state5)
+	(or	(up-compare-flag gl-group-state-flag == retreating-mode)
+		(up-compare-flag gl-group-state-flag == 524288)); partial-retreat
+=>
+	(up-modify-group-flag 0 g: temporary-goal13)
+)
+
+(defrule
+	(game-time g:>= gl-group-initializing-time)
+	(or	(and	(up-compare-flag gl-group-state-flag == march-state5)
+			(or	(up-compare-flag gl-group-state-flag == retreating-mode)
+				(up-compare-flag gl-group-state-flag == 524288)))
+		(up-group-size g: temporary-goal13 == 0))
+=>
+	(set-goal gl-group-state-flag 0); reset all flags
+	(set-goal gl-attack-target-id -1)
+	(set-goal gl-old-target-id -1)
+	(set-goal gl-old-target2-id -1)
+	(set-goal gl-ancient-target-id -1)
+	(up-reset-group g: temporary-goal13)
+)
+
+;
+
+(defrule
+	(or	(up-compare-flag gl-group-state-flag != combat-mode)
+		(up-compare-flag gl-group-state-flag != group-active))
+=>
+	(up-jump-rule 79)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal11 0)
+	(set-goal gl-ranged-patrolling 0)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-full-reset-search)
+	(up-set-group search-local g: temporary-goal13)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point6-x)
+	(up-find-remote c: town-center c: 2)
+	(up-find-remote c: watch-tower c: 2)
+	(up-find-remote c: castle c: 1)
+	(up-set-target-point gl-point6-x)
+	(up-filter-distance c: -1 c: 15)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 240)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-point position-object gl-point3-x)
+	(up-set-target-object search-remote c: 1)
+	(up-get-point position-object gl-object-point-x)
+	(up-set-target-object search-remote c: 2)
+	(up-get-point position-object gl-temporary-point-x)
+	(up-set-target-object search-remote c: 3)
+	(up-get-point position-object gl-point7-x)
+	(up-set-target-object search-remote c: 4)
+	(up-get-point position-object gl-point8-x)
+	(set-goal temporary-goal11 1)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != melee-group)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-remove-objects search-local object-data-range >= 4)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal gl-ranged-patrolling g:= gl-local-total)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag != melee-group)
+	(or	(and	(research-completed ri-ballistics)
+			(and	(up-group-size g: temporary-goal13 > 13)
+				(or	(up-group-size g: temporary-goal13 > 19)
+					(and	(up-set-target-object search-local c: 0)
+						(up-object-data object-data-frame-delay > 6)))))
+		(or	(up-object-data object-data-frame-delay > 8)
+			(up-group-size g: temporary-goal13 > 23)))
+=>
+	(set-goal gl-ranged-patrolling 1)
+)
+
+(defrule
+	(up-compare-flag gl-ranged-patrolling <= 0)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-set-target-point gl-point6-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 15)
+	(up-find-remote c: mangonel-line c: 1)
+)
+
+(defrule
+	(up-compare-flag gl-ranged-patrolling <= 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(set-goal gl-ranged-patrolling 3454543)
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-flag gl-ranged-patrolling <= 0)
+	(not	(up-set-target-object search-remote c: 0))
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-find-remote c: mangonel-line c: 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal gl-point5-y -2)
+	(set-goal gl-remote-total 0)
+	(up-full-reset-search)
+	(up-set-group search-local g: temporary-goal13)
+	(up-get-precise-time 0 temporary-goal3)
+	(up-modify-goal temporary-goal4 g:= temporary-goal3)
+	(up-modify-goal temporary-goal3 c:mod 7)
+	(up-modify-goal temporary-goal4 c:mod 11)
+	(set-goal temporary-goal2 13)
+	(set-goal temporary-goal5 -1)
+	(set-goal temporary-goal6 400)
+	(set-strategic-number sn-target-point-adjustment adjust-precise)
+;	(up-clean-search search-local object-data-base-attack search-order-asc)
+)
+
+(defrule
+	(up-compare-goal temporary-goal3 >= 4)
+	(up-compare-goal temporary-goal4 >= 9)
+	(up-object-data object-data-next-attack == 0)
+=>
+	(up-modify-goal gl-micro-direction c:* -1)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-get-object-data object-data-range temporary-goal7)
+	(up-modify-goal temporary-goal7 c:* 100)
+	(up-modify-goal temporary-goal8 g:= temporary-goal7)
+	(up-modify-goal temporary-goal8 c:+ 200)
+)
+
+(defrule
+	(false)
+	(up-compare-flag gl-group-state-flag == suicide-enabled)
+	(not	(stance-toward focus-player ally))
+	(player-valid focus-player)
+=>
+	(up-set-target-point gl-point6-x)
+	(up-filter-distance c: -1 c: 5)
+	(up-find-remote c: villager-class c: 20)
+	(up-clean-search search-remote object-data-hitpoints search-order-asc)
+;	(up-filter-distance c: -1 c: 8)
+;	(up-find-remote c: villager-class c: 20)
+)
+
+(defrule
+	(false)
+	(up-compare-flag gl-group-state-flag == suicide-enabled)
+	(not	(up-set-target-object search-remote c: 0))
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(false)
+	(up-compare-flag gl-group-state-flag == suicide-enabled)
+=>
+;	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(false)
+	(up-compare-flag gl-group-state-flag == suicide-enabled)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-jump-rule 9)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(player-valid focus-player)
+	(not	(stance-toward focus-player ally))
+	(goal gl-point5-y -1)
+=>
+	(up-filter-distance c: -1 g: temporary-goal2)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-move -1 -1)
+	(up-find-remote c: -1 c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-remote c: -1 c: 240)
+	(up-filter-exclude -1 -1 -1 -1)
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+)
+
+(defrule
+	(goal gl-point5-y -1)
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(goal gl-point5-y -1)
+=>
+	(up-get-object-data object-data-precise-x gl-point6-x)
+	(up-get-object-data object-data-precise-y gl-point6-y)
+	(up-get-object-data object-data-id temporary-goal5)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-precise-x gl-point5-x)
+	(up-get-object-data object-data-precise-y gl-point5-y)
+	(up-get-point-distance gl-point6-x gl-point5-x temporary-goal9)
+	(up-modify-goal temporary-goal9 c:- 250)
+	(up-modify-goal temporary-goal9 c:max 50)
+;	(up-chat-data-to-all "sr: %d" g: temporary-goal9)
+	(up-reset-search 0 0 1 1)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(player-valid focus-player)
+	(not	(stance-toward focus-player ally))
+=>
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-get-object-data object-data-precise-move-x gl-point4-x)
+	(up-get-object-data object-data-precise-move-y gl-point4-y)
+	(up-filter-distance c: -1 g: temporary-goal2)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-remote c: -1 c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-remote c: -1 c: 240)
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(goal gl-point5-y -2)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-get-point position-object gl-point2-x)
+	(up-set-target-point gl-point2-x)
+	(up-get-point-distance gl-point-x gl-point2-x temporary-goal2)
+	(up-modify-goal temporary-goal2 c:+ 5)
+	(up-modify-goal temporary-goal2 c:max 12)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-set-target-point gl-point-x)
+	(up-reset-search 0 0 1 1)
+	(set-goal gl-point5-y -1)
+	(up-jump-rule -6)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(nor	(up-set-target-object search-remote c: 0)
+		(stance-toward focus-player ally))
+	(player-valid focus-player)
+	(up-set-target-object search-local c: 0)
+=>
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 13)
+	(up-filter-include -1 -1 -1 -1)
+	(up-find-remote c: villager-class c: 20)
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+)
+
+(defrule
+	(not	(up-set-target-object search-remote c: 0))
+	(player-valid focus-player)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(or	(up-object-data object-data-class == villager-class)
+		(up-object-data object-data-range < 4))
+=>
+	(set-goal gl-ranged-patrolling 0)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-class == villager-class)
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(goal temporary-goal11 1)
+=>
+	(up-set-target-point gl-point3-x)
+	(up-remove-objects search-remote object-data-distance < 6)
+	(up-set-target-point gl-object-point-x)
+	(up-remove-objects search-remote object-data-distance < 6)
+	(up-set-target-point gl-temporary-point-x)
+	(up-remove-objects search-remote object-data-distance < 6)
+	(up-set-target-point gl-point7-x)
+	(up-remove-objects search-remote object-data-distance < 6)
+	(up-set-target-point gl-point8-x)
+	(up-remove-objects search-remote object-data-distance < 6)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-search-state gl-local-total)
+	(up-modify-goal gl-point-x g:= gl-local-total)
+	(up-modify-goal gl-point-x g:%/ gl-remote-total)
+	(up-get-object-data object-data-maxhp gl-point-y)
+	(up-get-object-data object-data-precise-x gl-point5-x)
+	(up-get-object-data object-data-precise-y gl-point5-y)
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-precise-x gl-point6-x)
+	(up-get-object-data object-data-precise-y gl-point6-y)
+	(up-get-point-distance gl-point5-x gl-point6-x temporary-goal)
+;	(up-chat-data-to-all "mr: %d" g: temporary-goal)
+	(set-goal gl-local-last 100)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(goal temporary-goal11 1)
+=>
+	(up-set-target-point gl-point3-x)
+	(up-get-object-data object-data-distance temporary-goal11)
+	(up-modify-goal gl-local-last g:min temporary-goal11)
+	(up-set-target-point gl-object-point-x)
+	(up-get-object-data object-data-distance temporary-goal11)
+	(up-modify-goal gl-local-last g:min temporary-goal11)
+	(up-set-target-point gl-temporary-point-x)
+	(up-get-object-data object-data-distance temporary-goal11)
+	(up-modify-goal gl-local-last g:min temporary-goal11)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(up-compare-flag gl-group-state-flag != ignore-structures)
+	(goal temporary-goal11 1)
+=>
+	(up-set-target-point gl-point7-x)
+	(up-get-object-data object-data-distance temporary-goal11)
+	(up-modify-goal gl-local-last g:min temporary-goal11)
+	(up-set-target-point gl-point8-x)
+	(up-get-object-data object-data-distance temporary-goal11)
+	(up-modify-goal gl-local-last g:min temporary-goal11)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(up-set-target-by-id g: temporary-goal5)
+	(up-compare-goal temporary-goal g:> temporary-goal9)
+=>
+	(up-get-object-data object-data-precise-x gl-point6-x)
+	(up-get-object-data object-data-precise-y gl-point6-y)
+	(up-get-point-distance gl-point5-x gl-point6-x temporary-goal)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(or	(up-compare-goal temporary-goal g:<= temporary-goal9)
+		(not	(up-set-target-by-id g: temporary-goal5)))
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-get-object-data object-data-id temporary-goal5)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == melee-group)
+=>
+	(up-jump-rule 38)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-get-object-data object-data-min-range temporary-goal9)
+	(up-modify-goal temporary-goal9 c:* 100)
+	(up-get-point-distance gl-point5-x gl-point6-x temporary-goal)
+	(set-goal temporary-goal11 1)
+	(up-modify-goal gl-local-total c:min 10)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal11)
+	(up-compare-goal temporary-goal11 g:< gl-local-total)
+=>
+	(up-get-object-data object-data-precise-x gl-point7-x)
+	(up-get-object-data object-data-precise-y gl-point7-y)
+	(up-add-point gl-point5-x gl-point7-x c: 1)
+	(up-modify-goal temporary-goal11 c:+ 1)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(set-goal temporary-goal11 1)
+	(up-get-object-data object-data-range gl-point2-x)
+	(up-modify-goal gl-point2-x c:* 100)
+	(up-modify-goal gl-remote-total c:min 10)
+	(up-get-object-data object-data-precise-move-x gl-saved-point-x)
+	(up-get-object-data object-data-precise-move-y gl-saved-point-y)
+)
+
+(defrule
+	(up-set-target-object search-remote g: temporary-goal11)
+	(up-compare-goal temporary-goal11 g:< gl-remote-total)
+=>
+	(up-get-object-data object-data-precise-x gl-point7-x)
+	(up-get-object-data object-data-precise-y gl-point7-y)
+	(up-add-point gl-point6-x gl-point7-x c: 1)
+	(up-modify-goal temporary-goal11 c:+ 1)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-object-data object-data-range < 4)
+=>
+	(set-goal temporary-goal6 0)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-compare-goal gl-point2-x g:< temporary-goal7)
+=>
+	(set-goal temporary-goal6 2)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-modify-goal gl-point5-x g:/ gl-local-total)
+	(up-modify-goal gl-point5-y g:/ gl-local-total)
+	(up-modify-goal gl-point6-x g:/ gl-remote-total)
+	(up-modify-goal gl-point6-y g:/ gl-remote-total)
+	(up-copy-point gl-point3-x gl-point5-x)
+	(up-copy-point gl-point8-x gl-point5-x)
+	(up-modify-goal temporary-goal6 g:* gl-micro-direction)
+	(up-cross-tiles gl-point3-x gl-point6-x g: temporary-goal6)
+	(up-modify-goal temporary-goal6 g:* gl-micro-direction)
+	(up-cross-tiles gl-point8-x gl-point6-x g: temporary-goal6)
+	(up-get-point-distance gl-point3-x gl-point6-x temporary-goal2)
+	(up-modify-goal temporary-goal2 g:- temporary-goal7)
+	(up-lerp-tiles gl-point3-x gl-point6-x g: temporary-goal2)
+	(up-lerp-tiles gl-point8-x gl-point6-x g: temporary-goal2)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-object-data object-data-target-id >= 0)
+=>
+	(up-get-object-data object-data-target-id gl-object-point-x)
+	(up-set-target-by-id g: gl-object-point-x)
+	(up-get-object-data object-data-precise-x gl-saved-point-x)
+	(up-get-object-data object-data-precise-y gl-saved-point-y)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-get-object-data object-data-precise-x gl-object-point-x)
+	(up-get-object-data object-data-precise-y gl-object-point-y)
+	(up-add-point gl-saved-point-x gl-object-point-x c: -1)
+	(set-goal gl-point7-x 0)
+	(set-goal gl-point7-y 0)
+	(up-get-point-distance gl-point7-x gl-saved-point-x temporary-goal6)
+	(up-add-point gl-saved-point-x gl-saved-point-x c: 99)
+	(up-modify-goal gl-saved-point-x g:/ temporary-goal6)
+	(up-modify-goal gl-saved-point-y g:/ temporary-goal6)
+	(set-goal temporary-goal11 470)
+	(up-get-object-data object-data-next-attack temporary-goal2)
+	(up-lerp-tiles gl-point6-x gl-point5-x g: temporary-goal9); remove if p6 is still needed
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-get-object-data object-data-precise-x gl-object-point-x)
+	(up-get-object-data object-data-precise-y gl-object-point-y)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-precise-x gl-point7-x)
+	(up-get-object-data object-data-precise-y gl-point7-y)
+	(up-add-point gl-point7-x gl-object-point-x c: -1)
+	(set-goal gl-object-point-x 0)
+	(set-goal gl-object-point-y 0)
+	(up-get-point-distance gl-object-point-x gl-point7-x temporary-goal6)
+	(up-add-point gl-point7-x gl-point7-x c: 99)
+	(up-modify-goal gl-point7-x g:/ temporary-goal6)
+	(up-modify-goal gl-point7-y g:/ temporary-goal6)
+	(up-add-point gl-saved-point-x gl-point7-x c: -1)
+	(up-get-point-distance gl-object-point-x gl-saved-point-x temporary-goal6)
+;	(up-chat-data-to-all "Vector delta: %d" g: temporary-goal6)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-group-size g: temporary-goal13 > 12)
+	(up-compare-goal gl-remote-total > 6)
+	(up-object-data object-data-next-attack > 0)
+=>
+	(up-lerp-tiles gl-point3-x gl-point6-x c: -230); 130
+	(up-copy-point gl-object-point-x gl-point3-x)
+	(up-modify-goal gl-object-point-x c:/ 100)
+	(up-modify-goal gl-object-point-y c:/ 100)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-next-attack > 0)
+	(up-set-target-by-id g: temporary-goal5)
+	(up-path-distance gl-object-point-x 0 > 300)
+=>
+	(up-lerp-tiles gl-point8-x gl-point6-x c: -230)
+	(up-copy-point gl-point3-x gl-point8-x)
+;	(chat-to-all "hmm")
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-object-data object-data-speed > 1)
+=>
+	(set-goal temporary-goal11 350)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-compare-goal temporary-goal6 < 100)
+=>
+	(up-modify-goal temporary-goal11 c:max 400)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-compare-goal temporary-goal6 < 70)
+=>
+	(up-modify-goal temporary-goal11 c:max 600)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(or	(up-object-data object-data-range < 4)
+		(up-compare-goal temporary-goal6 < 50))
+=>
+	(set-goal temporary-goal11 1500)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-object-data object-data-class != villager-class)
+	(up-object-data object-data-range < 4)
+	(up-compare-goal temporary-goal < 160)
+=>
+;	(up-modify-goal temporary-goal3 c:- 1)
+	(set-goal temporary-goal11 0)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-object-data object-data-range > 3)
+	(or	(and	(up-object-data object-data-ballistics == 1)
+			(up-object-data object-data-range > 4))
+		(or	(research-completed ri-ballistics)
+			(up-compare-goal gl-point2-x g:< temporary-goal7)))
+=>
+	(set-goal temporary-goal2 600)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-get-point-distance gl-point5-x gl-point6-x temporary-goal9)
+	(up-modify-goal temporary-goal9 c:+ 200)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(or	(and	(up-compare-goal temporary-goal g:> temporary-goal9)
+			(up-compare-goal temporary-goal > 250))
+		(up-object-data object-data-class == villager-class))
+=>
+	(up-get-object-data object-data-precise-x gl-point6-x)
+	(up-get-object-data object-data-precise-y gl-point6-y)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(set-goal temporary-goal9 0)
+	(set-goal temporary-goal10 70)
+;	(set-goal gl-point7-x 0)
+	(up-get-object-data object-data-next-attack gl-point7-x)
+	(set-goal gl-point8-x 0)
+	(set-goal gl-point2-y 0)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal9)
+	(up-object-data object-data-type != hand-cannoneer)
+	(up-object-data object-data-type != crossbowman)
+	(up-object-data object-data-type != arbalest)
+	(up-object-data object-data-type != arambai)
+	(up-object-data object-data-type != elite-arambai)
+=>
+	(set-goal temporary-goal10 100)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal9)
+	(up-object-data object-data-type == archer)
+=>
+	(set-goal temporary-goal10 105)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal9)
+	(or	(up-object-data object-data-type == gbeto)
+		(up-object-data object-data-type == elite-gbeto))
+=>
+	(set-goal temporary-goal10 120)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal9)
+	(or	(up-object-data object-data-type == genitour)
+		(or	(up-object-data object-data-type == elite-genitour)
+			(or	(up-object-data object-data-type == camel-archer)
+				(up-object-data object-data-type == elite-camel-archer))))
+=>
+	(set-goal temporary-goal10 125)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal9)
+	(or	(up-object-data object-data-type == rattan-archer)
+		(up-object-data object-data-type == elite-rattan-archer))
+=>
+	(set-goal temporary-goal10 135)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal9)
+	(up-object-data object-data-type == slinger)
+=>
+	(set-goal temporary-goal10 155)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal9)
+=>
+	(up-modify-goal temporary-goal9 c:+ 1)
+	(up-get-object-data object-data-frame-delay gl-point8-y)
+	(up-modify-goal gl-point8-x g:max gl-point8-y)
+;	(up-get-object-data object-data-next-attack gl-point8-y)
+;	(up-modify-goal gl-point7-x g:max gl-point8-y)
+	(up-get-object-data object-data-reload-time gl-point8-y)
+	(up-modify-goal gl-point2-y g:max gl-point8-y)
+;	(up-chat-data-to-all "frame: %d" g: gl-point8-x)
+;	(up-chat-data-to-all "next: %d" g: gl-point7-x)
+;	(up-chat-data-to-all "reload: %d" g: gl-point2-y)
+	(up-jump-rule -7)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(up-modify-goal gl-point8-x g:* temporary-goal10); 100/70
+	(up-modify-goal gl-point2-y g:- gl-point7-x)
+	(up-modify-goal gl-point2-y g:- gl-point8-x)
+;	(up-chat-data-to-all "distance: %d" g: temporary-goal)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-compare-goal gl-point7-x > 0)
+	(up-compare-goal gl-point2-y >= 0)
+=>
+	(set-goal gl-point2-y 7452354)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-compare-goal gl-local-last < 8); target near TC
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(or	(up-object-data object-data-class == villager-class)
+		(or	(and	(up-compare-goal gl-point-x > 230)
+				(and	(up-object-data object-data-maxhp g:<= gl-point-y)
+					(and	(up-object-data object-data-range > 0)
+						(up-object-data object-data-type != fire-ship))))
+			(and	(up-compare-goal temporary-goal g:> temporary-goal7)
+				(up-compare-goal temporary-goal7 g:> gl-point2-x)))); Chasing when range is same?
+=>
+	(set-goal gl-point-y 856546)
+)
+
+(defrule
+	(up-compare-goal gl-ranged-patrolling > 0)
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(set-strategic-number sn-number-tasked-units 1)
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-target-objects 1 action-default formation-line aggressive)
+)
+
+(defrule
+	(up-compare-goal gl-ranged-patrolling > 0)
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-reset-search 0 0 1 1)
+	(up-set-group search-local g: temporary-goal13)
+	(up-remove-objects search-local object-data-target != building-class)
+	(up-target-objects 1 action-default -1 aggressive)
+)
+
+(defrule
+	(up-compare-goal gl-ranged-patrolling > 0)
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(goal gl-point-y 856546)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-action != actionid-attack); test
+	(up-point-distance gl-point4-x gl-point6-x < 600)
+	(or	(and	(up-point-distance gl-point4-x gl-point5-x > 200)
+			(and	(up-compare-goal temporary-goal g:> temporary-goal7)
+				(up-compare-goal temporary-goal > 250)))
+		(and	(up-point-distance gl-point4-x gl-point6-x < 150)
+			(up-compare-goal gl-point7-x > 0)))
+=>
+	(up-jump-rule 5)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-min-range > 0)
+	(or	(up-compare-goal temporary-goal g:> temporary-goal8)
+		(and	(goal gl-point-y 856546)
+			(or	(goal gl-point2-y 7452354)
+				(up-compare-goal temporary-goal g:> temporary-goal7))))
+=>
+	(up-lerp-tiles gl-point6-x gl-point5-x c: 180)
+	(set-goal gl-point5-x -100)
+	(set-goal gl-point5-y -100)
+	(up-target-point gl-point5-x action-move formation-line -1)
+	(up-target-point gl-point6-x action-move formation-line no-attack)
+	(up-jump-rule 4)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(or	(up-compare-goal temporary-goal g:> temporary-goal8)
+		(and	(goal gl-point-y 856546)
+			(or	(goal gl-point2-y 7452354)
+				(up-compare-goal temporary-goal g:> temporary-goal7))))
+=>
+	(set-goal gl-point5-x -100)
+	(set-goal gl-point5-y -100)
+	(up-target-point gl-point5-x action-move formation-line -1)
+	(up-target-point gl-point6-x action-move formation-line no-attack)
+	(up-jump-rule 3)
+;	(chat-to-all "dis2")
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(goal gl-point7-x 0)
+	(up-compare-goal temporary-goal g:<= temporary-goal7)
+	(or	(up-compare-goal temporary-goal3 >= 4)
+		(or	(up-compare-goal temporary-goal g:<= temporary-goal11)
+			(and	(up-compare-goal temporary-goal2 > 300)
+				(up-compare-goal temporary-goal2 < 800))))
+=>
+	(up-target-objects 1 action-default formation-line stand-ground)
+;	(chat-to-all "shoot")
+	(up-jump-rule 2)
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-action != actionid-attack)
+	(up-point-distance gl-point4-x gl-point3-x < 600)
+	(up-point-distance gl-point4-x gl-point5-x > 200)
+=>
+	(up-jump-rule 1)
+;	(chat-to-all "dis0")
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-set-target-object search-local c: 0)
+	(or	(goal gl-point2-y 7452354)
+		(and	(or	(up-compare-goal temporary-goal g:> temporary-goal7)
+				(up-compare-goal temporary-goal3 < 4))
+			(goal gl-point7-x 0)))
+=>
+	(set-goal gl-point5-x -100)
+	(set-goal gl-point5-y -100)
+	(up-target-point gl-point5-x action-move formation-line -1)
+	(up-target-point gl-point3-x action-move formation-line no-attack)
+;	(chat-to-all "dis1")
+)
+
+;
+
+(defrule
+	(up-compare-flag gl-group-state-flag == melee-group)
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-remove-objects search-local object-data-action == actionid-attack)
+	(up-target-objects 1 action-default -1 aggressive)
+	(set-goal gl-point-y 8123446)
+;	(chat-to-all "charge")
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == melee-group)
+	(goal gl-point-y 8123446)
+	(up-set-target-by-id g: temporary-goal5)
+=>
+	(up-reset-search 0 0 1 1)
+	(up-set-group search-local g: temporary-goal13)
+	(up-remove-objects search-local object-data-target != building-class)
+	(up-target-objects 1 action-default -1 aggressive)
+;	(chat-to-all "charge")
+)
+
+(defrule
+	(up-set-target-by-id g: temporary-goal5)
+	(up-object-data object-data-class == villager-class)
+	(or	(up-compare-goal temporary-goal < 760)
+		(and	(up-compare-flag gl-group-state-flag == suicide-enabled)
+			(false)))
+	(up-compare-goal temporary-goal < 900)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal gl-remote-total < 2)
+	(or	(up-compare-goal gl-remote-total < 1)
+		(and	(up-compare-goal temporary-goal6 > 130)
+			(up-compare-goal temporary-goal > 550)))
+=>
+	(up-modify-flag gl-group-state-flag c:- combat-mode)
+	(up-reset-search 1 1 0 0)
+	(up-reset-filters)
+	(up-set-group search-local g: temporary-goal13)
+	(up-remove-objects search-local object-data-status != 2)
+	(up-create-group 0 0 g: temporary-goal13)
+	(up-target-point 0 action-none -1 stand-ground)
+	(up-chat-data-to-player my-player-number "return to march mode (%d)" g: gl-remote-total)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == combat-mode)
+;	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag == melee-group); placeholder
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point2-x)
+	(up-set-target-point gl-point2-x)
+	(up-reset-search 1 1 0 0)
+	(up-reset-filters)
+	(up-remove-objects search-remote object-data-class == villager-class)
+	(up-filter-distance c: -1 c: 15)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal gl-remote-total c:* 13)
+	(up-modify-goal gl-remote-total c:/ 20)
+	(up-get-group-size g: temporary-goal13 temporary-goal4)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == combat-mode)
+;	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(up-compare-flag gl-group-state-flag != melee-group)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point2-x)
+	(up-set-target-point gl-point2-x)
+	(up-reset-search 1 1 0 0)
+	(up-reset-filters)
+	(up-remove-objects search-remote object-data-class == villager-class)
+	(up-filter-distance c: -1 c: 15)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: -1 c: 60)
+	(up-get-search-state gl-local-total)
+	(up-modify-goal gl-remote-total c:* 3)
+	(up-modify-goal gl-remote-total c:/ 4)
+	(up-get-group-size g: temporary-goal13 temporary-goal4)
+)
+
+(defrule
+	(up-compare-flag gl-group-state-flag == combat-mode)
+;	(up-compare-flag gl-group-state-flag != retreating-mode)
+	(or	(up-compare-goal gl-remote-total g:> gl-local-total)
+		(up-compare-flag gl-group-state-flag != suicide-enabled))
+	(goal TSA 0); test
+=>
+	(up-modify-flag gl-group-state-flag c:+ retreating-mode)
+	(up-modify-flag gl-group-state-flag c:+ initializing)
+;	(chat-to-all "retreat2")
+	(up-get-fact game-time 0 gl-group-initializing-time)
+	(up-modify-goal gl-group-initializing-time c:+ 10)
+	(set-goal gl-remote-total 0)
+	(up-jump-rule -4)
+)
+
+;
+
+(defrule
+	(goal temporary-goal13 0)
+=>
+	(up-modify-goal gl-group0-state-flag g:= gl-group-state-flag)
+	(up-copy-point gl-group0-1-x gl-candidate1-point-x)
+	(up-copy-point gl-group0-2-x gl-candidate2-point-x)
+	(up-copy-point gl-group0-3-x gl-candidate3-point-x)
+	(up-copy-point gl-group0-4-x gl-candidate4-point-x)
+	(up-copy-point gl-group0-5-x gl-march-point-x)
+	(up-modify-goal gl-group0-initializing-time g:= gl-group-initializing-time)
+	(up-modify-goal gl-attacking0-target-id g:= gl-attack-target-id)
+	(up-modify-goal gl-old0-target-id g:= gl-old-target-id)
+	(up-modify-goal gl-old0-target2-id g:= gl-old-target2-id)
+	(up-modify-goal gl-ancient-target0-id g:= gl-ancient-target-id)
+)
+
+(defrule
+	(goal temporary-goal13 0)
+=>
+	(up-modify-goal gl-group-state-flag g:= gl-group1-state-flag)
+	(up-copy-point gl-candidate1-point-x gl-group1-1-x)
+	(up-copy-point gl-candidate2-point-x gl-group1-2-x)
+	(up-copy-point gl-candidate3-point-x gl-group1-3-x)
+	(up-copy-point gl-candidate4-point-x gl-group1-4-x)
+	(up-copy-point gl-march-point-x gl-group1-5-x)
+	(up-modify-goal gl-group-initializing-time g:= gl-group1-initializing-time)
+	(up-modify-goal gl-attack-target-id g:= gl-attacking1-target-id)
+	(up-modify-goal gl-old-target-id g:= gl-old1-target-id)
+	(up-modify-goal gl-old-target2-id g:= gl-old1-target2-id)
+	(up-modify-goal gl-ancient-target-id g:= gl-ancient-target1-id)
+	(set-goal temporary-goal13 1)
+	(up-jump-rule -204)
+)
+
+(defrule
+	(goal temporary-goal13 1)
+=>
+	(up-modify-goal gl-group1-state-flag g:= gl-group-state-flag)
+	(up-copy-point gl-group1-1-x gl-candidate1-point-x)
+	(up-copy-point gl-group1-2-x gl-candidate2-point-x)
+	(up-copy-point gl-group1-3-x gl-candidate3-point-x)
+	(up-copy-point gl-group1-4-x gl-candidate4-point-x)
+	(up-copy-point gl-group1-5-x gl-march-point-x)
+	(up-modify-goal gl-group1-initializing-time g:= gl-group-initializing-time)
+	(up-modify-goal gl-attacking1-target-id g:= gl-attack-target-id)
+	(up-modify-goal gl-old1-target-id g:= gl-old-target-id)
+	(up-modify-goal gl-old1-target2-id g:= gl-old-target2-id)
+	(up-modify-goal gl-ancient-target1-id g:= gl-ancient-target-id)
+)
+
+(defrule
+	(goal temporary-goal13 1)
+=>
+	(up-modify-goal gl-group-state-flag g:= gl-group2-state-flag)
+	(up-copy-point gl-candidate1-point-x gl-group2-1-x)
+	(up-copy-point gl-candidate2-point-x gl-group2-2-x)
+	(up-copy-point gl-candidate3-point-x gl-group2-3-x)
+	(up-copy-point gl-candidate4-point-x gl-group2-4-x)
+	(up-copy-point gl-march-point-x gl-group2-5-x)
+	(up-modify-goal gl-group-initializing-time g:= gl-group2-initializing-time)
+	(up-modify-goal gl-attack-target-id g:= gl-attacking2-target-id)
+	(up-modify-goal gl-old-target-id g:= gl-old2-target-id)
+	(up-modify-goal gl-old-target2-id g:= gl-old2-target2-id)
+	(up-modify-goal gl-ancient-target-id g:= gl-ancient-target2-id)
+	(set-goal temporary-goal13 2)
+	(up-jump-rule -206)
+)
+
+(defrule
+	(goal temporary-goal13 2)
+=>
+	(up-modify-goal gl-group2-state-flag g:= gl-group-state-flag)
+	(up-copy-point gl-group2-1-x gl-candidate1-point-x)
+	(up-copy-point gl-group2-2-x gl-candidate2-point-x)
+	(up-copy-point gl-group2-3-x gl-candidate3-point-x)
+	(up-copy-point gl-group2-4-x gl-candidate4-point-x)
+	(up-copy-point gl-group2-5-x gl-march-point-x)
+	(up-modify-goal gl-group2-initializing-time g:= gl-group-initializing-time)
+	(up-modify-goal gl-attacking2-target-id g:= gl-attack-target-id)
+	(up-modify-goal gl-old2-target-id g:= gl-old-target-id)
+	(up-modify-goal gl-old2-target2-id g:= gl-old-target2-id)
+	(up-modify-goal gl-ancient-target2-id g:= gl-ancient-target-id)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal12)
+	(set-strategic-number sn-target-point-adjustment 0)
+)
+
+(defrule
+	(goal gl-early-raid DUC-system)
+=>
+	(enable-timer 40 30)
+)
+
+;
+
+(defrule
+	(or	(up-compare-goal gl-early-raid != DUC-system)
+		(or	(unit-type-count battering-ram-line > 0)
+			(or	(and	(population > 105)
+					(military-population > 29))
+				(or	(or	(goal gl-anti-trush YES)
+						(up-compare-goal gl-target-player-distance < 25))
+					(or	(strategic-number sn-minimum-water-body-size-for-dock >= islands-map-landing-style)
+						(goal gl-strategy castle-push))))))
+=>
+	(up-jump-rule 11)
+)
+
+(defrule
+	(or	(goal gl-strategy castle-push)
+		(game-time > 1920))
+=>
+	(up-jump-rule 10)
+)
+
+(defrule
+	(up-projectile-detected projectile-town-center < 5000)
+	(not	(up-projectile-detected projectile-castle < 5000))
+	(or	(and	(unit-type-count knight-line >= 15)
+			(up-research-status c: ri-chain-barding == research-complete))
+		(and	(unit-type-count huskarl-set >= 8)
+			(up-research-status c: ri-chain-mail == research-complete)))
+=>
+	(up-jump-rule 9)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-full-reset-search)
+	(up-filter-include -1 actionid-attack -1 -1)
+	(up-find-remote c: watch-tower c: 1)
+	(up-find-remote c: castle c: 1)
+	(up-filter-garrison c: 2 c: -1)
+	(up-find-remote c: town-center c: 1)
+	(up-reset-filters)
+	(up-get-search-state gl-local-total)
+	(up-copy-point gl-point3-x gl-position-self-x)
+	(up-copy-point gl-point4-x gl-position-self-x)
+	(up-copy-point gl-point5-x gl-position-self-x)
+	(set-goal temporary-goal2 0)
+)
+
+(defrule
+	(up-compare-flag gl-group0-state-flag == group-active)
+=>
+	(up-set-group search-local c: 0)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point3-x)
+	(up-reset-search 1 1 0 0)
+)
+
+(defrule
+	(up-compare-flag gl-group1-state-flag == group-active)
+=>
+	(up-set-group search-local c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point4-x)
+	(up-reset-search 1 1 0 0)
+)
+
+(defrule
+	(up-compare-flag gl-group2-state-flag == group-active)
+=>
+	(up-set-group search-local c: 2)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point5-x)
+	(up-reset-search 1 1 0 0)
+)
+
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(up-compare-flag gl-group0-state-flag != 131072); dive-in
+	(up-compare-flag gl-group1-state-flag != 131072); dive-in
+	(up-compare-flag gl-group2-state-flag != 131072); dive-in	
+	(up-compare-flag gl-group0-state-flag != 262144); full-dive-in
+	(up-compare-flag gl-group1-state-flag != 262144); full-dive-in
+	(up-compare-flag gl-group2-state-flag != 262144); full-dive-in
+=>
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 10)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 -1 -1 warship-class)
+	(up-find-local c: all-units-class c: 100)
+;	(chat-to-all ".")
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal2)
+=>
+	(up-get-point position-object gl-point2-x)
+	(up-lerp-tiles gl-point2-x gl-point-x c: -10)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal2)
+	(up-point-distance gl-point2-x gl-point3-x > 6)
+	(up-point-distance gl-point2-x gl-point4-x > 6)
+	(up-point-distance gl-point2-x gl-point5-x > 6)
+=>
+	(up-set-target-point gl-point2-x)
+	(up-target-point 0 action-move -1 no-attack)
+	(up-set-group search-local c: 9)
+	(up-remove-objects search-local object-data-status != 2)
+	(up-create-group 0 0 c: 9)
+	(set-goal gl-attack-stance-switcher 2)
+)
+
+(defrule
+	(up-set-target-object search-local g: temporary-goal2)
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 0 0)
+	(up-find-local c: all-units-class c: 100)
+	(up-modify-goal temporary-goal2 c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+;
+
+(defrule
+	(goal gl-attack-stance-switcher 2)
+	(or	(and	(up-projectile-detected projectile-fortification < 10000)
+			(up-projectile-detected projectile-fortification > 5000))
+		(and	(up-projectile-detected projectile-town-center < 10000)
+			(up-projectile-detected projectile-town-center > 5000)))
+	(goal gl-early-raid DUC-system)
+=>
+	(up-full-reset-search)
+	(up-set-group search-local c: 9)
+	(up-target-point 0 action-none -1 aggressive)
+	(set-goal gl-attack-stance-switcher 0)
+)
+
+;
+
+
+(defrule
+	(or	(taunt-detected 1 60)
+		(taunt-detected 2 60))
+=>
+	(up-send-flare gl-group0-1-x)
+	(up-send-flare gl-group0-2-x)
+	(up-send-flare gl-group0-3-x)
+	(up-send-flare gl-group0-4-x)
+	(up-send-flare gl-group0-5-x)
+	(acknowledge-taunt 1 60)
+	(acknowledge-taunt 2 60)
+)
+
+(defrule
+	(or	(taunt-detected 1 61)
+		(taunt-detected 2 61))
+=>
+	(up-send-flare gl-group1-1-x)
+	(up-send-flare gl-group1-2-x)
+	(up-send-flare gl-group1-3-x)
+	(up-send-flare gl-group1-4-x)
+	(up-send-flare gl-group1-5-x)
+	(acknowledge-taunt 1 61)
+	(acknowledge-taunt 2 61)
+)
+
+(defrule
+	(or	(taunt-detected 1 62)
+		(taunt-detected 2 62))
+=>
+	(up-send-flare gl-group2-1-x)
+	(up-send-flare gl-group2-2-x)
+	(up-send-flare gl-group2-3-x)
+	(up-send-flare gl-group2-4-x)
+	(up-send-flare gl-group2-5-x)
+	(acknowledge-taunt 1 62)
+	(acknowledge-taunt 2 62)
+)
+
+#load-if-defined DEBUG
+(defrule
+	(taunt-detected 1 65)
+=>
+	(acknowledge-taunt 1 64)
+	(acknowledge-taunt 1 65)
+)
+
+(defrule
+	(taunt-detected 1 64)
+=>
+	(up-modify-goal gl-point8-x g:* temporary-goal10); 100/70
+	(up-modify-goal gl-point2-y g:- gl-point7-x)
+	(up-modify-goal gl-point2-y g:- gl-point8-x)
+	(up-chat-data-to-all "distance: %d" g: temporary-goal)
+)
+
+(defrule
+	(true)
+=>
+	(up-get-group-size c: 0 temporary-goal)
+	(up-get-group-size c: 1 temporary-goal2)
+	(up-get-group-size c: 2 temporary-goal3)
+)
+
+(defrule
+	(taunt-detected 1 64)
+	(up-compare-flag gl-group0-state-flag == group-active)
+	(up-compare-flag gl-group1-state-flag == group-active)
+	(up-compare-goal temporary-goal g:== temporary-goal2)
+=>
+	(up-chat-data-to-all "Same size: %d" g: temporary-goal)
+)
+
+(defrule
+	(taunt-detected 1 63)
+=>
+	(up-get-group-size c: 0 temporary-goal)
+	(up-chat-data-to-all "g0 size: %d" g: temporary-goal)
+	(up-get-group-size c: 1 temporary-goal)
+	(up-chat-data-to-all "g1 size: %d" g: temporary-goal)
+	(up-get-group-size c: 2 temporary-goal)
+	(up-chat-data-to-all "g2 size: %d" g: temporary-goal)
+	(acknowledge-taunt 1 63)
+)
+
+(defrule
+	(taunt-detected 1 66)
+=>
+	(acknowledge-taunt 1 66)
+)
+#end-if
+
+
+
+
+
+
+

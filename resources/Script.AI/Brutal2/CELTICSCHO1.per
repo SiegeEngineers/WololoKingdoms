@@ -1,0 +1,37 @@
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-onager)
+=>
+	(research ri-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-pending-objects c: mangonel-line < 1)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)

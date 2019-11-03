@@ -1,0 +1,1199 @@
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(true)
+=>
+	(set-strategic-number sn-castle-age-strategy krush)
+	(set-goal gl-fast-castle 1)
+	(disable-self)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(true)
+=>
+	(set-strategic-number sn-maximum-food-drop-distance 10)
+	(set-strategic-number sn-maximum-wood-drop-distance 10)
+	(set-strategic-number sn-maximum-gold-drop-distance 10)
+	(disable-self)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(building-type-count-total town-center > 0)
+	(current-age >= dark-age)
+	(housing-headroom < 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(building-type-count-total stable > 0)
+	(up-research-status c: castle-age >= research-pending)
+	(housing-headroom < 6)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(building-type-count-total stable > 0)
+	(up-research-status c: castle-age >= research-pending)
+	(housing-headroom < 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 2)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(building-type-count-total town-center >= 3)
+	(housing-headroom < 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 3)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(building-type-count-total town-center >= 3)
+	(housing-headroom < 6)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 2)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(building-type-count-total town-center >= 3)
+	(housing-headroom < 12)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(unit-type-count villager < 11)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(unit-type-count villager >= 11)
+	(up-research-status c: ri-loom < research-pending)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(unit-type-count villager >= 11)
+	;(food-amount <= 410)
+	(unit-type-count-total villager < 28)
+	(up-research-status c: ri-loom >= research-pending)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(unit-type-count-total villager >= 26)
+	(or(food-amount >= 411)
+	   (unit-type-count-total villager >= 28))
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(current-age >= feudal-age)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(unit-type-count-total villager < max-civ)
+	(up-research-status c: ri-loom < research-pending)
+	(unit-type-count villager < 10)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	;(or(food-amount >= 500)
+	(or(unit-type-count-total villager >= 28)
+	   (game-time > 750))
+	(can-research feudal-age)
+=>
+	(research feudal-age)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(or(food-amount < 50)
+	   (and(civ-selected mayan)(housing-headroom == 0)))
+	(not(can-train villager))
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(unit-type-count-total villager >= 10)
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(unit-type-count-total villager < max-civ)
+	(up-research-status c: ri-loom >= research-pending)
+;	(up-compare-goal gl-total-lured-deer < 1)
+	(unit-type-count villager < 28)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+;(defrule
+;	(up-compare-goal gl-map-style != WATER) 
+;	(strategic-number sn-castle-age-strategy == krush)
+;	(unit-type-count-total villager < max-civ)
+;	(or(unit-type-count-total villager < 10)
+;	(or(up-research-status c: ri-loom >= research-pending)
+;	   (dropsite-min-distance live-boar < 10)))
+;	(unit-type-count-total villager < 24)
+;	(or(food-amount < 470)
+;	   (unit-type-count villager < 23))
+;	(can-train villager)
+;=>
+;	(train villager)
+;	(enable-timer 46 21)
+;)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(unit-type-count-total villager < max-civ)
+	(food-amount < 450)
+	(up-research-status c: ri-loom >= research-pending)
+	(unit-type-count-total villager < 30)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(up-research-status c: feudal-age >= research-pending)
+	(building-type-count-total barracks == 0)
+	;(up-unit-type-in-town c: militiaman-line == 0)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(set-strategic-number sn-placement-zone-size 1)
+	(up-set-placement-data my-player-number -1 g: gl-new-town-size) 
+	;(up-build place-control 1 c: barracks)
+	(build barracks)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(up-research-status c: feudal-age >= research-pending)
+	(building-type-count-total barracks == 0)
+	;(up-unit-type-in-town c: militiaman-line > 0)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(set-strategic-number sn-placement-zone-size 1)
+	(up-set-placement-data my-player-number -1 c: -10) 
+	;(up-build place-control 1 c: barracks)
+	(build barracks)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)	
+	(game-time > 50)
+	(or(housing-headroom > 4)
+	   (up-pending-objects c: house >= 1))
+	(unit-type-count livestock-class < 1)
+	(unit-type-count villager-forager > 0)
+	(building-type-count-total mill == 0)
+	(can-build mill)
+	(or(unit-type-count-total villager > 8)
+	   (unit-type-count villager-forager > 0))
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mill)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)	
+	(or(housing-headroom > 3)
+	   (up-pending-objects c: house >= 1))
+	(or(building-type-count-total lumber-camp > 0)
+	   (unit-type-count livestock-class < 1))
+	(building-type-count-total mill == 0)
+	(can-build mill)
+	(or(unit-type-count-total villager > 8)
+	   (unit-type-count villager-forager > 0))
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mill)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(or(housing-headroom > 3)
+	   (up-pending-objects c: house >= 1))
+	(game-time > 30)
+	(unit-type-count villager-forager > 0)
+	(unit-type-count livestock-class < 2)
+	(building-type-count-total mill == 0)
+	(can-build mill)
+	(or(unit-type-count-total villager > 8)
+	   (unit-type-count villager-forager > 0))
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mill)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(or(housing-headroom > 3)
+	   (up-pending-objects c: house >= 1))
+	(game-time > 30)
+	(unit-type-count villager-shepherd >= 6)
+	(unit-type-count livestock-class <= 2)
+	(building-type-count-total mill == 0)
+	(can-build mill)
+	(or(unit-type-count-total villager > 8)
+	   (unit-type-count villager-forager > 0))
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mill)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(unit-type-count villager > 7)
+	(or(unit-type-count livestock-class > 1)
+	   (building-type-count-total mill >= 1))
+	(building-type-count-total lumber-camp == 0)
+	(housing-headroom > 4)
+	(can-build lumber-camp)
+	(resource-found wood)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build lumber-camp)
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	;(up-research-status c: feudal-age >= research-pending)
+	(building-type-count-total mill > 0)
+	(building-type-count-total lumber-camp == 1)
+	(can-build lumber-camp)
+	(unit-type-count-total villager > 19)
+	(or(unit-type-count 123 > 3)
+	   (unit-type-count 218 > 3))
+	;(dropsite-min-distance wood > 2)
+	(resource-found wood)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build lumber-camp)
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(not(resource-found gold))
+	(building-type-count-total mining-camp == 0)
+	(up-research-status c: feudal-age >= research-pending)
+	(strategic-number sn-camp-max-distance < 32)
+	(can-build mining-camp)
+=>
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+	(up-chat-data-to-player my-player-number "No gold within range, increase distance: %d" s: sn-camp-max-distance)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	;(up-research-status c: feudal-age >= research-pending)
+	(unit-type-count villager >= 25)
+	(building-type-count-total mining-camp == 0)
+	(can-build mining-camp)
+	(resource-found gold)
+=>
+	(set-goal gl-pause-tsa 1)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	
+	(current-age == feudal-age)
+	(game-time > 1080)
+	(dropsite-min-distance gold > 3)
+	(building-type-count-total mining-camp < 2)
+	(can-build mining-camp)
+	(resource-found gold)
+=>
+	(set-goal gl-pause-tsa 1)
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(or(unit-type-count 120 > 2)
+	   (unit-type-count 354 > 2))
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 2)
+	(building-type-count lumber-camp > 0)
+	(dropsite-min-distance wood < 3)
+	(or(housing-headroom > 3)
+	   (up-pending-objects c: house >= 1))	
+	(can-build farm)
+	(building-type-count-total farm < 8)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager < 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-food-gatherer-percentage 100)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 14)
+	(set-strategic-number sn-food-gatherer-percentage 85)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 8)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 75)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 9)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 10)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 11)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-food-gatherer-percentage 64)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 12)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-food-gatherer-percentage 59)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 13)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 46)
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 14)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 15)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-food-gatherer-percentage 57)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 16)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-food-gatherer-percentage 57)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 17)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-food-gatherer-percentage 59)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 20)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-food-gatherer-percentage 65)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 21)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 22)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 69)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager == 23)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager >= 24)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-food-gatherer-percentage 71)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager >= 25)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 2)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager >= 26)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 63)
+	(set-strategic-number sn-gold-gatherer-percentage 6)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(unit-type-count villager >= 27)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 59)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush) 
+	
+	(current-age == dark-age)
+	(up-research-status c: feudal-age >= research-pending)
+	(unit-type-count villager >= 28)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(building-type-count-total stable == 0)
+	(can-build stable)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build stable)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(building-type-count-total stable > 0)
+	(building-type-count-total blacksmith == 0)
+	(can-build blacksmith)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build blacksmith)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(unit-type-count-total villager >= 30)
+	(can-research castle-age)
+=>
+	(research castle-age)
+	(set-goal gl-enable-tsa 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(unit-type-count-total villager < max-civ)
+	(strategic-number sn-castle-age-strategy == krush)
+	(current-age == feudal-age)
+	(or(unit-type-count-total villager < 31)
+	   (and(not(research-available castle-age))
+	       (food-amount > 850)))
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age >= research-pending)
+	(building-type-count-total stable < 2)
+	(can-build stable)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build stable)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age >= research-pending)
+	(food-amount < 200)
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 2)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age < research-pending)
+	(up-research-status c: feudal-age >= research-pending)
+	(wood-amount > 385)
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 2)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age < research-pending)
+	(research-available castle-age)
+	(food-amount < 650)
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 2)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(up-compare-goal gl-data-military-population g:< gl-data-enemy-military-population)
+	(strategic-number sn-castle-age-strategy == krush)
+	(can-train camel-line)
+=>
+	(train camel-line)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age >= research-pending)
+	(can-research ri-double-bit-axe)
+=>
+	(research ri-double-bit-axe)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age >= research-pending)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(can-research ri-bow-saw)
+=>
+	(research ri-bow-saw)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(can-research ri-wheel-barrow)
+=>
+	(research ri-wheel-barrow)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(unit-type-count-total villager < max-civ)
+	(strategic-number sn-castle-age-strategy == krush)
+	(current-age == castle-age)
+	(unit-type-count-total villager < 134)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age >= research-pending)
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: castle-age >= research-pending)
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-castle-age-strategy == krush)
+	(up-research-status c: ri-iron-casting >= research-pending)
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(strategic-number sn-enemy-current-age < castle-transit)
+	(strategic-number sn-military-level > 0)
+	(building-type-count-total archery-range >= 3)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(strategic-number sn-enemy-current-age == castle-transit)
+	(unit-type-count-total camel-line > 4)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(strategic-number sn-enemy-current-age != castle-transit)
+	(unit-type-count-total camel-line > 4)
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(strategic-number sn-enemy-current-age >= castle-transit)
+	(strategic-number sn-military-level > 0)
+	;(up-compare-goal gl-enemy-strategy == fast-castle)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	(strategic-number sn-enemy-current-age < castle-transit)
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager < 30)
+	(unit-type-count villager >= 17)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-food-gatherer-percentage 59)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 30)
+	(unit-type-count villager < 35)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 57)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 35)
+	(unit-type-count villager < 40)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 55)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 40)
+	(unit-type-count villager < 45)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-food-gatherer-percentage 53)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 45)
+	(unit-type-count villager < 50)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-food-gatherer-percentage 51)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 50)
+	(unit-type-count villager < 55)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 55)
+	(unit-type-count villager < 60)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 60)
+	(unit-type-count villager < 65)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 21)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 65)
+	(unit-type-count villager < 70)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 70)
+	(unit-type-count villager < 75)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 75)
+	(unit-type-count villager < 80)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-food-gatherer-percentage 51)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 80)
+	(unit-type-count villager < 85)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-food-gatherer-percentage 53)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 85)
+	(unit-type-count villager < 90)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-food-gatherer-percentage 53)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 90)
+	(unit-type-count villager < 95)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-food-gatherer-percentage 51)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 95)
+	(unit-type-count villager < 100)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 29)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 100)
+	(unit-type-count villager < 105)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 31)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 105)
+	(unit-type-count villager < 110)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 33)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 110)
+	(unit-type-count villager < 115)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 115)
+	(unit-type-count villager < 120)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(strategic-number sn-castle-age-strategy == krush)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-camels-type > one-stable)
+	(unit-type-count villager >= 120)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 37)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-castle-age-strategy == krush)
+	(building-type-count town-center > 3)
+	(research-available imperial-age)
+	(wood-amount > 300)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-food-gatherer-percentage 58)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-castle-age-strategy == krush)
+	(idle-farm-count < 1)
+	(building-type-count town-center > 3)
+	(research-available imperial-age)
+	(wood-amount > 300)
+	(idle-farm-count < 5)
+	(building-type-count farm < 40)
+	(can-build farm)
+=>
+	(build farm)
+)

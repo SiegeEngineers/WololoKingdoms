@@ -1,0 +1,50 @@
+#load-if-not-defined GOTHIC-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-champ-cannoneer)
+	(set-goal gl-dm-barracks-number 11)
+	(set-goal gl-dm-range-number 10)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-stone-to-sell 2000)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit champion)
+	(disable-self)
+)
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-champ-cannoneer)
+	(set-goal gl-dm-barracks-number 10)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-stone-to-sell 2000)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit champion)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count-total barracks > 0)
+=>
+	(set-goal gl-dm-range-number 10)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count-total barracks > 4)
+	(players-civ focus-player gothic)
+=>
+	(up-modify-goal gl-dm-workshop-number c:max 2)
+	(disable-self)
+)
+#end-if

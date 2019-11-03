@@ -1,0 +1,99 @@
+#load-if-defined TURKISH-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-cannoneers)
+	(set-goal gl-dm-barracks-number 4)
+	(set-goal gl-dm-range-number 6)
+	(set-goal gl-dm-stable-number 2)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 0)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit hand-cannoneer)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-const dm-eagle-threat-likelihood == 1)
+=>
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-range-number 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-const dm-eagle-threat-likelihood == 1)
+	(building-type-count-total barracks > 0)
+=>
+	(up-modify-goal gl-dm-range-number c:max 6)
+	(disable-self)
+)
+
+(defrule
+	(or	(game-time > 240)
+		(or	(up-compare-const dm-cavalry-threat-likelihood == 1)
+			(or	(up-compare-goal gl-enemy-cavalry-count > 1)
+				(or	(players-building-type-count focus-player stable > 0)
+					(player-valid 3)))))
+=>
+	(set-goal gl-dm-barracks-number 0)
+	(up-modify-goal gl-dm-stable-number c:max 7)
+	(disable-self)
+)
+#else
+#load-if-defined SARACEN-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-cannoneers)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 11)
+	(set-goal gl-dm-stable-number 4)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 1000)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit hand-cannoneer)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count-total archery-range > 5)
+=>
+	(up-modify-goal gl-dm-stable-number c:max 8)
+	(set-goal gl-dm-workshop-number 2)
+	(disable-self)
+)
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-cannoneers)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 13)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 1000)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit hand-cannoneer)
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy dm-cannoneers)
+	(building-type-count castle > 2)
+=>
+	(set-goal gl-dm-main-unit champion)
+	(disable-self)
+)
+#end-if
+#end-if

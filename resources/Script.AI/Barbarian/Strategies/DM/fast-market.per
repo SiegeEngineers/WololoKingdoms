@@ -1,0 +1,22 @@
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-market-notice 1)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-my-villager-count > 3)
+	(starting-age == post-imperial-age)
+	(or	(players-civ focus-player hun)
+		(players-civ focus-player mayan))
+	(up-compare-goal gl-my-villager-count g:> gl-my-builder-count)
+	(building-type-count-total market < 1)
+	(can-build market)
+=>
+	(set-strategic-number sn-placement-zone-size 5)
+	(up-set-placement-data my-player-number villager-class c: 0)
+	(up-build place-control 0 c: market)
+	(set-strategic-number sn-placement-zone-size dm-starting-zone-size)
+	(up-modify-goal gl-my-builder-count c:+ 1)
+)

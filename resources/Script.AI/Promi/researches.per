@@ -1,0 +1,2899 @@
+;=============================================================
+;
+; Age advancement
+;
+;=============================================================
+(defrule
+(or	(up-compare-goal total-food-amount >= 800); (food-amount >= 700); 720
+(or	(unit-type-count-total villager >= darkvills)
+;(or	(and	(unit-type-count-total villager >= 25)
+;		(unit-type-count-total fishing-ship >= 5)); 7
+	(players-current-age focus-player >= feudal-age)));)
+	(can-research feudal-age)
+=>
+	(set-strategic-number sn-enable-boar-hunting 1)
+	(research feudal-age)
+	(chat-to-player every-ally text-advancing-feudal); "I am advancing to the Feudal Age."
+	(chat-to-player my-player-number text-advancing-feudal); "I am advancing to the Feudal Age."
+	(set-strategic-number sn-current-age dfeudal)
+	(up-modify-sn sn-maximum-town-size c:min 10))
+(defrule
+(or	(and	(up-compare-goal total-food-amount >= 700); (food-amount >= 650)
+		(unit-type-count-total villager >= 30))
+(or	(up-compare-goal trainvillager != yes); (up-compare-goal enemy-goal != 0)
+(or	(goal strategy sling)
+	(up-compare-goal strategy-type == feudal-war))))
+	(can-research feudal-age)
+=>
+	(set-strategic-number sn-enable-boar-hunting 1)
+	(research feudal-age)
+	(chat-to-player every-ally text-advancing-feudal); "I am advancing to the Feudal Age."
+	(chat-to-player my-player-number text-advancing-feudal); "I am advancing to the Feudal Age."
+	(set-strategic-number sn-current-age dfeudal)
+	(up-modify-sn sn-maximum-town-size c:min 10))
+;=============================================================
+(defrule
+	(can-research castle-age)
+=>
+	(research castle-age)
+	(chat-to-player every-ally text-advancing-castle); "I am advancing to the Castle Age."
+	(chat-to-player my-player-number text-advancing-castle); "I am advancing to the Castle Age."
+	(set-strategic-number sn-current-age fcastlea)
+	(up-modify-sn sn-maximum-town-size c:min 14))
+;=============================================================
+(defrule
+	(can-research imperial-age)
+=>
+	(research imperial-age)
+	(chat-to-player every-ally text-advancing-imperial); "I am advancing to the Imperial Age."
+	(chat-to-player my-player-number text-advancing-imperial); "I am advancing to the Imperial Age."
+	(set-strategic-number sn-current-age imperial)
+	(up-modify-sn sn-maximum-town-size c:min 18))
+;=============================================================
+; Unique upgrades
+;=============================================================
+(defrule
+;(or	(up-compare-goal tradeunits >= 25)
+(or	(unit-type-count-total my-unique-unit-line >= 5)
+;(or
+	(unit-type-count-total huskarl-set >= 5)
+;(or	(up-compare-goal excessGold >= 2900)
+;	(and	(population >= up-max-civ)
+;		(up-compare-goal excessGold >= 1900)))))
+)
+	(up-compare-goal uugoal != yes)
+=>
+	(set-goal uugoal yes))
+(defrule
+(or	(unit-type-count-total genoese-crossbowman >= 5)
+(or	(unit-type-count-total kamayuk >= 5)
+(or	(unit-type-count-total magyar-huszar >= 5)
+(or	(unit-type-count-total elephant-archer >= 5)
+(or	(unit-type-count-total boyar >= 5)
+(or	(unit-type-count-total organ-gun >= 5)
+	(unit-type-count-total gbeto >= 5)))))))
+	(up-compare-goal uugoal != yes)
+=>
+	(set-goal uugoal yes))
+(defrule
+(or	(unit-type-count-total shotel-warrior >= 5)
+(or	(unit-type-count-total camel-archer >= 5)
+(or	(unit-type-count-total rattan-archer >= 5)
+(or	(unit-type-count-total ballista-elephant >= 5)
+(or	(unit-type-count-total arambai >= 5)
+	(unit-type-count-total karambit-warrior >= 5))))))
+	(up-compare-goal uugoal != yes)
+=>
+	(set-goal uugoal yes))
+(defrule; consistency
+	(goal trainunique yes)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(up-compare-goal uugoal != yes)
+=>
+	(set-goal uugoal yes))
+
+(defrule
+(or	(goal uugoal yes)
+(or	(unit-type-count-total my-unique-unit-line >= 4)
+(or	(unit-type-count-total huskarl-set >= 4)
+	(up-compare-goal excessGold >= 2900)))); 3600
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade))
+(defrule
+	(up-compare-goal excessGold >= 2500); 2600
+(or	(population >= max-civ-pop)
+(or	(population >= 192)
+(or	(up-compare-goal relic-count >= 3); 4
+(or	(up-compare-goal tradeunits >= 30); 40
+(or	(up-compare-goal tradeunits >= maxcartspop)
+	(up-compare-goal tradeunits >= maxcartssize))))))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade))
+
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined ETHIOPIAN-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KHMER-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV ; Byzantines, Turks, Britons, Chinese, Mayas, Mongols, Koreans, Japanese, Magyars, Italians,
+#load-if-not-defined VIKING-CIV ; Berbers, Burmese, Malay, Malians, Portuguese, Slavs, Vietnamese
+(defrule
+	(up-compare-goal uugoal != yes)
+=>
+	(set-goal uugoal yes))
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade))
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+
+#load-if-not-defined INCAN-CIV;
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV;
+#load-if-not-defined MAGYAR-CIV;
+#load-if-not-defined SLAVIC-CIV
+
+;#load-if-not-defined PORTUGUESE-CIV
+#load-if-not-defined ETHIOPIAN-CIV
+#load-if-not-defined MALIAN-CIV
+#load-if-not-defined BERBERS-CIV
+;#load-if-not-defined KHMER-CIV
+#load-if-not-defined MALAY-CIV
+#load-if-not-defined BURMESE-CIV
+#load-if-not-defined VIETNAMESE-CIV
+
+#load-if-not-defined AZTEC-CIV
+;#load-if-not-defined BRITON-CIV
+;#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+;#load-if-not-defined CHINESE-CIV
+;#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined MONGOL-CIV
+;#load-if-not-defined PERSIAN-CIV
+;#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+;#load-if-not-defined VIKING-CIV ; Aztecs, Britons, Byzantines, Chinese, Franks, Persians, Saracens, Vikings
+;(defrule
+;	(goal uugoal yes)
+;(or	(and	(up-compare-const uu-type == cavalry-uu)
+;		(up-research-status c: ri-plate-barding == research-available))
+;(or	(and	(up-compare-const uu-type == infantry-uu)
+;		(up-research-status c: ri-plate-mail == research-available))
+;(or	(and	(up-compare-const uu-type == archer-uu)
+;		(up-research-status c: ri-bracer == research-available))
+;	(and	(up-compare-const uu-type == powder-uu)
+;		(up-research-status c: ri-ring-archer-armor == research-available)))))
+;=>
+;	(up-jump-rule 1))
+(defrule
+	(up-compare-goal urgoal != yes)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(unit-type-count-total my-unique-unit-line >= 10)
+	(and	(civ-selected gothic)
+		(unit-type-count-total huskarl-set >= 10)))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+;#end-if
+;#end-if
+;#end-if
+;#end-if
+;#end-if
+;#end-if
+;#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#end-if
+#end-if
+#end-if
+;#end-if
+#end-if
+#end-if
+#end-if
+;#end-if
+
+#end-if;
+#end-if
+#end-if;
+#end-if;
+#end-if
+
+#load-if-defined JAPANESE-CIV
+(defrule
+	(up-research-status c: imperial-age >= research-pending); (current-age >= imperial-age)
+(or	(dropsite-min-distance stone s:<= sn-maximum-stone-drop-distance)
+(or	(dropsite-min-distance stone s:<= sn-camp-max-distance); test
+(or	(and	(up-compare-goal champgoal != yes)
+		(or	(stone-amount > 0)
+			(or	(unit-type-count villager-stone >= 1)
+				(building-type-count-total castle >= 1))))
+	(building-type-count-total castle >= 2))))
+	(goal uugoal no)
+=>
+	(set-goal uugoal yes))
+(defrule
+(or	(goal champgoal no)
+	(building-type-count castle >= 1)); -total
+(or	(players-unit-type-count focus-player huskarl-line >= 8)
+(or	(players-unit-type-count focus-player teutonic-knight-line >= 8)
+(or	(players-unit-type-count focus-player woad-raider-line >= 8)
+(or	(players-unit-type-count focus-player throwing-axeman-line >= 8)
+	(players-unit-type-count focus-player berserk-line >= 8)))))
+	(goal uugoal no)
+=>
+	(set-goal uugoal yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+	(population >= del-civ-pop)
+	(unit-type-count-total trebuchet-set >= 10)
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(up-research-status c: ri-champion >= research-pending))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined VIKING-CIV
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined MONGOL-CIV
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined GOTHIC-CIV
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+#else; Goths
+(defrule
+	(up-compare-goal uugoal != yes)
+(or	(strategic-number archers >= 15)
+(or	(and	(current-age >= imperial-age)
+		(and	(building-type-count-total castle >= 1)
+			(up-compare-goal champgoal != yes)))
+	(players-civ focus-player mayan)))
+	(strategic-number sn-current-age >= imperial)
+=>
+	(set-goal uugoal yes)
+	(disable-self))
+(defrule
+(or	(unit-type-count-total huskarl-set >= 1)
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(goal uugoal yes)))
+(or	(up-compare-goal strategy-type <= castle-war)
+	(strategic-number sn-current-age >= imperial))
+(or	(gold-amount >= 650); 850
+(or	(goal uugoal yes)
+	(goal trainunique yes)))
+;	(nand	(up-research-status c: ri-champion >= research-pending)
+;		(up-research-status c: ri-perfusion < research-pending)))
+	(can-research ri-anarchy)
+=>
+	(research ri-anarchy))
+(defrule
+(or	(unit-type-count-total infantry-class >= 21); 1
+(or	(up-research-status c: ri-champion >= research-pending)
+(or	(goal champgoal yes)
+(or	(and	(goal uugoal yes)
+		(up-research-status c: my-unique-research >= research-pending))
+	(goal researchplan yes)))))
+	(can-research ri-perfusion)
+=>
+	(research ri-perfusion)
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+(or	(goal champgoal yes)
+	(goal uugoal yes))
+	(food-amount >= 6000)
+	(gold-amount >= 2600)
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else; Huns
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(up-research-status c: ri-paladin >= research-pending)
+	(players-building-type-count any-enemy wonder >= 1)
+	(building-type-count-total wonder <= 0)
+	(players-building-type-count every-ally wonder <= 0)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+	(game-time > 8)
+	(up-compare-goal victory-time >= 0)
+	(up-compare-goal victory-time <= 750)
+(not	(hold-relics))
+	(building-type-count wonder <= 0)
+	(players-building-type-count every-ally wonder <= 0)
+(or	(players-building-type-count any-enemy wonder >= 1)
+	(enemy-captured-relics))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#else
+(defrule
+	(up-research-status c: ri-paladin >= research-pending)
+	(goal researchplan no)
+=>
+	(set-goal researchplan yes)
+	(disable-self))
+#end-if
+#end-if
+#else ; Celts
+(defrule
+	(strategic-number sn-current-age >= imperial)
+(or	(up-research-status c: imperial-age >= research-pending);	(current-age >= imperial-age)
+(or	(strategic-number archers < 25); 25
+(or	(strategic-number cavalry >= 10); 15
+(or	(strategic-number eagles >= 10); 15
+	(strategic-number husks >= 10))))); 15
+;	(goal escrowing no)
+;(or	(up-compare-goal custom-civ-pop >= up-max-civ);	(civilian-population >= up-max-civ)
+;	(up-compare-goal custom-civ-pop >= 90);	(civilian-population >= 90));
+	(goal palagoal no); hm
+	(goal champgoal no); hm
+;	(building-type-count castle >= 1)
+	(goal uugoal no)
+=>
+	(set-goal uugoal yes))
+(defrule
+(or	(unit-type-count-total siege-weapon-class >= 4)
+(or	(unit-type-count-total scorpion-class >= 4)
+(or	(up-research-status c: ri-siege-onager >= research-pending)
+	(gold-amount >= 1200))))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+(or	(unit-type-count-total battering-ram-line >= 12)
+(or	(unit-type-count-total scorpion-line >= 12)
+	(up-compare-goal mangonel-set >= 12)))
+(or	(and	(unit-type-count-total battering-ram-line >= 9)
+		(up-research-status c: ri-siege-ram >= research-pending))
+(or	(up-research-status c: ri-heavy-scorpion >= research-pending)
+	(up-research-status c: ri-siege-onager >= research-pending)))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Koreans
+(defrule
+(or	(up-compare-goal mangonel-set >= 4)
+	(up-research-status c: ri-siege-onager >= research-pending))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+	(up-compare-goal mangonel-set >= 12)
+	(up-research-status c: ri-siege-onager >= research-pending)
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Mayans
+(defrule
+	(goal strategy stonewall)
+	(strategic-number sn-current-age >= imperial)
+	(current-age <= castle-age)
+	(building-type-count-total castle >= 1)
+	(strategic-number skirms < 30)
+	(strategic-number siege < 10)
+	(goal strategylocked no)
+=>
+	(set-goal milunits yes)
+	(set-goal strategy usual)
+	(set-goal attackprioritychange yes)
+	(set-goal uugoal yes))
+(defrule
+(or	(unit-type-count-total eagle-warrior-line >= 6)
+	(unit-type-count-total heavy-eagle-warrior >= 6))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+(defrule
+	(unit-type-count-total eagle-warrior-line < 2)
+	(unit-type-count-total heavy-eagle-warrior < 2)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(goal researchplan no)
+=>
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+(or	(unit-type-count-total eagle-warrior-line >= 12)
+	(unit-type-count-total heavy-eagle-warrior >= 12))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Teutons
+(defrule
+	(current-age >= imperial-age)
+	(goal palagoal no)
+	(goal uugoal no)
+	(game-time > 5)
+=>
+	(set-goal uugoal yes))
+;(defrule
+;	(goal uugoal yes)
+;	(can-research my-unique-unit-upgrade)
+;=>
+;	(research my-unique-unit-upgrade)
+;	(set-goal researchplan yes))
+(defrule
+	(building-type-count-total castle >= 4)
+(or	(up-compare-goal excessFood >= 2900)
+(or	(goal underattack yes)
+	(and	(goal researchplan yes)
+		(town-under-attack))))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+;	(set-goal researchplan yes)
+)
+(defrule
+	(up-compare-goal urgoal != yes)
+	(unit-type-count-total castle >= 9)
+(or	(up-research-status c: ri-paladin >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Aztecs
+(defrule
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total condottiero >= 6)
+	(unit-type-count-total heavy-eagle-warrior >= 6)))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+(or	(unit-type-count-total spearman-line >= 24)
+(or	(unit-type-count-total eagle-warrior-line >= 12)
+(or	(unit-type-count-total my-unique-unit-line >= 12)
+	(unit-type-count-total militiaman-line >= 12))))
+(or	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+(or	(up-research-status c: ri-champion >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)))
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Mongols
+(defrule
+(or	(unit-type-count-total siege-weapon-class >= 5)
+(or	(unit-type-count-total scorpion-class >= 5)
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending); gonna need this research anyway
+	(gold-amount >= 1400))))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+;	(set-goal researchplan yes)
+)
+(defrule
+	(up-compare-goal urgoal != yes)
+(or	(unit-type-count-total battering-ram-line >= 12)
+(or	(unit-type-count-total scorpion-line >= 12)
+	(up-compare-goal mangonel-set >= 12)))
+(or	(and	(unit-type-count-total battering-ram-line >= 9)
+		(up-research-status c: ri-siege-ram >= research-pending))
+(or	(up-research-status c: ri-heavy-scorpion >= research-pending)
+	(up-research-status c: ri-siege-onager >= research-pending)))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Turks
+(defrule
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(unit-type-count-total bombard-cannon >= 3)
+(or	(unit-type-count-total cannon-galleon-line >= 3)
+	(building-type-count-total bombard-tower >= 3))))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal urgoal != yes)
+(or	(unit-type-count-total bombard-cannon >= 12)
+	(building-type-count-total bombard-tower >= 12))
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Franks
+(defrule
+	(up-research-status c: ri-paladin >= research-pending)
+	(goal researchplan no)
+=>
+	(set-goal researchplan yes)
+	(disable-self))
+(defrule
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(unit-type-count-total my-unique-unit-line >= 5))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research))
+#end-if
+#else ; Saracens
+(defrule
+	(up-compare-goal uugoal != yes)
+(or	(building-type-count castle >= 1)
+	(strategic-number sn-current-age >= imperial))
+(or	(player-in-game any-ally); test
+(or	(up-compare-goal tradeunits >= 9); 25
+	(and	(population >= up-max-civ)
+		(up-compare-goal excessGold >= 2900))))
+(or	(up-compare-goal custom-civ-pop >= 60);	(civilian-population >= 60)
+	(up-compare-goal excessGold >= 250))
+=>
+	(set-goal uugoal yes))
+(defrule
+	(up-compare-goal uugoal != no)
+(or	(and	(building-type-count-total castle <= 0)
+		(strategic-number sn-current-age <= castlea))
+	(and	(not	(player-in-game any-ally))
+		(and	(up-compare-goal tradeunits < 9); 25
+			(and	(up-compare-goal excessGold < 250)
+				(up-gaia-type-count c: gold < 4)))))
+=>
+	(set-goal uugoal no))
+(defrule
+(or	(and	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+		(goal uugoal yes))
+(or	(unit-type-count-total camel-line >= 5)
+	(unit-type-count-total my-unique-unit-line >= 5)))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+(defrule
+	(up-compare-goal uugoal != yes)
+	(up-research-status c: my-unique-research >= research-pending)
+	(can-research my-unique-unit-upgrade)
+=>
+	(set-goal uugoal yes)
+	(research my-unique-unit-upgrade))
+(defrule
+	(up-compare-goal urgoal != yes)
+(or	(unit-type-count-total my-unique-unit-line >= 12)
+	(unit-type-count-total camel-line >= 12))
+(or	(up-research-status c: ri-heavy-camel >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else ; Vikings
+(defrule
+	(up-research-status c: my-unique-unit-upgrade != research-available); >= research-pending)
+(or	(unit-type-count-total my-unique-unit-line >= 5)
+	(goal uugoal yes));
+	(can-research my-unique-research)
+=>
+	(research my-unique-research))
+(defrule
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(up-research-status c: ri-champion >= research-pending))
+	(goal researchplan no)
+=>
+	(set-goal researchplan yes))
+#end-if
+#else ; Spanish
+(defrule
+	(goal milunits yes)
+	(current-age >= imperial-age)
+	(building-type-count castle >= 1)
+(or	(strategic-number spears >= 40); 35
+	(up-compare-goal palagoal != yes))
+;	(goal escrowing no)
+(or	(up-compare-goal custom-civ-pop >= up-max-civ);	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop))
+	(up-compare-goal uugoal != yes)
+=>
+	(set-goal uugoal yes))
+(defrule
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(up-research-status c: ri-paladin >= research-pending))
+	(goal researchplan no)
+=>
+	(set-goal researchplan yes)
+	(disable-self))
+(defrule
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(and	(goal researchplan yes)
+		(or	(goal defend yes)
+			(gold-amount >= 900))))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research))
+(defrule
+	(up-compare-goal urgoal != yes)
+	(population >= max-pop)
+	(town-under-attack)
+	(strategic-number sn-military-superiority >= 1)
+	(unit-type-count-total villager >= 90)
+(or	(up-research-status c: ri-paladin >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade >= research-pending))
+	(goal underattack no)
+=>
+	(set-goal urgoal yes))
+#end-if
+#else; chinese
+(defrule
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(unit-type-count-total scorpion-line >= 7))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+#end-if
+#else; britons
+(defrule
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(building-type-count-total watch-tower >= 5)
+	(unit-type-count-total archery-class >= 25)))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+	(set-goal researchplan yes))
+#end-if
+(defrule ; just to make sure
+	(strategic-number sn-current-age >= imperial)
+(or	(up-compare-goal tradeunits >= 45)
+	(and	(and	(wood-amount >= 4000)
+			(food-amount >= 4000))
+		(gold-amount >= 4000)))
+	(up-compare-goal researchplan != yes)
+=>
+	(set-goal researchplan yes))
+;=============================================================
+;
+; Economic research
+;
+;=============================================================
+;=============================================================
+; Villager upgrades
+;=============================================================
+(defrule
+(or	(strategic-number sn-current-age >= fcastlea)
+(or	(and	(goal strategy sling)
+		(up-research-status c: ri-coinage >= research-pending))
+	(and	(up-compare-goal strategy-type == feudal-war)
+		(or	(up-compare-goal total-food-amount >= castle-f2)
+			(or	(building-type-count-total blacksmith >= 1)
+				(research-available castle-age))))))
+;	(up-compare-goal escrowing == 0)
+	(can-research ri-wheel-barrow)
+=>
+	(research ri-wheel-barrow))
+(defrule
+(or	(unit-type-count-total villager >= 36)
+	(and	(up-compare-goal strategy-type == feudal-war)
+		(and	(wood-amount >= 200)
+			(and	(up-research-status c: ri-double-bit-axe >= research-pending)
+				(up-research-status c: ri-horse-collar >= research-pending)))))
+;	(up-compare-goal escrowing == 0)
+	(can-research ri-wheel-barrow)
+=>
+	(research ri-wheel-barrow))
+;=============================================================
+(defrule
+(or	(goal dreitc yes)
+(or	(unit-type-count-total villager >= 50); 52
+	(strategic-number sn-military-superiority >= 1)))
+(or	(unit-type-count-total villager >= 40); 35
+	(civilian-population >= up-max-civ))
+	(can-research ri-hand-cart)
+=>
+	(research ri-hand-cart))
+;=============================================================
+; Lumber upgrades
+;=============================================================
+(defrule
+(or	(strategic-number sn-current-age >= fcastlea)
+(or	(and	(goal strategy-type feudal-war)
+		(or	(building-type-count-total archery-range >= 1)
+			(building-type-count-total stable >= 1)))
+	(and	(food-amount >= db-food-buffer);	(up-compare-goal total-food-amount >= db-food-buffer)
+		(or	(building-type-count-total blacksmith >= 1)
+			(research-available castle-age)))))
+	(can-research ri-double-bit-axe)
+=>
+	(research ri-double-bit-axe))
+(defrule
+(or	(goal strategy sling)
+	(up-compare-goal total-food-amount < 369))
+	(can-research ri-double-bit-axe)
+=>
+	(research ri-double-bit-axe))
+;=============================================================
+(defrule
+(or	(up-research-status c: ri-wheel-barrow >= research-pending)
+(or	(unit-type-count-total villager >= 30)
+(or	(goal dreitc yes)
+(or	(stone-amount < 100)
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop))))))
+	(can-research ri-bow-saw)
+=>
+	(research ri-bow-saw))
+;=============================================================
+(defrule
+	(can-research ri-two-man-saw)
+=>
+	(research ri-two-man-saw))
+;=============================================================
+; Farm upgrades
+;=============================================================
+;(defrule
+;	(goal strategy a-rush)
+;	(building-type-count-total town-center <= 1)
+;(or	(unit-type-count forage-count >= 2)
+;	(up-compare-goal mysheep >= 2))
+;	(civilian-population < 36); 39
+;	(food-amount < 400)
+;(or	(up-research-status c: ri-bodkin-arrow < research-pending)
+;	(up-research-status c: ri-crossbow < research-pending))
+;=>
+;	(up-jump-rule 5))
+(defrule
+	(building-type-count-total farm g:>= maxfarms)
+(or	(unit-type-count villager-forager g:<= forage-count)
+	(building-type-count-total farm >= 7))
+	(current-age <= feudal-age)
+	(up-compare-goal total-food-amount < 175); (
+	(current-age-time < 75)
+(or	(up-compare-goal forage-count >= 1)
+;	(and
+	(dropsite-min-distance hunting s:<= sn-maximum-hunt-drop-distance)
+;		(unit-type-count villager-hunter >= 1))
+)
+	(up-research-status c: ri-fletching == research-available)
+	(up-research-status c: ri-wheel-barrow == research-available)
+	(up-research-status c: castle-age == research-available)
+=>
+	(up-jump-rule 4))
+(defrule
+	(unit-type-count fishing-ship >= 9)
+	(unit-type-count villager < 33)
+	(wood-amount < 175)
+	(strategic-number sn-food-gatherer-percentage <= 24)
+(or	(up-compare-goal strategy-type2 == water)
+	(strategic-number sn-food-gatherer-percentage <= 16))
+(or	(up-gaia-type-count c: shore-fish-class >= 1)
+	(up-gaia-type-count c: ocean-fish-class >= 1))
+=>
+	(up-jump-rule 3))
+(defrule
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+(or	(and	(goal enemy-goal flush) ;(goal strategy-type feudal-war)
+		(or	(building-type-count-total stable >= 1)
+			(building-type-count-total archery-range >= 1)))
+(or	(and	(food-amount >= wb-food-buffer);	(up-compare-goal total-food-amount >= wb-food-buffer)
+		(or	(building-type-count-total blacksmith >= 1)
+			(research-available castle-age)))
+	(up-compare-goal total-food-amount < 369)))
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar))
+(defrule
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+(or	(and	(goal strategy-type feudal-war)
+		(building-type-count-total blacksmith >= 1))
+(or	(and	(goal strategy r-flush)
+		(building-type-count-total blacksmith >= 1))
+	(and	(goal strategy s-flush)
+		(building-type-count-total stable >= 1))))
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar))
+(defrule
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+(or	(strategic-number sn-current-age >= fcastlea)
+	(and	(goal maa-var yes)
+		(building-type-count-total barracks >= 1)))
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar)); end big jump
+;=============================================================
+(defrule
+	(up-research-status c: ri-bow-saw >= research-pending)
+(or	(civilian-population >= up-max-civ)
+(or	(unit-type-count-total villager >= 42)
+(or	(goal dreitc yes)
+	(strategic-number sn-military-superiority >= 1))))
+	(can-research ri-heavy-plow)
+=>
+	(research ri-heavy-plow))
+;=============================================================
+(defrule
+	(can-research ri-crop-rotation)
+=>
+	(research ri-crop-rotation))
+;=============================================================
+; Mining
+;=============================================================
+(defrule
+	(unit-type-count-total villager-gold >= 1)
+(or	(food-amount >= imperial-fs)
+(or	(strategic-number sn-current-age >= imperial)
+	(unit-type-count villager-gold >= 10)))
+(or	(strategic-number sn-current-age >= fcastlea)
+	(food-amount >= castle-fs))
+(or	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(current-age <= feudal-age))
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-gold >= 1)
+	(up-research-status c: ri-bow-saw >= research-pending)
+	(up-research-status c: ri-heavy-plow >= research-pending)
+(or	(building-type-count-total town-center >= 2)
+(or	(unit-type-count-total villager >= 45)
+(or	(goal dreitc yes)
+	(strategic-number sn-military-superiority >= 0)))); 2; 1
+(or	(gold-amount < imperial-gold); 800
+	(unit-type-count villager-gold >= 4))
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-gold >= 4); 1
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+	(building-type-count dock >= 1)
+	(up-compare-goal navycount >= 1); hmm
+	(goal enemy-boats yes)
+	(strategic-number sn-current-age >= fcastlea)
+(or	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(current-age <= feudal-age))
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-gold >= 4); 3
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+	(goal strategy r-flush)
+	(goal sk-var no)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-wheel-barrow >= research-pending); test
+	(building-type-count-total blacksmith >= 1)
+(or	(building-type-count-total archery-range >= 2)
+(or	(building-type-count-total stable >= 1); 2
+	(building-type-count-total market >= 1)))
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining))
+(defrule
+	(unit-type-count-total villager-gold >= 3)
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+	(goal strategy sling)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(up-research-status c: ri-coinage >= research-pending)
+(or	(wood-amount >= 225)
+	(building-type-count-total market >= 1))
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining))
+(defrule
+(or	(strategic-number sn-gold-gatherer-percentage <= 0)
+(or	(and	(strategic-number sn-current-age <= feudal)
+		(food-amount < db-food-buffer))
+(or	(and	(up-compare-goal strategy != a-rush)
+		(up-compare-goal strategy != ca-rush))
+	(and	(up-research-status c: ri-bodkin-arrow == research-available)
+		(food-amount < 300)))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(unit-type-count-total villager-gold >= 4); 3
+	(goal strategy a-rush)
+;	(up-research-status c: ri-horse-collar >= research-pending)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+(or	(building-type-count-total town-center >= 2)
+	(civilian-population >= 36)); 33
+(or	(building-type-count-total archery-range >= 2)
+	(building-type-count-total stable >= 1)); 2
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining))
+(defrule
+	(strategic-number sn-current-age <= feudal)
+	(food-amount >= db-food-buffer)
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+	(unit-type-count villager-gold >= 1)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(up-research-status c: ri-horse-collar != research-available)
+	(up-research-status c: ri-wheel-barrow != research-available)
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-gold >= 1)
+(or	(unit-type-count villager-gold >= 12); 10
+(or	(food-amount >= 1200)
+	(strategic-number sn-current-age >= imperial)))
+	(can-research ri-gold-shaft-mining)
+=>
+	(research ri-gold-shaft-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-gold >= 6); 4
+	(gold-amount < imperial-gold); 200
+	(up-research-status c: ri-bow-saw >= research-pending)
+	(up-research-status c: ri-heavy-plow >= research-pending)
+	(goal dreitc yes)
+;(or	(up-compare-goal strategy-type <= castle-war)
+(or	(unit-type-count-total villager-gold >= 9); 8
+(or	(strategic-number sn-military-superiority >= 1); hm
+	(up-research-status c: ri-hand-cart >= research-pending)));)
+	(can-research ri-gold-shaft-mining)
+=>
+	(research ri-gold-shaft-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-stone >= 2); 3
+(or	(strategic-number sn-current-age >= imperial)
+	(and	(unit-type-count-total villager-stone >= 4); 3
+		(and	(strategic-number sn-military-superiority >= 1); 1 = test (it's also cheap)
+			(up-research-status c: ri-hand-cart >= research-pending))))
+	(goal dreitc yes)
+	(goal underattack no)
+	(can-research ri-stone-mining)
+=>
+	(research ri-stone-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-stone >= 2); 3
+	(strategic-number sn-stone-gatherer-percentage >= 1)
+	(goal strategy sling)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(up-research-status c: ri-coinage >= research-pending)
+	(up-research-status c: ri-gold-mining >= research-pending)
+(or	(wood-amount >= 225)
+	(building-type-count-total market >= 1))
+	(can-research ri-stone-mining)
+=>
+	(research ri-stone-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-stone >= 2); 3
+	(strategic-number sn-stone-gatherer-percentage >= 1)
+	(goal strategy castledrop)
+	(stone-amount < 200)
+	(building-type-count-total castle <= 0)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+;	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(up-research-status c: castle-age >= research-pending)
+	(can-research ri-stone-mining)
+=>
+	(research ri-stone-mining))
+;=============================================================
+(defrule
+	(unit-type-count-total villager-stone >= 3); 2
+	(up-research-status c: ri-hand-cart != research-available)
+(or	(strategic-number sn-current-age >= imperial)
+	(unit-type-count-total villager-stone >= 8)); 6;	(strategic-number sn-military-superiority >= 1)); 1 = test (it's also cheap)
+(or	(building-type-count-total castle < 3); uugoal
+(or	(unit-type-count-total villager-stone >= 8)
+	(goal uugoal yes)))
+;	(stone-amount < castle-stone)
+	(goal dreitc yes)
+	(goal underattack no)
+	(can-research ri-stone-shaft-mining)
+=>
+	(research ri-stone-shaft-mining))
+;=============================================================
+; Loom
+;=============================================================
+(defrule
+;	(game-time < 3); 5/5 at the start
+(or	(town-under-attack)
+(or	(and	(housing-headroom <= 0)
+		(up-pending-objects c: house <= 0))
+	(and	(unit-type-count villager-food <= 1); scout?
+		;(and	(unit-type-count fishing-ship <= 0)
+			(up-compare-goal total-food-amount < 42))));)
+	(current-age == dark-age)
+	(can-research ri-loom)
+=>
+;	(chat-local-to-self "1")
+	(set-strategic-number sn-maximum-gaia-attack-response 2); 1
+	(research ri-loom)
+	(enable-timer FDrop 21))
+;=============================================================
+(defrule
+	(up-pending-objects c: villager <= 0)
+(or	(and	(unit-type-count-total villager <= 7); deer first ; shouldn't happen anymore though
+		(up-compare-goal total-food-amount < 25)); (food-amount < 25)
+	(and	(unit-type-count-total villager <= 11); nomad or sth
+		(up-compare-goal total-food-amount < 15))); (food-amount < 15)
+	(current-age == dark-age)
+	(can-research ri-loom)
+=>
+;	(chat-local-to-self "2")
+	(set-strategic-number sn-maximum-gaia-attack-response 2); 1
+	(research ri-loom)
+	(enable-timer FDrop 21))
+;=============================================================
+(defrule
+	(up-compare-goal total-food-amount < 100)
+(or	(and	(up-pending-objects c: villager <= 0)
+		(and	(up-compare-goal total-food-amount < 50)
+			(unit-type-count villager-food <= 0)))
+	(and	(up-pending-objects c: villager >= 1)
+		(food-amount < 50)))
+	(current-age == dark-age)
+	(can-research ri-loom)
+=>
+;	(chat-local-to-self "3")
+	(set-strategic-number sn-maximum-gaia-attack-response 2); 1
+	(research ri-loom)
+	(enable-timer FDrop 21))
+;=============================================================
+(defrule
+	(current-age == dark-age)
+	(can-research ri-loom)
+=>
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-filter-distance c: -1 c: 32)
+	(up-find-remote c: wolf c: 8)
+	(up-find-remote c: jaguar c: 8)
+	(up-get-search-state local-total))
+(defrule
+	(unit-type-count-total villager >= 20)
+(or	(up-compare-goal remote-total >= 6)
+	(up-compare-goal total-food-amount < 460))
+	(current-age == dark-age)
+	(can-research ri-loom)
+=>
+;	(chat-local-to-self "4")
+	(set-strategic-number sn-maximum-gaia-attack-response 2); 1
+	(research ri-loom)
+	(enable-timer FDrop 21))
+;=============================================================
+(defrule
+	(military-population <= 0)
+(or	(strategic-number sn-cap-civilian-explorers >= 1)
+	(strategic-number sn-minimum-civilian-explorers >= 1))
+(or	(cc-players-unit-type-count 0 wolf >= 2)
+	(cc-players-unit-type-count 0 jaguar >= 2))
+	(unit-type-count-total villager >= 1)
+	(current-age == dark-age)
+	(can-research ri-loom)
+=>
+;	(chat-local-to-self "5")
+	(set-strategic-number sn-maximum-gaia-attack-response 2); 1
+	(research ri-loom)
+	(enable-timer FDrop 21))
+;=============================================================
+(defrule
+(or	(strategic-number sn-current-age >= fcastlea)
+	(and	(or	(up-compare-goal strategy-type == feudal-war)
+			(goal strategy sling))
+		(strategic-number sn-current-age >= dfeudal)))
+(or	(strategic-number sn-current-age >= imperial)
+(or	(players-current-age target-player >= feudal-age)
+	(players-military-population target-player >= 4)))
+	(can-research ri-loom)
+=>
+;	(chat-local-to-self "6")
+	(set-strategic-number sn-maximum-gaia-attack-response 2); 1
+	(research ri-loom)
+	(enable-timer FDrop 21))
+;=============================================================
+; Teams
+;=============================================================
+#load-if-not-defined WONDER-RACE
+(defrule
+;	(goal researchplan no)
+;	(game-time < 3000)
+;	(up-compare-goal tradeunits < maxcartspop)
+;	(up-compare-goal tradeunits < maxcartssize)
+(or	(goal underattack yes)
+(or	(and	(unit-type-count-total trade-cart <= 0)
+		(unit-type-count-total trade-cog <= 0))
+	(and	(players-building-type-count every-ally market <= 0)
+		(players-building-type-count every-ally dock <= 0))))
+=>
+	(up-jump-rule 2))
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+(or	(players-building-type-count any-ally market >= 1)
+(or	(players-building-type-count any-ally dock >= 1)
+	(player-in-game any-ally)))
+	(up-compare-goal tradeunits >= 4)
+;(or	(goal strategy sling)
+(or	(up-compare-goal tradeunits >= 12)
+(or	(strategic-number sn-current-age >= imperial)
+	(civilian-population >= up-max-civ)));)
+	(can-research ri-cartography)
+=>
+	(research ri-cartography))
+(defrule
+(or	(up-compare-goal tradeunits >= 3)
+	(building-type-count-total market >= 2))
+(or	(goal strategy sling)
+(or	(up-compare-goal tradeunits >= 5)
+(or	(strategic-number sn-current-age >= imperial)
+	(civilian-population >= up-max-civ))))
+	(can-research ri-caravan)
+=>
+	(research ri-caravan))
+;=============================================================
+(defrule
+	(goal strategy stonewall)
+(or	(up-research-status c: ri-elite-eagle-warrior < research-pending)
+	(and	(wood-amount < 1000)
+		(and	(food-amount < 1000)
+			(gold-amount < 1000))))
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(taunt-detected any-ally 3)
+(or	(taunt-detected any-ally 4)
+(or	(taunt-detected any-ally 5)
+	(taunt-detected any-ally 6))))
+	(player-in-game any-ally)
+	(population >= max-civ-pop);
+	(goal underattack no)
+	(strategic-number sn-current-age >= imperial)
+	(can-research ri-coinage)
+=>
+;	(chat-to-player my-player-number text-researching-coinage); "Researching coinage."
+	(research ri-coinage))
+(defrule
+(or	(wood-amount > 1900)
+(or	(food-amount > 1900)
+	(gold-amount > 1900)))
+(or	(up-allied-resource-amount any-ally wood < 1200)
+(or	(up-allied-resource-amount any-ally food < 1200)
+	(up-allied-resource-amount any-ally gold < 1200)))
+;	(goal underattack no)
+;(or
+	(population >= max-civ-pop); del-civ-pop
+	(strategic-number sn-current-age >= imperial);)
+	(player-in-game any-ally); every
+	(can-research ri-coinage)
+=>
+;	(chat-to-player my-player-number text-researching-coinage); "Researching coinage."
+	(research ri-coinage))
+(defrule
+(or	(and	(goal strategy sling)
+		(player-in-game any-ally))
+(or	(wood-amount > 10000)
+(or	(food-amount > 10000)
+	(gold-amount > 10000))))
+	(can-research ri-coinage)
+=>
+;	(chat-to-player my-player-number text-researching-coinage); "Researching coinage."
+	(research ri-coinage))
+;=============================================================
+(defrule
+	(goal underattack no)
+	(player-in-game any-ally)
+(or	(goal strategy sling)
+	(strategic-number sn-current-age >= imperial))
+(or	(goal strategy sling)
+(or	(population >= max-civ-pop);
+(or	(wood-amount > 1900)
+(or	(food-amount > 1900)
+	(gold-amount > 1900)))))
+	(can-research ri-banking)
+=>
+;	(chat-to-player my-player-number text-researching-banking); "Researching banking."
+	(research ri-banking))
+;=============================================================
+; Infantry upgrades
+;=============================================================
+(defrule
+	(strategic-number sn-current-age == feudal);	(research-available castle-age)
+	(unit-type-count-total militiaman < 6); 5
+	(up-compare-goal strategy-type >= castle-war)
+	(food-amount < castle-fs)
+	(gold-amount < 240)
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(and	(goal maa-var yes)
+		(up-compare-goal strategy-type == feudal-war))
+(or	(unit-type-count-total militiaman >= 5)
+(or	(and	(goal enemy-goal2 klew)
+		(goal trainchamp yes));(unit-type-count-total militiaman-line >= 1))
+	(and	(strategic-number sn-current-age >= imperial)
+		(goal champgoal yes)))))
+	(can-research ri-man-at-arms)
+=>
+	(research ri-man-at-arms)); end mini jump
+;=============================================================
+(defrule
+(or	(unit-type-count-total man-at-arms >= 5)
+(or	(and	(goal enemy-goal2 klew)
+		(unit-type-count-total militiaman-line >= 1))
+	(and	(strategic-number sn-current-age >= imperial)
+		(goal champgoal yes))))
+	(can-research ri-long-swordsman)
+=>
+	(research ri-long-swordsman))
+;=============================================================
+(defrule
+(or	(unit-type-count-total long-swordsman >= 5)
+(or	(and	(goal enemy-goal2 klew)
+		(unit-type-count-total militiaman-line >= 1))
+	(and	(strategic-number sn-current-age >= imperial)
+		(goal champgoal yes))))
+	(can-research ri-two-handed-swordsman)
+=>
+	(research ri-two-handed-swordsman))
+;=============================================================
+(defrule
+(or	(unit-type-count-total two-handed-swordsman >= 5)
+(or	(and	(goal enemy-goal2 klew)
+		(unit-type-count-total militiaman-line >= 1))
+	(goal champgoal yes)))
+	(can-research ri-champion)
+=>
+	(research ri-champion))
+;=============================================================
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(goal trainchamp yes)
+(or	(can-research ri-man-at-arms)
+(or	(can-research ri-long-swordsman)
+	(can-research ri-two-handed-swordsman)))
+=>
+	(research ri-man-at-arms)
+	(research ri-long-swordsman)
+	(research ri-two-handed-swordsman)); test
+;=============================================================
+(defrule
+(or	(up-compare-goal strategy == stonewall)
+(or	(unit-type-count-total eagle-warrior-line >= 6)
+	(unit-type-count-total heavy-eagle-warrior >= 6)))
+	(can-research ri-elite-eagle-warrior)
+=>
+	(research ri-elite-eagle-warrior))
+;=============================================================
+; Cavalry upgrades
+;=============================================================
+(defrule
+(or	(unit-type-count-total knight-line >= 18); 18
+	(goal palagoal yes))
+	(can-research ri-cavalier)
+=>
+	(research ri-cavalier))
+;=============================================================
+(defrule
+(or	(and	(unit-type-count-total knight-line >= 18); 18
+		(up-research-status c: ri-bloodlines >= research-pending))
+	(goal palagoal yes))
+	(can-research ri-paladin)
+=>
+	(research ri-paladin)
+	(set-goal researchplan yes))
+;=============================================================
+(defrule
+	(research-available ri-light-cavalry)
+(or	(unit-type-count-total scout-cavalry-line >= 3)
+	(cc-players-unit-type-count 0 gold-mine < 6))
+	(can-research ri-light-cavalry)
+=>
+	(research ri-light-cavalry))
+;=============================================================
+(defrule
+	(research-available ri-hussar)
+(or	(unit-type-count-total scout-cavalry-line >= 3)
+	(cc-players-unit-type-count 0 gold-mine < 6))
+	(can-research ri-hussar)
+=>
+	(research ri-hussar))
+;=============================================================
+(defrule
+(or	(strategic-number cavalry >= 15)
+(or	(unit-type-count-total camel-line >= 6)
+(or	(unit-type-count-total genitour >= 10)
+(or	(unit-type-count-total elite-genitour >= 10)
+(or	(unit-type-count-total 732 >= 10)
+	(players-unit-type-count any-enemy cavalry-archer-class >= 10))))))
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-heavy-camel)
+=>
+	(research ri-heavy-camel))
+;=============================================================
+#load-if-defined UP-GAME-WK
+(defrule
+(or	(strategic-number cavalry >= 15)
+(or	(unit-type-count-total camel-line >= 6)
+(or	(unit-type-count-total genitour >= 10)
+(or	(unit-type-count-total elite-genitour >= 10)
+(or	(unit-type-count-total 732 >= 10)
+	(players-unit-type-count focus-player cavalry-archer-class >= 10))))))
+	(unit-type-count-total camel-line >= 4)
+	(can-research ri-imperial-camel)
+=>
+	(research ri-imperial-camel))
+;=============================================================
+(defrule
+(or	(up-research-status c: ri-howdah >= research-pending)
+(or	(up-research-status c: ri-tusk-swords >= research-pending)
+(or	(up-research-status c: ri-chatras >= research-pending)
+	(up-compare-goal battle-elephant-set >= 4))))
+	(can-research ri-elite-battle-elephant)
+=>
+	(research ri-elite-battle-elephant))
+#end-if
+;=============================================================
+; Archer upgrades
+;=============================================================
+(defrule
+(or	(building-type-count monastery < 1)
+(or	(unit-type-count-total monk >= 3)
+	(and	(unit-type-count-total monk >= 1)
+		(goal Multiplayer yes))))
+(or	(goal strategy a-rush)
+(or	(goal strategy r-flush)
+	(unit-type-count-total archer-line >= 4)))
+	(can-research ri-crossbow)
+=>
+	(research ri-crossbow))
+;=============================================================
+(defrule
+(or	(players-unit-type-count focus-player huskarl-line < 4)
+	(unit-type-count-total archer-line >= 9))
+	(unit-type-count-total archer-line >= 5)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest))
+;=============================================================
+(defrule
+(or	(goal dreitc yes)
+	(and	(strategic-number sn-military-superiority <= -1)
+		(up-compare-goal position-goal != pocket)))
+(or	(unit-type-count-total skirmisher-line >= 5)
+(or	(strategic-number archers >= 5)
+(or	(and	(goal researchplan yes)
+		(up-compare-goal excessGold >= 1200))
+	(cc-players-unit-type-count 0 gold-mine < 8))))
+	(can-research ri-elite-skirmisher)
+=>
+	(research ri-elite-skirmisher))
+(defrule
+(or	(goal attacking yes)
+	(goal underattack yes))
+(or	(unit-type-count-total skirmisher-line >= 5)
+	(cc-players-unit-type-count 0 gold-mine < 8))
+(or	(can-research ri-elite-skirmisher)
+	(can-research ri-imperial-skirmisher))
+=>
+	(research ri-elite-skirmisher)
+	(research ri-imperial-skirmisher))
+#load-if-defined UP-GAME-WK
+(defrule
+(or	(goal dreitc yes)
+	(and	(strategic-number sn-military-superiority <= -1)
+		(up-compare-goal position-goal != pocket)))
+(or	(unit-type-count-total skirmisher-line >= 5)
+(or	(strategic-number archers >= 5)
+(or	(and	(goal researchplan yes)
+		(up-compare-goal excessGold >= 1200))
+	(cc-players-unit-type-count 0 gold-mine < 8))))
+	(can-research ri-imperial-skirmisher)
+=>
+	(research ri-imperial-skirmisher))
+(defrule
+(or	(up-research-status c: ri-atlatl >= research-pending)
+(or	(up-research-status c: ri-yeomen >= research-pending)
+	(up-research-status c: ri-elite-genitour < research-pending)))
+(or	(unit-type-count-total skirmisher-line >= 2)
+	(goal trainskirm yes))
+	(can-research ri-imperial-skirmisher)
+=>
+	(research ri-imperial-skirmisher))
+(defrule
+(or	(up-research-status c: ri-imperial-skirmisher < research-pending)
+(or	(unit-type-count-total genitour >= 4)
+(or	(unit-type-count-total elite-genitour >= 4)
+	(unit-type-count-total 732 >= 4))))
+(or	(unit-type-count-total genitour >= 2)
+(or	(unit-type-count-total elite-genitour >= 2)
+(or	(unit-type-count-total 732 >= 2)
+	(goal traingenitour yes))))
+	(can-research ri-elite-genitour)
+=>
+	(research ri-elite-genitour))
+#end-if
+;=============================================================
+(defrule
+(or	(goal strategy ca-rush)
+	(unit-type-count-total cavalry-archer-line >= 5))
+	(can-research ri-heavy-cavalry-archer)
+=>
+	(research ri-heavy-cavalry-archer))
+;=============================================================
+; Pike upgrades
+;=============================================================
+(defrule
+(or	(unit-type-count-total spearman-line >= 4)
+(or	(and	(goal researchplan yes)
+		(gold-amount >= 1400))
+	(cc-players-unit-type-count 0 gold-mine < 6)))
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman))
+;=============================================================
+(defrule
+(or	(unit-type-count-total spearman-line >= 4)
+(or	(and	(goal researchplan yes)
+		(gold-amount >= 1400))
+	(cc-players-unit-type-count 0 gold-mine < 6)))
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier))
+;=============================================================
+; Siege upgrades
+;=============================================================
+(defrule
+(or	(goal researchplan yes)
+	(strategic-number sn-military-superiority >= 0))
+	(unit-type-count-total battering-ram-line >= 2)
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram))
+;=============================================================
+(defrule
+(or	(and	(unit-type-count-total scorpion-line >= 3)
+		(goal researchplan yes))
+	(unit-type-count-total scorpion-line >= 4))
+	(can-research ri-heavy-scorpion)
+=>
+	(research ri-heavy-scorpion))
+;=============================================================
+(defrule
+	(up-compare-goal mangonel-set >= 3)
+	(can-research ri-onager)
+=>
+	(research ri-onager))
+(defrule
+	(up-compare-goal mangonel-set >= 5)
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager))
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TURKISH-CIV ; Siege Onagers
+#load-if-not-defined VIKING-CIV ; Aztecs, Celts, Koreans, Mongols, Saracens, Slavs, Teutons
+(defrule
+;	(goal escrowing no)
+(or	(gold-amount >= 2500)
+(or	(food-amount >= 2500)
+(or	(wood-amount >= 2500)
+(or	(strategic-number skirmsarchers >= 40)
+	(players-unit-type-count focus-player scorpion-line >= 8)))))
+	(can-research ri-onager)
+=>
+	(research ri-onager))
+(defrule
+;	(goal escrowing no)
+(or	(gold-amount >= 2500)
+(or	(food-amount >= 2500)
+(or	(wood-amount >= 2500)
+(or	(strategic-number skirmsarchers >= 40)
+	(players-unit-type-count focus-player scorpion-line >= 8)))))
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager))
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+(defrule
+(or	(up-compare-const michi-style == yes)
+	(and	(gold-amount >= 1800)
+		(up-compare-goal mangonel-set >= 1)))
+(or	(up-research-status c: ri-heavy-scorpion == research-unavailable)
+	(up-compare-goal mangonel-set >= 1))
+(or	(can-research ri-onager)
+	(can-research ri-siege-onager))
+=>
+	(research ri-onager)
+	(research ri-siege-onager))
+;=============================================================
+(defrule
+(or	(unit-type-count-total battering-ram-line >= 4); 5
+(or	(unit-type-count-total organ-gun >= 2)
+(or	(unit-type-count-total elite-organ-gun >= 2)
+(or	(unit-type-count-total scorpion-line >= 2)
+(or	(up-compare-goal mangonel-set >= 2)
+(or	(unit-type-count-total bombard-cannon >= 2)
+	(unit-type-count-total trebuchet-set >= 2)))))))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers))
+(defrule
+(or	(unit-type-count-total ballista-elephant >= 2)
+	(unit-type-count-total elite-ballista-elephant >= 2))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers))
+;=============================================================
+; Cavalry upgrades
+;=============================================================
+(defrule
+	(strategic-number sn-current-age < fcastlea)
+	(goal attacking no)
+	(goal underattack no)
+	(up-compare-goal strategy-type >= castle-war)
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(unit-type-count-total imperial-camel >= 6)
+(or	(unit-type-count-total missionary >= 6)
+(or	(unit-type-count-total scout-cavalry-class >= 6)
+(or	(unit-type-count-total cavalry-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 6)
+(or	(unit-type-count-total boyar >= 6)
+	(unit-type-count-total cavalry-archer-class >= 6)))))))
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines))
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 6)
+(or	(unit-type-count-total ballista-elephant >= 6)
+(or	(unit-type-count-total elite-ballista-elephant >= 6)
+(or	(unit-type-count-total cavalry-cannon-class >= 6)
+	(and	(goal palagoal yes)
+		(strategic-number sn-current-age >= imperial))))))
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines))
+(defrule
+(or	(unit-type-count-total genitour >= 6)
+(or	(unit-type-count-total elite-genitour >= 6)
+(or	(unit-type-count-total 732 >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+	(unit-type-count-total cavalry-cannon-class >= 6)))))
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)); end jump
+;=============================================================
+(defrule
+	(strategic-number sn-current-age < fcastlea)
+	(goal attacking no)
+	(goal underattack no)
+	(up-compare-goal strategy-type >= castle-war)
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(unit-type-count-total imperial-camel >= 6)
+(or	(unit-type-count-total ballista-elephant >= 6)
+(or	(unit-type-count-total elite-ballista-elephant >= 6)
+(or	(unit-type-count-total scout-cavalry-class >= 6)
+(or	(unit-type-count-total cavalry-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 6)
+	(unit-type-count-total boyar >= 6)))))))
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding))
+(defrule
+	(up-compare-goal battle-elephant-set >= 6)
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)); end jump
+;=============================================================
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 15)
+(or	(unit-type-count-total ballista-elephant >= 24)
+(or	(unit-type-count-total elite-ballista-elephant >= 24)
+(or	(unit-type-count-total imperial-camel >= 24)
+(or	(unit-type-count-total cavalry-class >= 24)
+(or	(unit-type-count-total magyar-huszar >= 24)
+	(unit-type-count-total boyar >= 24)))))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(unit-type-count-total genitour >= 24)
+(or	(unit-type-count-total elite-genitour >= 24)
+(or	(unit-type-count-total 732 >= 24)
+(or	(unit-type-count-total cavalry-cannon-class >= 24)
+(or	(unit-type-count-total elephant-archer >= 24)
+	(unit-type-count-total cavalry-archer-class >= 24))))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(strategic-number moenche < 10)
+	(food-amount < 1350)
+	(strategic-number sn-current-age < imperial)
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 6)
+(or	(unit-type-count-total ballista-elephant >= 9)
+(or	(unit-type-count-total elite-ballista-elephant >= 9)
+(or	(unit-type-count-total imperial-camel >= 9)
+(or	(unit-type-count-total cavalry-class >= 9)
+(or	(unit-type-count-total magyar-huszar >= 9)
+	(unit-type-count-total boyar >= 9)))))))
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry))
+(defrule
+(or	(unit-type-count-total genitour >= 9)
+(or	(unit-type-count-total elite-genitour >= 9)
+(or	(unit-type-count-total 732 >= 9)
+(or	(unit-type-count-total cavalry-cannon-class >= 9)
+(or	(unit-type-count-total elephant-archer >= 9)
+	(unit-type-count-total cavalry-archer-class >= 9))))))
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry)); end jump
+;=============================================================
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 6)
+(or	(unit-type-count-total imperial-camel >= 6)
+(or	(unit-type-count-total cavalry-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 6)
+(or	(unit-type-count-total boyar >= 6)
+(or	(unit-type-count-total ballista-elephant >= 6)
+	(unit-type-count-total elite-ballista-elephant >= 6)))))))
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding))
+;=============================================================
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 6)
+(or	(unit-type-count-total imperial-camel >= 6)
+(or	(unit-type-count-total cavalry-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 6)
+(or	(unit-type-count-total boyar >= 6)
+(or	(unit-type-count-total ballista-elephant >= 6)
+	(unit-type-count-total elite-ballista-elephant >= 6)))))))
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding))
+;=============================================================
+; Archer upgrades
+;=============================================================
+(defrule
+	(strategic-number sn-current-age < fcastlea)
+	(up-compare-goal strategy-type != feudal-war)
+	(food-amount < castle-fs)
+	(goal attacking no);
+	(goal underattack no);
+=>
+	(up-jump-rule 4))
+(defrule
+(or	(and	(up-research-status c: ri-double-bit-axe < research-pending)
+		(food-amount < 200))
+(or	(up-compare-goal milunits == no)
+(or	(up-compare-goal milunits == s-flush)
+	(up-compare-goal milunits == krush))))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(building-type-count watch-tower >= 3)
+(or	(building-type-count castle >= 3)
+(or	(unit-type-count-total archery-class >= 1)
+(or	(up-compare-goal skirmisher-set >= 1)
+(or	(unit-type-count-total elephant-archer >= 1)
+(or	(unit-type-count-total slinger >= 1)
+	(unit-type-count-total cavalry-archer-class >= 1)))))))
+;	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(can-research ri-fletching)
+=>
+	(research ri-fletching))
+(defrule
+(or	(unit-type-count-total galley-line >= 3)
+(or	(unit-type-count-total longboat-line >= 3)
+(or	(up-compare-goal caravel-set >= 3)
+(or	(goal strategy grush)
+(or	(goal strategy a-rush)
+(or	(goal strategy ca-rush)
+	(goal strategy r-flush)))))))
+;(or	(up-research-status c: ri-double-bit-axe >= research-pending)
+;	(food-amount >= 200))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching))
+(defrule
+(or	(unit-type-count-total rattan-archer >= 1)
+(or	(unit-type-count-total elite-rattan-archer >= 1)
+(or	(unit-type-count-total camel-archer >= 1)
+(or	(unit-type-count-total elite-camel-archer >= 1)
+	(unit-type-count-total genoese-crossbowman >= 1)))))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)); end jump
+;============================================================
+(defrule
+(or	(building-type-count watch-tower >= 3)
+(or	(building-type-count castle >= 3)
+(or	(unit-type-count-total archery-class >= 3)
+(or	(unit-type-count-total slinger >= 3)
+(or	(unit-type-count-total galley-line >= 3)
+(or	(unit-type-count-total longboat-line >= 3)
+	(unit-type-count-total cavalry-archer-class >= 3)))))))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow))
+(defrule
+(or	(up-compare-goal skirmisher-set >= 3)
+(or	(up-compare-goal caravel-set >= 3)
+(or	(goal strategy a-rush)
+(or	(goal strategy ca-rush)
+	(goal strategy r-flush)))))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow))
+(defrule
+(or	(unit-type-count-total rattan-archer >= 3)
+(or	(unit-type-count-total elite-rattan-archer >= 3)
+(or	(unit-type-count-total camel-archer >= 3)
+(or	(unit-type-count-total elite-camel-archer >= 3)
+(or	(unit-type-count-total elephant-archer >= 3)
+	(unit-type-count-total genoese-crossbowman >= 3))))))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow))
+;============================================================
+(defrule
+(or	(unit-type-count-total archery-class >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+(or	(unit-type-count-total slinger >= 6)
+(or	(unit-type-count-total genoese-crossbowman >= 6)
+(or	(unit-type-count-total cavalry-archer-class >= 6)
+(or	(building-type-count castle >= 3)
+	(building-type-count watch-tower >= 3)))))))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer))
+(defrule
+(or	(up-compare-goal skirmisher-set >= 6)
+(or	(up-compare-goal caravel-set >= 3)
+(or	(unit-type-count-total galley-line >= 3)
+	(unit-type-count-total longboat-line >= 3))))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer))
+(defrule
+(or	(unit-type-count-total rattan-archer >= 6)
+(or	(unit-type-count-total elite-rattan-archer >= 6)
+(or	(unit-type-count-total camel-archer >= 6)
+(or	(unit-type-count-total elite-camel-archer >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6))))))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer))
+;=============================================================
+(defrule
+	(up-research-status c: ri-bodkin-arrow == research-available)
+	(building-type-count-total blacksmith < 2);
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(up-research-status c: ri-horse-collar >= research-pending)
+	(food-amount >= 175)); 125
+(or	(and	(goal milunits r-flush)
+		(up-research-status c: ri-fletching >= research-pending))
+	(and	(or	(goal milunits a-rush)
+			(goal milunits ca-rush))
+		(up-research-status c: ri-bodkin-arrow >= research-pending)))
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor))
+(defrule
+;	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(up-research-status c: ri-fletching >= research-pending)
+(or	(unit-type-count-total archery-class >= 6)
+(or	(unit-type-count-total cavalry-archer-class >= 6)
+(or	(unit-type-count-total slinger >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6)))))
+(or	(strategic-number sn-current-age >= fcastlea)
+	(up-compare-goal strategy-type == feudal-war))
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor))
+(defrule
+	(up-research-status c: ri-fletching >= research-pending)
+(or	(up-compare-goal skirmisher-set >= 6)
+(or	(unit-type-count-total rattan-archer >= 6)
+(or	(unit-type-count-total elite-rattan-archer >= 6)
+(or	(unit-type-count-total camel-archer >= 6)
+(or	(unit-type-count-total elite-camel-archer >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6)))))))
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)); end jump
+(defrule
+(or	(unit-type-count-total arambai >= 6)
+(or	(unit-type-count-total elite-arambai >= 6)
+(or	(unit-type-count-total archery-cannon-class >= 6)
+	(unit-type-count-total cavalry-cannon-class >= 6))))
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor))
+;=============================================================
+(defrule
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+(or	(unit-type-count-total archery-class >= 6)
+(or	(unit-type-count-total cavalry-archer-class >= 6)
+(or	(unit-type-count-total slinger >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6)))))
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor))
+(defrule
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+(or	(up-compare-goal skirmisher-set >= 6)
+(or	(unit-type-count-total rattan-archer >= 6)
+(or	(unit-type-count-total elite-rattan-archer >= 6)
+(or	(unit-type-count-total camel-archer >= 6)
+(or	(unit-type-count-total elite-camel-archer >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6)))))))
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor))
+(defrule
+(or	(unit-type-count-total arambai >= 6)
+(or	(unit-type-count-total elite-arambai >= 6)
+(or	(and	(or	(goal milunits a-rush)
+			(goal milunits ca-rush))
+		(up-research-status c: ri-bodkin-arrow >= research-pending))
+(or	(unit-type-count-total archery-cannon-class >= 6)
+	(unit-type-count-total cavalry-cannon-class >= 6)))))
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor))
+;=============================================================
+(defrule
+	(up-research-status c: ri-bracer == research-available)
+(or	(food-amount < 550)
+	(building-type-count-total blacksmith < 2))
+=>
+	(up-jump-rule 2))
+(defrule
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+(or	(up-compare-goal skirmisher-set >= 6)
+(or	(unit-type-count-total camel-archer >= 6)
+(or	(unit-type-count-total elite-camel-archer >= 6)
+(or	(unit-type-count-total archery-class >= 6)
+(or	(unit-type-count-total cavalry-archer-class >= 6)
+(or	(unit-type-count-total slinger >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6)))))))
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor))
+(defrule
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+(or	(unit-type-count-total elephant-archer >= 6)
+(or	(unit-type-count-total camel-archer >= 6)
+(or	(unit-type-count-total elite-camel-archer >= 6)
+(or	(unit-type-count-total rattan-archer >= 6)
+(or	(unit-type-count-total elite-rattan-archer >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6))))))
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)); end jump
+(defrule
+(or	(unit-type-count-total arambai >= 6)
+(or	(unit-type-count-total elite-arambai >= 6)
+(or	(unit-type-count-total archery-cannon-class >= 6)
+	(unit-type-count-total cavalry-cannon-class >= 6))))
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor))
+;=============================================================
+(defrule
+(or	(unit-type-count-total cavalry-archer-line >= 5)
+(or	(unit-type-count-total mangudai-line >= 5)
+(or	(unit-type-count-total elephant-archer >= 5)
+(or	(unit-type-count-total camel-archer >= 5)
+	(unit-type-count-total elite-camel-archer >= 5)))))
+	(can-research ri-parthian-tactics)
+=>
+	(research ri-parthian-tactics))
+;=============================================================
+(defrule
+(nor	(goal underattack yes)
+(or	(goal attacking yes)
+	(strategic-number sn-current-age >= imperial)))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(up-compare-goal skirmisher-set >= 7)
+(or	(unit-type-count-total elephant-archer >= 7)
+(or	(unit-type-count-total archery-class >= 7)
+(or	(unit-type-count-total slinger >= 7)
+(or	(unit-type-count-total cavalry-archer-class >= 5)
+(or	(unit-type-count-total genoese-crossbowman >= 7)
+	(unit-type-count-total rattan-archer >= 7)))))))
+	(can-research ri-thumb-ring)
+=>
+	(research ri-thumb-ring))
+(defrule
+(or	(unit-type-count-total elite-rattan-archer >= 7)
+(or	(unit-type-count-total camel-archer >= 7)
+	(unit-type-count-total elite-camel-archer >= 7)))
+	(can-research ri-thumb-ring)
+=>
+	(research ri-thumb-ring)); end jump
+;=============================================================
+(defrule
+(or	(strategic-number infantry >= 15)
+(or	(unit-type-count-total archery-class >= 6)
+(or	(unit-type-count-total cavalry-archer-class >= 6)
+(or	(unit-type-count-total galley-line >= 6)
+(or	(and	(goal palagoal yes)
+		(strategic-number spears >= 11))
+	(goal researchplan yes))))))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry))
+(defrule
+(or	(unit-type-count-total slinger >= 6)
+(or	(up-compare-goal skirmisher-set >= 6)
+(or	(up-compare-goal caravel-set >= 6)
+(or	(unit-type-count-total longboat-line >= 6)
+	(unit-type-count-total scorpion-line >= 4)))))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry))
+(defrule
+(or	(unit-type-count-total ballista-elephant >= 6)
+(or	(unit-type-count-total arambai >= 6)
+(or	(unit-type-count-total rattan-archer >= 6)
+(or	(unit-type-count-total elephant-archer >= 6)
+(or	(unit-type-count-total camel-archer >= 6)
+(or	(unit-type-count-total elite-genitour >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6)))))))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry))
+(defrule
+(or	(unit-type-count-total elite-ballista-elephant >= 6)
+(or	(unit-type-count-total elite-arambai >= 6)
+	(unit-type-count-total elite-rattan-archer >= 6)))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry))
+#load-if-defined UP-GAME-WK
+(defrule
+	(up-compare-goal mangonel-set >= 6)
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry))
+#end-if
+;=============================================================
+(defrule
+(or	(goal researchplan yes)
+;(or	(unit-type-count-total scorpion-line >= 4); soon?
+(or	(unit-type-count-total skirmisher-line >= 14)
+(or	(unit-type-count-total archery-class >= 9)
+(or	(unit-type-count-total cavalry-archer-class >= 9)
+(or	(unit-type-count-total galley-line >= 6)
+	(unit-type-count-total longboat-line >= 6))))));)
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics))
+(defrule
+(or	(unit-type-count-total elephant-archer >= 6)
+(or	(up-compare-goal caravel-set >= 6)
+(or	(unit-type-count-total slinger >= 6)
+(or	(up-compare-goal skirmisher-set >= 6)
+(or	(goal strategy grush)
+(or	(building-type-count-total castle >= 4)
+	(building-type-count-total watch-tower >= 6)))))))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics))
+(defrule
+(or	(unit-type-count-total arambai >= 6)
+(or	(unit-type-count-total elite-arambai >= 6)
+(or	(unit-type-count-total rattan-archer >= 6)
+(or	(unit-type-count-total elite-rattan-archer >= 6)
+(or	(unit-type-count-total camel-archer >= 6)
+(or	(unit-type-count-total elite-camel-archer >= 6)
+	(unit-type-count-total genoese-crossbowman >= 6)))))))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics))
+;=============================================================
+; Infantry upgrades
+;=============================================================
+(defrule
+	(strategic-number sn-current-age < fcastlea)
+	(food-amount < castle-fs)
+(nand	(unit-type-count-total infantry-class >= 30)
+	(strategic-number sn-military-superiority <= -1))
+(or	(up-compare-goal strategy-type != feudal-war)
+(or	(up-research-status c: ri-fletching < research-pending)
+	(and	(nand	(unit-type-count-total militiaman-line >= 6)
+			(up-research-status c: ri-man-at-arms >= research-pending))
+		(unit-type-count-total spearman-line < 12))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+(or	(unit-type-count-total shotel-warrior >= 6)
+(or	(unit-type-count-total elite-shotel-warrior >= 6)
+(or	(unit-type-count-total gbeto >= 6)
+(or	(unit-type-count-total karambit-warrior >= 6)
+	(unit-type-count-total condottiero >= 6)))))))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail))
+(defrule
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total elite-gbeto >= 6)
+	(unit-type-count-total elite-karambit-warrior >= 6)))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail))
+;=============================================================
+(defrule
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+(or	(unit-type-count-total shotel-warrior >= 6)
+(or	(unit-type-count-total elite-shotel-warrior >= 6)
+(or	(unit-type-count-total gbeto >= 6)
+(or	(unit-type-count-total karambit-warrior >= 6)
+	(unit-type-count-total condottiero >= 6)))))))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail))
+(defrule
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total elite-gbeto >= 6)
+	(unit-type-count-total elite-karambit-warrior >= 6)))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail))
+;=============================================================
+#load-if-not-defined FEUDAL-AGE-END
+(defrule
+	(strategic-number moenche < 10)
+	(strategic-number sn-current-age < fcastlea)
+(or	(food-amount < 1050)
+	(and	(up-research-status c: ri-scale-mail < research-pending)
+		(up-research-status c: ri-scale-barding < research-pending)))
+=>
+	(up-jump-rule 4))
+(defrule
+	(strategic-number moenche < 10)
+	(up-research-status c: castle-age >= research-pending);	(current-age >= castle-age)
+(nand	(up-research-status c: imperial-age == research-available); test
+	(food-amount < 1250)); 1150
+	(up-research-status c: ri-chain-mail < research-pending)
+	(up-research-status c: ri-chain-barding < research-pending)
+(nand	(up-compare-goal excessFood >= 400); 450
+	(up-compare-goal excessGold < 50))
+=>
+	(up-jump-rule 3))
+#end-if
+(defrule
+(or	(unit-type-count-total scout-cavalry-class >= 6)
+(or	(unit-type-count-total cavalry-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 6)
+(or	(unit-type-count-total boyar >= 6)
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+	(unit-type-count-total condottiero >= 6)))))))
+	(can-research ri-forging)
+=>
+	(research ri-forging))
+(defrule
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total shotel-warrior >= 6)
+(or	(unit-type-count-total elite-shotel-warrior >= 6)
+(or	(unit-type-count-total gbeto >= 6)
+(or	(unit-type-count-total elite-gbeto >= 6)
+(or	(unit-type-count-total karambit-warrior >= 6)
+	(unit-type-count-total elite-karambit-warrior >= 6)))))))
+	(can-research ri-forging)
+=>
+	(research ri-forging))
+(defrule
+(or	(up-compare-goal imperial-camel >= 6)
+	(up-compare-goal battle-elephant-set >= 6))
+	(can-research ri-forging)
+=>
+	(research ri-forging)); end jump
+;=============================================================
+(defrule
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+(or	(unit-type-count-total shotel-warrior >= 6)
+(or	(unit-type-count-total elite-shotel-warrior >= 6)
+	(unit-type-count-total condottiero >= 6)))))
+(or	(strategic-number sn-current-age >= imperial)
+	(up-compare-goal excessFood >= 1400))
+	(can-research ri-squires)
+=>
+	(research ri-squires))
+(defrule
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total gbeto >= 6)
+(or	(unit-type-count-total elite-gbeto >= 6)
+(or	(unit-type-count-total karambit-warrior >= 6)
+	(unit-type-count-total elite-karambit-warrior >= 6)))))
+(or	(strategic-number sn-current-age >= imperial)
+	(up-compare-goal excessFood >= 1400))
+	(can-research ri-squires)
+=>
+	(research ri-squires))
+(defrule
+(or	(unit-type-count-total infantry-class >= 30)
+(or	(unit-type-count-total kamayuk >= 30)
+(or	(unit-type-count-total shotel-warrior >= 30)
+(or	(unit-type-count-total elite-shotel-warrior >= 30)
+	(unit-type-count-total condottiero >= 30)))))
+	(can-research ri-squires)
+=>
+	(research ri-squires))
+(defrule
+(or	(unit-type-count-total heavy-eagle-warrior >= 30)
+(or	(unit-type-count-total gbeto >= 30)
+(or	(unit-type-count-total elite-gbeto >= 30)
+(or	(unit-type-count-total karambit-warrior >= 30)
+	(unit-type-count-total elite-karambit-warrior >= 30)))))
+	(can-research ri-squires)
+=>
+	(research ri-squires))
+;=============================================================
+(defrule
+(or	(up-research-status c: ri-chain-mail >= research-pending)
+	(building-type-count-total blacksmith >= 2));
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total shotel-warrior >= 6)
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+	(unit-type-count-total condottiero >= 6)))))
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting))
+(defrule
+(or	(up-research-status c: ri-chain-mail >= research-pending)
+	(building-type-count-total blacksmith >= 2));
+(or	(unit-type-count-total elite-shotel-warrior >= 6)
+(or	(unit-type-count-total gbeto >= 6)
+(or	(unit-type-count-total elite-gbeto >= 6)
+(or	(unit-type-count-total karambit-warrior >= 6)
+	(unit-type-count-total elite-karambit-warrior >= 6)))))
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting))
+(defrule
+(or	(up-research-status c: ri-chain-barding >= research-pending)
+	(building-type-count-total blacksmith >= 2));
+(or	(up-compare-goal battle-elephant-set >= 6)
+(or	(unit-type-count-total imperial-camel >= 6)
+(or	(unit-type-count-total cavalry-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 6)
+	(unit-type-count-total boyar >= 6)))))
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting))
+;=============================================================
+(defrule
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total shotel-warrior >= 6)
+(or	(unit-type-count-total elite-shotel-warrior >= 6)
+(or	(unit-type-count-total gbeto >= 6)
+(or	(unit-type-count-total elite-gbeto >= 6)
+(or	(unit-type-count-total karambit-warrior >= 6)
+	(unit-type-count-total elite-karambit-warrior >= 6)))))))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail))
+(defrule
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+	(unit-type-count-total condottiero >= 6)))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail))
+;=============================================================
+(defrule
+(or	(unit-type-count-total infantry-class >= 6)
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+(or	(unit-type-count-total condottiero >= 6)
+(or	(unit-type-count-total cavalry-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 6)
+	(unit-type-count-total boyar >= 6)))))))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace))
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 6)
+(or	(unit-type-count-total shotel-warrior >= 6)
+(or	(unit-type-count-total elite-shotel-warrior >= 6)
+(or	(unit-type-count-total gbeto >= 6)
+(or	(unit-type-count-total elite-gbeto >= 6)
+(or	(unit-type-count-total karambit-warrior >= 6)
+	(unit-type-count-total elite-karambit-warrior >= 6)))))))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace))
+(defrule
+	(up-compare-goal imperial-camel >= 6)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace))
+;=============================================================
+; Boats
+;=============================================================
+(defrule
+	(goal enemy-boats yes)
+	(goal fleet yes); new
+(or	(up-compare-goal navycount >= 1)
+	(building-type-count-total dock >= 4))
+	(can-research ri-shipwright)
+=>
+	(research ri-shipwright))
+(defrule
+(or	(up-compare-goal navycount >= 5)
+(or	(map-type islands)
+	(map-type team-islands)))
+	(can-research ri-cannon-galleon)
+=>
+	(research ri-cannon-galleon))
+(defrule
+(or	(up-compare-goal navycount >= 5)
+(or	(map-type islands)
+	(map-type team-islands)))
+(or	(unit-type-count-total cannon-galleon-line >= 1)
+	(goal researchplan yes))
+	(can-research ri-deck-guns); elite cannon galleon
+=>
+	(research ri-deck-guns))
+(defrule
+(or	(unit-type-count-total galley-line >= 2); 3
+	(and	(goal islands yes)
+		(and	(up-research-status c: ri-bow-saw >= research-pending)
+			(and	(not	(civ-selected aztec))
+				(strategic-number sn-current-age >= imperial)))))
+	(can-research ri-war-galley)
+=>
+	(research ri-war-galley))
+(defrule
+(or	(unit-type-count-total fire-galley >= 3)
+(or	(unit-type-count-total demolition-raft >= 3)
+(or	(unit-type-count-total fire-ship-line >= 3)
+	(unit-type-count-total demolition-ship-line >= 3))))
+	(can-research ri-war-galley)
+=>
+	(research ri-war-galley))
+(defrule
+(or	(unit-type-count-total galley-line >= 2); 3
+	(and	(goal islands yes)
+		(up-research-status c: ri-bow-saw >= research-pending)))
+	(can-research ri-galleon)
+=>
+	(research ri-galleon))
+(defrule
+(or	(unit-type-count-total turtle-ship-line >= 3)
+	(up-research-status c: ri-panokseon >= research-pending))
+	(can-research ri-elite-turtle-ship)
+=>
+	(research ri-elite-turtle-ship))
+(defrule
+	(unit-type-count-total longboat-line >= 3)
+        (can-research ri-elite-longboat)
+=>
+        (research ri-elite-longboat))
+(defrule
+	(goal enemy-boats yes)
+	(goal fleet yes); new
+(or	(up-compare-goal navycount >= 1)
+	(building-type-count-total dock >= 4))
+	(strategic-number sn-current-age >= fcastlea)
+	(can-research ri-shipwright)
+=>
+	(research ri-shipwright))
+(defrule
+	(unit-type-count-total demolition-ship-line >= 3)
+	(can-research ri-heavy-demolition-ship)
+=>
+	(research ri-heavy-demolition-ship))
+(defrule
+(or	(unit-type-count-total fire-ship-line >= 3)
+(or	(and	(goal enemy-boats yes)
+		(and	(up-research-status c: ri-galleon <= research-unavailable)
+			(up-research-status c: ri-fast-fire-ship == research-available)))
+	(up-research-status c: ri-greek-fire >= research-pending)))
+	(can-research ri-fast-fire-ship)
+=>
+	(research ri-fast-fire-ship))
+(defrule
+(or	(up-compare-goal navycount >= 5)
+	(unit-type-count-total transport-ship >= 1))
+(or	(up-compare-goal navycount >= 15)
+	(strategic-number sn-current-age >= imperial))
+	(can-research ri-careening)
+=>
+	(research ri-careening))
+(defrule
+(or	(up-compare-goal navycount >= 10)
+(or	(unit-type-count-total fire-ship-line >= 5)
+(or	(unit-type-count-total demolition-ship-line >= 5)
+	(unit-type-count-total transport-ship >= 1))))
+	(can-research ri-dry-dock)
+=>
+	(research ri-dry-dock))
+;============================================================
+; Monks
+;============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+(or	(strategic-number moenche >= 10); = any-enemy
+	(and	(strategic-number moenche >= 7); = any-enemy
+		(players-civ any-enemy aztec)))
+	(can-research ri-heresy)
+=>
+	(research ri-heresy))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+(or	(strategic-number moenche >= 10); = any-enemy
+	(and	(strategic-number moenche >= 7); = any-enemy
+		(players-civ any-enemy aztec)))
+	(can-research ri-faith)
+=>
+	(research ri-faith))
+;=============================================================
+(defrule
+(or	(unit-type-count-total monastery-class >= 7)
+(or	(strategic-number sn-military-superiority <= 0)
+(or	(goal attacking yes)
+(or	(gold-amount >= 220); 300
+	(strategic-number sn-current-age >= imperial)))))
+	(unit-type-count-total monastery-class >= 5)
+	(can-research ri-sanctity)
+=>
+	(research ri-sanctity))
+;=============================================================
+(defrule
+(or	(gold-amount >= 950)
+	(strategic-number sn-current-age >= imperial))
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+(or	(unit-type-count-total monastery-class >= 11)
+	(and	(civ-selected aztec)
+		(unit-type-count-total monastery-class >= 9)))
+	(can-research ri-theocracy)
+=>
+	(research ri-theocracy))
+;=============================================================
+(defrule
+(or	(gold-amount >= 950)
+	(strategic-number sn-current-age >= imperial))
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+(or	(unit-type-count-total monastery-class >= 11)
+	(and	(civ-selected aztec)
+		(unit-type-count-total monastery-class >= 9)))
+	(can-research ri-block-printing)
+=>
+	(research ri-block-printing))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+	(unit-type-count-total monastery-class >= 9)
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+(or	(players-unit-type-count target-player scorpion-line >= 5)
+(or	(players-unit-type-count target-player mangonel-line >= 3)
+	(and	(players-unit-type-count target-player battering-ram-line >= 5)
+		(unit-type-count siege-weapon-class < 1))))
+=>
+	(research ri-redemption))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+(or	(gold-amount >= 950)
+	(strategic-number sn-current-age >= imperial))
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+(or	(unit-type-count-total monastery-class >= 11)
+	(and	(civ-selected aztec)
+		(unit-type-count-total monastery-class >= 9)))
+	(can-research ri-illumination)
+=>
+	(research ri-illumination))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+(or	(and	(civ-selected aztec)
+		(strategic-number sn-current-age >= imperial))
+	(strategic-number moenche >= 7))
+;(or	(gold-amount >= 400)
+;	(strategic-number moenche >= 7))
+;	(strategic-number sn-current-age >= imperial)
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+(or	(unit-type-count-total monastery-class >= 11)
+	(and	(civ-selected aztec)
+		(unit-type-count-total monastery-class >= 9)))
+	(can-research ri-atonement)
+=>
+	(research ri-atonement))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+(or	(gold-amount >= 950)
+	(goal researchplan yes))
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+(or	(unit-type-count-total monastery-class >= 11)
+	(and	(civ-selected aztec)
+		(unit-type-count-total monastery-class >= 9)))
+	(can-research ri-redemption)
+=>
+	(research ri-redemption))
+;=============================================================
+#load-if-defined AZTEC-CIV
+(defrule
+	(up-compare-goal strategy != stonewall)
+;	(gold-amount >= 1100)
+	(strategic-number sn-current-age >= imperial)
+	(population >= up-max-civ)
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+	(unit-type-count-total monastery-class >= 10)
+	(can-research ri-faith)
+=>
+	(research ri-faith))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+;	(gold-amount >= 1100)
+	(strategic-number sn-current-age >= imperial)
+	(population >= up-max-civ)
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+	(unit-type-count-total monastery-class >= 10)
+	(can-research ri-heresy)
+=>
+	(research ri-heresy))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+	(gold-amount >= 500)
+	(strategic-number sn-current-age >= imperial)
+	(population >= del-civ-pop)
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+	(unit-type-count-total monastery-class >= 15); 10
+	(can-research ri-herbal-medicine)
+=>
+	(research ri-herbal-medicine))
+;=============================================================
+(defrule
+	(up-compare-goal strategy != stonewall)
+	(gold-amount >= 500)
+	(strategic-number sn-current-age >= imperial)
+	(population >= del-civ-pop)
+	(strategic-number archers < 24)
+	(players-unit-type-count focus-player eagle-warrior-line < 18)
+	(players-unit-type-count focus-player scout-cavalry-line < 15)
+	(unit-type-count-total monastery-class >= 15); 10
+	(can-research ri-fervor)
+=>
+	(research ri-fervor))
+#end-if
+;=============================================================
+; Miscellaneous
+;=============================================================
+(defrule
+;(or	(strategic-number sn-military-superiority >= 1)
+;	(goal researchplan yes))
+	(can-research ri-guilds)
+=>
+	(research ri-guilds))
+(defrule
+(or	(population < siege-pop)
+	(goal siegereq yes))
+	(can-research ri-conscription)
+=>
+	(research ri-conscription))
+(defrule
+(or	(building-type-count-total wonder >= 1)
+	(and	(goal researchplan yes)
+		(strategic-number sn-military-superiority >= 0)))
+	(can-research ri-treadmill-crane)
+=>
+	(research ri-treadmill-crane))
+;=============================================================
+(defrule
+	(unit-type-count-total battering-ram-line >= 2)
+(or	(and	(unit-type-count-total battering-ram-line >= 8)
+		(goal attacking yes))
+(or	(up-compare-goal excessFood >= 1600)
+(or	(goal researchplan yes)
+	(food-amount >= 1900))))
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram))
+(defrule
+(or	(population >= max-civ-pop)
+	(civilian-population >= up-max-civ))
+(or	(and	(housing-headroom <= 0); housed (maybe bugged (scout))
+		(population < del-civ-pop))
+(or	(goal researchplan yes)
+	(and	(strategic-number sn-current-age >= imperial)
+		(food-amount >= 900))))
+	(can-research ri-town-watch)
+=>
+	(research ri-town-watch))
+(defrule
+(or	(goal nomad yes)
+(or	(goal landnomad 3)
+	(goal landnomad yes)))
+	(military-population <= 0)
+	(goal underattack no)
+	(goal defend no)
+(not	(town-under-attack))
+(not	(goal increase-ts 0))
+	(strategic-number sn-current-age < imperial)
+	(strategic-number sn-maximum-town-size >= 28)
+	(can-research ri-town-watch)
+=>
+	(research ri-town-watch))
+(defrule
+(or	(population >= max-civ-pop)
+	(civilian-population >= up-max-civ))
+	(strategic-number sn-current-age >= imperial)
+	(up-compare-goal excessFood >= 3200)
+	(up-compare-goal excessGold >= 3200)
+	(can-research ri-town-patrol)
+=>
+	(research ri-town-patrol))
+(defrule
+(or	(up-compare-goal strategy-type <= castle-war)
+	(strategic-number sn-current-age >= imperial))
+(or	(goal researchplan yes)
+	(and	(strategic-number sn-current-age >= imperial)
+		(or	(up-compare-goal excessFood >= 800)
+			(unit-type-count infantry-class >= 30))))
+	(unit-type-count infantry-class >= 10)
+	(can-research ri-tracking)
+=>
+	(research ri-tracking))
+(defrule
+(or	(building-type-count-total wonder >= 1)
+	(players-building-type-count any-ally wonder >= 1))
+	(can-research ri-bombard-tower)
+=>
+	(research ri-bombard-tower))
+(defrule
+	(population > max-civ-pop)
+(or	(strategic-number sn-military-superiority >= 2)
+	(and	(up-compare-goal excessFood >= 1600)
+		(strategic-number sn-military-superiority >= 1)))
+	(strategic-number teamsuperiority >= -2); not thaaaat bad
+	(building-type-count-total castle >= 3)
+	(goal attacking yes)
+	(goal underattack no)
+	(goal wwonder no)
+	(can-research ri-bombard-tower)
+=>
+	(research ri-bombard-tower))
+(defrule
+(or	(and	(strategic-number sn-current-age >= imperial)
+		(population >= max-pop))
+(or	(and	(goal researchplan yes)
+		(population >= max-civ-pop))
+	(and	(strategic-number sn-current-age >= imperial)
+		(goal underattack yes))))
+	(can-research ri-hoardings)
+=>
+	(research ri-hoardings))
+(defrule
+(or	(and	(strategic-number sn-military-superiority <= -1)
+		(goal defend yes))
+(or	(up-enemy-units-in-town >= 5)
+(or	(goal underattack yes);	(town-under-attack)
+	(goal researchplan yes))))
+(or	(building-type-count-total castle >= 4)
+        (building-type-count-total watch-tower >= 6))
+	(can-research ri-murder-holes)
+=>
+	(research ri-murder-holes))
+(defrule
+(or	(goal attacking yes)
+(or	(goal underattack yes)
+	(goal researchplan yes)))
+	(building-type-count-total watch-tower >= 3)
+	(can-research ri-guard-tower)
+=>
+	(research ri-guard-tower))
+(defrule
+(or	(goal attacking yes)
+(or	(goal underattack yes)
+	(goal researchplan yes)))
+	(building-type-count-total watch-tower >= 3)
+	(can-research ri-keep)
+=>
+	(research ri-keep))
+(defrule
+	(strategic-number sn-current-age >= imperial)
+(or	(building-type-count-total castle >= 2)
+	(building-type-count-total watch-tower >= 3))
+(or	(goal enemy-boats yes)
+(or	(players-unit-type-count focus-player camel-line >= 40)
+	(players-unit-type-count focus-player mameluke-line >= 40)))
+(or	(town-under-attack)
+	(goal underattack yes))
+	(goal attacking no)
+	(goal researchplan yes); test
+	(can-research ri-heated-shot)
+=>
+	(research ri-heated-shot))
+(defrule
+(or	(up-pending-objects c: stone-wall-line >= 1)
+(or	(up-pending-objects c: 939 >= 1); gate
+(or	(and	(goal researchplan yes)
+		(population >= max-civ-pop))
+(or	(building-type-count-total wonder >= 1)
+	(and	(strategic-number sn-current-age >= imperial)
+		(goal underattack yes))))))
+	(can-research ri-masonry)
+=>
+	(research ri-masonry))
+(defrule
+(or	(up-pending-objects c: stone-wall-line >= 1)
+(or	(up-pending-objects c: 939 >= 1); gate
+(or	(and	(goal researchplan yes)
+		(population >= max-civ-pop))
+(or	(building-type-count-total wonder >= 1)
+	(and	(strategic-number sn-current-age >= imperial)
+		(goal underattack yes))))))
+	(can-research ri-architecture)
+=>
+	(research ri-architecture))
+(defrule
+;	(goal researchplan yes)
+(or	(up-compare-const scenario-game == 1)
+(or	(building-type-count-total wonder >= 1)
+	(and	(up-compare-goal relic-count >= 1)
+		(hold-relics))))
+(or	(wall-completed-percentage 2 >= 100)
+	(wall-completed-percentage 1 >= 100)); test
+(or	(unit-type-count-total stone-wall >= 4)
+	(building-type-count gate >= 2))
+	(can-research ri-fortified-wall)
+=>
+	(research ri-fortified-wall))
+;=============================================================
+; Early smith upgrades
+;=============================================================
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(goal palagoal yes)
+	(building-type-count stable >= 1); -total
+(or	(can-research ri-scale-barding)
+;(or
+	(can-research ri-chain-barding)
+;	(can-research ri-plate-barding))
+)
+=>
+	(research ri-scale-barding)
+	(research ri-chain-barding)
+;	(research ri-plate-barding)
+)
+(defrule
+(or	(and	(goal strategy castledrop)
+		(strategic-number sn-current-age >= fcastlea))
+	(and	(goal uugoal yes)
+		(strategic-number sn-current-age >= imperial)))
+	(building-type-count castle >= 1); -total
+	(up-compare-const uu-type == cavalry-uu)
+(or	(can-research ri-scale-barding)
+;(or
+	(can-research ri-chain-barding)
+;	(can-research ri-plate-barding))
+)
+=>
+	(research ri-scale-barding)
+	(research ri-chain-barding)
+;	(research ri-plate-barding)
+)
+(defrule
+(or	(and	(goal strategy castledrop)
+		(strategic-number sn-current-age >= fcastlea))
+	(and	(goal uugoal yes)
+		(strategic-number sn-current-age >= imperial)))
+	(building-type-count castle >= 1); -total
+	(up-compare-const uu-type == archer-uu)
+(or	(can-research ri-fletching)
+;(or
+	(can-research ri-bodkin-arrow)
+;	(can-research ri-bracer))
+)
+=>
+	(research ri-fletching)
+	(research ri-bodkin-arrow)
+;	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-current-age >= imperial)
+(or	(goal champgoal yes)
+	(goal strategy stonewall))
+	(building-type-count barracks >= 1); -total
+(or	(can-research ri-scale-mail)
+;(or
+	(can-research ri-chain-mail)
+;	(can-research ri-plate-mail))
+)
+=>
+	(research ri-scale-mail)
+	(research ri-chain-mail)
+;	(research ri-plate-mail)
+)
+(defrule
+(or	(and	(goal strategy castledrop)
+		(strategic-number sn-current-age >= fcastlea))
+	(and	(goal uugoal yes)
+		(strategic-number sn-current-age >= imperial)))
+	(building-type-count castle >= 1); -total
+	(up-compare-const uu-type == infantry-uu)
+(or	(can-research ri-scale-mail)
+;(or
+	(can-research ri-chain-mail)
+;	(can-research ri-plate-mail))
+)
+=>
+	(research ri-scale-mail)
+	(research ri-chain-mail)
+;	(research ri-plate-mail)
+)
+(defrule
+(or	(and	(goal strategy castledrop)
+		(strategic-number sn-current-age >= fcastlea))
+	(and	(goal uugoal yes)
+		(strategic-number sn-current-age >= imperial)))
+	(building-type-count castle >= 1); -total
+	(up-compare-const uu-type == powder-uu)
+;(or
+	(can-research ri-padded-archer-armor)
+;(or
+;	(can-research ri-leather-archer-armor)
+;	(can-research ri-ring-archer-armor))
+;)
+=>
+	(research ri-padded-archer-armor)
+;	(research ri-leather-archer-armor)
+;	(research ri-ring-archer-armor)
+)
+#else; wonder race
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(can-research ri-treadmill-crane)
+=>
+	(research ri-treadmill-crane))
+#end-if

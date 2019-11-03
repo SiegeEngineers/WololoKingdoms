@@ -1,0 +1,112 @@
+#load-if-defined SARACEN-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-camel-cannoneer)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 8)
+	(set-goal gl-dm-stable-number 9)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 1000)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 0)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit camel)
+	(set-strategic-number sn-dm-low-housing-time 240)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 150)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy dm-camel-cannoneer)
+	(building-type-count castle > 2)
+=>
+	(set-goal gl-dm-main-unit my-unique-unit)
+	(disable-self)
+)
+#else
+#load-if-defined INDIAN-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-camel-cannoneer)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 9)
+	(set-goal gl-dm-stable-number 11)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 1500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit camel)
+	(set-strategic-number sn-dm-low-housing-time 240)
+	(disable-self)
+)
+#else
+#load-if-defined BYZANTINE-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-camel-cannoneer)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 7)
+	(set-goal gl-dm-stable-number 4)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-stone-to-sell 0)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit camel)
+	(set-strategic-number sn-dm-low-housing-time 300)
+	(disable-self)
+)
+#else
+#load-if-defined TURKISH-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-camel-cannoneer)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 8)
+	(set-goal gl-dm-stable-number 4)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 0)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit camel)
+	(set-strategic-number sn-dm-low-housing-time 240)
+	(disable-self)
+)
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-camel-cannoneer)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 8)
+	(set-goal gl-dm-stable-number 8)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 1500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit camel)
+	(set-strategic-number sn-dm-low-housing-time 240)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+#end-if

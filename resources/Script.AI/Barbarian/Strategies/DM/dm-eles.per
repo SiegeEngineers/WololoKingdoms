@@ -1,0 +1,23 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-eles)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 10)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit battle-elephant)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 30)
+	(research-completed ri-heavy-scorpion)
+=>
+	(up-modify-goal gl-dm-workshop-number c:max 6)
+	(disable-self)
+)

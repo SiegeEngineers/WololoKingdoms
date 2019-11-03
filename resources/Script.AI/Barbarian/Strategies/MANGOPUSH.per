@@ -1,0 +1,36 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy regicide-strategy)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(strategic-number sn-nomad-style-start == 0)
+=>
+	(set-goal gl-strategy monk-mango-push)
+	(set-goal gl-strategy-type FC)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(disable-self)
+)
+
+(defrule
+	(strategic-number sn-strategy-lock == 0)
+	(goal gl-strategy monk-mango-push)
+	(or	(players-civ target-player aztec)
+		(and	(players-civ target-player mayan)
+			(map-size tiny)))
+	(nand	(game-time < 550)
+		(player-valid 3))
+	(game-time < 600)
+	(goal gl-current-age gv-dark)
+=>
+	(set-goal gl-strategy regicide-strategy)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(disable-self)
+)

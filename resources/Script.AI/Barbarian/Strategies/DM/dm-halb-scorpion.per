@@ -1,0 +1,36 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-halb-scorpion)
+	(set-goal gl-dm-barracks-number 10)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 0)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit scorpion)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(goal POSITION FLANK)
+	(research-completed ri-paladin)
+=>
+	(set-goal gl-dm-stable-number 2)
+	(set-goal gl-dm-food-to-sell 1000)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 20)
+	(or	(players-civ focus-player aztec)
+		(or	(players-civ focus-player mayan)
+			(players-civ focus-player incan)))
+=>
+	(set-goal gl-dm-wood-to-sell 500)
+	(disable-self)
+)

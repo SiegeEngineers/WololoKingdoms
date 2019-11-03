@@ -1,0 +1,103 @@
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total trade-cart < 20)
+	(or(gold-amount < 100)
+	   (and(town-under-attack)
+	       (up-compare-goal gl-enable-tsa < 1)))
+	(research-available ri-elite-skirmisher)
+	(up-research-status c: ri-elite-skirmisher < research-pending)
+=>
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total trade-cart < 20)
+	(or(gold-amount < 100)
+	   (and(town-under-attack)
+	       (up-compare-goal gl-enable-tsa < 1)))
+	(research-available ri-pikeman)
+	(up-research-status c: ri-pikeman < research-pending)
+=>
+	(up-add-research-cost c: ri-pikeman c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total trade-cart < 20)
+	(or(gold-amount < 100)
+	   (and(town-under-attack)
+	       (up-compare-goal gl-enable-tsa < 1)))
+	(research-available ri-pikeman)
+	(up-research-status c: ri-halberdier < research-pending)
+=>
+	(up-add-research-cost c: ri-halberdier c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total trade-cart < 20)
+	(can-research ri-elite-skirmisher)
+=>
+	(research ri-elite-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total trade-cart < 20)
+	(can-research ri-imperial-skirmisher)
+=>
+	(research ri-imperial-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total trade-cart < 20)
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total trade-cart < 20)
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-elite-skirmisher >= research-pending)
+	(building-type-count-total archery-range < 8)
+	(unit-type-count-total trade-cart < 20)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(building-type-count-total barracks < 8)
+	(unit-type-count-total trade-cart < 20)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-elite-skirmisher >= research-pending)
+	(unit-type-count-total trade-cart < 20)
+	(or(gold-amount < 100)
+	   (and(town-under-attack)
+	       (up-compare-goal gl-enable-tsa < 1)))
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(unit-type-count-total trade-cart < 20)
+	(or(gold-amount < 100)
+	   (and(town-under-attack)
+	       (up-compare-goal gl-enable-tsa < 1)))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)

@@ -1,0 +1,394 @@
+; Water Nomad / Bog Islands gameplay
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	;(set-strategic-number sn-maximum-town-size 254)
+	(disable-self)
+)
+(defrule
+	(true)
+=>
+	(up-get-fact building-type-count dock temporary-goal1)
+	;(up-chat-data-to-self "Total Docks: %d" g: temporary-goal1)
+)
+#load-if-defined WATER-NOMAD-MAP
+(defrule
+	(strategic-number sn-castle-age-strategy != RUN)
+	(building-type-count-total town-center == 0)
+	(resource-found wood)
+	(can-build-with-escrow town-center)
+=>
+	(release-escrow wood)
+	(release-escrow stone)
+	(up-assign-builders c: town-center-foundation c: 6)
+	(build town-center)
+	;(set-strategic-number sn-maximum-town-size 10)
+)
+#end-if
+#load-if-defined WATER-NOMAD-MAP
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-maximum-fish-boat-drop-distance 20)
+	(set-strategic-number sn-task-ungrouped-soldiers 1)
+	(set-strategic-number sn-maximum-food-drop-distance 10)
+	(set-strategic-number sn-maximum-wood-drop-distance 10)
+	(set-strategic-number sn-maximum-gold-drop-distance 10)
+	(disable-self)
+)
+(defrule
+	(building-type-count-total dock < 4)
+	(building-type-count town-center > 0)
+	(can-build-with-escrow dock)
+=>
+	(release-escrow wood)
+	(build dock)
+)
+(defrule
+	(building-type-count town-center > 0)
+	(building-type-count-total house < 2)
+	(building-type-count-total dock > 0)
+	(housing-headroom < 3)
+	(can-build house)
+=>
+	(build house)
+)
+(defrule
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+#end-if
+(defrule
+	(building-type-count-total town-center > 0)
+	(up-pending-objects c: house < 1)
+	(housing-headroom < 3)
+	(can-build house)
+=>
+	(build house)
+)
+#load-if-defined UP-POCKET-POSITION
+(defrule
+	(unit-type-count-total villager < 28)
+	(unit-type-count-total villager < max-civ)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(can-research feudal-age)
+=>
+	(research feudal-age)
+)
+#else
+(defrule
+	(can-research feudal-age)
+=>
+	(research feudal-age)
+)
+(defrule
+	(food-amount >= 400)
+	(research-available feudal-age)
+	(strategic-number sn-enable-training-queue == 1)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(unit-type-count-total villager < 24)
+	(unit-type-count-total villager < max-civ)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(food-amount < 650)
+	(unit-type-count-total fire-ship-line < 30)
+	(can-train fire-ship-line)
+=>
+	(train fire-ship-line)
+)
+(defrule
+	(building-type-count-total dock >= 4)
+	(up-pending-objects c: fire-ship-line g:>= temporary-goal1)
+	(building-type-count town-center > 0)
+	(can-build-with-escrow dock)
+=>
+	(release-escrow wood)
+	;(chat-local-to-self "extra dock")
+	(build dock)
+)
+(defrule
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(can-research ri-wheel-barrow)
+=>
+	(research ri-wheel-barrow)
+)
+(defrule
+	(can-research castle-age)
+=>
+	(research castle-age)
+	(set-goal gl-enable-tsa 0)
+)
+(defrule
+	(current-age == feudal-age)
+	(unit-type-count-total villager < max-civ)
+	(food-amount < 650)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(building-type-count town-center > 0)
+	(building-type-count-total dock > 0)
+	(up-research-status c: feudal-age >= research-pending)
+	(up-pending-objects c: house < 1)
+	(housing-headroom < 7)
+	(can-build house)
+=>
+	(build house)
+)
+(defrule
+	(building-type-count town-center > 0)
+	(building-type-count-total dock > 0)
+	(up-research-status c: feudal-age >= research-pending)
+	(up-pending-objects c: house < 2)
+	(housing-headroom < 4)
+	(can-build house)
+=>
+	(build house)
+)
+(defrule
+	(can-research ri-double-bit-axe)
+=>
+	(research ri-double-bit-axe)
+)
+(defrule
+	(unit-type-count-total fire-ship-line > 19)
+	(building-type-count-total mill == 0)
+	(can-build mill)
+=>
+	(build mill)
+)
+(defrule
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 5)
+	(can-build farm)
+=>
+	(build farm)
+	(chat-local-to-self "Farm 2")
+)
+(defrule
+	(building-type-count-total market == 0)
+	(can-build market)
+=>
+	(build market)
+)
+(defrule
+	(building-type-count-total market > 0)
+	(building-type-count-total blacksmith == 0)
+	(can-build blacksmith)
+=>
+	(build blacksmith)
+)
+(defrule
+	(wood-amount > 300)
+	(cc-players-unit-type-count 0 sea-fish > 0)
+	(civilian-population < 70)
+	(can-train fishing-ship)
+=>
+	(train fishing-ship)
+)
+(defrule
+	(game-time > 1500)
+	(building-type-count-total mining-camp < 2)
+	(can-build mining-camp)
+=>
+	(up-modify-sn sn-camp-max-distance c:+ 3)
+	(build mining-camp)
+)
+(defrule
+	(game-time > 1500)
+	(up-pending-objects c: mining-camp < 1)
+	(dropsite-min-distance gold > 3)
+	(can-build mining-camp)
+=>
+	(up-modify-sn sn-camp-max-distance c:+ 3)
+	(build mining-camp)
+)
+(defrule
+	(can-research ri-war-galley)
+=>
+	(research ri-war-galley)
+)
+(defrule
+	(gold-amount > 300)
+	(food-amount < 650)
+	(can-buy-commodity food)
+	(up-research-status c: castle-age < research-pending)
+=>
+	;(chat-local-to-self "buy food for up")
+	(buy-commodity food)
+)
+#end-if
+#load-if-defined WATER-NOMAD-MAP
+(defrule
+	(building-type-count town-center > 0)
+	(unit-type-count-total villager >= 12)
+	(or(housing-headroom > 3)
+	   (up-pending-objects c: house > 0))
+	(building-type-count lumber-camp == 0)
+	(can-build lumber-camp)
+	(resource-found wood)
+=>
+	(build lumber-camp)
+)
+(defrule
+	(building-type-count town-center > 0)
+	(unit-type-count-total villager >= 24)
+	(or(housing-headroom > 3)
+	   (up-pending-objects c: house > 0))
+	(building-type-count lumber-camp < 2)
+	(can-build lumber-camp)
+	(resource-found wood)
+=>
+	(build lumber-camp)
+)
+(defrule
+	(building-type-count town-center > 0)
+	(or(housing-headroom > 3)
+	   (up-pending-objects c: house > 0))
+	(up-pending-objects c: lumber-camp < 1)
+	(can-build lumber-camp)
+	(dropsite-min-distance wood > 5)
+=>
+	(up-modify-sn sn-camp-max-distance c:+ 5)
+	(build lumber-camp)
+)
+#load-if-defined UP-POCKET-POSITION
+(defrule 
+	(unit-type-count villager < 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(unit-type-count villager == 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+#else
+(defrule 
+	(unit-type-count villager < 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(unit-type-count villager == 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(up-research-status c: feudal-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 80)
+	(set-strategic-number sn-food-gatherer-percentage 0)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(current-age == feudal-age)
+	(wood-amount >= 200)
+	(unit-type-count villager < 30)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-food-gatherer-percentage 15)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(current-age == feudal-age)
+	(wood-amount >= 200)
+	(unit-type-count villager >= 30)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 55)
+	(set-strategic-number sn-food-gatherer-percentage 10)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(current-age == feudal-age)
+	(wood-amount >= 200)
+	(unit-type-count villager >= 40)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 20)
+	(set-strategic-number sn-gold-gatherer-percentage 40)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(current-age == feudal-age)
+	(wood-amount >= 200)
+	(unit-type-count villager >= 40)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 45)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(current-age == feudal-age)
+	(wood-amount >= 200)
+	(unit-type-count villager >= 45)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 23)
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-gold-gatherer-percentage 45)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+#end-if
+#else
+(defrule 
+	(unit-type-count villager < 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-food-gatherer-percentage 100)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(unit-type-count villager == 7)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 14)
+	(set-strategic-number sn-food-gatherer-percentage 85)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+#end-if
+(defrule
+	(building-type-count-total lumber-camp > 0)
+	(or(up-research-status c: feudal-age >= research-pending)
+	   (strategic-number sn-gold-gatherer-percentage > 0))
+	(resource-found gold)
+	(building-type-count-total mining-camp == 0)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+	

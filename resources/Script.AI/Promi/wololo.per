@@ -1,0 +1,609 @@
+(defrule
+	(true)
+=>
+	(up-get-fact unit-type-count-total battle-elephant battle-elephant-set)
+	(up-get-fact unit-type-count-total elite-battle-elephant temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal battle-elephant-set g:+ temporary-goal)
+	(up-get-fact unit-type-count-total caravel caravel-set)
+	(up-get-fact unit-type-count-total elite-caravel temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal caravel-set g:+ temporary-goal))
+(defrule
+	(can-research ri-cartography)
+=>
+	(research ri-cartography))
+(defrule
+	(research-completed ri-sanctity)
+	(unit-type-count-total monastery-class >= 9)
+	(up-compare-goal excessGold >= 200)
+	(can-research ri-fervor)
+=>
+	(research ri-fervor))
+(defrule
+	(unit-type-count-total fishing-ship >= 5)
+(or	(strategic-number sn-military-superiority >= 1)
+(or	(up-compare-goal navycount >= 7)
+	(goal enemy-boats no)))
+	(can-research ri-gillnets)
+=>
+	(research ri-gillnets))
+(defrule
+(or	(and	(or	(up-compare-goal strategy == stonewall)
+			(or	(and	(goal traineagle yes)
+					(unit-type-count-total eagle-warrior-line >= 2))
+				(unit-type-count-total eagle-warrior-line >= 4)))
+		(strategic-number sn-current-age >= imperial))
+	(unit-type-count-total eagle-warrior-line >= 6))
+	(can-research ri-eagle-warrior)
+=>
+	(research ri-eagle-warrior))
+(defrule
+(or	(unit-type-count-total genoese-crossbowman >= 4)
+(or	(unit-type-count-total kamayuk >= 4)
+(or	(unit-type-count-total magyar-huszar >= 4)
+(or	(unit-type-count-total elephant-archer >= 4)
+(or	(unit-type-count-total boyar >= 4)
+(or	(unit-type-count-total organ-gun >= 4)
+	(unit-type-count-total gbeto >= 4)))))))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade))
+(defrule
+(or	(unit-type-count-total shotel-warrior >= 4)
+(or	(unit-type-count-total camel-archer >= 4)
+(or	(unit-type-count-total rattan-archer >= 4)
+(or	(unit-type-count-total ballista-elephant >= 4)
+(or	(unit-type-count-total arambai >= 4)
+	(unit-type-count-total karambit-warrior >= 4))))))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade))
+(defrule
+	(strategic-number sn-current-age < imperial)
+	(up-compare-goal attacking != yes)
+=>
+	(up-jump-rule 1))
+(defrule
+	(unit-type-count-total infantry-class >= 12)
+(or	(unit-type-count-total infantry-class >= 24)
+	(population >= del-civ-pop))
+	(up-research-status c: ri-chain-mail >= research-pending)
+(or	(up-research-status c: ri-blast-furnace >= research-pending)
+(or	(up-research-status c: ri-plate-mail >= research-pending)
+(or	(goal champgoal yes)
+	(and	(up-compare-goal uugoal == yes)
+		(up-compare-const uu-type == infantry-uu)))))
+	(can-research ri-arson)
+=>
+	(research ri-arson))
+(defrule
+;	(current-age >= imperial-age)
+(or	(up-research-status c: ri-guard-tower >= research-pending)
+	(and	(strategic-number sn-current-age >= imperial)
+		(population >= max-pop)))
+(or	(building-type-count watch-tower >= 3)
+(or	(building-type-count guard-tower >= 3)
+(or	(building-type-count keep >= 3)
+	(building-type-count watch-tower-line >= 3))))
+	(can-research ri-arrowslits)
+=>
+	(research ri-arrowslits))
+#load-if-defined AZTEC-CIV
+(defrule
+(or	(unit-type-count-total imperial-skirmisher >= 14)
+(or	(unit-type-count-total skirmisher-line >= 14)
+(or	(up-research-status c: imperial-age != research-available)
+	(strategic-number sn-current-age >= imperial))))
+(or	(unit-type-count-total imperial-skirmisher >= 7)
+	(unit-type-count-total skirmisher-line >= 7))
+	(can-research ri-atlatl)
+=>
+	(research ri-atlatl))
+(defrule
+(or	(unit-type-count-total genitour >= 14)
+(or	(unit-type-count-total elite-genitour >= 14)
+(or	(unit-type-count-total 732 >= 14)
+(or	(up-research-status c: imperial-age != research-available)
+	(strategic-number sn-current-age >= imperial)))))
+(or	(unit-type-count-total genitour >= 7)
+(or	(unit-type-count-total elite-genitour >= 7)
+	(unit-type-count-total 732 >= 7)))
+	(can-research ri-atlatl)
+=>
+	(research ri-atlatl))
+#end-if
+#load-if-defined BRITON-CIV
+(defrule
+	(unit-type-count-total trebuchet-set >= 2); 3
+(or	(up-research-status c: ri-yeomen >= research-pending)
+	(unit-type-count-total trebuchet-set >= 4)); 6
+	(can-research ri-war-wolf)
+=>
+	(research ri-war-wolf))
+#end-if
+#load-if-defined BYZANTINE-CIV
+(defrule
+(or	(unit-type-count-total fire-ship-line >= 3)
+	(unit-type-count-total fire-galley >= 3))
+	(can-research ri-greek-fire)
+=>
+	(research ri-greek-fire))
+#end-if
+#load-if-defined CELTIC-CIV
+(defrule
+(or	(building-type-count-total castle >= 2)
+	(building-type-count-total watch-tower >= 3))
+(or	(strategic-number sn-current-age >= imperial)
+(or	(building-type-count-total castle >= 3)
+	(building-type-count-total watch-tower >= 6)))
+(or	(goal underattack yes)
+	(goal defend yes))
+	(can-research ri-stronghold)
+=>
+	(research ri-stronghold))
+#end-if
+#load-if-defined CHINESE-CIV
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(building-type-count-total castle >= 2); costs stone
+(or	(and	(up-research-status c: ri-fortified-wall >= research-pending)
+		(or	(unit-type-count-total stone-wall-line >= 4)
+			(building-type-count gate >= 2)))
+(or	(building-type-count-total bombard-tower >= 4)
+	(building-type-count-total watch-tower >= 4)))
+	(can-research ri-great-wall)
+=>
+	(research ri-great-wall))
+#end-if
+#load-if-defined FRANKISH-CIV
+(defrule
+(or	(strategic-number sn-current-age >= imperial)
+	(death-match-game))
+	(can-research ri-chivalry)
+=>
+	(research ri-chivalry))
+#end-if
+#load-if-defined HUN-CIV
+(defrule
+(or	(goal uugoal yes)
+(or	(unit-type-count-total my-unique-unit-line >= 4)
+	(unit-type-count-total tarkan-line >= 4)))
+(or	(unit-type-count-total my-unique-unit-line >= 2)
+	(unit-type-count-total tarkan-line >= 2))
+	(can-research ri-marauders)
+=>
+	(research ri-marauders))
+#end-if
+#load-if-defined JAPANESE-CIV
+(defrule
+	(building-type-count-total watch-tower >= 3)
+(or	(up-research-status c: ri-arrowslits >= research-pending)
+(or	(up-research-status c: ri-guard-tower >= research-pending)
+	(building-type-count-total watch-tower >= 5)))
+	(can-research ri-yasama)
+=>
+	(research ri-yasama))
+#end-if
+#load-if-defined KOREAN-CIV
+(defrule
+(or	(up-research-status c: ri-elite-turtle-ship >= research-pending)
+	(unit-type-count-total turtle-ship-line >= 3))
+	(can-research ri-panokseon)
+=>
+	(research ri-panokseon))
+#end-if
+#load-if-defined MAYAN-CIV
+(defrule
+	(unit-type-count-total archer-line >= 14)
+	(strategic-number sn-military-superiority >= 0)
+	(goal attacking yes)
+(or	(strategic-number sn-current-age >= imperial)
+	(strategic-number sn-military-superiority >= 3))
+	(can-research ri-obsidian-arrows)
+=>
+	(research ri-obsidian-arrows))
+#end-if
+#load-if-defined MONGOL-CIV
+(defrule
+	(goal researchplan yes)
+	(strategic-number sn-military-superiority >= 0)
+(or	(strategic-number sn-current-age >= imperial)
+	(population-headroom <= 50))
+	(can-research ri-nomads)
+=>
+	(research ri-nomads))
+(defrule
+	(building-type-count house >= 1)
+	(population-headroom <= 0)
+	(research-completed ri-nomads)
+=>
+	(up-delete-objects c: house c: 32767))
+#end-if
+#load-if-defined PERSIAN-CIV
+(defrule
+	(building-type-count-total castle >= 1)
+	(players-unit-type-count any-enemy battering-ram-line >= 1)
+(or	(goal underattack yes)
+	(strategic-number sn-current-age >= imperial))
+(or	(goal underattack yes)
+(or	(goal researchplan yes)
+	(and	(town-under-attack)
+		(up-attacker-class == battering-ram-line))))
+	(can-research ri-boiling-oil)
+=>
+	(research ri-boiling-oil))
+#end-if
+#load-if-defined SARACEN-CIV
+(defrule
+	(unit-type-count-total monk-set >= 6)
+	(can-research ri-madrasah)
+=>
+	(research ri-madrasah))
+#end-if
+#load-if-defined SPANISH-CIV
+(defrule
+	(unit-type-count-total monastery-class >= 6)
+	(can-research ri-inquisition)
+=>
+	(research ri-inquisition))
+#end-if
+#load-if-defined TEUTONIC-CIV
+(defrule
+(or	(goal attacking yes)
+	(goal researchplan yes))
+(or	(unit-type-count-total trebuchet-set >= 2)
+(or	(unit-type-count-total siege-weapon-class >= 2)
+	(unit-type-count-total scorpion-class >= 2)))
+	(can-research ri-ironclad)
+=>
+	(research ri-ironclad))
+#end-if
+#load-if-defined TURKISH-CIV
+(defrule
+(or	(unit-type-count-total cavalry-archer-line >= 6)
+(or	(and	(unit-type-count-total cavalry-archer-line >= 2)
+		(up-research-status c: ri-heavy-cavalry-archer >= research-pending))
+(or	(unit-type-count-total genitour >= 6)
+(or	(unit-type-count-total elite-genitour >= 6)
+	(unit-type-count-total 732 >= 6)))))
+	(can-research ri-sipahi)
+=>
+	(research ri-sipahi))
+#end-if
+#load-if-defined VIKING-CIV
+(defrule
+	(unit-type-count-total infantry-class >= 6)
+	(strategic-number cavalry >= 6)
+(or	(strategic-number sn-current-age >= imperial)
+	(and	(unit-type-count-total infantry-class >= 12)
+		(strategic-number cavalry >= 12)))
+	(can-research ri-chieftains)
+=>
+	(research ri-chieftains))
+#end-if
+
+#load-if-defined BERBERS-CIV
+(defrule
+(or	(goal uugoal yes)
+(or	(and	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+		(up-research-status c: ri-maghrabi-camels >= research-pending))
+(or	(unit-type-count-total camel-archer >= 7)
+	(unit-type-count-total elite-camel-archer >= 7))))
+(or	(up-compare-goal strategy-type <= castle-war)
+	(strategic-number sn-current-age >= imperial))
+	(can-research ri-kasbah)
+=>
+	(research ri-kasbah))
+(defrule
+(or	(unit-type-count-total camel-archer >= 7)
+(or	(unit-type-count-total elite-camel-archer >= 7)
+(or	(unit-type-count-total imperial-camel >= 7)
+	(unit-type-count-total camel-line >= 7))))
+	(can-research ri-maghrabi-camels)
+=>
+	(research ri-maghrabi-camels)
+	(set-goal researchplan yes))
+#end-if
+#load-if-defined BURMESE-CIV
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 4)
+	(up-research-status c: ri-elite-battle-elephant >= research-pending))
+(or	(up-compare-goal strategy-type <= castle-war)
+	(strategic-number sn-current-age >= imperial))
+	(can-research ri-howdah)
+=>
+	(research ri-howdah))
+(defrule
+(or	(unit-type-count-total cavalry-class >= 7)
+(or	(unit-type-count-total arambai >= 7)
+	(unit-type-count-total elite-arambai >= 7)))
+	(can-research ri-manipur-cavalry)
+=>
+	(research ri-manipur-cavalry)
+	(set-goal researchplan yes))
+#end-if
+#load-if-defined ETHIOPIAN-CIV
+(defrule
+(or	(up-compare-goal strategy-type <= castle-war)
+	(strategic-number sn-current-age >= imperial))
+(or	(goal uugoal yes)
+	(goal trainunique yes))
+	(can-research ri-royal-heirs)
+=>
+	(research ri-royal-heirs)
+	(set-goal researchplan yes))
+(defrule
+(or	(up-compare-goal mangonel-set >= 4)
+(or	(unit-type-count-total bombard-cannon >= 4)
+(or	(unit-type-count-total scorpion-line >= 8)
+	(unit-type-count-total battering-ram-line >= 4))))
+	(can-research ri-torsion-engines)
+=>
+	(research ri-torsion-engines)
+	(set-goal researchplan yes))
+#end-if
+#load-if-defined INCAN-CIV
+(defrule
+(or	(unit-type-count-total genitour >= 4)
+(or	(unit-type-count-total elite-genitour >= 4)
+(or	(unit-type-count-total 732 >= 4)
+(or	(unit-type-count-total skirmisher-line >= 7)
+	(unit-type-count-total slinger >= 4)))))
+(or	(strategic-number sn-current-age >= imperial)
+(or	(goal underattack yes)
+	(goal attacking yes)))
+	(can-research ri-andean-sling)
+=>
+	(research ri-andean-sling))
+(defrule
+;	(up-research-status c: ri-conscription >= research-pending)
+(or	(unit-type-count-total eagle-warrior-line >= 6)
+(or	(unit-type-count-total heavy-eagle-warrior >= 6)
+(or	(unit-type-count-total kamayuk >= 6)
+	(unit-type-count-total slinger >= 6))))
+	(can-research ri-couriers)
+=>
+	(research ri-couriers))
+(defrule
+	(goal milunits yes)
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(strategic-number cavalry >= 20)
+	(strategic-number sn-military-superiority <= -2)))
+	(strategic-number moenche < 15)
+	(strategic-number cavalry >= 10)
+	(goal siegereq yes)
+;	(unit-type-count-total kamayuk < 48)
+	(can-train kamayuk)
+=>
+	(train kamayuk))
+#end-if
+#load-if-defined INDIAN-CIV
+(defrule
+(or	(cc-players-unit-type-count 0 gold-mine >= 1)
+(or	(up-compare-goal relic-count >= 1)
+(or	(cc-players-unit-type-count 0 relic >= 1)
+(or	(up-compare-goal tradeunits >= 1)
+	(unit-type-count villager-gold >= 1)))))
+	(can-research ri-sultans)
+=>
+	(research ri-sultans))
+(defrule
+(or	(goal trainhandcannon yes)
+	(unit-type-count-total hand-cannoneer >= 7))
+	(unit-type-count-total hand-cannoneer >= 4)
+	(can-research ri-shatagni)
+=>
+	(research ri-shatagni))
+(defrule
+	(goal milunits yes)
+;t	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(strategic-number sn-current-age >= imperial)
+	(goal underattack yes))
+	(strategic-number moenche < 15)
+	(goal siegereq yes)
+;	(unit-type-count-total elephant-archer < 80)
+	(can-train elephant-archer)
+=>
+	(train elephant-archer))
+#end-if
+#load-if-defined ITALIAN-CIV
+(defrule
+(or	(and	(goal uugoal yes)
+		(unit-type-count-total genoese-crossbowman >= 4))
+(or	(unit-type-count-total genoese-crossbowman >= 7)
+(or	(unit-type-count-total archer-line >= 7)
+	(research-completed my-unique-unit-upgrade))))
+	(can-research ri-pavise)
+=>
+	(research ri-pavise))
+(defrule
+(or	(players-building-type-count any-ally market >= 1)
+	(players-building-type-count any-ally dock >= 1))
+(or	(strategic-number sn-military-superiority >= 1)
+(or	(goal researchplan yes)
+(or	(population >= max-pop)
+(or	(goal traincart yes)
+	(goal traincog yes)))))
+	(can-research ri-silk-road)
+=>
+	(research ri-silk-road))
+(defrule
+	(goal milunits yes)
+;t	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(strategic-number sn-current-age >= imperial)
+	(goal underattack yes))
+	(goal siegereq yes)
+;	(unit-type-count-total genoese-crossbowman < 90)
+	(can-train genoese-crossbowman)
+=>
+	(train genoese-crossbowman))
+#end-if
+#load-if-defined KHMER-CIV
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 4)
+	(up-research-status c: ri-elite-battle-elephant >= research-pending))
+(or	(up-compare-goal strategy-type <= castle-war)
+	(strategic-number sn-current-age >= imperial))
+	(can-research ri-tusk-swords)
+=>
+	(research ri-tusk-swords))
+(defrule
+(or	(up-research-status c: ri-elite-ballista-elephant >= research-pending)
+(or	(up-research-status c: ri-heavy-scorpion >= research-pending)
+(or	(unit-type-count-total scorpion-line >= 7)
+(or	(unit-type-count-total ballista-elephant >= 7)
+	(unit-type-count-total elite-ballista-elephant >= 7)))))
+	(can-research ri-double-crossbow)
+=>
+	(research ri-double-crossbow)
+	(set-goal researchplan yes))
+#end-if
+#load-if-defined MAGYAR-CIV
+(defrule
+(or	(strategic-number sn-current-age >= imperial)
+(or	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(goal trainunique yes)
+(or	(goal uugoal yes)
+	(game-time >= 2400)))))
+	(can-research ri-mercenaries)
+=>
+	(research ri-mercenaries))
+(defrule
+(or	(unit-type-count-total cavalry-archer-line >= 6)
+	(and	(unit-type-count-total cavalry-archer-line >= 2)
+		(up-research-status c: ri-heavy-cavalry-archer >= research-pending)))
+	(can-research ri-recurve-bow)
+=>
+	(research ri-recurve-bow))
+(defrule
+	(goal milunits yes)
+;t	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(strategic-number sn-current-age >= imperial)
+	(goal underattack yes))
+	(strategic-number spears < 40)
+	(goal siegereq yes)
+;	(unit-type-count-total magyar-huszar < 90)
+	(can-train magyar-huszar)
+=>
+	(train magyar-huszar))
+#end-if
+#load-if-defined MALAY-CIV
+(defrule
+	(building-type-count-total dock >= 1)
+(or	(goal enemy-boats yes)
+(or	(and	(up-compare-goal strategy-type <= castle-war)
+		(up-compare-goal strategy-type2 == water))
+	(strategic-number sn-current-age >= imperial)))
+	(can-research ri-thalassocracy)
+=>
+	(research ri-thalassocracy))
+(defrule
+(or	(game-time >= 2400)
+(or	(goal researchplan yes)
+(or	(goal champgoal yes)
+(or	(goal trainchamp yes)
+(or	(up-research-status c: ri-two-handed-swordsman >= research-pending)
+	(unit-type-count-total militiaman-line >= 7))))))
+	(can-research ri-forced-levy)
+=>
+	(research ri-forced-levy)
+	(set-goal researchplan yes))
+#end-if
+#load-if-defined MALIAN-CIV
+(defrule
+(or	(goal underattack yes)
+	(strategic-number sn-current-age >= imperial))
+(or	(and	(goal researchplan yes)
+		(town-under-attack))
+(or	(goal underattack yes)
+	(goal defend yes)))
+	(can-research ri-tigui)
+=>
+	(research ri-tigui))
+(defrule
+(or	(unit-type-count-total imperial-camel >= 7)
+(or	(unit-type-count-total scout-cavalry-class >= 7)
+	(unit-type-count-total cavalry-class >= 7)))
+	(can-research ri-farimba)
+=>
+	(research ri-farimba)
+	(set-goal researchplan yes))
+#end-if
+#load-if-defined PORTUGUESE-CIV
+(defrule
+(or	(up-compare-goal caravel-set >= 4)
+	(goal traincaravel yes))
+	(up-compare-goal caravel-set >= 2)
+	(can-research ri-elite-caravel)
+=>
+	(research ri-elite-caravel))
+(defrule
+(or	(up-compare-goal navycount >= 5)
+	(unit-type-count-total transport-ship >= 1))
+(or	(up-compare-goal navycount >= 15)
+	(strategic-number sn-current-age >= imperial))
+	(can-research ri-carrack)
+=>
+	(research ri-carrack))
+(defrule
+(or	(unit-type-count-total archery-cannon-class >= 4)
+(or	(unit-type-count-total organ-gun >= 4)
+(or	(unit-type-count-total elite-organ-gun >= 4)
+(or	(unit-type-count-total cannon-galleon-line >= 4)
+(or	(unit-type-count-total bombard-cannon >= 4)
+	(and	(goal uugoal yes)
+		(up-research-status c: my-unique-research >= research-pending)))))))
+	(can-research ri-arquebus)
+=>
+	(research ri-arquebus)
+	(set-goal researchplan yes))
+#end-if
+#load-if-defined SLAVIC-CIV
+(defrule
+	(unit-type-count-total monk-set >= 7)
+	(can-research ri-orthodoxy)
+=>
+	(research ri-orthodoxy))
+(defrule
+(or	(unit-type-count-total infantry-class >= 14)
+(or	(up-research-status c: ri-halberdier >= research-pending)
+	(up-research-status c: ri-champion >= research-pending)))
+	(unit-type-count-total infantry-class >= 7)
+	(can-research ri-druzhina)
+=>
+	(research ri-druzhina))
+(defrule
+	(goal milunits yes)
+;t	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+(or	(strategic-number sn-current-age >= imperial)
+	(goal underattack yes))
+	(strategic-number spears < 40)
+	(strategic-number moenche < 15)
+	(goal siegereq yes)
+;	(unit-type-count-total boyar < 90)
+	(can-train boyar)
+=>
+	(train boyar))
+#end-if
+#load-if-defined VIETNAMESE-CIV
+(defrule
+(or	(up-compare-goal battle-elephant-set >= 4)
+	(up-research-status c: ri-elite-battle-elephant >= research-pending))
+(or	(up-compare-goal strategy-type <= castle-war)
+	(strategic-number sn-current-age >= imperial))
+	(can-research ri-chatras)
+=>
+	(research ri-chatras))
+(defrule
+(or	(and	(player-in-game any-ally)
+		(or	(up-allied-resource-amount any-ally gold < 1000)
+			(up-compare-goal excessGold < 1000)))
+(or	(up-compare-goal excessGold < 300)
+	(and	(up-compare-goal tradeunits < 9)
+		(up-gaia-type-count c: gold < 4))))
+	(can-research ri-paper-money)
+=>
+	(research ri-paper-money)
+	(set-goal researchplan yes))
+#end-if

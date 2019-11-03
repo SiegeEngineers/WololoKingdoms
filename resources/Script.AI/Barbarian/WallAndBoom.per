@@ -1,0 +1,1157 @@
+; WallAndBoom or actually drop a castle and boom ^^
+; (this used to be an independent gothic AI)
+
+; ============== RULES
+
+(defrule
+	(goal gl-strategy castle-drop)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+=>
+	(set-goal gl-strategy gothic-boom)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != gothic-boom)
+=>
+	(up-jump-rule 93)
+)
+
+(defrule
+	(or	(game-time > 3900)
+		(or	(and	(players-unit-type-count focus-player teutonic-knight-line > 8)
+				(goal SLING 0))
+			(or	(and	(players-current-age focus-player == imperial-age)
+					(players-unit-type-count focus-player cataphract-line > 11))
+				(and	(up-compare-goal gl-current-age >= gv-castle-up)
+					(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)))))
+=>
+	(set-goal gl-strategy default)
+	(set-goal gl-strategy-control 0)
+	(set-goal gl-advanced-cavalry 0)
+)
+
+(defrule
+	(current-age >= castle-age)
+	(goal MILITARY 1)
+	(wood-amount > 450)
+	(map-size tiny)
+	(or	(up-compare-goal gl-strategy-control != HUSKS)
+		(or	(and	(goal gl-advanced-cavalry LC)
+				(building-type-count-total barracks < 1))
+			(up-compare-goal gl-current-age >= gv-castle-up)))
+	(building-type-count-total barracks > 7)
+	(building-type-count-total barracks < 19)
+	(can-build barracks)
+=>
+	(build-forward barracks)
+)
+
+; ============= ECO BALANCING
+
+(defrule
+	(goal gl-current-age gv-feudal-up)
+	(dropsite-min-distance stone < 4)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 27)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 27)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal SLING 3)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 27)
+	(set-strategic-number sn-wood-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 3)
+	(set-strategic-number sn-stone-gatherer-percentage 33)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal gl-eternal-drush YES)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 15)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 8)
+	(set-strategic-number sn-stone-gatherer-percentage 27)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(stone-amount >= 650)
+			(goal gl-current-age gv-feudal-up))
+		(building-type-count-total castle > 0))
+	(or	(goal SLING 0)
+		(stone-amount >= 800))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(stone-amount >= 650)
+			(goal gl-current-age gv-feudal-up))
+		(building-type-count-total castle > 0))
+	(or	(goal SLING 0)
+		(stone-amount >= 800))
+	(wood-amount >= 400)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total castle > 0)
+	(building-type-count-total town-center > 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total castle > 0)
+	(building-type-count-total town-center > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 56)
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-gold-gatherer-percentage 9)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(building-type-count-total castle > 0)
+	(not	(goal gl-strategy-control HUSKS))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 48); 50
+	(set-strategic-number sn-wood-gatherer-percentage 37); 35
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total castle > 0)
+	(or	(and	(or	(building-type-count-total town-center > 1)
+				(not	(goal gl-strategy-control HUSKS)))
+			(building-type-count-total monastery == 0))
+		(and	(food-amount < 300)
+			(gold-amount > 250)))
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 3)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 3)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(nor	(goal gl-strategy-control HUSKS)
+		(goal gl-strategy-control HUSKS-PIKS))
+	(building-type-count-total barracks > 5)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 51); 54
+	(set-strategic-number sn-wood-gatherer-percentage 27); 24
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(goal gl-strategy-control HUSKS-PIKS)
+	(building-type-count-total barracks > 5)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(food-amount > 500)
+	(food-amount < 1200)
+	(wood-amount > 500)
+	(building-type-count-total barracks > 7)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(or	(and	(food-amount > 1200)
+			(wood-amount > 500))
+		(and	(food-amount > 600)
+			(and	(food-amount < 1200)
+				(wood-amount < 250))))
+	(building-type-count-total barracks > 7)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(game-time > 1800)
+	(food-amount > 1200)
+	(wood-amount < 250)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(game-time > 1800)
+	(food-amount < 500)
+	(wood-amount > 450)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-wood-gatherer-percentage 18)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(game-time > 1800)
+	(food-amount > 1500)
+	(wood-amount > 1200)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 18)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(building-type-count-total castle > 0)
+	(building-type-count-total town-center > 1)
+	(research-available imperial-age)
+	(civilian-population > 80)
+	(food-amount > 450)
+	(gold-amount < 800)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 4)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 1)
+	(up-modify-sn sn-gold-gatherer-percentage c:+ 5)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(population-cap >= 150)
+	(building-type-count-total town-center < 3)
+	(or	(stone-amount < 100)
+		(building-type-count-total town-center < 2))
+	(stone-amount < 200)
+=>
+	(up-modify-sn sn-stone-gatherer-percentage c:max 10)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(stone-amount >= 200)
+		(or	(building-type-count-total town-center >= 3)
+			(and	(stone-amount >= 100)
+				(building-type-count-total town-center >= 2))))
+	(strategic-number sn-stone-gatherer-percentage == 10)
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+; ============== THREAT LEVEL - HUSKS
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(unit-type-count-total huskarl-line > 0)
+	(players-current-age every-enemy <= feudal-age)
+=>
+	(set-strategic-number sn-threat-level -2)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy <= feudal-age)
+	(research-completed ri-scale-mail)
+=>
+	(set-strategic-number sn-threat-level -4)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+=>
+	(set-strategic-number sn-threat-level 0)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+	(players-unit-type-count every-enemy militiaman-line > 2)
+=>
+	(set-strategic-number sn-threat-level -1)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+	(strategic-number sn-threat-level == 0)
+	(players-unit-type-count every-enemy knight-line < 2)
+	(players-building-type-count every-enemy stable == 0)
+	(players-building-type-count every-enemy archery-range > 0)
+=>
+	(set-strategic-number sn-threat-level -2)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+	(strategic-number sn-threat-level > -2)
+	(players-unit-type-count every-enemy eagle-warrior-line > 2)
+=>
+	(set-strategic-number sn-threat-level -2)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+	(strategic-number sn-threat-level > -4)
+	(or	(players-unit-type-count every-enemy archer-line > 2)
+		(players-unit-type-count every-enemy cavalry-archer-line > 2))
+	(players-unit-type-count every-enemy knight-line < 2)
+	(players-unit-type-count every-enemy scout-cavalry-line < 3)
+	(players-unit-type-count every-enemy militiaman-line < 3)
+	(players-unit-type-count every-enemy jaguar-man-line < 3)
+	(players-unit-type-count every-enemy teutonic-knight-line < 3)
+=>
+	(set-strategic-number sn-threat-level -4)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+	(strategic-number sn-threat-level < 0)
+	(unit-type-count-total monk < 5)
+	(players-unit-type-count every-enemy knight-line > 1)
+	(players-unit-type-count every-enemy archer-line < 3)
+	(players-unit-type-count every-enemy cavalry-archer-line < 3)
+=>
+	(set-strategic-number sn-threat-level 0)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+	(strategic-number sn-threat-level != -1)
+	(players-unit-type-count every-enemy knight-line > 1)
+	(or	(players-unit-type-count every-enemy archer-line > 2)
+		(or	(players-unit-type-count every-enemy cavalry-archer-line > 2)
+			(unit-type-count-total monk > 4)))
+=>
+	(set-strategic-number sn-threat-level -1)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(players-current-age every-enemy >= castle-age)
+	(strategic-number sn-threat-level == -2)
+	(players-unit-type-count every-enemy scout-cavalry-line > 2)
+=>
+	(set-strategic-number sn-threat-level -1)
+	(disable-self)
+)
+
+; ============= OTHER THREAT LEVELS
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(not	(goal gl-strategy-control HUSKS))
+	(or	(game-time > 1700)
+		(and	(goal gl-strategy-control HUSKS-PIKS)
+			(research-completed ri-pikeman)))
+=>
+	(set-strategic-number sn-threat-level -2)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(not	(goal gl-strategy-control HUSKS))
+	(current-age == castle-age)
+	(players-current-age every-enemy == imperial-age)
+	(game-time > 1700)
+=>
+	(set-strategic-number sn-threat-level 1)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(current-age == imperial-age)
+	(players-current-age every-enemy <= castle-age)
+	(nand	(goal gl-strategy-control HUSKS-PIKS)
+		(research-available ri-halberdier))
+	(nand	(goal gl-strategy-control CHAMPS)
+		(research-available ri-champion))
+	(nand	(not	(goal gl-strategy-control CHAMPS))
+		(research-available my-unique-unit-upgrade))
+	(game-time > 1700)
+=>
+	(set-strategic-number sn-threat-level -4)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(not	(goal gl-strategy-control HUSKS))
+	(current-age == imperial-age)
+	(players-current-age every-enemy == imperial-age)
+	(game-time > 1700)
+=>
+	(set-strategic-number sn-threat-level -2)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-advanced-cavalry LC)
+	(strategic-number sn-threat-level != 2)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-threat-level 2)
+)
+
+; ============== STRATEGY
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+=>
+	(set-goal gl-strategy-control HUSKS)
+	(set-strategic-number sn-threat-level 0)
+	(set-goal strategy-selection-control YES)
+	(disable-self)
+)
+
+(defrule
+	(goal strategy-selection-control YES)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(game-time < 2100)
+	(or	(players-current-age target-player == imperial-age)
+		(or	(players-current-age focus-player == imperial-age)
+			(and	(goal gl-enemy-strategy KNIGHT-RUSH)
+				(goal POSITION FLANK))))
+=>
+	(set-goal gl-strategy-control PICK-A-STRATEGY)
+	(chat-to-player my-player-number "1Pick a strategy")
+	(set-goal strategy-selection-control NO)
+	(disable-self)
+)
+
+(defrule
+	(goal strategy-selection-control YES)
+	(or	(game-time > 1800)
+		(goal SLING 3))
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(or	(or	(up-compare-goal gl-enemy-units-in-town > 2)
+				(goal gl-patrol-defence patrol-on))
+			(goal MILITARY 1)))
+=>
+	(set-goal gl-strategy-control PICK-A-STRATEGY)
+	(chat-to-player my-player-number "1Pick a strategy")
+	(set-goal strategy-selection-control NO)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control PICK-A-STRATEGY)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(or	(players-civ focus-player japanese)
+				(or	(players-civ focus-player briton)
+					(or	(players-civ focus-player viking)
+						(players-civ focus-player incan))))))
+=>
+	(set-goal gl-strategy-control HUSKS-CHAMPS)
+	(chat-to-player my-player-number "=> Husk+champ")
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS-CHAMPS)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(players-civ focus-player japanese)))
+	(or	(up-compare-goal gl-enemy-infantry-count > 4)
+		(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+			(up-compare-goal gl-enemy-archery-count < 5)))
+	(up-compare-goal gl-enemy-archer-count < 5)
+	(up-compare-goal gl-enemy-gunpowder-count < 4)
+=>
+	(set-goal gl-strategy-control CHAMPS)
+	(chat-to-player my-player-number "=> Champ")
+)
+
+(defrule
+	(goal gl-strategy-control CHAMPS)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(players-civ focus-player japanese)))
+	(or	(up-compare-goal gl-enemy-archer-count > 4)
+		(up-compare-goal gl-enemy-gunpowder-count > 3))
+=>
+	(set-goal gl-strategy-control HUSKS-CHAMPS)
+	(chat-to-player my-player-number "=> Husk+champ")
+)
+
+(defrule
+	(goal gl-strategy-control PICK-A-STRATEGY)
+	(nor	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(or	(players-civ focus-player japanese)
+				(or	(players-civ focus-player mayan)
+					(or	(players-civ focus-player briton)
+						(or	(players-civ focus-player viking)
+							(players-civ focus-player incan)))))))
+=>
+	(set-goal gl-strategy-control HUSKS-PIKS)
+	(chat-to-player my-player-number "=> Husk+pik")
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(up-compare-goal temporary-goal != 1)
+	(nor	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(or	(players-civ focus-player japanese)
+				(or	(players-civ focus-player mayan)
+					(or	(players-civ focus-player briton)
+						(or	(players-civ focus-player viking)
+							(players-civ focus-player incan)))))))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(up-compare-goal temporary-goal != 0)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(or	(players-civ focus-player japanese)
+				(or	(players-civ focus-player mayan)
+					(or	(players-civ focus-player briton)
+						(or	(players-civ focus-player viking)
+							(players-civ focus-player incan)))))))
+=>
+	(set-goal temporary-goal 0)
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(up-compare-goal gl-strategy-control != HUSKS)
+	(up-compare-goal gl-strategy-control != PICK-A-STRATEGY)
+	(up-compare-goal gl-strategy-control != HUSKS-PIKS)
+	(goal temporary-goal 1)
+	(up-compare-goal gl-enemy-infantry-count < 9)
+=>
+	(set-goal gl-strategy-control PICK-A-STRATEGY)
+)
+
+(defrule
+	(goal gl-strategy-control PICK-A-STRATEGY)
+	(players-civ focus-player mayan)
+=>
+	(set-goal gl-strategy-control FULL-HUSKS)
+	(chat-to-player my-player-number "=> Husk")
+)
+
+(defrule
+	(or	(goal gl-strategy-control FULL-HUSKS)
+		(and	(up-compare-goal gl-enemy-infantry-count > 8)
+			(and	(goal gl-strategy-control HUSKS-PIKS)
+				(up-compare-goal gl-enemy-cavalry-count < 15))))
+	(or	(up-compare-goal gl-enemy-infantry-count > 8)
+		(and	(up-compare-goal gl-enemy-eagle-count > 5)
+			(players-current-age focus-player == imperial-age)))
+=>
+	(set-goal gl-strategy-control HUSKS-CHAMPS)
+	(chat-to-player my-player-number "=> Husk+champ")
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS-CHAMPS)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player japanese)
+			(or	(players-civ focus-player briton)
+				(players-civ focus-player viking))))
+	(up-compare-goal gl-enemy-cavalry-count > 9)
+	(up-compare-goal gl-enemy-infantry-count < 5)
+=>
+	(set-goal gl-strategy-control HUSKS-PIKS)
+	(chat-to-player my-player-number "=> Husk+pik")
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS-PIKS)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(or	(players-civ focus-player japanese)
+				(or	(players-civ focus-player briton)
+					(or	(players-civ focus-player viking)
+						(players-civ focus-player incan))))))
+	(up-compare-goal gl-enemy-cavalry-count < 8)
+=>
+	(set-goal gl-strategy-control HUSKS-CHAMPS)
+	(chat-to-player my-player-number "=> Husk+champ")
+)
+
+(defrule
+	(building-type-count-total town-center > 1)
+	(players-unit-type-count focus-player monk > 8)
+=>
+	(set-goal gl-advanced-cavalry LC)
+	(chat-to-player my-player-number "Add scouts!")
+	(disable-self)
+)
+
+; ============== VILLAGERS
+
+(defrule
+	(goal gl-strategy-control HUSKS); Needs priority
+	(nand	(goal gl-advanced-cavalry LC)
+		(or	(research-available ri-light-cavalry)
+			(unit-type-count-total scout-cavalry-line < 10)))
+	(unit-type-count-total huskarl-line < 1)
+	(can-train huskarl-line)
+=>
+	(train huskarl-line)
+)
+
+; ======== BUILDINGS - HIGH PRIORITY
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-pending-objects c: house < 2)
+	(building-type-count-total town-center > 1)
+	(or	(housing-headroom < 8)
+		(and	(building-type-count-total town-center > 2)
+			(housing-headroom < 25)))
+	(population-headroom > 4)
+=>
+	(up-modify-goal gl-house-build-priority c:max 900)
+)
+
+(defrule
+	(or	(building-type-count-total castle > 0)
+		(stone-amount >= 750))
+	(or	(building-type-count-total town-center < 3)
+		(nand	(current-age == imperial-age)
+			(game-time < 600)))
+	(building-type-count-total town-center < 4)
+	(can-build town-center)
+=>
+	(build town-center)
+	(chat-to-player my-player-number "Town center")
+)
+
+(defrule
+	(up-pending-objects c: mining-camp < 1)
+	(current-age >= castle-age)
+	(building-type-count town-center > 2)
+	(or	(and	(dropsite-min-distance stone > 4)
+			(cc-players-unit-type-count 0 stone-mine > 0))
+		(and	(dropsite-min-distance gold > 4)
+			(cc-players-unit-type-count 0 gold-mine > 0)))
+	(building-type-count-total mining-camp < 14)
+	(dropsite-min-distance stone < 255)
+	(dropsite-min-distance gold < 255)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+(defrule
+	(up-pending-objects c: mining-camp < 1)
+	(current-age >= castle-age)
+	(building-type-count town-center > 1)
+	(building-type-count-total barracks > 2)
+	(building-type-count-total mining-camp < relative-5-camps)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+; ======== RESEARCHES - ECONOMY - HIGH PRIORITY
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(can-research ri-horse-collar)
+		(or	(can-research ri-double-bit-axe)
+			(and	(can-research-with-escrow ri-heavy-plow)
+				(and	(or	(building-type-count-total town-center > 2)
+						(wood-amount > 400))
+					(up-research-status c: ri-bow-saw >= research-pending)))))
+=>
+  	(research ri-double-bit-axe)
+  	(research ri-horse-collar)
+	(research ri-heavy-plow)
+)
+
+; ======== RESEARCHES - UNIT UPGRADES
+
+(defrule
+	(not	(goal gl-strategy-control CHAMPS))
+	(unit-type-count-total huskarl-set > 15)
+	(research-available my-unique-unit-upgrade)
+=>
+	(up-modify-escrow food c:max 1200)
+	(up-modify-escrow gold c:max 550)
+)
+
+(defrule
+	(not	(goal gl-strategy-control CHAMPS))
+	(can-research-with-escrow my-unique-unit-upgrade)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+ 	(research my-unique-unit-upgrade)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS-PIKS)
+	(unit-type-count-total spearman-line > 5)
+	(building-type-count-total barracks > 0)
+	(research-available ri-halberdier)
+=>
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 600)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS-PIKS)
+	(or	(can-research-with-escrow ri-pikeman)
+		(can-research-with-escrow ri-halberdier))
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-pikeman)
+	(research ri-halberdier)
+)
+
+(defrule
+	(or	(goal gl-strategy-control HUSKS-CHAMPS)
+		(goal gl-strategy-control CHAMPS))
+	(or	(can-research-with-escrow ri-man-at-arms)
+		(can-research-with-escrow ri-long-swordsman))
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(research ri-man-at-arms)
+	(research ri-long-swordsman)
+)
+
+(defrule
+	(or	(goal gl-strategy-control HUSKS-CHAMPS)
+		(goal gl-strategy-control CHAMPS))
+	(can-research-with-escrow ri-two-handed-swordsman)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(research ri-two-handed-swordsman)
+)
+
+(defrule
+	(or	(goal gl-strategy-control HUSKS-CHAMPS)
+		(goal gl-strategy-control CHAMPS))
+	(can-research-with-escrow ri-champion)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(research ri-champion)
+)
+
+(defrule
+	(or	(town-under-attack)
+		(or	(game-time > 1500)
+			(or	(up-compare-goal POSITION != POCKET)
+				(goal MILITARY 1))))
+	(unit-type-count-total huskarl-line > 0)
+	(or	(can-research ri-scale-mail)
+		(or	(can-research ri-chain-mail)
+			(can-research ri-squires)))
+=>
+	(research ri-scale-mail)
+	(research ri-chain-mail)
+	(research ri-squires)
+)
+
+(defrule
+	(or	(up-compare-goal gl-strategy-control != HUSKS)
+		(goal MILITARY 1))
+	(nand	(goal gl-strategy-control HUSKS-PIKS)
+		(research-available ri-pikeman))
+	(unit-type-count infantry-class >= relative-4-units)
+	(or	(can-research ri-forging)
+		(or	(can-research ri-iron-casting)
+			(can-research ri-blast-furnace)))
+=>
+	(research ri-forging)
+	(research ri-iron-casting)
+	(research ri-blast-furnace)
+)
+
+(defrule
+	(not	(goal gl-strategy-control CHAMPS))
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(goal gl-strategy-control FULL-HUSKS))
+	(can-research ri-anarchy)
+=>
+	(research ri-anarchy)
+)
+
+(defrule
+	(current-age-time > 300)
+	(or	(can-research ri-conscription)
+		(can-research ri-perfusion))
+=>
+	(research ri-conscription)
+	(research ri-perfusion)
+)
+
+(defrule
+	(or	(unit-type-count-total battering-ram-line > 1)
+		(and	(unit-type-count-total battering-ram-line > 0)
+			(population > 200)))
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+
+(defrule
+	(unit-type-count-total scout-cavalry-line > 4)
+	(or	(can-research ri-scale-barding)
+		(or	(can-research ri-chain-barding)
+			(or	(can-research ri-forging)
+				(can-research ri-iron-casting))))
+=>
+	(research ri-scale-barding)
+	(research ri-chain-barding)
+	(research ri-forging)
+	(research ri-iron-casting)
+)
+
+(defrule
+	(research-completed ri-light-cavalry)
+	(unit-type-count-total scout-cavalry-line > 5)
+	(or	(can-research ri-bloodlines)
+		(can-research ri-husbandry))
+=>
+	(research ri-bloodlines)
+	(research ri-husbandry)
+)
+
+(defrule
+	(players-unit-type-count focus-player monk > 3)
+	(unit-type-count-total scout-cavalry-line > 1)
+	(research-available ri-light-cavalry)
+=>
+	(up-modify-escrow food c:max 150)
+	(up-modify-escrow gold c:max 50)
+)
+
+(defrule
+	(or	(and	(players-unit-type-count focus-player monk > 3)
+			(unit-type-count-total scout-cavalry-line > 1))
+		(unit-type-count-total scout-cavalry-line > 4))
+	(can-research-with-escrow ri-light-cavalry)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(research ri-light-cavalry)
+)
+
+; ======== BUILDINGS - CASTLE
+
+(defrule
+	(or	(nand	(goal gl-advanced-cavalry LC)
+			(and	(building-type-count-total stable < 2)
+				(wood-amount < 235)))
+		(building-type-count-total farm < 20))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(nand	(up-compare-goal gl-strategy-control != HUSKS)
+		(building-type-count-total barracks < 2))
+	(current-age-time > 20)
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(research-completed ri-horse-collar)
+		(current-age-time g:> gl-current-age-time-for-farms))
+	(nand	(or	(and	(up-compare-goal gl-strategy-control != HUSKS)
+				(building-type-count-total barracks < 2))
+			(and	(goal gl-advanced-cavalry LC)
+				(building-type-count-total stable < 2)))
+		(wood-amount < 235))
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(goal gl-advanced-cavalry LC)
+	(current-age >= castle-age)
+	(or	(building-type-count-total stable < 2)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(building-type-count-total stable < 3)
+=>
+	(up-modify-goal gl-stable-build-priority c:max 901)
+)
+
+(defrule
+	(current-age >= castle-age)
+	(or	(not	(goal gl-strategy-control HUSKS))
+		(or	(and	(goal gl-advanced-cavalry LC)
+				(building-type-count-total barracks < 1))
+			(up-compare-goal gl-current-age >= gv-castle-up)))
+	(building-type-count-total barracks < 12)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 900)
+)
+
+(defrule
+	(or	(and	(research-completed my-unique-unit-upgrade)
+			(or	(research-completed ri-halberdier)
+				(or	(goal gl-strategy-control FULL-HUSKS)
+					(research-completed ri-champion))))
+		(and	(research-completed ri-champion)
+			(goal gl-strategy-control CHAMPS)))
+	(building-type-count-total archery-range < 3)
+=>
+	(up-modify-goal gl-range-build-priority c:max 900)
+)
+
+; ======== UNITS - ARMY
+
+(defrule
+	(goal gl-advanced-cavalry LC)
+	(unit-type-count-total scout-cavalry-line < 30)
+	(can-train scout-cavalry-line)
+=>
+	(train scout-cavalry-line)
+)
+
+(defrule
+	(current-age >= castle-age)
+	(game-time > 2100)
+	(food-amount > 88)
+	(or	(players-unit-type-count focus-player militiaman-line > 13)
+		(players-unit-type-count target-player militiaman-line > 13))
+	(or	(unit-type-count-total militiaman-line < 25)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(nor	(research-available ri-long-swordsman)
+		(research-available ri-chain-mail))
+	(unit-type-count-total militiaman-line < 40)
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+
+(defrule
+	(goal gl-strategy-control HUSKS)
+	(food-amount >= uu-food-buffer)
+	(nand	(goal gl-advanced-cavalry LC)
+		(or	(research-available ri-light-cavalry)
+			(unit-type-count-total scout-cavalry-line < 10)))
+	(not	(research-available ri-wheel-barrow))
+	(unit-type-count-total huskarl-set < 30)
+	(can-train huskarl-line)
+=>
+	(train huskarl-line)
+)
+
+(defrule
+	(up-compare-goal gl-strategy-control >= 1)
+	(or	(goal gl-strategy-control HUSKS-PIKS)
+		(players-unit-type-count focus-player knight-line > 7))
+	(food-amount >= 52)
+	(unit-type-count-total spearman-line < 70)
+	(nand	(research-available ri-pikeman)
+		(unit-type-count-total spearman-line > 6))
+	(nand	(unit-type-count-total spearman-line > 40)
+		(or	(research-available ri-elite-huskarl)
+			(research-available ri-halberdier)))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+
+(defrule
+	(or	(goal gl-strategy-control CHAMPS)
+		(and	(goal gl-strategy-control HUSKS-CHAMPS)
+			(food-amount >= 80)))
+	(nand	(unit-type-count-total militiaman-line > 40)
+		(and	(not	(research-completed ri-elite-huskarl))
+			(goal gl-strategy-control HUSKS-CHAMPS)))
+	(unit-type-count-total militiaman-line < 70)
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+
+(defrule
+	(or	(goal gl-strategy-control HUSKS-CHAMPS)
+		(goal gl-strategy-control HUSKS-PIKS))
+	(nand	(up-research-status c: ri-pikeman <= research-available)
+		(and	(or	(unit-type-count-total huskarl-line > 15)
+				(game-time < 1500))
+			(goal gl-strategy-control HUSKS-PIKS)))
+	(nand	(unit-type-count-total huskarl-set > 25)
+		(research-available ri-elite-huskarl))
+	(unit-type-count-total huskarl-set < 50)
+	(can-train huskarl-line)
+=>
+	(train huskarl-line)
+)
+
+(defrule
+	(or	(goal gl-strategy-control HUSKS-CHAMPS)
+		(goal gl-strategy-control HUSKS-PIKS))
+	(or	(and	(unit-type-count-total huskarl-set < 30)
+			(not	(research-completed ri-elite-huskarl)))
+		(research-completed ri-elite-huskarl))
+	(or	(can-train huskarl2)
+		(can-train elite-huskarl2))
+=>
+	(train huskarl2)
+	(train elite-huskarl2)
+)
+
+(defrule
+	(goal gl-strategy-control FULL-HUSKS)
+	(nand	(unit-type-count-total huskarl-set > 40)
+		(research-available my-unique-unit-upgrade))
+	(nand	(unit-type-count-total huskarl-set > 50)
+		(not	(research-completed ri-elite-huskarl)))
+	(can-train huskarl-line)
+=>
+	(train huskarl-line)
+)
+
+(defrule
+	(goal gl-strategy-control FULL-HUSKS)
+	(or	(and	(unit-type-count-total huskarl-set < 40)
+			(not	(research-completed ri-elite-huskarl)))
+		(research-completed ri-elite-huskarl))
+	(or	(can-train huskarl2)
+		(can-train elite-huskarl2))
+=>
+	(train huskarl2)
+	(train elite-huskarl2)
+)
+
+; ======== ATTACKING
+
+(defrule
+	(current-age >= feudal-age)
+=>
+	(enable-timer 1 0)
+	(disable-self)
+)
+
+(defrule
+	(or	(and	(players-building-type-count target-player stone-wall-line < 1)
+			(building-type-count-total stone-wall-line < 1))
+		(or	(players-military-population any-enemy > 4)
+			(players-building-type-count target-player castle > 0)))
+	(current-age >= castle-age)
+=>
+	(enable-timer 7 0)
+	(disable-self)
+)
+
+; ========= MARKET - BALANCING THE RESOURCES
+
+(defrule
+	(current-age >= castle-age)
+	(food-amount < 200)
+	(gold-amount > 500)
+	(commodity-buying-price food < 140)
+	(can-buy-commodity food)
+=>
+	(buy-commodity food)
+	(chat-to-player my-player-number "Buy food")
+)
+
+(defrule
+	(current-age-time > 60)
+	(current-age == imperial-age)
+	(goal gl-strategy-control HUSKS-PIKS)
+	(unit-type-count-total spearman-line > 8)
+	(research-available ri-halberdier)
+	(food-amount > 500)
+	(gold-amount < 600)
+	(can-sell-commodity food)
+	(commodity-selling-price food >= 70)
+=>
+	(sell-commodity food)
+	(chat-to-player my-player-number "Sell food for halbs")
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(gold-amount > 1000)
+	(wood-amount < 150)
+	(can-buy-commodity wood)
+	(or	(commodity-buying-price wood <= 140)
+		(gold-amount > 1500))
+=>
+	(buy-commodity wood)
+	(chat-to-player my-player-number buy-wood-chat)
+)
+
+(defrule
+	(current-age == castle-age)
+	(building-type-count-total castle == 0)
+	(stone-amount >= 450)
+	(stone-amount < 650)
+	(can-buy-commodity stone)
+	(town-under-attack)
+=>
+	(buy-commodity stone)
+	(chat-to-player my-player-number "Buy stone for castle")
+)

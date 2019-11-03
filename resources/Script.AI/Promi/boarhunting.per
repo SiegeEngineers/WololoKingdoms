@@ -1,0 +1,996 @@
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0))
+
+
+#load-if-not-defined DEATH-MATCH
+(defrule
+(or	(and	(goal drushmicro yes)
+		(goal drushtarget 0))
+	(and	(cc-players-unit-type-count 0 wild-boar <= 0)
+		(and	(cc-players-unit-type-count 0 javelina <= 0)
+			(dropsite-min-distance live-boar >= 35))))
+=>
+	(up-jump-rule 2))
+(defrule
+	(game-time s:>= sn-home-exploration-time)
+	(strategic-number sn-home-exploration-time < 900)
+	(players-building-count every-enemy >= 1)
+(or	(up-compare-goal totalboars < 2)
+	(up-compare-goal totalsheep < 8))
+(or	(up-compare-goal deer-luring <= 0)
+	(up-compare-goal deer-luring >= 3))
+(or	(dropsite-min-distance live-boar >= 35)
+	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance)); 30
+	(players-current-age every-enemy <= dark-age)
+=>
+	(up-modify-sn sn-home-exploration-time c:+ 20)); 10
+(defrule
+	(game-time s:>= sn-home-exploration-time)
+	(up-compare-goal boar-hunting-goal < 3); no hunting available
+	(up-compare-goal totalboars < 2); new
+	(dropsite-min-distance live-boar >= 35)
+	(dropsite-min-distance deer-hunting > 15); 30
+(or	(unit-type-count-total villager >= 10)
+	(players-building-count every-enemy >= 1))
+=>
+	(up-modify-sn sn-home-exploration-time c:+ 60)
+	(disable-self))
+(defrule
+	(game-time s:< sn-home-exploration-time)
+	(game-time >= home-exploration-time)
+(or	(dropsite-min-distance live-boar <= 34)
+(or	(dropsite-min-distance deer-hunting <= 15); 30
+	(up-compare-goal totalboars >= 2))); new
+	(players-building-count any-enemy <= 0)
+=>
+	(up-modify-sn sn-home-exploration-time c:= home-exploration-time)
+	(disable-self))
+#end-if
+
+
+
+(defrule
+(or	(and	(cc-players-unit-type-count 0 wild-boar <= 0)
+		(cc-players-unit-type-count 0 javelina <= 0))
+	(dropsite-min-distance live-boar >= 35))
+=>
+	(up-jump-rule 9))
+(defrule; inspired by II2N
+;(or
+	(and	(game-time >= 105)
+		(or	(and	(up-compare-goal totalsheep <= 3)
+				(building-type-count mill <= 0)); -total
+			(and	(up-compare-goal mysheep <= 1)
+				(and	(game-time >= earlyBoar)
+					(or	(up-compare-goal villagercounttotal >= 10)
+						(up-compare-goal wood-villagers >= 3))))))
+;	(something))
+=>
+	(up-modify-goal minBoar c:min 8))
+(defrule
+(or	(and	(unit-type-count-total villager >= 8)
+		(and	(up-compare-goal mysheep <= 1); test
+			(nand	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance)
+				(or	(strategic-number sn-enable-boar-hunting == 1)
+					(unit-type-count villager-hunter >= 2)))))
+	(and	(up-compare-goal targetdistance <= 22)
+		(players-building-count any-enemy >= 1)))
+=>
+	(up-modify-goal minBoar c:min 8))
+(defrule
+(or	(goal map water)
+(or	(and	(game-time >= 165)
+		(up-compare-goal totalsheep <= 5))
+	(and	(unit-type-count villager-shepherd >= 6)
+		(up-compare-goal food-villagers >= 7))))
+=>
+	(up-modify-goal minBoar c:min 10)); 9
+(defrule
+(or	(up-compare-goal targetdistance >= 23)
+	(players-building-count any-enemy >= 1))
+(or	(and	(up-research-status c: ri-loom == research-available)
+		(dropsite-min-distance boar-hunting g:> loom-dist))
+(or	(unit-type-count villager-forager >= 2)
+	(unit-type-count-total villager-food <= 6)))
+	(up-compare-goal villagercount g:< minBoar)
+	(unit-type-count villager-shepherd <= 6)
+	(up-compare-goal totalsheep >= 6)
+=>
+	(up-modify-goal minBoar c:max 11))
+(defrule
+(or	(and	(up-compare-goal totalsheep <= 7)
+		(and	(game-time >= 155)
+			(or	(game-time >= 190)
+				(and	(civ-selected briton)
+					(building-type-count-total mill <= 0)))))
+	(and	(dropsite-min-distance live-boar g:<= loom-dist)
+		(unit-type-count villager-shepherd >= 7)))
+=>
+	(up-modify-goal minBoar c:min brit11)); brits are hungree
+(defrule
+(or	(dropsite-min-distance food >= 10)
+	(and	(goal nomad no)
+		(and	(and	(and	(goal buildmill no)
+					(building-type-count-total mill <= 0))
+				(goal buildlumber yes))
+			(up-compare-goal totalsheep <= 4))))
+	(game-time > 120)
+(or	(game-time > 480)
+	(goal nomad no))
+=>
+	(up-modify-goal minBoar c:min 6))
+(defrule
+(or	(goal nomad yes)
+	(up-compare-goal total-food-amount < 50))
+(or	(unit-type-count villager-food <= 0)
+(or	(dropsite-min-distance food >= 10)
+	(dropsite-min-distance food <= -1)))
+	(game-time > 300)
+=>
+	(up-modify-goal minBoar c:min 6))
+(defrule
+(or	(dropsite-min-distance deer-hunting > 13)
+	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance))
+(or	(sheep-and-forage-too-far)
+(or	(dropsite-min-distance food >= 10)
+	(dropsite-min-distance food <= -1)))
+	(up-compare-goal mysheep <= 0); 1
+	(unit-type-count villager >= 6)
+	(unit-type-count villager-food <= 0)
+	(game-time > 120)
+=>
+	(up-modify-goal minBoar c:min 6))
+(defrule
+	(goal nomad yes)
+(or	(and	(or	(dropsite-min-distance food >= 10)
+			(dropsite-min-distance food <= -1))
+		(and	(dropsite-min-distance deer-hunting >= 13); 12
+			(game-time > 300)))
+	(up-compare-goal targetdistance <= 22))
+=>
+	(up-modify-goal minBoar c:min 3)); end jump
+
+
+
+;(defrule
+;	(strategic-number sn-enable-boar-hunting <= 0); 1
+;(or	(dropsite-min-distance live-boar g:<= loom-dist)
+;	(research-completed ri-loom))
+;	(dropsite-min-distance live-boar <= 34)
+;	(up-compare-goal villagercount g:>= minBoar);		(unit-type-count villager-food >= 2);	(unit-type-count villager >= 7); test
+;	(up-compare-goal boar-hunting-goal >= 0); DM
+;=>
+;	(set-strategic-number sn-enable-boar-hunting 2)
+;	(set-strategic-number sn-minimum-number-hunters 1)); test 2 first
+(defrule
+	(strategic-number sn-enable-boar-hunting <= 0)
+	(up-compare-goal villagercount g:>= minBoar);		(unit-type-count villager >= 8); -total
+	(up-compare-goal boar-hunting-goal >= 0); DM
+=>
+	(set-strategic-number sn-enable-boar-hunting 1); boar and deer
+;	(chat-local-to-self "Disabling hunting-restrictions. 3")
+;	(disable-self)
+)
+;(defrule
+;	(up-compare-goal villagercount g:>= minBoar);	(unit-type-count villager >= 8); -total
+;(or	(dropsite-min-distance live-boar g:<= loom-dist)
+;	(research-completed ri-loom))
+;	(dropsite-min-distance live-boar <= 34)
+;	(strategic-number sn-current-age <= dfeudal)
+;	(strategic-number sn-maximum-hunt-drop-distance < 34)
+;=>
+;	(set-strategic-number sn-maximum-hunt-drop-distance 34)
+;;	(set-strategic-number sn-maximum-food-drop-distance 34)
+;)
+(defrule
+	(strategic-number sn-enable-boar-hunting != 1)
+	(dropsite-min-distance live-boar >= 35)
+	(game-time > 120);	(dropsite-min-distance boar-hunting s:> sn-maximum-hunt-drop-distance)
+	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance)
+(or	(sheep-and-forage-too-far)
+(or	(dropsite-min-distance food >= 10)
+	(dropsite-min-distance food <= -1)))
+	(up-compare-goal mysheep <= 0); 1
+	(dropsite-min-distance deer-hunting <= 12)
+	(unit-type-count villager >= 6); 4
+	(unit-type-count villager-food < 1)
+	(up-compare-goal boar-hunting-goal >= 0); DM
+=>
+	(set-strategic-number sn-enable-boar-hunting 1)); boar and deer
+(defrule
+	(strategic-number sn-enable-boar-hunting != 1)
+;(or	(unit-type-count villager >= 12)
+;	(game-time > 240))
+(or	(unit-type-count villager >= 18)
+	(game-time > 420)); 390
+(or	(dropsite-min-distance live-boar >= 35)
+	(unit-type-count villager-food < 6)); test
+;	(up-compare-goal boar-hunting-goal < 5)
+	(up-compare-goal boar-hunting-goal >= 0); DM
+=>
+;	(set-strategic-number sn-minimum-boar-hunt-group-size 2)
+;	(set-strategic-number sn-minimum-boar-lure-group-size 0)
+;	(set-strategic-number sn-minimum-number-hunters 2)
+;	(set-goal boar-hunting-goal 5)
+	(set-strategic-number sn-enable-boar-hunting 1)
+;	(chat-local-to-self "Disabling hunting-restrictions.")
+)
+(defrule
+	(strategic-number sn-enable-boar-hunting != 1)
+(or	(up-compare-goal deer-luring >= 1)
+(or	(up-compare-goal total-food-amount >= 400)
+(or	(unit-type-count villager >= 9)
+	(game-time >= 240))))
+(or	(up-compare-goal deer-luring >= 1)
+	(and	(cc-players-unit-type-count 0 wild-boar <= 0); no boar on map
+		(cc-players-unit-type-count 0 javelina <= 0)))
+;	(up-compare-goal boar-hunting-goal < 5)
+	(up-compare-goal boar-hunting-goal >= 0); DM
+=>
+;	(set-strategic-number sn-minimum-boar-hunt-group-size 2)
+;	(set-strategic-number sn-minimum-boar-lure-group-size 0)
+;	(set-strategic-number sn-minimum-number-hunters 2)
+;	(set-goal boar-hunting-goal 5)
+	(set-strategic-number sn-enable-boar-hunting 1)
+;	(chat-local-to-self "Disabling hunting-restrictions. 1")
+)
+(defrule
+	(strategic-number sn-enable-boar-hunting != 1)
+	(dropsite-min-distance live-boar >= 35)
+	(building-type-count-total mill >= 1)
+(or	(and	(or	(dropsite-min-distance food <= -1)
+			(dropsite-min-distance food s:> sn-maximum-food-drop-distance))
+		(dropsite-min-distance deer-hunting <= 16))
+(or	(up-compare-goal forage-count <= 0)
+	(cc-players-unit-type-count 0 forage-bush <= 0)))
+;	(up-compare-goal boar-hunting-goal < 5)
+	(up-compare-goal boar-hunting-goal >= 0); DM
+=>
+;	(set-strategic-number sn-minimum-boar-hunt-group-size 2)
+;	(set-strategic-number sn-minimum-boar-lure-group-size 0)
+;	(set-strategic-number sn-minimum-number-hunters 2)
+;	(set-goal boar-hunting-goal 5)
+	(set-strategic-number sn-enable-boar-hunting 1)
+;	(chat-local-to-self "Disabling hunting-restrictions. 2")
+)
+(defrule
+;(or	(strategic-number sn-minimum-boar-hunt-group-size > 2)
+;	(strategic-number sn-minimum-number-hunters > 2))
+(or	(strategic-number sn-minimum-boar-hunt-group-size != 2)
+	(strategic-number sn-minimum-number-hunters != 2))
+(or	(dropsite-min-distance live-boar <= -1)
+	(dropsite-min-distance live-boar >= 35))
+(or	(dropsite-min-distance hunting <= 34)
+	(dropsite-min-distance hunting s:<= sn-maximum-hunt-drop-distance))
+	(strategic-number sn-enable-boar-hunting == 1)
+=>
+;	(up-modify-sn sn-minimum-boar-hunt-group-size c:min 2)
+;	(up-modify-sn sn-minimum-number-hunters c:min 2)
+	(set-strategic-number sn-minimum-boar-hunt-group-size 2)
+	(set-strategic-number sn-minimum-number-hunters 2))
+
+
+
+
+(defrule
+	(up-compare-goal boar-distance >= 64)
+	(timer-triggered one-min)
+=>
+	(chat-to-player my-player-number "Trying to reach boar again.")
+;	(chat-to-all "chest")
+;	(chat-to-player every-ally "Trying to reach boar again.")
+	(set-goal current-boar -1)
+	(set-goal found-boar -1)
+;	(set-goal boar-lurer -1)
+;	(set-goal found-lurer -1)
+	(set-goal boar-distance -1)
+	(disable-timer boar-reset-timer))
+(defrule
+(or	(building-type-count town-center <= 0)
+(or	(dropsite-min-distance live-boar >= 35)
+	(and	(cc-players-unit-type-count 0 wild-boar <= 0)
+		(cc-players-unit-type-count 0 javelina <= 0))))
+=>
+	(up-jump-rule 37))
+(defrule
+	(up-compare-goal boar-type != wild-boar)
+	(cc-players-unit-type-count 0 wild-boar >= 1)
+=>
+	(set-goal boar-type wild-boar))
+(defrule
+	(up-compare-goal boar-type != javelina)
+	(cc-players-unit-type-count 0 javelina >= 1)
+=>
+	(set-goal boar-type javelina))
+(defrule
+	(goal boar-sighted -1)
+	(up-compare-goal boar-type != -1)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal 0)
+	(up-get-fact building-type-count town-center temporary-goal2))
+(defrule
+	(goal boar-sighted -1)
+	(up-compare-goal boar-type != -1)
+=>
+	(up-find-local c: town-center c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object point-x)
+	(up-modify-goal point-x c:- 1)
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 c: 34)
+	(up-find-remote g: boar-type c: 2)
+	(up-get-search-state local-total))
+(defrule; 5
+	(goal boar-sighted -1)
+	(up-compare-goal boar-type != -1)
+;	(game-time s:<= sn-home-exploration-time)
+	(up-compare-goal remote-total < 2)
+	(up-compare-goal boar-captured < 2)
+	(up-compare-goal temporary-goal g:< temporary-goal2)
+=>
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-reset-filters)
+	(up-find-local c: town-center g: temporary-goal)
+	(up-reset-search 0 1 1 1)
+	(up-jump-rule -2))
+(defrule
+	(goal boar-sighted -1)
+	(up-compare-goal boar-type != -1)
+;(or	(game-time s:> sn-home-exploration-time)
+(or	(up-compare-goal remote-total >= 2)
+	(up-compare-goal boar-captured >= 2));)
+=>
+;	(chat-to-player my-player-number "Boar in sight.")
+	(set-goal boar-sighted 1))
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal 1); !; 0
+	(up-full-reset-search)
+	(up-get-fact unit-type-count villager-hunter temporary-goal3)
+	(up-modify-goal temporary-goal3 c:min 240)
+	(up-find-local c: 122 g: temporary-goal3)
+	(up-find-local c: 216 g: temporary-goal3)
+	(up-remove-objects search-local object-data-target != boar-food);	(up-remove-objects search-local object-data-target-id g:!= current-boar)
+	(up-get-search-state local-total)
+	(up-modify-goal temporary-goal3 g:= local-total)
+;	(up-modify-goal temporary-goal3 c:- 1)
+	(up-modify-goal temporary-goal3 c:max 0)
+;	(up-chat-data-to-player my-player-number "l-hunters1: %d" g: temporary-goal3)
+	(up-get-fact dropsite-min-distance live-boar temporary-goal2)
+;	(up-chat-data-to-player my-player-number "Boar-dist: %d" g: temporary-goal2)
+	(up-modify-goal temporary-goal2 c:* 25); (both)
+	(up-modify-goal temporary-goal2 c:+ 50); 40
+)
+(defrule
+	(true)
+=>
+;	(up-chat-data-to-player my-player-number "l-hunters2: %d" g: temporary-goal3)
+	(up-modify-goal temporary-goal3 c:* l-hunters1)
+	(up-modify-goal temporary-goal3 c:/ l-hunters2)
+	(up-modify-goal temporary-goal3 c:min 9); 8
+	(up-modify-goal temporary-goal3 c:max 1); irrelevant
+;	(up-chat-data-to-player my-player-number "l-hunters3: %d" g: temporary-goal3)
+	(up-modify-goal temporary-goal3 c:* 4)
+	(up-modify-goal temporary-goal2 g:* temporary-goal3)
+	(up-modify-goal temporary-goal2 c:/ 100)
+	(up-modify-goal temporary-goal2 c:min 200)
+;	(up-chat-data-to-player my-player-number "Boar-amount threshold: %d" g: temporary-goal2)
+	(up-get-fact building-type-count town-center temporary-goal3)
+	(up-modify-goal temporary-goal4 g:= loom-dist)
+	(up-full-reset-search))
+
+(defrule
+(or	(not	(up-set-target-by-id g: current-boar))
+	(and	(up-compare-goal current-boar != -1); test
+;		(or
+	(dropsite-min-distance boar-hunting >= 35); live-boar
+;			(up-compare-goal boar-distance >= 35)
+));)
+=>
+;	(chat-to-player my-player-number "No valid boar in range.")
+;	(chat-to-player every-ally "No valid boar in range.")
+	(set-goal current-boar -1)
+	(set-goal found-boar -1)
+;	(set-goal boar-lurer -1)
+;	(set-goal found-lurer -1)
+	(set-goal boar-distance -1)
+	(disable-timer boar-reset-timer))
+(defrule
+	(up-set-target-by-id g: current-boar)
+(or	(up-object-data object-data-carry g:< temporary-goal2)
+	(and	(timer-triggered boar-reset-timer)
+		(and	(up-object-data object-data-status == 2)
+			(and	(dropsite-min-distance live-boar > 8); boar-kill-dist; 6
+				(up-object-data object-data-action != actionid-attack)))))
+=>
+;	(chat-to-player my-player-number "Low food or reset.")
+;	(chat-to-player every-ally "Low food or reset.")
+	(set-goal current-boar -1)
+	(set-goal found-boar -1)
+;	(set-goal boar-lurer -1)
+;	(set-goal found-lurer -1)
+	(set-goal boar-distance -1)
+	(disable-timer boar-reset-timer))
+
+(defrule; 10
+(or	(goal boar-type -1)
+(or	;(and
+	(up-compare-goal current-boar != -1)
+	;	(or	(up-timer-status FDrop != timer-triggered); test
+	;		(or	(up-timer-status boar-reset-timer == timer-running)
+	;			(up-compare-goal found-boar >= 2))))
+(or	(dropsite-min-distance live-boar >= 35)
+(or	(up-compare-goal villagercount g:< minBoar);	(unit-type-count villager < 8); 10
+;(or	(game-time < 10); test
+;(or	(unit-type-count villager-food < 2); test
+	(strategic-number sn-enable-boar-hunting < 1))))););)
+=>
+	(up-jump-rule 4))
+(defrule; end neg jump
+	(goal current-boar -1)
+	(up-compare-goal boar-type != -1)
+=>
+;	(up-modify-sn sn-minimum-number-hunters c:max 1) ; For now .
+;	(chat-to-player my-player-number "Find boar.")
+	(up-find-local c: town-center c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object point-x)
+	(up-modify-goal point-x c:- 1)
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 g: temporary-goal4); 7 | 34
+	(up-find-remote g: boar-type c: 8)
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(up-remove-objects search-remote object-data-index >= 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal remote-total <= 0)
+	(up-compare-goal temporary-goal g:< temporary-goal3)
+	(goal current-boar -1)
+	(up-compare-goal boar-type != -1)
+=>
+;	(up-send-flare point-x)
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-reset-filters)
+	(up-find-local c: town-center g: temporary-goal)
+	(up-reset-search 0 1 1 1)
+	(up-jump-rule -2)); end jump
+(defrule
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal remote-total <= 0)
+	(up-compare-goal temporary-goal4 g:<= loom-dist)
+	(up-compare-goal temporary-goal4 <= 33)
+	(goal current-boar -1)
+	(up-compare-goal boar-type != -1)
+=>
+	(up-modify-goal temporary-goal4 c:max 33)
+	(up-modify-goal temporary-goal4 c:+ 1)
+;	(up-chat-data-to-player my-player-number "Search radius: %d" g: temporary-goal4)
+	(set-goal temporary-goal 1)
+	(up-full-reset-search)
+	(up-jump-rule -3)); end jump
+(defrule
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal remote-total >= 1)
+	(goal current-boar -1)
+	(up-compare-goal boar-type != -1)
+=>
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-id current-boar)
+	(up-get-point position-object object-point-x)
+	(up-get-point-distance point-x object-point-x boar-distance)
+;	(up-chat-data-to-player my-player-number "Distance to boar: %d" g: boar-distance)
+;	(chat-to-player my-player-number "Selected boar.1")
+	(set-goal found-boar 1))
+
+
+(defrule
+;	(goal found-boar 1)
+	(up-compare-goal current-boar != -1)
+=>
+;	(up-modify-goal found-boar c:max 1);	(set-goal found-boar 1)
+	(up-full-reset-search)
+	(up-set-target-by-id g: current-boar))
+(defrule; 15
+	(goal found-boar 1)
+	(up-compare-goal current-boar != -1)
+	(up-compare-goal boar-distance < 64)
+;	(up-compare-goal remote-total >= 1); test
+	(up-set-target-by-id g: current-boar)
+	(up-object-data object-data-status == 2)
+	(up-object-data object-data-action != actionid-attack)
+=>
+	(up-full-reset-search)
+;	(chat-to-player my-player-number "Selected boar.2")
+;	(up-chat-data-to-all "boar-dist3: %d" g: boar-distance)
+	(set-goal found-lurer 0)
+	(set-goal boar-lurer -1)
+	(up-set-target-by-id g: current-boar)
+	(up-get-point position-object saved-point-x)
+	(up-set-target-point saved-point-x)
+;	(up-send-flare saved-point-x)
+;	(up-send-flare point-x)
+	(set-goal search-action search-action-boar-hunting))
+(defrule
+	(goal search-action search-action-boar-hunting)
+	(goal found-boar 1)
+	(up-compare-goal current-boar != -1)
+(or	(and	(up-point-distance point-x saved-point-x <= 34)
+		(up-point-distance point-x saved-point-x g:> loom-dist))
+	(and	(dropsite-min-distance live-boar <= 34)
+		(dropsite-min-distance live-boar g:> loom-dist)))
+	(up-compare-flag escrow-flag != 64)
+	(up-compare-goal villagercounttotal g:>= minBoar)
+	(gold-amount >= 50)
+	(research-available ri-loom)
+=>
+	(up-add-research-cost c: ri-loom c: 1)
+	(up-modify-flag escrow-flag c:+ 64))
+
+
+(defrule
+(or	(up-compare-goal search-action != search-action-boar-hunting)
+(or	(up-compare-goal villagercount g:< minBoar)
+	(and	(up-research-status c: ri-loom < research-complete)
+		(and	(up-point-distance point-x saved-point-x g:> loom-dist)
+			(dropsite-min-distance live-boar g:> loom-dist)))))
+=>
+;	(set-goal found-lurer 0)
+;	(set-goal current-boar -1); test
+;	(set-goal search-action -1)
+;	(set-goal found-boar -1)
+;	(set-goal boar-lurer -1)
+	(up-jump-rule 4))
+(defrule
+	(goal search-action search-action-boar-hunting)
+=>
+	(up-full-reset-search)
+	(up-set-target-by-id g: current-boar)
+	(up-get-point position-object saved-point-x)
+	(up-set-target-point saved-point-x)
+	(up-filter-distance c: -1 c: 51)
+	(up-filter-exclude -1 actionid-attack orderid-build -1)
+	(up-find-local c: villager-class g: villagercount)
+	(up-remove-objects search-local object-data-gather-type != food))
+(defrule
+	(goal search-action search-action-boar-hunting)
+	(up-point-distance point-x saved-point-x g:> loom-dist)
+	(dropsite-min-distance live-boar g:> loom-dist)
+=>
+	(up-remove-objects search-local object-data-hitpoints < 40))
+(defrule
+	(goal search-action search-action-boar-hunting)
+=>
+	(up-remove-objects search-local object-data-hitpoints < 25)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index >= 1)
+	(up-get-search-state local-total))
+(defrule; 20
+	(goal search-action search-action-boar-hunting)
+	(up-compare-goal local-total >= 1)
+=>
+	(up-set-target-object search-local c: 0)
+;	(up-reset-search 0 0 1 1)
+	(up-get-path-distance saved-point-x 0 boar-distance)
+;	(up-chat-data-to-all "Distance to boar2: %d" g: boar-distance)
+;	(up-chat-data-to-player my-player-number "Distance to boar2: %d" g: boar-distance)
+	(set-goal found-lurer 2)); end jump
+
+(defrule
+	(goal search-action search-action-boar-hunting)
+	(goal found-lurer 2)
+	(up-compare-goal boar-distance < 64)
+;	(up-compare-goal current-boar != -1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-id boar-lurer)
+	(up-set-target-by-id g: current-boar)
+	(up-target-objects 1 action-default -1 -1)
+	(set-goal search-action -1)
+	(set-goal found-boar 2)
+	(set-goal temporary-goal 30); 15
+	(up-modify-goal temporary-goal2 g:= boar-distance)
+	(up-modify-goal temporary-goal2 c:* 125)
+	(up-modify-goal temporary-goal2 c:/ 100) 
+	(up-modify-goal temporary-goal2 c:+ 5)
+	(up-modify-goal temporary-goal g:max temporary-goal2)
+	(up-set-timer c: boar-reset-timer g: temporary-goal));	(enable-timer boar-reset-timer 30)); 15
+(defrule
+	(goal found-boar 2)
+	(up-compare-goal current-boar != -1)
+=>
+	(up-modify-goal boar-captured c:+ 1)
+;	(up-chat-data-to-player my-player-number "Target boar #%d." g: boar-captured)
+)
+
+(defrule
+(not	(up-set-target-by-id g: last-boar))
+=>
+	(set-goal last-boar -1))
+(defrule
+	(up-compare-goal current-boar != -1)
+	(up-compare-goal last-boar == -1);	(up-compare-goal last-boar g:!= current-boar)
+=>
+;	(up-chat-data-to-player my-player-number "Last boar #%d." g: last-boar)
+	(up-modify-goal last-boar g:= current-boar))
+
+
+
+(defrule
+	(goal found-boar 2)
+=>
+	(set-goal lure-distance 12); 13
+	(set-goal lure-support 1)
+	(up-modify-goal temporary-goal3 g:= lure-support)
+	(set-goal local-total 0)
+	(set-goal local-last 0))
+(defrule
+	(goal found-boar 3)
+=>
+	(set-goal lure-distance boar-kill-dist)
+	(set-goal lure-support 7)
+	(up-modify-goal temporary-goal3 g:= lure-support)
+	(set-goal local-total 0)
+	(set-goal local-last 0))
+
+(defrule; 25
+	(up-compare-goal found-boar >= 2)
+	(dropsite-min-distance live-boar g:<= lure-distance)
+	(up-compare-goal current-boar != -1)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal 0)
+;;	(up-copy-point point-x position-self-x)
+;	(up-set-target-point point-x)
+	(up-set-target-by-id g: current-boar)
+	(up-get-point position-object saved-point-x)
+	(up-set-target-point saved-point-x)
+;	(up-send-flare saved-point-x)
+	(set-goal search-action search-action-hunt-support))
+(defrule
+	(goal search-action search-action-hunt-support)
+	(up-compare-goal current-boar != -1)
+=>
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 51)
+	(up-filter-exclude -1 actionid-attack orderid-build -1)
+	(up-find-local c: villager-class g: villagercount)
+	(up-remove-objects search-local object-data-gather-type != food)
+;	(up-remove-objects search-local object-data-target == tree-class)
+;	(up-remove-objects search-local object-data-target == gold-mine-class)
+;	(up-remove-objects search-local object-data-target == stone-mine-class)
+	(up-remove-objects search-local object-data-target-id g:== current-boar)
+	(up-remove-objects search-local object-data-hitpoints < 9)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index g:>= lure-support)
+	(up-get-search-state local-total))
+;(defrule
+;	(up-compare-goal found-boar >= 2)
+;	(goal search-action search-action-hunt-support)
+;	(up-compare-goal local-total g:< lure-support)
+;	(up-compare-goal local-total < 2); 3
+;(or	(goal found-boar 3)
+;	(up-compare-goal local-total < 1))
+;	(up-compare-goal current-boar != -1)
+;=>
+;;	(chat-to-player my-player-number "Request emergency support.")
+;;	(up-filter-distance c: -1 c: 20)
+;;	(chat-local-to-self "test2")
+;	(up-modify-goal lure-support c:max 1); 1
+;	(up-modify-goal lure-support c:min 2); 2
+;	(up-find-local c: villager-class g: lure-support)
+;	(up-get-search-state local-total))
+(defrule
+	(goal found-boar 2)
+	(goal search-action search-action-hunt-support)
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal current-boar != -1)
+=>
+;	(chat-to-player my-player-number "Request support.")
+	(up-set-target-by-id g: current-boar)
+	(up-gather-inside c: town-center c: -1)
+	(up-target-objects 1 action-default -1 -1) 
+	(set-goal search-action -1)
+	(set-goal found-boar 3))
+(defrule
+	(goal found-boar 3)
+	(goal search-action search-action-hunt-support)
+	(up-compare-goal local-total >= 2); 5
+	(up-compare-goal current-boar != -1)
+=>
+;	(chat-to-player my-player-number "Capture boar.")
+	(up-set-target-by-id g: current-boar)
+	(up-gather-inside c: town-center c: -1)
+	(up-target-objects 1 action-default -1 -1)
+	(set-goal search-action -1)
+	(set-goal found-boar -1)
+	(set-goal boar-lurer -1)
+	(enable-timer boar-reset-timer 45)); 60
+
+(defrule
+(or	(and	(cc-players-unit-type-count 0 wolf <= 0)
+		(cc-players-unit-type-count 0 jaguar <= 0))
+(or	(up-compare-goal boar-lurer == -1)
+	(up-compare-goal current-boar == -1)))
+=>
+	(up-jump-rule 3))
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-add-object-by-id search-remote g: current-boar)
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-target-id temporary-goal)
+	(up-full-reset-search)
+	(up-set-target-by-id g: boar-lurer)
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-full-reset-search)
+	(up-filter-distance c: 2 c: 20)
+	(up-filter-include -1 actionid-attack -1 -1)
+	(up-find-remote c: wolf c: 1)
+	(up-find-remote c: jaguar c: 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal remote-total >= 1)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-target-id g:== boar-lurer)
+	(up-compare-goal temporary-goal g:!= boar-lurer)
+=>
+	(up-full-reset-search)
+	(set-goal boar-lurer -1)
+	(set-goal found-lurer -1)
+	(set-goal found-boar 1);
+	(up-add-object-by-id search-local g: boar-lurer)
+	(up-target-point 0 action-stop -1 -1)
+;	(chat-local-to-self "Villager saved.")
+	(up-get-timer c: boar-reset-timer temporary-goal)
+	(up-modify-goal temporary-goal c:max 8)
+	(up-set-timer c: boar-reset-timer g: temporary-goal)
+	(up-jump-rule 1))
+(defrule
+	(up-compare-goal remote-total >= 1)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-target-id g:== boar-lurer)
+	(up-compare-goal temporary-goal g:== boar-lurer)
+=>
+	(up-full-reset-search)
+	(set-goal boar-lurer -1)
+	(set-goal found-lurer -1)
+	(set-goal found-boar 1);
+	(up-add-object-by-id search-local g: boar-lurer)
+	(up-set-target-by-id g: position-self-id)
+	(up-target-objects 0 action-garrison -1 -1)
+;	(chat-local-to-self "Running.")
+	(up-get-timer c: boar-reset-timer temporary-goal)
+	(up-modify-goal temporary-goal c:max 8)
+	(up-set-timer c: boar-reset-timer g: temporary-goal)); end mini jumps; End big jump
+
+(defrule; 29
+(or	(dropsite-min-distance live-boar >= 35)
+(or	(not	(up-set-target-by-id g: current-boar))
+	(and	(up-set-target-by-id g: current-boar)
+		(or	(up-object-data object-data-status != 2)
+			(up-object-data object-data-action != actionid-attack)))))
+=>
+	(up-gather-inside c: town-center c: 0))
+
+
+
+
+
+
+
+
+
+#load-if-not-defined DEATH-MATCH
+(defrule
+(or	(up-compare-goal deer-luring >= 3)
+	(and	(goal drushmicro yes)
+		(players-building-count any-enemy <= 0)))
+=>
+	(up-jump-rule 15))
+(defrule; test
+	(game-time s:< sn-home-exploration-time)
+(or	(or	(not	(resource-found wood))
+		(and	(cc-players-unit-type-count 0 gold-mine > 0)
+			(not	(resource-found gold))))
+	;(and	(game-time < home-exploration-time); 390 ; 420|480
+		(or	(up-compare-goal totalsheep < 8)
+			(up-compare-goal totalboars < 2)));)
+=>
+	(up-jump-rule 14)
+	(set-goal deer-luring 0))
+(defrule
+(or	(unit-type-count villager <= 0)
+(or	(and	(death-match-game)
+		(players-building-count any-enemy < 1))
+	(and	(game-time > 330)
+		(and	(players-building-count any-enemy < 1)
+			(and	(goal position-goal flank)
+				(up-compare-goal strategy-type < feudal-war))))))
+=>
+	(up-jump-rule 13)
+	(set-goal deer-luring 0))
+(defrule
+(or	(unit-type-count scout-unit <= 0)
+(or	(building-type-count town-center <= 0)
+	(and	(game-time > 240)
+		(and	(up-gaia-type-count c: ocean-fish-class <= 0)
+			(and	(up-gaia-type-count c: shore-fish-class <= 0)
+				(and	(building-type-count-total dock <= 0)
+					(goal map water)))))))
+=>
+	(up-jump-rule 12)
+	(set-goal deer-luring 0))
+(defrule
+	(game-time s:>= sn-home-exploration-time);	(game-time >= 540); finding the enemy etc
+	(players-building-count any-enemy <= 0)
+(or	(game-time >= 900)
+(or	(and	(game-time >= 720)
+		(and	(up-timer-status scout != timer-running)
+			(up-timer-status scout != timer-triggered)))
+	(and	(goal position-goal flank)
+		(up-compare-goal strategy-type < castle-war))))
+=>
+	(up-jump-rule 11)
+	(set-goal deer-luring 0);	(set-goal deer-luring 3)
+)
+(defrule
+	(goal current-deer -1)
+	(dropsite-min-distance deer-hunting < 30)
+=>
+	(up-set-target-point position-self-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 30); s: hunt-max
+;	(up-filter-status c: status-ready c: list-active)
+	(up-find-status-remote c: deer c: 12)
+	(up-clean-search search-remote object-data-distance search-order-asc); -precise
+	(up-remove-objects search-remote object-data-index >= 1)
+	(up-get-search-state local-total))
+(defrule
+	(goal remote-total 1)
+	(goal current-deer -1)
+	(dropsite-min-distance deer-hunting < 30)
+=>
+;	(chat-local-to-self "Found deer.")
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-id current-deer)
+	(up-get-point position-object object-point-x)
+	(up-get-point-distance position-self-x object-point-x deer-distance)
+	(set-goal deer-luring 1))
+(defrule
+	(goal deer-luring 1);	(up-compare-goal deer-luring != 3)
+(or	(and	(goal remote-total 0)
+		(goal current-deer -1))
+(or	(and	(up-compare-goal deer-distance >= 16)
+		(or	(building-type-count wall-class >= 1); fortress/arena etc.
+			(building-type-count gate >= 1)))
+	(strategic-number sn-preferred-mill-placement == 1))); milling deer anyway
+=>
+;	(chat-local-to-self "Deer luring disabled.")
+	(set-goal deer-luring 3)
+	(enable-timer scout 2)
+;	(chat-local-to-self "Scouting timer enabled.")
+;	(up-send-scout group-type-land-explore scouting-type)
+)
+(defrule
+	(up-compare-goal deer-luring != 3);	(goal deer-luring 1)
+(or	(game-time >= 1200); 1800; 1500
+(or	(and	(up-compare-goal deer-distance s:> sn-maximum-hunt-drop-distance)
+		(game-time >= 1080)); 1500; 1200
+	(and	(building-type-count-total mill >= 2)
+		(game-time >= 900))))
+(or	(game-time s:>= sn-home-exploration-time)
+	(up-timer-status scout != timer-disabled))
+=>
+;	(chat-local-to-self "Deer luring disabled.2")
+	(set-goal deer-luring 3)
+	(enable-timer scout 2)
+;	(chat-local-to-self "Scouting timer enabled.")
+	(up-jump-rule 7)
+)
+(defrule
+	(goal deer-luring 1);	(up-compare-goal deer-luring != 3)
+(or	(dropsite-min-distance deer-hunting >= 31); live-deer
+	(up-compare-goal deer-distance >= 31))
+=>
+;	(chat-local-to-self "Deer luring disabled.3")
+	(set-goal deer-luring 3)
+	(enable-timer scout 2)
+;	(chat-local-to-self "Scouting timer enabled.")
+	(up-jump-rule 6)
+)
+(defrule
+(or	(not	(up-set-target-by-id g: current-deer))
+	(and	(up-set-target-by-id g: current-deer)
+		(up-object-data object-data-status != 2)))
+	(up-compare-goal current-deer != -1)
+=>
+;	(chat-to-player my-player-number "No valid deer in range.")
+;	(chat-to-player every-ally "No valid deer in range.")
+	(set-goal current-deer -1)
+	(set-goal deer-distance -1)
+	(set-goal deer-luring 0)
+	(disable-timer deer-reset-timer)); end mini-jump
+(defrule
+	(goal deer-luring 1)
+	(up-set-target-by-id g: current-deer)
+	(up-compare-goal current-deer != -1)
+=>
+	(up-full-reset-search)
+	(up-find-local c: scout-unit c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-set-target-by-id g: current-deer)
+	(up-get-point position-object object-point-x)
+	(up-get-point-distance position-self-x object-point-x deer-distance)
+	(up-lerp-tiles object-point-x position-self-x c: -1))
+(defrule
+;(or
+	(goal deer-luring 3); just to reset things
+;(or	(up-compare-goal object-point-x <= 0)
+;(or	(up-compare-goal object-point-y <= 0)
+;(or	(up-compare-goal object-point-x g:>= map-size)
+;	(up-compare-goal object-point-y g:>= map-size)))))
+	(up-compare-goal current-deer != -1)
+=>
+;	(chat-to-player my-player-number "Deer at the edge of the map.")
+;	(chat-to-player every-ally "Deer at the edge of the map.")
+	(set-goal current-deer -1)
+	(set-goal deer-distance -1)
+	(disable-timer deer-reset-timer)
+	(up-jump-rule 3))
+(defrule
+	(goal deer-luring 1)
+	(up-set-target-by-id g: current-deer)
+	(up-compare-goal current-deer != -1)
+=>
+	(up-set-target-point object-point-x)
+	(up-target-point 0 action-move -1 -1))
+(defrule
+	(goal deer-luring 1)
+	(up-set-target-by-id g: current-deer)
+	(up-compare-goal current-deer != -1)
+	(up-timer-status deer-reset-timer != timer-running)
+	(dropsite-min-distance live-boar >= 7)
+	(up-compare-goal deer-distance < 5)
+=>
+	(up-set-target-point position-self-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 17)
+	(up-filter-exclude -1 actionid-attack orderid-build -1)
+	(up-find-local c: villager-class g: villagercount)
+	(up-remove-objects search-local object-data-gather-type != food)
+;	(up-remove-objects search-local object-data-target == tree-class)
+;	(up-remove-objects search-local object-data-target == gold-mine-class)
+;	(up-remove-objects search-local object-data-target == stone-mine-class)
+	(up-remove-objects search-local object-data-target-id g:== current-deer)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index >= 3)
+	(up-get-search-state local-total))
+(defrule
+	(goal deer-luring 1)
+	(up-set-target-by-id g: current-deer)
+	(up-compare-goal current-deer != -1)
+	(up-timer-status deer-reset-timer != timer-running)
+	(dropsite-min-distance live-boar >= 7)
+	(up-compare-goal deer-distance < 5)
+=>
+;	(chat-local-to-self "Target deer.")
+	(up-set-target-by-id g: current-deer)
+	(up-target-objects 1 action-default -1 -1)
+	(set-goal current-deer -1)
+	(set-goal deer-distance -1)
+	(enable-timer deer-reset-timer 9)); end jumps
+#end-if
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7))

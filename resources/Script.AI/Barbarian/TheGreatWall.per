@@ -1,0 +1,2413 @@
+#load-if-defined KOREAN-CIV
+#load-if-defined BLACK-FOREST-MAP
+
+; ================= ECO
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(up-compare-goal TSA >= 1)
+=>
+	(up-delete-objects c: wall-class c: 32767)
+	(up-delete-objects c: gate-class c: 32767)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != wall-boom)
+=>
+	(up-jump-rule 44)
+)
+
+(defrule
+	(game-time > 65)
+=>
+	(set-goal gl-strategy wall-boom)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-strategic-number sn-home-exploration-time 600)
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 29)
+	(set-strategic-number sn-wood-gatherer-percentage 51)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+	(set-strategic-number sn-skip-first-mining-camp 0)
+	(set-goal gl-strategy-type FC)
+	(set-goal gl-deer-luring -2)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(building-type-count-total blacksmith == 0)
+	(building-type-count-total market == 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 15)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total market > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-gold-gatherer-percentage 9)
+	(set-strategic-number sn-stone-gatherer-percentage 8)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total market > 0)
+	(gold-amount > 200)
+	(strategic-number sn-gold-gatherer-percentage > 3)
+=>
+	(set-strategic-number sn-gold-gatherer-percentage 3)
+	(up-retask-gatherers gold c: 6)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 25)
+	(set-strategic-number sn-wood-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+	(set-goal TC 1)
+)
+
+(defrule
+	(current-age-time > 20)
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 6)
+)
+
+(defrule
+	(current-age-time > 240)
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal-up)
+	(goal gl-strategy-control defences-needed)
+	(building-type-count-total castle == 0)
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 23)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal-up)
+	(or	(current-age-time > 120)
+		(goal gl-strategy-control defences-needed))
+	(current-age == castle-age)
+=>
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(goal gl-strategy-control YES)
+	(or	(players-unit-type-count focus-player battering-ram-line > 0)
+		(or	(up-compare-goal gl-enemy-onager-count > 0)
+			(or	(players-building-type-count focus-player siege-workshop > 0)
+				(and	(game-time > 1460)
+					(or	(up-compare-goal gl-enemy-units-in-town > 2)
+						(goal gl-patrol-defence patrol-on))))))
+=>
+	(set-goal gl-strategy-control defences-needed)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(players-military-population focus-player > 12)
+		(or	(players-unit-type-count focus-player battering-ram-line > 0)
+			(up-compare-goal gl-enemy-onager-count > 0)))
+	(unit-type-count-total mangonel-line < 1)
+=>
+	(up-modify-escrow wood c:max 200)
+	(up-modify-escrow gold c:max 135)
+	(set-goal gl-panic-xbow-counter YES)
+)
+
+(defrule
+	(or	(unit-type-count-total monk < 6)
+		(or	(and	(up-compare-goal gl-enemy-heavy-cavalry-count > 3)
+				(unit-type-count-total monk-set < 11))
+			(up-compare-goal gl-enemy-heavy-cavalry-count > 7)))
+	(unit-type-count-total monk-set < 15)
+	(can-train monk)
+=>
+	(train monk)
+	(set-strategic-number sn-monk-trained 1)
+)
+
+; ============ RESEARCHES
+
+(defrule
+	(current-age == dark-age)
+	(goal gl-strategy wall-boom)
+	(food-amount > 420)
+	(not	(can-research feudal-age))
+	(up-compare-goal gl-my-villager-count > 24)
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+	(enable-timer 2 22)
+)
+
+(defrule
+	(or	(can-research-with-escrow ri-horse-collar)
+		(or	(can-research-with-escrow ri-heavy-plow)
+			(can-research-with-escrow ri-double-bit-axe)))
+=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-horse-collar)
+	(research ri-heavy-plow)
+	(research ri-double-bit-axe)
+)
+
+; ============ BUILDINGS
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(building-type-count-total mining-camp < 3)
+	(dropsite-min-distance stone > 3)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+(defrule
+	(strategic-number sn-camp-max-distance > 23)
+=>
+	(set-strategic-number sn-camp-max-distance 23)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal)
+	(strategic-number sn-maximum-town-size < 41)
+=>
+	(set-strategic-number sn-camp-max-distance 41)
+)
+
+(defrule
+	(or	(and	(current-age == feudal-age)
+			(up-compare-goal gl-current-age >= gv-feudal))
+		(and	(current-age-time > 30)
+			(up-compare-goal gl-current-age >= gv-castle)))
+	(building-type-count-total farm g:< gl-max-farm-count)
+	(or	(research-completed ri-horse-collar)
+		(building-type-count-total farm < 10))
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(current-age-time > 16)
+	(dropsite-min-distance stone < 4)
+	(building-type-count-total market < 1)
+=>
+	(up-modify-goal gl-market-build-priority c:max 800)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+=>
+	(set-goal gl-strategy-control RESET)
+	(set-goal gl-disable-mining-upgrades YES)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control RESET)
+=>
+	(set-goal 490 20)
+	(set-goal 492 40)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy-control RESET)
+	(up-compare-goal 490 > -20)
+=>
+	(up-copy-point gl-point-x gl-position-center-x)
+	(up-copy-point gl-saved-point-x gl-position-center-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: 490)
+	(up-lerp-tiles gl-saved-point-x gl-position-self-x g: 490)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 30)
+	(up-cross-tiles gl-saved-point-x gl-position-self-x c: -30)
+	(up-modify-goal 490 c:- 1)
+	(set-goal 491 0)
+)
+
+(defrule
+	(goal gl-strategy-control RESET)
+	(up-compare-goal 490 > -20)
+	(nor	(up-point-contains gl-point-x c: tree-class)
+		(up-point-contains gl-point-x c: gold-mine))
+	(nor	(up-point-contains gl-point-x c: stone-mine)
+		(up-point-contains gl-point-x c: forage-bush))
+	(not	(up-point-contains gl-point-x c: relic))
+=>
+	(up-modify-goal 491 c:+ 1)
+)
+
+(defrule
+	(goal gl-strategy-control RESET)
+	(up-compare-goal 490 > -20)
+	(up-compare-goal gl-point-x g:!= gl-saved-point-x)
+=>
+	(up-lerp-tiles gl-point-x gl-saved-point-x c: 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(goal gl-strategy-control RESET)
+	(up-compare-goal 490 > -20)
+	(up-compare-goal 492 g:> 491)
+=>
+	(up-modify-goal 492 g:= 491)
+	(up-copy-point gl-cut-point-x gl-saved-point-x)
+	(up-copy-point gl-point-x gl-position-center-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: 490)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 20)
+	(up-copy-point gl-second-cut-point-x gl-point-x)
+)
+
+(defrule
+	(goal gl-strategy-control RESET)
+	(up-compare-goal 490 > -20)
+=>
+	(up-jump-rule -5)
+)
+
+(defrule
+	(goal gl-strategy-control RESET)
+=>
+	(set-goal 490 -30)
+	(up-chat-data-to-all "Smallest distance: %d" g: 492)
+	(up-send-flare gl-cut-point-x)
+	(up-send-flare gl-second-cut-point-x)
+	(set-goal gl-strategy-control YES)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-local c: villager-class c: 5)
+	(up-reset-search 0 1 0 0)
+	(up-find-local c: villager-class c: 1)
+	(up-target-point gl-cut-point-x action-move -1 -1)
+	(up-reset-search 1 1 1 1)
+	(up-find-local c: scout-unit c: 1)
+	(up-target-point gl-second-cut-point-x action-move -1 -1)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(building-type-count stone-wall > 0)
+	(or	(players-military-population focus-player > 2)
+		(building-type-count-total watch-tower < 1))
+	(building-type-count-total watch-tower < 3)
+	(up-can-build 0 c: watch-tower)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-local c: wall-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-lerp-tiles gl-point-x gl-cut-point-x c: 4)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 4)
+	(up-assign-builders c: watch-tower c: 1)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(up-set-target-object search-local c: 0)
+	(building-type-count stone-wall > 0)
+	(or	(players-military-population focus-player > 2)
+		(building-type-count-total watch-tower < 1))
+	(building-type-count-total watch-tower < 3)
+	(up-can-build 0 c: watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-set-target-point gl-point-x)
+	(up-build place-point 0 c: watch-tower)
+	(up-jump-rule 8)
+)
+
+(defrule
+	(building-type-count stone-wall > 0)
+	(up-pending-placement c: watch-tower)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-local c: wall-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-lerp-tiles gl-point-x gl-cut-point-x c: 4)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 4)
+	(up-set-target-point gl-point-x)
+	(up-jump-rule 7)
+)
+
+(defrule
+	(or	(not	(goal gl-strategy-control YES))
+		(building-type-count-total stone-wall >= 40))
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(up-pending-objects c: wall-class < 1)
+=>
+	(up-copy-point gl-point-x gl-second-cut-point-x)
+	(up-set-target-point gl-point-x)
+	(set-strategic-number sn-placement-zone-size 1)
+	(set-goal temporary-goal 0)
+	(set-goal temporary-goal2 250)
+)
+
+(defrule
+	(up-compare-goal gl-point-x g:!= gl-cut-point-x)
+	(or	(up-point-terrain gl-point-x == terrain-water)
+		(or	(up-point-terrain gl-point-x == terrain-water-deep)
+			(or	(up-point-terrain gl-point-x == terrain-water-medium)
+				(or	(up-point-terrain gl-point-x == terrain-water-beach)
+					(up-point-terrain gl-point-x == terrain-ice-beach)))))
+	(up-compare-goal gl-point-x g:!= gl-cut-point-x)
+=>
+	(up-lerp-tiles gl-point-x gl-cut-point-x c: 1)
+	(up-set-target-point gl-point-x)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(goal temporary-goal 0)
+	(up-pending-objects c: wall-class > 0)
+=>
+	(enable-timer 16 2)
+)
+
+(defrule
+	(goal temporary-goal 0)
+	(or	(goal gl-strategy-control YES)
+		(building-type-count-total stone-wall < 40))
+	(up-timer-status 16 == timer-running)
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(nor	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: tree-class))
+	(nor	(up-point-contains gl-point-x c: stone-mine)
+		(up-point-contains gl-point-x c: gold-mine))
+	(nor	(up-point-contains gl-point-x c: building-class)
+		(up-point-contains gl-point-x c: relic))
+	(up-pending-objects c: stone-wall < 1)
+	(up-can-build 0 c: stone-wall)
+=>
+	(up-lerp-tiles gl-point-x gl-cut-point-x c: -1)
+	(up-set-target-point gl-point-x)
+	(up-build place-point 0 c: stone-wall)
+	(up-jump-rule 2)
+)
+
+(defrule
+	(up-compare-goal gl-point-x g:!= gl-cut-point-x)
+	(up-pending-objects c: stone-wall < 1)
+=>
+	(up-lerp-tiles gl-point-x gl-cut-point-x c: 1)
+	(up-set-target-point gl-point-x)
+	(set-goal temporary-goal 1)
+	(up-jump-rule -5)
+)
+
+(defrule
+	(up-pending-placement c: stone-wall)
+=>
+	(up-lerp-tiles gl-point-x gl-cut-point-x c: -1)
+	(up-set-target-point gl-point-x)
+	(set-goal temporary-goal 0)
+)
+
+(defrule
+	(goal gl-strategy-control defences-needed)
+	(building-type-count-total monastery < 2)
+=>
+	(up-modify-goal gl-monastery-build-priority c:max 800)
+)
+
+(defrule
+	(or	(goal gl-strategy-control defences-needed)
+		(building-type-count-total town-center > 3))
+	(building-type-count-total siege-workshop < 1)
+=>
+	(up-modify-goal gl-workshop-build-priority c:max 800)
+)
+
+(defrule
+	(goal gl-strategy-control defences-needed)
+	(unit-type-count-total mangonel-line < 1)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+
+(defrule
+	(goal gl-strategy-control defences-needed)
+	(unit-type-count-total scorpion-line < 4)
+	(can-train scorpion-line)
+=>
+	(train scorpion-line)
+)
+#end-if
+#end-if
+
+; ================ THE FORWARD
+
+(defrule
+	(up-compare-goal gl-strategy != forward)
+=>
+	(up-jump-rule 22)
+)
+
+(defrule
+	(or	(players-building-count target-player == 0)
+		(up-compare-goal gl-target-player-distance > 90))
+	(goal gl-current-age gv-dark)
+	(food-amount >= 500)
+	(up-compare-goal gl-my-villager-count-total >= forward-villagers)
+=>
+	(set-goal gl-feudal-archery archer-skirm)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy flush)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 62)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(building-type-count-total archery-range > 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-wood-gatherer-percentage 53)
+	(set-strategic-number sn-allow-resource-spending 1)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(building-type-count-total archery-range > 1)
+	(building-type-count-total mining-camp > 0)
+	(dropsite-min-distance stone < 5)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(food-amount > 500)
+	(research-available castle-age)
+	(building-type-count-total archery-range > 1)
+	(building-type-count-total mining-camp > 0)
+	(dropsite-min-distance stone < 5)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 42)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-skip-first-mining-camp 0)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(not	(building-available archery-range))
+	(building-type-count-total barracks < 1)
+	(can-build barracks)
+=>
+	(set-strategic-number sn-placement-zone-size 5)
+	(up-get-point position-target gl-point-x)
+	(up-get-point position-self gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x c: 14)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: barracks c: 4)
+	(up-build place-point 0 c: barracks)
+	(set-strategic-number sn-number-explore-groups 0)
+	(set-strategic-number sn-total-number-explorers 0)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(not	(building-available archery-range))
+	(building-type-count-total barracks < 1)
+	(can-build barracks)
+=>
+	(up-reset-scouts)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-local c: scout-unit c: 1)
+	(up-lerp-tiles gl-point-x gl-saved-point-x c: 4)
+	(up-target-point gl-point-x action-move -1 defensive)
+)
+
+(defrule
+	(building-type-count barracks > 0)
+	(up-pending-objects c: archery-range < 1)
+	(up-pending-objects c: watch-tower < 1)
+	(nand	(can-build archery-range)
+		(building-type-count archery-range < 2))
+	(up-timer-status 7 == timer-disabled)
+	(game-time < 900)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-set-target-point gl-position-self-x)
+	(up-find-local c: barracks c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point-x)
+)
+
+(defrule
+	(building-type-count barracks > 0)
+	(up-pending-objects c: archery-range < 1)
+	(up-pending-objects c: watch-tower < 1)
+	(nand	(can-build archery-range)
+		(building-type-count archery-range < 2))
+	(up-timer-status 7 == timer-disabled)
+	(game-time < 900)
+=>
+	(up-filter-distance c: 35 c: -1)
+	(up-find-local c: villager-class c: 4)
+	(up-target-point gl-point-x action-move -1 -1)
+)
+
+(defrule
+	(or	(building-type-count-total archery-range < 2)
+		(up-compare-goal gl-my-villager-count-total > 40))
+	(building-type-count-total archery-range < 4)
+	(can-build archery-range)
+=>
+	(up-assign-builders c: archery-range c: 3)
+	(set-strategic-number sn-placement-zone-size 5)
+	(up-get-point position-target gl-point-x)
+	(up-get-point position-self gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x c: 10)
+	(up-set-target-point gl-point-x)
+	(up-build place-point 0 c: archery-range)
+)
+
+(defrule
+	(up-compare-goal gl-my-villager-count-total > 40)
+	(or	(building-type-count-total archery-range < 3)
+		(up-compare-goal gl-my-villager-count-total > 47))
+	(or	(building-type-count-total archery-range < 4)
+		(up-compare-goal gl-my-villager-count-total > 60))
+	(building-type-count-total archery-range < 6)
+	(can-build archery-range)
+=>
+	(up-assign-builders c: archery-range c: 1)
+	(set-strategic-number sn-placement-zone-size 5)
+	(up-get-point position-target gl-point-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 10)
+	(up-set-target-point gl-point-x)
+	(up-build place-point 0 c: archery-range)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(goal MILITARY 1)
+	(up-compare-goal gl-skirmisher-count-total > 8)
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar)
+)
+
+(defrule
+	(food-amount >= 75)
+	(or	(up-compare-goal gl-enemy-cavalry-count > 1)
+		(or	(players-building-type-count target-player stable > 0)
+			(players-unit-type-count target-player knight-line > 0)))
+	(unit-type-count-total spearman-line < 12)
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+
+(defrule
+	(food-amount >= 75)
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+
+(defrule
+	(up-pending-placement c: watch-tower)
+=>
+	(up-get-point position-target gl-point-x)
+	(up-get-point position-self gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x c: 6)
+	(up-set-target-point gl-point-x)
+	(set-strategic-number sn-placement-fail-delta -1)
+)
+
+(defrule
+	(or	(up-compare-goal gl-skirmisher-count-total > 1)
+		(and	(building-type-count archery-range > 0)
+			(stone-amount == 200)))
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 6)
+	(up-get-point position-target gl-point-x)
+	(up-get-point position-self gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x c: 6)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(building-type-count watch-tower > 0)
+	(up-compare-goal gl-my-villager-count-total > 40)
+	(can-build mining-camp)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-set-target-point gl-position-self-x)
+	(up-filter-distance c: -1 c: 25)
+	(up-find-remote c: stone-mine c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-build place-point 0 c: mining-camp)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count watch-tower > 0)
+=>
+	(enable-timer 7 0)
+	(disable-self)
+)
+
+(defrule
+	(soldier-count < 11)
+	(game-time < 1200)
+	(up-compare-goal threat-time < 3000)
+	(goal threat-source villager-class)
+	(up-compare-goal TSA >= 1)
+	(up-timer-status 27 != timer-running)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number c:= my-player-number)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(set-goal gl-retreat-notice 3)
+	(enable-timer 42 10)
+)
+
+(defrule
+	(soldier-count < 11)
+	(game-time < 1200)
+	(up-compare-goal threat-time < 3000)
+	(goal threat-source villager-class)
+	(up-compare-goal TSA >= 1)
+	(up-timer-status 27 != timer-running)
+=>
+	(up-find-remote c: watch-tower c: 1)
+	(up-target-objects 0 action-move -1 no-attack)
+	(enable-timer 27 15)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+; ================ TRUSH
+
+(defrule
+	(up-compare-goal gl-strategy != trush)
+=>
+	(up-jump-rule 55)
+)
+
+(defrule
+	(or	(players-building-count target-player == 0)
+		(up-compare-goal gl-target-player-distance > 90))
+	(goal gl-current-age gv-dark)
+	(food-amount >= 500)
+	(up-compare-goal gl-my-villager-count-total >= forward-villagers)
+=>
+	(set-goal gl-feudal-archery archer-skirm)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy flush)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-const scout-unit == scout-cavalry-line)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-strategy knight-rush)
+)
+
+(defrule
+	(up-compare-const scout-unit != scout-cavalry-line)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-strategy eagle-rush)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 47)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 22)
+	(up-get-fact building-type-count-total watch-tower gl-trush-tower-order)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(game-time > 840)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(current-age-time > 210)
+	(game-time > 960)
+	(building-type-count-total blacksmith > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+	(set-strategic-number sn-skip-first-mining-camp 0)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(current-age-time > 210)
+	(game-time > 960)
+	(or	(building-type-count-total stable > 0)
+		(building-type-count-total market > 0))
+	(building-type-count-total blacksmith > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 6)
+)
+
+(defrule
+	(nor	(goal gl-enemy-strategy KNIGHT-RUSH)
+		(player-valid 3))
+=>
+	(up-jump-rule 3)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(current-age-time > 210)
+	(strategic-number sn-nomad-style-start == 0)
+	(building-type-count watch-tower > 1)
+	(building-type-count-total barracks < 2)
+	(up-compare-goal gl-target-player-distance > 20)
+	(players-building-type-count target-player castle == 0)
+	(players-building-type-count target-player watch-tower < 2)
+	(game-time > 960)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-wood-gatherer-percentage 53)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+	(set-strategic-number sn-skip-first-mining-camp 1)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(current-age-time > 500)
+	(strategic-number sn-nomad-style-start == 0)
+	(building-type-count watch-tower > 1)
+	(not	(research-available castle-age))
+	(up-compare-goal gl-target-player-distance > 20)
+	(players-building-type-count target-player castle == 0)
+	(players-building-type-count target-player watch-tower < 2)
+	(game-time > 1230)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 7)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+	(set-strategic-number sn-skip-first-mining-camp 0)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(current-age-time > 500)
+	(strategic-number sn-nomad-style-start == 0)
+	(building-type-count watch-tower > 1)
+	(not	(research-available castle-age))
+	(up-compare-goal gl-target-player-distance > 20)
+	(players-building-type-count target-player castle == 0)
+	(players-building-type-count target-player watch-tower < 2)
+	(game-time > 1230)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-wood-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+	(set-strategic-number sn-skip-first-mining-camp 0)
+)
+
+(defrule
+	(goal gl-current-age gv-feudal)
+	(current-age-time > 500)
+	(game-time > 1230)
+	(gold-amount >= 200)
+	(wood-amount > 300)
+	(research-available castle-age)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 66)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+	(set-strategic-number sn-skip-first-mining-camp 0)
+)
+
+(defrule
+	(gold-amount >= 200)
+=>
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+)
+
+(defrule
+	(building-type-count-total mining-camp > 0)
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(up-compare-goal gl-my-villager-count-total > 30)
+	(building-type-count-total blacksmith < 1)
+=>
+	(up-modify-goal gl-blacksmith-build-priority c:max 800)
+)
+
+(defrule
+	(strategic-number sn-nomad-style-start == 0)
+	(or	(player-valid 3)
+		(goal gl-enemy-strategy KNIGHT-RUSH))
+	(building-type-count watch-tower > 1)
+	(building-type-count-total barracks < 2)
+	(up-compare-goal gl-target-player-distance > 20)
+	(players-building-type-count target-player castle == 0)
+	(players-building-type-count target-player watch-tower < 2)
+	(game-time > 960)
+	(building-type-count-total barracks < 2)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 800)
+)
+
+(defrule
+	(not	(building-available stable))
+	(game-time > 900)
+	(up-compare-const scout-unit == scout-cavalry-line)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total barracks < 1)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 800)
+)
+
+(defrule
+	(game-time > 900)
+	(up-compare-const scout-unit != scout-cavalry-line)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total market < 1)
+=>
+	(up-modify-goal gl-market-build-priority c:max 800)
+)
+
+(defrule
+	(game-time > 900)
+	(building-type-count-total stable < 1)
+=>
+	(up-modify-goal gl-stable-build-priority c:max 800)
+)
+
+(defrule
+	(not	(research-available castle-age))
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(up-compare-goal gl-my-villager-count-total < 100)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 2 22)
+)
+
+(defrule
+	(food-amount >= 100)
+	(or	(can-research ri-horse-collar)
+		(and	(and	(can-research ri-fletching)
+				(up-research-status c: ri-horse-collar >= research-pending))
+			(food-amount >= 125)))
+=>
+	(research ri-horse-collar)
+	(research ri-fletching)
+)
+
+(defrule
+	(food-amount >= 75)
+	(or	(up-compare-goal gl-enemy-cavalry-count > 1)
+		(or	(players-building-type-count target-player stable > 0)
+			(players-unit-type-count target-player knight-line > 0)))
+	(or	(unit-type-count-total spearman-line < 6)
+		(up-compare-goal gl-enemy-cavalry-count > 4))
+	(unit-type-count-total spearman-line < 15)
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(up-compare-goal gl-target-player-distance > 55)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-get-point position-target gl-point-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 14)
+	(up-find-local c: villager-class c: 3)
+	(up-reset-search 0 1 0 0)
+	(up-find-local c: villager-class c: 3)
+	(up-find-local c: scout-unit c: 1)
+	(enable-timer 32 80)
+	(up-target-point gl-point-x action-move -1 -1)
+	(set-goal gl-trush-notice 0)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+	(up-compare-goal gl-target-player-distance > 55)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-get-point position-target gl-point-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 14)
+	(up-set-target-point gl-position-self-x)
+	(up-filter-distance c: 35 c: -1)
+	(up-filter-exclude -1 actionid-attack -1 -1)
+	(up-find-local c: villager-class c: 3)
+	(up-target-point gl-point-x action-move -1 -1)
+)
+
+(defrule
+	(building-type-count-total watch-tower > 0)
+	(building-type-count 143 == 0)
+=>
+	(up-assign-builders c: watch-tower c: 3)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count-total watch-tower == 0)
+	(can-build watch-tower)
+	(goal gl-current-age gv-feudal)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-get-point position-target gl-point-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 10)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 6)
+	(up-find-remote c: villager-class c: 1)
+	(up-get-search-state gl-local-total)
+	(set-goal gl-remote-total 31252)
+	(up-assign-builders c: watch-tower c: 1)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count 143 > 0)
+=>
+	(up-assign-builders c: watch-tower c: 1)
+)
+
+(defrule
+	(or	(goal gl-remote-total 31252)
+		(or	(building-type-count 143 > 0)
+			(goal gl-trush-tower-order -1)))
+	(building-type-count-total watch-tower == 0)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(up-get-point position-self gl-saved-point-x)
+	(set-goal gl-trush-tiles 17)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(up-build place-point 0 c: watch-tower)
+	(set-goal gl-trush-notice 1)
+)
+
+(defrule
+	(goal gl-trush-notice 1)
+=>
+	(up-modify-goal gl-trush-tower-order c:- 1)
+)
+
+(defrule
+	(can-build watch-tower)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-local c: watch-tower c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(up-pending-placement c: watch-tower)
+=>
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 0)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 5)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 1)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 9)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 2)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 12)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 3)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 15)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 5)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 4)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 17)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 7)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 5)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 20)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 5)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 6)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 23)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 5)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(goal gl-local-total 1)
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 7)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(set-goal gl-trush-tiles 25)
+	(up-get-point position-target gl-saved-point-x)
+	(up-lerp-tiles gl-point-x gl-saved-point-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 6)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-local-total 0)
+	(up-pending-placement c: watch-tower)
+=>
+	(up-get-point position-target gl-point-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(set-strategic-number sn-placement-fail-delta -1)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 0)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles 11)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 1)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles 6)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 2)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles 1)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 3)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles -4)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 5)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 4)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles -10)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 7)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 5)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles -15)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 7)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 6)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles -19)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 7)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 7)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 3)
+	(up-get-point position-target gl-point-x)
+	(set-goal gl-trush-tiles -24)
+	(up-lerp-tiles gl-point-x gl-position-self-x g: gl-trush-tiles)
+	(up-cross-tiles gl-point-x gl-position-self-x c: 7)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 8)
+	(can-build watch-tower)
+=>
+	(up-set-placement-data my-player-number mining-camp c: 2)
+	(up-assign-builders c: watch-tower c: 1)
+	(up-build place-control 0 c: watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-units-in-town < 3)
+	(goal gl-trush-tower-order 9)
+	(can-build watch-tower)
+=>
+	(up-set-placement-data my-player-number lumber-camp c: 2)
+	(up-assign-builders c: watch-tower c: 1)
+	(up-build place-control 0 c: watch-tower)
+)
+
+(defrule
+	(or	(up-compare-goal gl-trush-tower-order > 9)
+		(up-compare-goal gl-enemy-units-in-town >= 3))
+	(can-build watch-tower)
+=>
+	(build watch-tower)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(building-type-count-total mining-camp > 0)
+	(building-type-count-total mining-camp < 3)
+	(resource-found stone)
+	(dropsite-min-distance stone > 4)
+=>
+	(build mining-camp)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(game-time > 500)
+	(dropsite-min-distance stone s:> sn-mining-camp-max-distance)
+	(dropsite-min-distance stone < 255)
+=>
+	(up-get-fact dropsite-min-distance stone temporary-goal)
+	(up-modify-sn sn-mining-camp-max-distance g:= temporary-goal)
+	(up-modify-sn sn-mining-camp-max-distance c:+ 10)
+	(up-chat-data-to-player my-player-number "Trying to locate camps further, camp-max %d" s: sn-mining-camp-max-distance)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-placement-zone-size 5)
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-set-target-point gl-position-self-x)
+	(up-filter-distance c: -1 s: sn-mining-camp-max-distance)
+	(up-find-remote c: stone-mine c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-build place-point 0 c: mining-camp)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(disable-self)
+)
+
+; ============== FORWARD TOWERING
+
+#load-if-defined DARK-AGE-START
+(defrule
+	(or	(up-compare-goal gl-current-age >= gv-feudal-up)
+		(or	(and	(up-compare-goal gl-strategy != flush)
+				(up-compare-goal gl-strategy != scrush))
+			(or	(goal TSA 0)
+				(or	(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)
+					(or	(strategic-number sn-focus-player-number s:!= sn-target-player-number)
+						(or	(game-time > 1500)
+							(up-compare-goal gl-drush-waypoint-required >= 10))))))); Indirect attack route
+=>
+	(up-jump-rule 9)
+)
+
+(defrule
+	(true)
+=>
+	(up-get-fact military-population 0 temporary-goal)
+	(up-modify-goal temporary-goal c:* 2)
+	(up-modify-goal temporary-goal c:/ 5)
+	(up-modify-goal temporary-goal c:- 2)
+)
+
+(defrule
+	(or	(and	(up-compare-goal gl-trush-tower-order < 100)
+			(up-compare-goal temporary-goal g:< gl-toughest-fought-enemy-military))
+		(or	(up-compare-goal gl-enemy-wall-count-total > 7)
+			(up-compare-goal gl-target-player-distance > 90))); Enemy may be partly walled and villager could have to walk large distance
+=>
+	(up-jump-rule 7)
+)
+
+(defrule
+	(players-building-type-count target-player lumber-camp > 0)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: lumber-camp c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 7)
+	(up-find-local c: all-units-class c: 5)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(players-building-type-count target-player lumber-camp > 0)
+	(goal gl-remote-last 1)
+	(goal gl-local-last 5)
+	(up-compare-goal gl-trush-tower-order < 100)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 5)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 4)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 1)
+	(up-build place-point 0 c: watch-tower)
+	(set-goal gl-trush-tower-order 100)
+	(chat-to-player my-player-number "Towering an enemy lumber camp")
+	(chat-to-player chat-recipient "Towering an enemy lumber camp")
+)
+
+(defrule
+	(goal gl-trush-tower-order 100)
+	(up-pending-placement c: watch-tower)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: lumber-camp c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 4)
+	(up-set-target-point gl-point-x)
+	(up-jump-rule 2)
+)
+
+(defrule
+	(or	(players-building-type-count target-player lumber-camp == 0)
+		(or	(goal gl-remote-last 0)
+			(up-compare-goal gl-local-last < 5)))
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: mining-camp c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-set-target-point gl-point-x)
+	(up-filter-distance c: -1 c: 7)
+	(up-find-local c: all-units-class c: 5)
+	(up-get-search-state gl-local-total)
+)
+
+(defrule
+	(players-building-type-count target-player mining-camp > 0)
+	(goal gl-remote-last 1)
+	(goal gl-local-last 5)
+	(up-compare-goal gl-trush-tower-order < 100)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-placement-zone-size 5)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 4)
+	(up-set-target-point gl-point-x)
+	(up-assign-builders c: watch-tower c: 1)
+	(up-build place-point 0 c: watch-tower)
+	(set-goal gl-trush-tower-order 200)
+	(chat-to-player my-player-number "Towering an enemy mining camp")
+	(chat-to-player chat-recipient "Towering an enemy mining camp")
+)
+
+(defrule
+	(goal gl-trush-tower-order 200)
+	(up-pending-placement c: watch-tower)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-remote c: mining-camp c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-point-x)
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 4)
+	(up-set-target-point gl-point-x)
+)
+
+(defrule
+	(or	(goal gl-trush-tower-order 100)
+		(goal gl-trush-tower-order 200))
+	(up-pending-objects c: watch-tower > 0)
+=>
+	(set-goal gl-trush-tower-order 201)
+)
+#end-if
+
+#load-if-defined ARENA-MAP
+(defrule
+	(or	(game-time >= 10)
+		(or	(up-compare-flag gl-flag == walls-deleted)
+			(game-time < 5)))
+=>
+	(up-jump-rule 54)
+)
+
+(defrule
+        (true)
+=>
+	(up-copy-point gl-point-x gl-position-self-x)
+	(up-copy-point gl-temporary-point-x gl-position-self-x)
+	(up-cross-tiles gl-temporary-point-x gl-position-center-x c: 1)
+	(up-add-point gl-temporary-point-x gl-point-x c: -1)
+	(up-modify-goal gl-point-y c:- 10)
+	(set-goal temporary-goal 0)
+	(set-goal temporary-goal2 0)
+	(set-goal temporary-goal6 1)
+	(set-goal gl-remote-total 0)
+	(set-goal temporary-goal7 1)
+	(set-goal gl-local-total 0)
+	(set-goal gl-remote-last -10)
+)
+
+(defrule
+        (up-compare-goal gl-temporary-point-x != 0)
+	(up-compare-goal gl-position-center-y g:< gl-position-self-y)
+=>
+	(set-goal temporary-goal 1)
+	(set-goal gl-temporary-point-y 0)
+;	(chat-to-all "Vertical wall detected (left side front).")
+)
+
+(defrule
+        (up-compare-goal gl-temporary-point-y != 0)
+	(up-compare-goal gl-position-center-x g:> gl-position-self-x)
+=>
+	(set-goal temporary-goal2 1)
+	(set-goal gl-temporary-point-x 0)
+;	(chat-to-all "Horizontal wall detected (up side front).")
+)
+
+(defrule
+        (up-compare-goal gl-temporary-point-x != 0)
+	(up-compare-goal gl-position-center-y g:> gl-position-self-y)
+=>
+	(set-goal temporary-goal 2)
+	(set-goal gl-temporary-point-y 0)
+;	(chat-to-all "Vertical wall detected (right side front).")
+)
+
+(defrule
+	(up-compare-goal gl-temporary-point-y != 0)
+	(up-compare-goal gl-position-center-x g:< gl-position-self-x)
+=>
+	(set-goal temporary-goal2 2)
+	(set-goal gl-temporary-point-x 0)
+;	(chat-to-all "Horizontal wall detected (down side front).")
+)
+
+(defrule
+        (nor	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+	(up-compare-goal gl-point-x >= 0)
+	(up-compare-goal gl-point-y >= 0)
+	(up-compare-goal gl-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-y g:< gl-max-coordinate-value)
+	(up-point-distance gl-point-x gl-position-self-x < 30)
+=>
+	(up-modify-goal gl-point-x g:+ temporary-goal6)
+	(up-modify-goal gl-point-y g:+ gl-remote-total)
+;	(up-send-flare gl-point-x)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(or	(goal temporary-goal7 1)
+		(goal temporary-goal7 2))
+	(up-compare-goal gl-remote-last < 10)
+        (nor	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+=>
+	(up-modify-goal gl-point-x g:= gl-position-self-x)
+	(up-modify-goal gl-point-y c:+ 1)
+	(up-modify-goal gl-remote-last c:+ 1)
+	(up-jump-rule -2)
+)
+
+(defrule
+	(or	(goal temporary-goal7 3)
+		(goal temporary-goal7 4))
+	(up-compare-goal gl-remote-last < 10)
+        (nor	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+=>
+	(up-modify-goal gl-point-y g:= gl-position-self-y)
+	(up-modify-goal gl-point-x c:+ 1)
+	(up-modify-goal gl-remote-last c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(goal temporary-goal7 1)
+=>
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-candidate1-point-x gl-point-x)
+	(up-copy-point gl-point-x gl-position-self-x)
+	(set-goal temporary-goal7 2)
+	(set-goal temporary-goal6 -1)
+	(set-goal gl-remote-last -10)
+	(up-modify-goal gl-point-y c:- 10)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(goal temporary-goal7 2)
+=>
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-candidate3-point-x gl-point-x)
+	(up-copy-point gl-point-x gl-position-self-x)
+	(set-goal temporary-goal7 3)
+	(set-goal temporary-goal6 0)
+	(set-goal gl-remote-total 1)
+	(set-goal gl-remote-last -10)
+	(up-modify-goal gl-point-x c:- 10)
+	(up-jump-rule -5)
+)
+
+(defrule
+	(goal temporary-goal7 3)
+=>
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-candidate2-point-x gl-point-x)
+	(up-copy-point gl-point-x gl-position-self-x)
+	(set-goal temporary-goal7 4)
+	(set-goal gl-remote-total -1)
+	(set-goal gl-remote-last -10)
+	(up-modify-goal gl-point-x c:- 10)
+	(up-jump-rule -6)
+)
+
+(defrule
+	(goal temporary-goal7 4)
+=>
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-candidate4-point-x gl-point-x)
+	(set-goal gl-point2-x 0)
+	(set-goal gl-point2-y 1)
+	(set-goal gl-object-point-x -1)
+	(set-goal gl-object-point-y 0)
+	(set-goal gl-temporary-point-x 0)
+	(set-goal gl-temporary-point-y 1)
+	(set-goal temporary-goal7 1)
+)
+
+(defrule
+	(goal temporary-goal7 1)
+	(up-compare-goal temporary-goal != 1)
+=>
+	(set-goal temporary-goal7 3)
+	(up-jump-rule 34)
+)
+
+(defrule
+	(goal temporary-goal 1)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate3-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate4-point-y)
+	(up-modify-goal gl-point-y c:+ 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate2-point-y)
+	(up-modify-goal temporary-goal3 c:+ 2)
+	(set-goal temporary-goal5 0)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(disable-self)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+        (or	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+	(up-compare-goal gl-point-x >= 0)
+	(up-compare-goal gl-point-y >= 0)
+	(up-compare-goal gl-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-y g:< gl-max-coordinate-value)
+=>
+	(up-modify-goal gl-point-x g:+ gl-point2-x)
+	(up-modify-goal gl-point-y g:+ gl-point2-y)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -1)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(goal temporary-goal5 0)
+	(up-point-contains gl-point-x c: tree-class)
+	(up-point-contains gl-saved-point-x c: tree-class)
+	(up-compare-goal temporary-goal4 < 10)
+=>
+	(up-modify-goal temporary-goal4 c:+ 1)
+;	(up-send-flare gl-saved-point-x)
+	(up-modify-goal gl-saved-point-x g:+ gl-object-point-x)
+	(up-modify-goal gl-saved-point-y g:+ gl-object-point-y)
+;	(up-chat-data-to-all "Trees in a row: %d" g: temporary-goal4)
+	(up-jump-rule -1)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(or	(goal temporary-goal7 1)
+		(goal temporary-goal7 3))
+	(goal temporary-goal5 0)
+	(goal temporary-goal4 10)
+=>
+	(set-goal temporary-goal5 1)
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-second-cut-point-x gl-point-x)
+	(up-modify-goal gl-local-total c:+ 1)
+	(up-modify-goal gl-remote-total g:= gl-point-y)
+;	(chat-to-all "Large forest found (3).")
+)
+
+(defrule
+	(or	(goal temporary-goal7 2)
+		(goal temporary-goal7 4))
+	(goal temporary-goal5 0)
+	(goal temporary-goal4 10)
+=>
+	(set-goal temporary-goal5 1)
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-cut-point-x gl-point-x)
+	(up-modify-goal gl-local-total c:+ 1)
+	(up-modify-goal gl-remote-last g:= gl-point-y)
+;	(chat-to-all "Large forest found (1).")
+)
+
+(defrule
+	(or	(goal temporary-goal7 5)
+		(goal temporary-goal7 7))
+	(goal temporary-goal5 0)
+	(goal temporary-goal4 10)
+=>
+	(set-goal temporary-goal5 1)
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-second-cut-point-x gl-point-x)
+	(up-modify-goal gl-local-total c:+ 1)
+	(up-modify-goal gl-remote-total g:= gl-point-x)
+;	(chat-to-all "Large forest found (...).")
+)
+
+(defrule
+	(or	(goal temporary-goal7 6)
+		(goal temporary-goal7 8))
+	(goal temporary-goal5 0)
+	(goal temporary-goal4 10)
+=>
+	(set-goal temporary-goal5 1)
+;	(up-send-flare gl-point-x)
+	(up-copy-point gl-cut-point-x gl-point-x)
+	(up-modify-goal gl-local-total c:+ 1)
+	(up-modify-goal gl-remote-last g:= gl-point-x)
+;	(chat-to-all "Large forest found (...).")
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(up-compare-goal temporary-goal7 >= 1)
+	(up-compare-goal temporary-goal7 <= 2)
+	(up-compare-goal gl-point-y g:< temporary-goal3)
+	(up-compare-goal gl-point-y g:< gl-max-coordinate-value)
+=>
+	(up-modify-goal gl-point-y c:+ 1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -7)
+)
+
+(defrule
+;	(goal temporary-goal 2)
+	(up-compare-goal temporary-goal7 >= 3)
+	(up-compare-goal temporary-goal7 <= 4)
+	(up-compare-goal gl-point-y g:> temporary-goal3)
+	(up-compare-goal gl-point-y >= 0)
+=>
+	(up-modify-goal gl-point-y c:- 1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -8)
+)
+
+(defrule
+;	(goal temporary-goal2 1)
+	(up-compare-goal temporary-goal7 >= 5)
+	(up-compare-goal temporary-goal7 <= 6)
+	(up-compare-goal gl-point-x g:> temporary-goal3)
+	(up-compare-goal gl-point-x >= 0)
+=>
+	(up-modify-goal gl-point-x c:- 1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -9)
+)
+
+(defrule
+;	(goal temporary-goal2 2)
+	(up-compare-goal temporary-goal7 >= 7)
+	(up-compare-goal temporary-goal7 <= 8)
+	(up-compare-goal gl-point-x g:< temporary-goal3)
+	(up-compare-goal gl-point-x g:< gl-max-coordinate-value)
+=>
+	(up-modify-goal gl-point-x c:+ 1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -10)
+)
+
+(defrule
+	(goal temporary-goal 1)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate1-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate4-point-y)
+	(up-modify-goal gl-point-y c:+ 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate2-point-y)
+	(up-modify-goal temporary-goal3 c:+ 2)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal7 2)
+	(set-goal gl-object-point-x 1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(up-jump-rule -11)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(goal gl-local-total 2)
+=>
+	(up-copy-point gl-saved-point-x gl-second-cut-point-x)
+	(up-modify-goal gl-saved-point-x c:- 4)
+	(up-copy-point gl-point-x gl-saved-point-x)
+	(set-goal temporary-goal3 9)
+	(up-modify-goal gl-remote-total g:max gl-remote-last)
+	(up-modify-goal gl-remote-last g:max gl-remote-total)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal 2)
+	(goal gl-local-total 2)
+=>
+	(up-copy-point gl-saved-point-x gl-second-cut-point-x)
+	(up-modify-goal gl-saved-point-x c:- 4)
+	(up-copy-point gl-point-x gl-saved-point-x)
+	(set-goal temporary-goal3 9)
+	(up-modify-goal gl-remote-total g:min gl-remote-last)
+	(up-modify-goal gl-remote-last g:min gl-remote-total)
+	(set-goal gl-temporary-point-x 0)
+	(set-goal gl-temporary-point-y -1)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+	(goal gl-local-total 2)
+=>
+	(up-copy-point gl-saved-point-x gl-second-cut-point-x)
+	(up-modify-goal gl-saved-point-y c:- 4)
+	(up-copy-point gl-point-x gl-saved-point-x)
+	(set-goal temporary-goal3 9)
+	(up-modify-goal gl-remote-total g:min gl-remote-last)
+	(up-modify-goal gl-remote-last g:min gl-remote-total)
+	(set-goal gl-temporary-point-x -1)
+	(set-goal gl-temporary-point-y 0)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal2 2)
+	(goal gl-local-total 2)
+=>
+	(up-copy-point gl-saved-point-x gl-second-cut-point-x)
+	(up-modify-goal gl-saved-point-y c:- 4)
+	(up-copy-point gl-point-x gl-saved-point-x)
+	(set-goal temporary-goal3 9)
+	(up-modify-goal gl-remote-total g:max gl-remote-last)
+	(up-modify-goal gl-remote-last g:max gl-remote-total)
+	(set-goal gl-temporary-point-x 1)
+	(set-goal gl-temporary-point-y 0)
+	(disable-self)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(up-compare-goal gl-local-total >= 2)
+        (or	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 0)
+	(up-find-local c: wall-class c: 2)
+	(up-find-local c: gate-class c: 2)
+	(up-target-point 0 action-delete -1 -1)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-point-y >= 0)
+	(up-compare-goal gl-point-x >= 0)
+	(up-compare-goal gl-point-y g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-x g:< gl-max-coordinate-value)
+=>
+	(up-modify-goal gl-point-x g:+ gl-temporary-point-x)
+	(up-modify-goal gl-point-y g:+ gl-temporary-point-y)
+;	(up-send-flare gl-point-x)
+	(up-jump-rule -2)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(up-compare-goal temporary-goal7 >= 1)
+	(up-compare-goal temporary-goal7 <= 4)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal temporary-goal3 > 0)
+=>
+	(up-modify-goal temporary-goal3 c:- 1)
+	(up-modify-goal gl-point-y g:= gl-saved-point-y)
+	(up-modify-goal gl-point-x c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+;	(goal temporary-goal2 1)
+	(up-compare-goal temporary-goal7 >= 5)
+	(up-compare-goal temporary-goal7 <= 8)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal temporary-goal3 > 0)
+=>
+	(up-modify-goal temporary-goal3 c:- 1)
+	(up-modify-goal gl-point-x g:= gl-saved-point-x)
+	(up-modify-goal gl-point-y c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(or	(goal temporary-goal 1)
+		(goal temporary-goal 2))
+	(goal gl-local-total 2)
+=>
+	(up-copy-point gl-saved-point-x gl-cut-point-x)
+	(up-modify-goal gl-saved-point-x c:- 3)
+	(up-copy-point gl-point-x gl-saved-point-x)
+	(set-goal temporary-goal3 7)
+	(set-goal gl-local-total 3)
+	(up-jump-rule -5)
+)
+
+(defrule
+	(or	(goal temporary-goal2 1)
+		(goal temporary-goal2 2))
+	(goal gl-local-total 2)
+=>
+	(up-copy-point gl-saved-point-x gl-cut-point-x)
+	(up-modify-goal gl-saved-point-y c:- 3)
+	(up-copy-point gl-point-x gl-saved-point-x)
+	(set-goal temporary-goal3 7)
+	(set-goal gl-local-total 3)
+	(up-jump-rule -6)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(goal temporary-goal7 2)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate2-point-x > 0)
+	(up-compare-goal gl-candidate2-point-x g:< gl-max-coordinate-value)
+=>
+	(up-copy-point gl-point-x gl-candidate2-point-x)
+	(set-goal gl-point-x 0)
+	(up-modify-goal gl-point-y c:- 3)
+	(set-goal temporary-goal3 7)
+)
+
+(defrule
+;	(goal temporary-goal 2)
+	(goal temporary-goal7 4)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate4-point-x > 0)
+	(up-compare-goal gl-candidate4-point-x g:< gl-max-coordinate-value)
+=>
+	(up-copy-point gl-point-x gl-candidate4-point-x)
+	(set-goal gl-point-x 0)
+	(up-modify-goal gl-point-y c:- 3)
+	(set-goal temporary-goal3 7)
+)
+
+(defrule
+;	(goal temporary-goal2 1)
+	(goal temporary-goal7 6)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate3-point-x > 0)
+	(up-compare-goal gl-candidate3-point-x g:< gl-max-coordinate-value)
+=>
+	(up-copy-point gl-point-x gl-candidate3-point-x)
+	(set-goal gl-point-y 0)
+	(up-modify-goal gl-point-x c:- 3)
+	(set-goal temporary-goal3 7)
+)
+
+(defrule
+;	(goal temporary-goal2 2)
+	(goal temporary-goal7 8)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate1-point-x > 0)
+	(up-compare-goal gl-candidate1-point-x g:< gl-max-coordinate-value)
+=>
+	(up-copy-point gl-point-x gl-candidate1-point-x)
+	(set-goal gl-point-y 0)
+	(up-modify-goal gl-point-x c:- 3)
+	(set-goal temporary-goal3 7)
+)
+
+(defrule
+	(goal temporary-goal 1)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate2-point-x > 0)
+	(up-compare-goal gl-candidate2-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-y g:>= gl-remote-total)
+        (or	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 0)
+	(up-find-local c: wall-class c: 2)
+	(up-find-local c: gate-class c: 2)
+	(up-target-point 0 action-delete -1 -1)
+)
+
+(defrule
+	(goal temporary-goal 2)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate4-point-x > 0)
+	(up-compare-goal gl-candidate4-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-y g:<= gl-remote-total)
+        (or	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 0)
+	(up-find-local c: wall-class c: 2)
+	(up-find-local c: gate-class c: 2)
+	(up-target-point 0 action-delete -1 -1)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(up-compare-goal temporary-goal7 >= 1)
+	(up-compare-goal temporary-goal7 <= 4)
+	(up-compare-goal gl-local-total >= 2)
+;	(up-compare-goal gl-candidate2-point-x > 0)
+;	(up-compare-goal gl-candidate2-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-x g:< gl-max-coordinate-value)
+=>
+	(up-modify-goal gl-point-x c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+;	(goal temporary-goal 1)
+	(up-compare-goal temporary-goal7 >= 1)
+	(up-compare-goal temporary-goal7 <= 4)
+	(up-compare-goal gl-local-total >= 2)
+;	(up-compare-goal gl-candidate2-point-x > 0)
+;	(up-compare-goal gl-candidate2-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal temporary-goal3 > 0)
+=>
+	(up-modify-goal temporary-goal3 c:- 1)
+	(set-goal gl-point-x 0)
+	(up-modify-goal gl-point-y c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate3-point-x > 0)
+	(up-compare-goal gl-candidate3-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-x g:<= gl-remote-total)
+        (or	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 0)
+	(up-find-local c: wall-class c: 2)
+	(up-find-local c: gate-class c: 2)
+	(up-target-point 0 action-delete -1 -1)
+)
+
+(defrule
+	(goal temporary-goal2 2)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-candidate1-point-x > 0)
+	(up-compare-goal gl-candidate1-point-x g:< gl-max-coordinate-value)
+	(up-compare-goal gl-point-x g:>= gl-remote-total)
+        (or	(up-point-contains gl-point-x c: wall-class)
+		(up-point-contains gl-point-x c: gate-class))
+=>
+	(up-set-target-point gl-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 0)
+	(up-find-local c: wall-class c: 2)
+	(up-find-local c: gate-class c: 2)
+	(up-target-point 0 action-delete -1 -1)
+)
+
+(defrule
+	(up-compare-goal temporary-goal7 >= 5)
+	(up-compare-goal temporary-goal7 <= 8)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal gl-point-y g:< gl-max-coordinate-value)
+=>
+	(up-modify-goal gl-point-y c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(up-compare-goal temporary-goal7 >= 5)
+	(up-compare-goal temporary-goal7 <= 8)
+	(up-compare-goal gl-local-total >= 2)
+	(up-compare-goal temporary-goal3 > 0)
+=>
+	(up-modify-goal temporary-goal3 c:- 1)
+	(set-goal gl-point-y 0)
+	(up-modify-goal gl-point-x c:+ 1)
+	(up-jump-rule -4)
+)
+
+;
+
+(defrule
+	(goal temporary-goal 2)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate3-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate2-point-y)
+	(up-modify-goal gl-point-y c:- 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate4-point-y)
+	(up-modify-goal temporary-goal3 c:- 2)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal7 3)
+	(set-goal gl-point2-x 0)
+	(set-goal gl-point2-y -1)
+	(set-goal gl-object-point-x -1)
+	(set-goal gl-object-point-y 0)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal gl-local-total 0)
+	(up-jump-rule -34)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal 2)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate1-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate2-point-y)
+	(up-modify-goal gl-point-y c:- 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate4-point-y)
+	(up-modify-goal temporary-goal3 c:- 2)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal7 4)
+	(set-goal gl-object-point-x 1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(up-jump-rule -35)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate1-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate2-point-y)
+	(up-modify-goal gl-point-x c:- 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate3-point-x)
+	(up-modify-goal temporary-goal3 c:- 2)
+	(set-goal temporary-goal5 0)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal temporary-goal7 5)
+	(set-goal gl-point2-x -1)
+	(set-goal gl-point2-y 0)
+	(set-goal gl-object-point-x 0)
+	(set-goal gl-object-point-y 1)
+	(up-jump-rule -36)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal2 1)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate1-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate4-point-y)
+	(up-modify-goal gl-point-x c:- 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate3-point-x)
+	(up-modify-goal temporary-goal3 c:- 2)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal7 6)
+	(set-goal gl-object-point-y -1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(up-jump-rule -37)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal2 2)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate3-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate2-point-y)
+	(up-modify-goal gl-point-x c:+ 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate1-point-x)
+	(up-modify-goal temporary-goal3 c:+ 2)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal7 7)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(set-goal gl-point2-x 1)
+	(set-goal gl-point2-y 0)
+	(set-goal gl-object-point-x 0)
+	(set-goal gl-object-point-y 1)
+	(up-jump-rule -38)
+	(disable-self)
+)
+
+(defrule
+	(goal temporary-goal2 2)
+=>
+	(up-modify-goal gl-point-x g:= gl-candidate3-point-x)
+	(up-modify-goal gl-point-y g:= gl-candidate4-point-y)
+	(up-modify-goal gl-point-x c:+ 1)
+	(up-modify-goal temporary-goal3 g:= gl-candidate1-point-x)
+	(up-modify-goal temporary-goal3 c:+ 2)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal7 8)
+	(set-goal gl-object-point-y -1)
+	(up-copy-point gl-saved-point-x gl-point-x)
+	(up-jump-rule -39)
+	(disable-self)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-flag gl-flag c:+ walls-deleted)
+	(set-goal gl-candidate1-point-x -1)
+	(set-goal gl-candidate1-point-y -1)
+	(set-goal gl-candidate2-point-x -1)
+	(set-goal gl-candidate2-point-y -1)
+	(set-goal gl-candidate3-point-x -1)
+	(set-goal gl-candidate3-point-y -1)
+	(set-goal gl-candidate4-point-x -1)
+	(set-goal gl-candidate4-point-y -1)
+)
+
+(defrule
+	(or	(game-time >= 15)
+		(or	(up-compare-flag gl-flag == stuck-notice)
+			(game-time < 10)))
+=>
+	(up-jump-rule 4)
+)
+
+(defrule
+	(true)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-find-local c: villager-class c: 1)
+	(up-copy-point gl-point-x gl-position-center-x)
+)
+
+
+(defrule
+	(up-point-contains gl-point-x c: tree-class)
+	(up-point-distance gl-point-x gl-position-self-x > 25)
+=>
+	(up-lerp-tiles gl-point-x gl-position-self-x c: 1)
+	(up-jump-rule -1)
+)
+
+(defrule
+	(up-set-target-object search-local c: 0)
+	(not	(up-path-distance gl-point-x 0 < 35000))
+=>
+	(up-delete-objects c: wall-class c: 32767)
+	(up-delete-objects c: gate-class c: 32767)
+	(chat-to-all "I'm stuck :o")
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-flag gl-flag c:+ stuck-notice)
+)
+#end-if
+

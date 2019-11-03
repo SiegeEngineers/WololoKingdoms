@@ -1,0 +1,203 @@
+
+(defrule
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(building-type-count-total mining-camp < 2)
+	(can-build mining-camp)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build mining-camp)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == conquistadors)
+;	(up-research-status c: imperial-age < research-pending)
+	(or(not(research-available imperial-age))
+	(or(food-amount < 850)
+	   (gold-amount < 750)))
+	(unit-type-count-total villager < 134)
+	(unit-type-count-total villager < max-civ)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(up-compare-goal gl-data-civilian-population g:> gl-data-military-population)
+	(up-compare-goal gl-data-military-population g:< gl-data-enemy-military-population)
+	(strategic-number sn-enemy-current-age >= castle-transit)
+	(building-type-count castle == 0)
+	(can-train knight-line)
+=>
+	(train knight-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(up-compare-goal gl-data-civilian-population g:> gl-data-military-population)
+	(up-compare-goal gl-data-military-population g:< gl-data-enemy-military-population)
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(up-research-status c: castle-age >= research-pending)
+	(building-type-count-total town-center < 3)
+	(stone-amount < 100)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 22)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(up-research-status c: castle-age >= research-pending)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager <= 30)
+	(unit-type-count villager < 40)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 40)
+	(unit-type-count villager < 50)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 50)
+	(unit-type-count villager < 60)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 60)
+	(unit-type-count villager < 70)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 60)
+	(unit-type-count villager < 70)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 70)
+	(unit-type-count villager < 80)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 80)
+	(unit-type-count villager < 90)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 90)
+	(unit-type-count villager < 100)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 21)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(current-age == castle-age)
+	(unit-type-count villager >= 100)
+	(or(stone-amount >= 100)
+	   (building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 21)
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-gold-gatherer-percentage 26)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+)
+
+
+(defrule
+	(strategic-number sn-castle-age-strategy == conquistadors)
+	(or(taunt-detected any-human 250)
+	   (taunt-detected my-player-number 250))
+=>
+	(chat-to-allies "Hi! I'm BruteForce v3.1 Created by CheeseOnToast")
+	(chat-to-allies "Making conquistadors")
+	(acknowledge-taunt this-any-human 250)
+	(acknowledge-taunt my-player-number 250)
+)

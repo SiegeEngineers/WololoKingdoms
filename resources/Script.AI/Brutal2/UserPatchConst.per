@@ -1,0 +1,813 @@
+;--------------------------------------
+; Define FactId Constants
+;--------------------------------------
+(defconst game-time 0)
+(defconst population-cap 1)
+(defconst population-headroom 2)
+(defconst housing-headroom 3)
+(defconst idle-farm-count 4)
+(defconst food-amount 5)
+(defconst wood-amount 6)
+(defconst stone-amount 7)
+(defconst gold-amount 8)
+(defconst escrow-amount 9)
+(defconst commodity-buying-price 10)
+(defconst commodity-selling-price 11)
+(defconst dropsite-min-distance 12)
+(defconst soldier-count 13)
+(defconst attack-soldier-count 14)
+(defconst defend-soldier-count 15)
+(defconst warboat-count 16)
+(defconst attack-warboat-count 17)
+(defconst defend-warboat-count 18)
+(defconst current-age 19)					;any
+(defconst current-score 20)					;any
+(defconst civilization 21)					;any
+(defconst player-number 22)					;any
+(defconst player-in-game 23)				;any
+(defconst unit-count 24)					;any
+(defconst unit-type-count 25)				;any
+(defconst unit-type-count-total 26)
+(defconst building-count 27)				;any
+(defconst building-type-count 28)			;any
+(defconst building-type-count-total 29)
+(defconst population 30)					;any
+(defconst military-population 31)			;any
+(defconst civilian-population 32)			;any
+(defconst random-number 33)
+(defconst resource-amount 34)				;any
+(defconst player-distance 35)				;any
+(defconst allied-goal 36)					;any
+(defconst allied-sn 37)						;any
+(defconst resource-percent 38)				;any
+(defconst enemy-buildings-in-town 39)
+(defconst enemy-units-in-town 40)
+(defconst enemy-villagers-in-town 41)
+(defconst players-in-game 42)
+(defconst defender-count 43)
+(defconst building-type-in-town 44)
+(defconst unit-type-in-town 45)
+(defconst villager-type-in-town 46)
+(defconst gaia-type-count 47)
+(defconst gaia-type-count-total 48)
+(defconst cc-gaia-type-count 49)
+(defconst current-age-time 50)				;any
+(defconst timer-status 51)
+(defconst players-tribute 52)				;any
+(defconst players-tribute-memory 53)			;any
+
+;--------------------------------------
+; Define ObjectId Constants
+;--------------------------------------
+(defconst flare 274)
+(defconst villager-class 904)
+(defconst building-class 903)
+(defconst ocean-fish-class 905)
+(defconst shore-fish-class 933)
+(defconst farm-class 949)
+(defconst tower-class 952)
+(defconst wall-class 927)
+(defconst gate-class 939)
+(defconst king-class 959)
+(defconst livestock-class 958)
+(defconst infantry-class 906)
+(defconst archery-class 900)
+(defconst archery-cannon-class 944)
+(defconst cavalry-class 912)
+(defconst cavalry-archer-class 936)
+(defconst cavalry-cannon-class 923)
+(defconst monastery-class 918)
+(defconst siege-weapon-class 913)
+(defconst scorpion-class 955)
+(defconst packed-trebuchet-class 951)
+(defconst unpacked-trebuchet-class 954)
+(defconst petard-class 935)
+(defconst warship-class 922)
+(defconst all-units-class -1)
+
+;--------------------------------------
+; Define FoundationId Constants
+;--------------------------------------
+(defconst town-center-foundation 621)
+(defconst gate-ascending 487)
+(defconst gate-ascending-closed 64)
+(defconst gate-ascending-open 78)
+(defconst gate-descending 490)
+(defconst gate-descending-closed 88)
+(defconst gate-descending-open 99)
+(defconst gate-horizontal 665)
+(defconst gate-horizontal-closed 659)
+(defconst gate-horizontal-open 661)
+(defconst gate-vertical 673)
+(defconst gate-vertical-closed 667)
+(defconst gate-vertical-open 669)
+
+;--------------------------------------
+; Define ResearchState Constants
+;--------------------------------------
+(defconst research-unavailable 0)
+(defconst research-available 1)
+(defconst research-pending 2)
+(defconst research-complete 3)
+
+;--------------------------------------
+; Define TimerState Constants
+;--------------------------------------
+(defconst timer-disabled 0)
+(defconst timer-triggered 1)
+(defconst timer-running 2)
+
+;--------------------------------------
+; Define GroupType Constants
+;--------------------------------------
+(defconst group-type-land-attack 100)
+(defconst group-type-land-explore 101)
+(defconst group-type-land-trade 109)
+(defconst group-type-water-attack 102)
+(defconst group-type-water-explore 103)
+(defconst group-type-water-trade 106)
+(defconst group-type-transport-ship 104)
+(defconst group-type-fishing-ship 105)
+(defconst group-type-forward-builder 107)
+(defconst group-type-monk 108)
+
+;--------------------------------------
+; Define IdleType Constants
+;--------------------------------------
+(defconst idle-type-villager 0)
+(defconst idle-type-trade-cart 1)
+(defconst idle-type-fishing-ship 2)
+(defconst idle-type-trade-cog 3)
+
+;--------------------------------------
+; Define AttackStance Constants
+;--------------------------------------
+(defconst stance-aggressive 0)
+(defconst stance-defensive 1)
+(defconst stance-stand-ground 2)
+(defconst stance-no-attack 3)
+
+;--------------------------------------
+; Define ResourceAmount Constants
+;--------------------------------------
+(defconst amount-food 0)
+(defconst amount-wood 1)
+(defconst amount-stone 2)
+(defconst amount-gold 3)
+(defconst amount-population-cap 4)
+(defconst amount-religion 5)
+(defconst amount-current-age 6)
+(defconst amount-relics 7)
+(defconst amount-trade-bonus 8)
+(defconst amount-trade-goods 9)
+(defconst amount-trade-production 10)
+(defconst amount-population 11)
+(defconst amount-decay 12)
+(defconst amount-discovery 13)
+(defconst amount-ruins 14)
+(defconst amount-meat 15)
+(defconst amount-berries 16)
+(defconst amount-fish 17)
+(defconst amount-kills 20)
+(defconst amount-research-count 21)
+(defconst amount-exploration 22)
+(defconst amount-convert-priest 27)
+(defconst amount-convert-building 28)
+(defconst amount-building-limit 30)
+(defconst amount-food-limit 31)
+(defconst amount-unit-limit 32)
+(defconst amount-maintenance 33)
+(defconst amount-faith 34)
+(defconst amount-faith-recharge-rate 35)
+(defconst amount-farm-food 36)
+(defconst amount-civilian-population 37)
+(defconst amount-all-techs-achieved 39)
+(defconst amount-military-population 40)
+(defconst amount-conversions 41)
+(defconst amount-wonder 42)
+(defconst amount-razings 43)
+(defconst amount-kill-ratio 44)
+(defconst amount-player-killed 45)
+(defconst amount-tribute-inefficiency 46)
+(defconst amount-gold-bonus 47)
+(defconst amount-town-center-unavailable 48)
+(defconst amount-gold-counter 49)
+(defconst amount-writing 50)
+(defconst amount-monasteries 52)
+(defconst amount-tribute 53)
+(defconst amount-hold-ruins 54)
+(defconst amount-hold-relics 55)
+(defconst amount-ore 56)
+(defconst amount-captured-unit 57)
+(defconst amount-trade-good-quality 59)
+(defconst amount-trade-market-level 60)
+(defconst amount-formations 61)
+(defconst amount-building-housing-rate 62)
+(defconst amount-gather-tax-rate 63)
+(defconst amount-gather-accumulator 64)
+(defconst amount-salvage-decay-rate 65)
+(defconst amount-allow-formations 66)
+(defconst amount-can-convert 67)
+(defconst amount-player1-kills 69)
+(defconst amount-player2-kills 70)
+(defconst amount-player3-kills 71)
+(defconst amount-player4-kills 72)
+(defconst amount-player5-kills 73)
+(defconst amount-player6-kills 74)
+(defconst amount-player7-kills 75)
+(defconst amount-player8-kills 76)
+(defconst amount-convert-resistance 77)
+(defconst amount-trade-vig-rate 78)
+(defconst amount-stone-bonus 79)
+(defconst amount-queued-count 80)
+(defconst amount-training-count 81)
+(defconst amount-raider 82)
+(defconst amount-boarding-recharge-rate 83)
+(defconst amount-starting-villagers 84)
+(defconst amount-research-cost-mod 85)
+(defconst amount-research-time-mod 86)
+(defconst amount-convert-boats 87)
+(defconst amount-fish-trap-food 88)
+(defconst amount-heal-rate-modifier 89)
+(defconst amount-heal-range 90)
+(defconst amount-starting-food 91)
+(defconst amount-starting-wood 92)
+(defconst amount-starting-stone 93)
+(defconst amount-starting-gold 94)
+(defconst amount-raider-ability 95)
+(defconst amount-berserker-heal-timer 96)
+(defconst amount-dominant-sheep-control 97)
+(defconst amount-object-cost-summation 98)
+(defconst amount-research-cost-summation 99)
+(defconst amount-relic-income-summation 100)
+(defconst amount-trade-income-summation 101)
+(defconst amount-player1-tribute 102)
+(defconst amount-player2-tribute 103)
+(defconst amount-player3-tribute 104)
+(defconst amount-player4-tribute 105)
+(defconst amount-player5-tribute 106)
+(defconst amount-player6-tribute 107)
+(defconst amount-player7-tribute 108)
+(defconst amount-player8-tribute 109)
+(defconst amount-player1-kill-value 110)
+(defconst amount-player2-kill-value 111)
+(defconst amount-player3-kill-value 112)
+(defconst amount-player4-kill-value 113)
+(defconst amount-player5-kill-value 114)
+(defconst amount-player6-kill-value 115)
+(defconst amount-player7-kill-value 116)
+(defconst amount-player8-kill-value 117)
+(defconst amount-player1-razings 118)
+(defconst amount-player2-razings 119)
+(defconst amount-player3-razings 120)
+(defconst amount-player4-razings 121)
+(defconst amount-player5-razings 122)
+(defconst amount-player6-razings 123)
+(defconst amount-player7-razings 124)
+(defconst amount-player8-razings 125)
+(defconst amount-player1-razing-value 126)
+(defconst amount-player2-razing-value 127)
+(defconst amount-player3-razing-value 128)
+(defconst amount-player4-razing-value 129)
+(defconst amount-player5-razing-value 130)
+(defconst amount-player6-razing-value 131)
+(defconst amount-player7-razing-value 132)
+(defconst amount-player8-razing-value 133)
+(defconst amount-castle 134)
+(defconst amount-kills-by-player1 136)
+(defconst amount-kills-by-player2 137)
+(defconst amount-kills-by-player3 138)
+(defconst amount-kills-by-player4 139)
+(defconst amount-kills-by-player5 140)
+(defconst amount-kills-by-player6 141)
+(defconst amount-kills-by-player7 142)
+(defconst amount-kills-by-player8 143)
+(defconst amount-razings-by-player1 144)
+(defconst amount-razings-by-player2 145)
+(defconst amount-razings-by-player3 146)
+(defconst amount-razings-by-player4 147)
+(defconst amount-razings-by-player5 148)
+(defconst amount-razings-by-player6 149)
+(defconst amount-razings-by-player7 150)
+(defconst amount-razings-by-player8 151)
+(defconst amount-value-killed-by-others 152)
+(defconst amount-value-razed-by-others 153)
+(defconst amount-killed-by-others 154)
+(defconst amount-razed-by-others 155)
+(defconst amount-tribute-from-player1 156)
+(defconst amount-tribute-from-player2 157)
+(defconst amount-tribute-from-player3 158)
+(defconst amount-tribute-from-player4 159)
+(defconst amount-tribute-from-player5 160)
+(defconst amount-tribute-from-player6 161)
+(defconst amount-tribute-from-player7 162)
+(defconst amount-tribute-from-player8 163)
+(defconst amount-value-current-units 164)
+(defconst amount-value-current-buildings 165)
+(defconst amount-food-total 166)
+(defconst amount-wood-total 167)
+(defconst amount-stone-total 168)
+(defconst amount-gold-total 169)
+(defconst amount-total-value-of-kills 170)
+(defconst amount-total-tribute-received 171)
+(defconst amount-total-value-of-razings 172)
+(defconst amount-total-castles-built 173)
+(defconst amount-total-wonders-built 174)
+(defconst amount-tribute-score 175)
+(defconst amount-convert-min-adj 176)
+(defconst amount-convert-max-adj 177)
+(defconst amount-convert-resist-min-adj 178)
+(defconst amount-convert-resist-max-adj 179)
+(defconst amount-convert-building-min 180)
+(defconst amount-convert-building-max 181)
+(defconst amount-convert-building-chance 182)
+(defconst amount-spies 183)
+(defconst amount-value-wonders-castles 184)
+(defconst amount-food-score 185)
+(defconst amount-wood-score 186)
+(defconst amount-stone-score 187)
+(defconst amount-gold-score 188)
+(defconst amount-wood-bonus 189)
+(defconst amount-food-bonus 190)
+(defconst amount-relic-rate 191)
+(defconst amount-heresy 192)
+(defconst amount-theocracy 193)
+(defconst amount-crenellations 194)
+(defconst amount-construction-rate-mod 195)
+(defconst amount-hun-wonder-bonus 196)
+(defconst amount-spies-discount 197)
+(defconst amount-unused-0 220)
+(defconst amount-unused-1 221)
+(defconst amount-unused-2 222)
+(defconst amount-unused-3 223)
+(defconst amount-unused-4 224)
+
+;--------------------------------------
+; Unused ResourceAmount Constants
+;--------------------------------------
+;(defconst amount-houses 51)
+;(defconst amount-hit-points-killed 68)
+;(defconst amount-hit-points-razings 135)
+
+;--------------------------------------
+; Define ProjectileType Constants
+;--------------------------------------
+(defconst projectile-town-center 0)
+(defconst projectile-castle 1)
+(defconst projectile-watch-tower 2)
+(defconst projectile-bombard-tower 3)
+(defconst projectile-ship 4)
+(defconst projectile-siege 5)
+(defconst projectile-fortification 6)
+(defconst projectile-any 7)
+
+;--------------------------------------
+; Define EscrowState Constants
+;--------------------------------------
+(defconst with-escrow 0)
+(defconst without-escrow 1)
+
+;--------------------------------------
+; Define ExploredState Constants
+;--------------------------------------
+(defconst explored-no 0)
+(defconst explored-yes 128)					;point has been seen in the past
+(defconst explored-active 15)				;point is currently visible by an object
+
+;--------------------------------------
+; Define PlacementType Constants
+;--------------------------------------
+(defconst place-normal 0)
+(defconst place-forward 1)
+(defconst place-control 2)
+(defconst place-point 3)
+
+;--------------------------------------
+; Define PriorityType Constants
+;--------------------------------------
+(defconst priority-offense 0)
+(defconst priority-defense 1)
+
+;--------------------------------------
+; Define PositionType Constants
+;--------------------------------------
+(defconst position-center 0)
+(defconst position-opposite 1)
+(defconst position-corner 2)
+(defconst position-enemy 3)
+(defconst position-border 4)
+(defconst position-mirror 5)
+(defconst position-flank 6)
+(defconst position-zero 7)
+(defconst position-map-size 8)
+(defconst position-self 9)
+(defconst position-target 10)
+(defconst position-focus 11)
+(defconst position-object 12)
+(defconst position-point 13)
+
+;--------------------------------------
+; Define SearchSource Constants
+;--------------------------------------
+(defconst search-local 1)
+(defconst search-remote 2)
+
+;--------------------------------------
+; Define ObjectList Constants
+;--------------------------------------
+(defconst list-active 0)
+(defconst list-inactive 1)
+
+;--------------------------------------
+; Define ObjectStatus Constants
+;--------------------------------------
+(defconst status-pending 0)
+(defconst status-ready 2)
+(defconst status-resource 3)
+(defconst status-down 4)
+(defconst status-gather 5)
+
+;--------------------------------------
+; Define SearchOrder Constants
+;--------------------------------------
+(defconst search-order-none 0)
+(defconst search-order-asc 1)
+(defconst search-order-desc 2)
+
+;--------------------------------------
+; Define GuardFlag Constants
+;--------------------------------------
+(defconst guard-flag-victory 1)
+(defconst guard-flag-resource 2)
+(defconst guard-flag-inverse 4)
+
+;--------------------------------------
+; Define ProgressType Constants
+;--------------------------------------
+(defconst progress-type-train 102)
+(defconst progress-type-research 103)
+
+;--------------------------------------
+; Define TargetAction Constants
+;--------------------------------------
+(defconst action-default 0)	;target-point -> action-move
+(defconst action-move 1)	;target-point + target-objects
+(defconst action-patrol 2)	;target-point + target-objects
+(defconst action-guard 3)	;target-point -> action-move
+(defconst action-follow 4)	;target-point -> action-move
+(defconst action-stop 5)	;target-point + target-objects
+(defconst action-ground 6)	;target-point + target-objects
+(defconst action-garrison 7)	;target-point -> action-move
+(defconst action-delete 8)	;target-point + target-objects
+(defconst action-unload 9)	;target-objects -> action-none
+(defconst action-train 10)	;target-objects -> action-none
+(defconst action-gather 11)	;target-point + target-objects
+(defconst action-lock 12)	;target-objects -> action-none
+(defconst action-work 13)	;target-objects -> action-none
+(defconst action-ungarrison 14)	;target-objects -> action-none
+(defconst action-none 15)	;target-point + target-objects
+
+; action-train: (up-target-point inGoalEscrowState action-train typeOp inOpTypeId)
+; inGoalEscrowState must be either 0 for without-escrow or an extended goal from 41-510
+
+;--------------------------------------
+; Define Formation Constants
+;--------------------------------------
+(defconst formation-line 2)
+(defconst formation-box 4)
+(defconst formation-stagger 7)
+(defconst formation-flank 8)
+
+;--------------------------------------
+; Define CmdId Constants
+;--------------------------------------
+(defconst cmdid-flag 0)
+(defconst cmdid-livestock-gaia 1)
+(defconst cmdid-civilian-building 2)
+(defconst cmdid-villager 3)
+(defconst cmdid-military 4)
+(defconst cmdid-trade 5)
+(defconst cmdid-monk 6)
+(defconst cmdid-transport 7)
+(defconst cmdid-relic 8)					;includes monk-with-relic
+(defconst cmdid-unknown 9)
+(defconst cmdid-military-building 10)
+
+;--------------------------------------
+; Define ActionId Constants
+;--------------------------------------
+(defconst actionid-attack 600)
+(defconst actionid-defend 601)
+(defconst actionid-build 602)
+(defconst actionid-heal 603)
+(defconst actionid-convert 604)
+(defconst actionid-explore 605)
+(defconst actionid-stop 606)
+(defconst actionid-runaway 607)
+(defconst actionid-retreat 608)
+(defconst actionid-gather 609)
+(defconst actionid-move 610)
+(defconst actionid-patrol 611)
+(defconst actionid-follow 612)
+(defconst actionid-hunt 613)
+(defconst actionid-transport 614)
+(defconst actionid-trade 615)
+(defconst actionid-evade 616)
+(defconst actionid-enter 617)
+(defconst actionid-repair 618)
+(defconst actionid-train 619)
+(defconst actionid-research 620)
+(defconst actionid-unload 621)
+(defconst actionid-relic 631)
+
+;--------------------------------------
+; Define OrderId Constants
+;--------------------------------------
+(defconst orderid-attack 700)
+(defconst orderid-defend 701)
+(defconst orderid-build 702)
+(defconst orderid-heal 703)
+(defconst orderid-convert 704)
+(defconst orderid-explore 705)
+(defconst orderid-stop 706)
+(defconst orderid-runaway 707)
+(defconst orderid-retreat 708)
+(defconst orderid-gather 709)
+(defconst orderid-move 710)
+(defconst orderid-patrol 711)
+(defconst orderid-follow 712)
+(defconst orderid-hunt 713)
+(defconst orderid-transport 714)
+(defconst orderid-trade 715)
+(defconst orderid-evade 716)
+(defconst orderid-enter 717)
+(defconst orderid-repair 718)
+(defconst orderid-train 719)
+(defconst orderid-research 720)
+(defconst orderid-unload 721)
+(defconst orderid-relic 731)
+
+;--------------------------------------
+; Define Mainland Constants
+;--------------------------------------
+(defconst off-mainland 0)
+(defconst on-mainland 1)
+
+;--------------------------------------
+; Define ObjectData Constants
+;--------------------------------------
+(defconst object-data-index -1)				;only use with up-remove-objects
+(defconst object-data-id 0)
+(defconst object-data-type 1)
+(defconst object-data-class 2)
+(defconst object-data-category 3)
+(defconst object-data-cmdid 4)
+(defconst object-data-action 5)
+(defconst object-data-order 6)
+(defconst object-data-target 7)
+(defconst object-data-point-x 8)
+(defconst object-data-point-y 9)
+(defconst object-data-hitpoints 10)
+(defconst object-data-maxhp 11)
+(defconst object-data-range 12)
+(defconst object-data-speed 13)
+(defconst object-data-dropsite 14)
+(defconst object-data-resource 15)
+(defconst object-data-carry 16)
+(defconst object-data-garrisoned 17)
+(defconst object-data-garrison-count 18)
+(defconst object-data-status 19)			;0:incomplete, 2:active, 3:resource, >=4:inactive
+(defconst object-data-player 20)
+(defconst object-data-attack-stance 21)
+(defconst object-data-action-time 22)
+(defconst object-data-target-id 23)
+(defconst object-data-formation-id 24)
+(defconst object-data-patrolling 25)
+(defconst object-data-strike-armor 26)
+(defconst object-data-pierce-armor 27)
+(defconst object-data-base-attack 28)
+(defconst object-data-locked 29)
+(defconst object-data-garrison-id 30)
+(defconst object-data-train-count 31)
+(defconst object-data-tasks-count 32)		;increased for internal tasks performed on the object (may be more than 1 per event)
+(defconst object-data-attacker-count 33)	;not increased for certain situations like hunting
+(defconst object-data-attacker-id 34)		;not set for certain situations like hunting
+(defconst object-data-under-attack 35)		;not set for certain situations like hunting
+(defconst object-data-attack-timer 36)		;resets to 60s for each attack (buildings only)
+(defconst object-data-point-z 37)
+(defconst object-data-precise-x 38)			;point x100.0
+(defconst object-data-precise-y 39)
+(defconst object-data-precise-z 40)
+(defconst object-data-researching 41)
+(defconst object-data-tile-position 42)		;match with sn-target-point-adjustment
+(defconst object-data-tile-inverse 43)
+(defconst object-data-distance 44)			;based on target-point
+(defconst object-data-precise-distance 45)
+(defconst object-data-full-distance 46)
+(defconst object-data-map-zone-id 47)
+(defconst object-data-on-mainland 48)		;compares map-zone-id to home TC map-zone-id
+(defconst object-data-idling 49)
+(defconst object-data-move-x 50)
+(defconst object-data-move-y 51)
+(defconst object-data-precise-move-x 52)
+(defconst object-data-precise-move-y 53)
+(defconst object-data-reload-time 54)		;in milliseconds
+(defconst object-data-next-attack 55)		;in milliseconds
+(defconst object-data-train-site 56)
+(defconst object-data-train-time 57)		;in seconds
+(defconst object-data-blast-radius 58)		;radius x100.0
+(defconst object-data-blast-level 59)
+(defconst object-data-progress-type 60)
+(defconst object-data-progress-value 61)
+(defconst object-data-min-range 62)
+(defconst object-data-target-time 63)		;in milliseconds (not for villagers)
+(defconst object-data-heresy 64)		;checks amount-heresy
+(defconst object-data-faith 65)			;checks amount-convert-resistance
+(defconst object-data-redemption 66)		;checks amount-convert-building
+(defconst object-data-atonement 67)		;checks amount-convert-priest
+(defconst object-data-theocracy 68)		;checks amount-theocracy
+(defconst object-data-spies 69)			;checks amount-spies
+(defconst object-data-ballistics 70)
+(defconst object-data-gather-type 71)		;food, wood, gold, stone, or -1 for none
+(defconst object-data-language-id 72)		;can use to check villager types
+
+;--------------------------------------
+; Define LangId Constants (aoc)
+;--------------------------------------
+(defconst lid-villager-idle 5121)
+(defconst lid-villager-shepherd 5496)
+(defconst lid-villager-farmer 5123)
+(defconst lid-villager-forager 5402)
+(defconst lid-villager-hunter 5124)
+(defconst lid-villager-fisherman 5499)
+(defconst lid-villager-lumberjack 5125)
+(defconst lid-villager-gold-miner 5482)
+(defconst lid-villager-stone-miner 5126)
+(defconst lid-villager-builder 5122)
+(defconst lid-villager-repairer 5127)
+
+;--------------------------------------
+; Define Terrain Constants
+;--------------------------------------
+(defconst terrain-grass 0)
+(defconst terrain-grass2 12)
+(defconst terrain-grass3 9)
+(defconst terrain-grass-snow 34)
+(defconst terrain-grass-old 16)
+(defconst terrain-water 1)
+(defconst terrain-water-deep 22)
+(defconst terrain-water-medium 23)
+(defconst terrain-water-bridge 28)
+(defconst terrain-water-old 15)
+(defconst terrain-water-beach 2)
+(defconst terrain-shallows 4)
+(defconst terrain-ice 26)
+(defconst terrain-ice2 35)
+(defconst terrain-ice-beach 37)
+(defconst terrain-desert 14)
+(defconst terrain-dirt 6)
+(defconst terrain-dirt2 11)
+(defconst terrain-dirt3 3)
+(defconst terrain-dirt-snow 33)
+(defconst terrain-farm 7)
+(defconst terrain-farm1 29)
+(defconst terrain-farm2 30)
+(defconst terrain-farm3 31)
+(defconst terrain-farm-dead 8)
+(defconst terrain-forest 10)
+(defconst terrain-forest-bamboo 18)
+(defconst terrain-forest-jungle 17)
+(defconst terrain-forest-oak 20)
+(defconst terrain-forest-palm 13)
+(defconst terrain-forest-pine 19)
+(defconst terrain-forest-snow 21)
+(defconst terrain-foundation 27)
+(defconst terrain-foundation-snow 36)
+(defconst terrain-koh 40)
+(defconst terrain-leaves 5)
+(defconst terrain-road 24)
+(defconst terrain-road-broken 25)
+(defconst terrain-road-snow 38)
+(defconst terrain-road-fungus 39)
+(defconst terrain-snow 32)
+(defconst terrain-unknown 41)
+
+;--------------------------------------
+; Define SortTargetMethod Constants
+;--------------------------------------
+(defconst sort-targets 0)
+(defconst sort-random 1)
+(defconst sort-distance 2)
+(defconst sort-hitpoints 3)
+(defconst sort-range 4)
+
+;--------------------------------------
+; Define FindPlayerMethod Constants
+;--------------------------------------
+(defconst find-attacker 0)
+(defconst find-random 1)
+(defconst find-closest 2)
+(defconst find-ordered 3)
+
+;--------------------------------------
+; Define ScoutMethod Constants
+;--------------------------------------
+(defconst scout-center 0)
+(defconst scout-opposite 1)
+(defconst scout-corner 2)
+(defconst scout-enemy 3)
+(defconst scout-border 4)
+(defconst scout-mirror 5)
+(defconst scout-flank 6)
+
+;--------------------------------------
+; Define PlayerStance Constants
+;--------------------------------------
+;(defconst ally 0)
+;(defconst neutral 1)
+;(defconst enemy 3)
+;(defconst any 2)
+
+;--------------------------------------
+; Define DropsiteMinDistance Constants
+;--------------------------------------
+;(defconst hunting 4)
+;(defconst boar-hunting 5)
+;(defconst deer-hunting 6)
+;(defconst live-boar 7)
+
+;--------------------------------------
+; Define Counting Constants
+;--------------------------------------
+;(defconst monk-set 970)
+;(defconst trebuchet-set 971)
+;(defconst huskarl-set 972)
+;(defconst villager-shepherd 973)
+;(defconst villager-forager 974)
+;(defconst villager-farmer 975)
+;(defconst villager-hunter 976)
+;(defconst villager-fisherman 977)
+;(defconst villager-food 978)
+;(defconst villager-wood 979)
+;(defconst villager-stone 980)
+;(defconst villager-gold 981)
+;(defconst villager-builder 982)
+;(defconst villager-repairer 983)
+;(defconst villager-base 984)
+
+;--------------------------------------
+; Define Extended Strategic Numbers
+;--------------------------------------
+;(defconst sn-enable-new-building-system 242)
+;(defconst sn-percent-building-cancellation 243)
+;(defconst sn-enable-boar-hunting 244)
+;(defconst sn-minimum-number-hunters 245)
+;(defconst sn-object-repair-level 246)
+;(defconst sn-enable-patrol-attack 247)
+;(defconst sn-dropsite-separation-distance 248)
+;(defconst sn-target-player-number 249)
+;(defconst sn-safe-town-size 250)
+;(defconst sn-focus-player-number 251)
+;(defconst sn-minimum-boar-lure-group-size 252)
+;(defconst sn-preferred-mill-placement 253)
+;(defconst sn-enable-offensive-priority 254)
+;(defconst sn-building-targeting-mode 255)
+;(defconst sn-home-exploration-time 256)
+;(defconst sn-number-civilian-militia 257)
+;(defconst sn-allow-civilian-offense 258)
+;(defconst sn-preferred-trade-distance 259)
+;(defconst sn-lumber-camp-max-distance 260)
+;(defconst sn-mining-camp-max-distance 261)
+;(defconst sn-wall-targeting-mode 262)
+;(defconst sn-livestock-to-town-center 263)
+;(defconst sn-enable-training-queue 264)
+;(defconst sn-ignore-tower-elevation 265)
+;(defconst sn-town-center-placement 266)
+;(defconst sn-disable-tower-priority 267)
+;(defconst sn-placement-zone-size 268)
+;(defconst sn-placement-fail-delta 269)
+;(defconst sn-placement-to-center 270)
+;(defconst sn-disable-attack-groups 271)
+;(defconst sn-allow-adjacent-dropsites 272)
+;(defconst sn-defer-dropsite-update 273)
+;(defconst sn-maximum-garrison-fill 274)
+;(defconst sn-number-garrison-units 275)
+;(defconst sn-filter-under-attack 276)
+;(defconst sn-disable-defend-groups 277)
+;(defconst sn-dock-placement-mode 278)
+;(defconst sn-dock-proximity-factor 279)
+;(defconst sn-dock-avoidance-factor 280)
+;(defconst sn-dock-training-filter 281)
+;(defconst sn-free-siege-targeting 282)
+;(defconst sn-warship-targeting-mode 283)
+;(defconst sn-disable-sighted-response-cap 284)
+;(defconst sn-disable-builder-assistance 285)
+;(defconst sn-local-targeting-mode 286)
+;(defconst sn-livestock-defend-priority 287)
+;(defconst sn-number-tasked-units 288)
+;(defconst sn-minimum-tasked-units 289)
+;(defconst sn-maximum-tasked-units 290)
+;(defconst sn-disable-villager-garrison 291)
+;(defconst sn-target-point-adjustment 292)
+;(defconst sn-unexplored-construction 293)
+;(defconst sn-disable-trade-evasion 294)

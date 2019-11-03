@@ -1,0 +1,16 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-halb-husk)
+	(set-goal gl-dm-barracks-number 15)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-stone-to-sell 2000)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms dm-gunpowder-threat-likelihood)
+	(set-goal gl-dm-main-unit huskarl)
+	(disable-self)
+)

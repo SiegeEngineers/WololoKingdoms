@@ -1,0 +1,167 @@
+(defconst super-traitor-chat-id 22100); Your lands and your gold shall soon be mine!
+(defconst traitor-chat-id 22099); I and my troops can easily vanquish seven times your number!
+(defconst betrayed-chat-id 22071); From henceforth we are the bitterest of foes!
+(defconst wonder-game-time 6052)
+(defconst camp-raid-time-variance 777)
+(defconst nomad-tc-up-chat "me")
+(defconst gg-chat "gg")
+(defconst chip "Xhip")
+
+#load-if-not-defined UP-SCENARIO-GAME
+(defrule
+	(game-time > 13)
+	(up-players-in-game enemy >= 3)
+	(players-civ every-enemy briton)
+=>
+	(chat-to-all "Nice civs.")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 10372)
+	(population > almost-full-pop)
+	(players-population focus-player > almost-full-pop)
+	(up-compare-goal TSA >= 1)
+=>
+	(chat-to-allies "Actually, I'm getting exhausted.")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 1800)
+	(current-score > 5000)
+	(players-score any-ally > 4000)
+	(players-score any-human-ally < 2500)
+	(not	(players-score any-computer-ally < 3000))
+=>
+	(up-store-player-name this-any-human-ally)
+	(up-chat-data-to-player every-ally "Nice score %s" c: 7031232)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-const gv-pocket-position == 0)
+	(up-compare-goal TSA >= 1)
+	(players-current-age target-player == feudal-age)
+	(up-compare-goal gl-target-player-distance > 50)
+	(player-human target-player)
+	(players-building-type-count target-player watch-tower > 2)
+	(building-type-count watch-tower < 2)
+=>
+	(chat-to-all "What for do you need all those towers?")
+	(disable-self)
+)
+
+#load-if-defined UP-GAME-WK
+(defrule
+	(game-time > 47)
+	(game-time < 54)
+=>
+	(up-store-player-name 1)
+)
+
+(defrule
+	(game-time > 47)
+	(game-time < 54)
+	(up-compare-text c: chip >= 0)
+=>
+	(up-chat-data-to-all "%s playing WK?!" c: 7031232)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-not-defined UP-MICHI-STYLE
+#load-if-defined BLACK-FOREST
+(defrule
+	(game-time < 40)
+	(game-time > 30)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(civ-selected korean)
+	(players-civ any-enemy aztec)
+=>
+	(chat-to-all "What are these civs trying to be? 11")
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 7)
+=>
+	(chat-to-all "gg")
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(map-type islands)
+	(game-time > 5)
+	(player-in-game any-enemy)
+	(strategic-number sn-town-center-start == 1)
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+=>
+	(chat-to-all "Go away.")
+	(disable-self)
+)
+
+(defrule
+	(goal TSA 1)
+	(population > almost-full-pop)
+	(unit-type-count unpacked-trebuchet > 5)
+=>
+	(chat-to-all "Today's forecast says: Meteors.")
+	(disable-self)
+)
+
+(defrule
+	(player-in-game every-ally)
+	(game-time > 6872)
+	(game-time < 8500)
+	(population > almost-full-pop)
+	(players-population focus-player > almost-full-pop)
+	(up-compare-goal gl-gold-income-per-minute > 700)
+=>
+	(chat-to-all "I'm still full of power!")
+	(disable-self)
+)
+
+(defrule
+	(strategic-number sn-nomad-style-start == 0)
+	(up-compare-goal threat-time > 300000)
+	(player-valid 4)
+	(game-time < 3000)
+	(up-compare-goal TSA >= 1)
+	(goal gl-strategy eew-strategy)
+	(current-age == imperial-age)
+	(game-time > 150)
+	(difficulty <= hard)
+	(up-compare-const gv-x-vs-one-challenge == 1)
+=>
+	(chat-to-all "Now, bring it!")
+	(disable-self)
+)
+
+#load-if-not-defined WONDER-RACE
+#load-if-not-defined KING-OF-THE-HILL
+#load-if-defined DARK-AGE-START
+(defrule
+	(game-time > 7200)
+	(game-time < 9000)
+	(difficulty <= hard)
+	(up-compare-goal TSA >= 1)
+	(gold-amount > 1000)
+	(nor	(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+=>
+	(chat-to-all "27 27?")
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+
+#end-if

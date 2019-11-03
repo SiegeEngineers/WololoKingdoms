@@ -1,0 +1,31 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-feudal-archery archer-skirm)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type basic-flush)
+	(set-goal gl-strategy flush)
+	(disable-self)
+)
+
+#load-if-defined UP-HUMAN-IN-GAME
+#load-if-defined HUN-CIV
+(defrule
+	(map-type arabia)
+=>
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy forward)
+	(disable-self)
+)
+#else
+(defrule
+	(map-type arabia)
+=>
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy trush)
+	(disable-self)
+)
+#end-if
+#end-if

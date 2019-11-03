@@ -1,0 +1,194 @@
+#load-if-not-defined MIGRATION-MAP
+#load-if-defined DARK-AGE-START
+#load-if-defined IMPERIAL-AGE-END
+(defrule
+	(game-time > 50)
+	(goal gl-current-age gv-dark)
+	(goal SLING 0)
+	(cc-players-unit-type-count 0 gold-mine > average-fish-amount); Don't do turtles if map has low gold
+	(strategic-number sn-minimum-water-body-size-for-dock == islands-map-water-style)
+=>
+	(set-goal DOCK 12)
+	(set-goal gl-strategy turtle-rush)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-strategic-number sn-dock-avoidance-factor -10000)
+	(set-strategic-number sn-dock-proximity-factor 200)
+	(set-strategic-number sn-dock-placement-mode -1)
+	(set-strategic-number sn-allow-new-build-order 2)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != turtle-rush)
+=>
+	(up-jump-rule 15)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(game-time > 2100)
+		(or	(and	(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style)
+				(or	(game-time > 1800)
+					(and	(up-compare-goal gl-target-navy-count < 5)
+						(warboat-count > 15))))
+			(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)))
+=>
+	(set-goal gl-strategy default)
+)
+
+; ============ BUILDINGS
+
+(defrule
+	(building-type-count-total market < 1)
+	(can-build market)
+=>
+	(set-strategic-number sn-maximum-town-size 10)
+	(build market)
+)
+
+(defrule
+	(current-age == dark-age)
+	(building-type-count dock > 0)
+	(unit-type-count-total villager > 25)
+	(dropsite-min-distance deer-hunting > 7)
+	(dropsite-min-distance deer-hunting < 27)
+	(strategic-number sn-enable-boar-hunting < 2)
+	(building-type-count-total mill < 2)
+	(can-build mill)
+=>
+	(up-modify-sn sn-mill-max-distance c:max 27)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-preferred-mill-placement 1)
+	(build mill)
+)
+
+(defrule
+	(building-type-count-total castle < 1)
+	(can-build castle)
+=>
+	(up-set-placement-data my-player-number dock c: 1)
+	(set-strategic-number sn-placement-zone-size 10)
+	(up-build place-control 0 c: castle)
+	(chat-to-player my-player-number "Castle!")
+	(set-goal gl-castle-placed YES)
+	(set-goal gl-castle-control YES)
+	(set-goal castle-dropped-timer 20)
+)
+
+(defrule
+	(nand	(food-amount > 800)
+		(and	(unit-type-count-total turtle-ship-line > 15)
+			(or	(research-available imperial-age)
+				(research-available ri-elite-turtle-ship))))
+	(unit-type-count-total turtle-ship-line < 100)
+	(can-train turtle-ship-line)
+=>
+	(train turtle-ship-line)
+)
+
+
+(defrule
+	(not	(research-completed ri-elite-turtle-ship))
+	(players-current-age focus-player > castle-age)
+	(strategic-number sn-threat-level != -2)
+=>
+	(set-strategic-number sn-threat-level -2)
+)
+
+(defrule
+	(unit-type-count turtle-ship-line > 0)
+	(not	(research-completed ri-elite-turtle-ship))
+	(players-current-age focus-player >= castle-age)
+	(strategic-number sn-threat-level != -4)
+=>
+	(set-strategic-number sn-threat-level -4)
+)
+
+(defrule
+	(unit-type-count turtle-ship-line > 0)
+	(or	(players-current-age focus-player < castle-age)
+		(research-completed ri-elite-turtle-ship))
+	(strategic-number sn-threat-level != -5)
+=>
+	(set-strategic-number sn-threat-level -5)
+)
+
+; =============== ECO
+
+(defrule
+	(up-compare-const gv-aofe-game == 0)
+	(building-type-count-total castle < 1)
+	(goal gl-current-age gv-dark-up)
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-current-age gv-dark-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-skip-first-mining-camp 0)
+)
+
+(defrule
+	(up-compare-const gv-aofe-game == 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(building-type-count-total castle == 0)
+	(stone-amount < castle-stone)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 10)
+	(set-strategic-number sn-wood-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 9)
+	(set-strategic-number sn-stone-gatherer-percentage 33)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(stone-amount >= 650)
+		(or	(building-type-count-total castle > 0)
+			(up-compare-const gv-aofe-game == 1)))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 16)
+	(set-strategic-number sn-wood-gatherer-percentage 52)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+)
+
+(defrule
+	(building-type-count town-center > 2)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(stone-amount >= 650)
+		(or	(building-type-count-total castle > 0)
+			(up-compare-const gv-aofe-game == 1)))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 23)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+)
+
+(defrule
+	(up-compare-const gv-aofe-game == 1)
+	(strategic-number sn-stone-gatherer-percentage == 5)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:+ 2)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 3)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(unit-type-count fishing-ship < 5)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:+ 14)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 8)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 6)
+)
+#end-if
+#end-if
+#end-if
+

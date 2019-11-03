@@ -1,0 +1,18 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy trush-push)
+	(set-goal gl-strategy-type FC)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-const gv-team-disadvantage == 1)
+	(population-cap >= 65)
+=>
+	(set-goal gl-strategy castle-drop)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(disable-self)
+)

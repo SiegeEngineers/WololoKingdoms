@@ -1,0 +1,51 @@
+(defrule
+	(up-player-distance target-player < 90)
+	(cc-players-unit-type-count 0 deep-fish < 10)
+	(cc-players-unit-type-count 0 shore-fish < 10)
+	(game-time < 10)
+	(starting-resources == low-resources)
+	(players-building-type-count any-enemy wonder > 0)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-wonder-assault YES)
+)
+
+(defrule
+	(goal gl-wonder-assault YES)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy default)
+	(set-goal gl-current-age gv-imperial)
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(goal gl-wonder-assault YES)
+	(soldier-count > 0)
+=>
+	(set-strategic-number sn-home-exploration-time 0)
+	(up-send-scout group-type-land-explore scout-opposite)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-wonder-assault YES)
+	(civilian-population > 20)
+	(unit-type-count-total trebuchet-set < 1)
+=>
+	(up-modify-escrow wood c:max 200)
+	(up-modify-escrow gold c:max 200)
+)
+
+(defrule
+	(goal gl-wonder-assault YES)
+	(or	(unit-type-count-total trebuchet-set < 1)
+		(or	(unit-type-count-total my-unique-unit-line > 8)
+			(unit-type-count-total my-UU > 8)))
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train-with-escrow trebuchet)
+=>
+	(release-escrow gold)
+	(release-escrow wood)
+	(train trebuchet)
+)

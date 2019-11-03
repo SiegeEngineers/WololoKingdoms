@@ -1,0 +1,132 @@
+
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(can-research ri-bow-saw)
+=>
+	(research ri-bow-saw)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(can-research ri-war-galley)
+=>
+	(research ri-war-galley)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(up-pending-objects c: galley-line < 2)
+	(can-train galley-line)
+=>
+	(train galley-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(up-pending-objects c: fire-ship-line < 2)
+	(can-train fire-ship-line)
+=>
+	(train fire-ship-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(unit-type-count-total villager < max-civ)
+	(unit-type-count-total villager < 131)
+	(or(food-amount < 850)
+	   (not(research-available imperial-age)))
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(food-amount < 850)
+	(unit-type-count villager <= 45)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(food-amount < 850)
+	(unit-type-count villager >= 50)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(food-amount < 850)
+	(unit-type-count villager >= 55)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(food-amount < 850)
+	(unit-type-count villager >= 60)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-food-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(food-amount < 850)
+	(unit-type-count villager >= 65)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(food-amount >= 850)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 60)
+	(set-strategic-number sn-food-gatherer-percentage 10)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(stone-amount < 100)
+	(current-age == castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 10)
+)
+
+
+
+(defrule
+	(strategic-number sn-castle-age-strategy == naval-fun)
+	(or(taunt-detected any-human 250)
+	   (taunt-detected my-player-number 250))
+=>
+	(chat-to-allies "Hi! I'm BruteForce v3.1 Created by CheeseOnToast")
+	(chat-to-allies "Going for navy.")
+	(acknowledge-taunt this-any-human 250)
+	(acknowledge-taunt my-player-number 250)
+)
