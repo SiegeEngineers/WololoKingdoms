@@ -662,6 +662,10 @@ static void shiftHudIndices(std::map<int, fs::path>& slpFiles,
     }
     base_index++;
   }
+  for (auto i = 1; i <= 8; i++) {
+    slpFiles[51123 + i] =
+        assetsPath / "51123.slp";
+  } // Add interfaces for very low resolutions, they only get slav ones though
 }
 
 void WKConverter::copyWallFiles(const fs::path& inputDir) {
