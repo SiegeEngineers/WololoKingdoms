@@ -2310,7 +2310,8 @@ int WKConverter::run() {
   fs::path wallsInputDir = resourceDir / "visual-mods" / "short-walls";
   fs::path aiInputPath = resourceDir / "Script.Ai";
   fs::path upSetupAoCSource = resourceDir / "SetupAoc.exe";
-  fs::path aocLanguageIniModDll = resourceDir / "language_x1_p1.dll";
+  fs::path aocMmmmodDll = resourceDir / "aoc-mmmod.dll";
+  fs::path mmmodsInputDir = resourceDir / "mmmods";
   fs::path patchFolder;
 
   // HD Resources
@@ -2354,6 +2355,7 @@ int WKConverter::run() {
   fs::path scenarioSoundsOutputPath = installDir / "Sound" / "Scenario";
   fs::path historyOutputPath = installDir / "History";
   fs::path tauntOutputPath = installDir / "Taunt";
+  fs::path mmmodsOutputPath = installDir / "mmmods";
   fs::path drsOutPath = installDir / "Data" / "gamedata_x1_p1.drs";
   fs::path outputDatPath = installDir / "Data" / "empires2_x1_p1.dat";
 
@@ -2398,9 +2400,11 @@ int WKConverter::run() {
   createLanguageFile(languageIniPath, patchFolder);
   if (settings.useExe || settings.useBoth) {
     cfs::create_directories(settings.upDir / "Data");
-    cfs::copy_file(aocLanguageIniModDll,
+    cfs::copy_file(aocMmmmodDll,
                    settings.upDir / "Data" / "language_x1_p1.dll",
                    fs::copy_options::update_existing);
+    cfs::copy(mmmodsInputDir, mmmodsOutputPath,
+              fs::copy_options::recursive | fs::copy_options::skip_existing);
   }
 
   listener->increaseProgress(1); // 6
