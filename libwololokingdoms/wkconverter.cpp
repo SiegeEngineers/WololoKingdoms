@@ -151,16 +151,17 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
     // skip the old civ descriptions
     throw std::invalid_argument("uncentered achievement screen stuff");
   }
+  
   if (nb >= 20312 && nb <= 20341) {
     switch (nb) {
     case 20312:
-      nb = 20334;
+      nb = 20337;
       break;
     case 20313:
       nb = 20312;
       break;
     case 20314:
-      nb = 20338;
+      nb = 20340;
       break;
     case 20315:
       nb = 20313;
@@ -184,19 +185,19 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       nb = 20318;
       break;
     case 20322:
-      nb = 20329;
+      nb = 20331;
       break;
     case 20323:
       nb = 20330;
       break;
     case 20324:
-      nb = 20331;
+      nb = 20329;
       break;
     case 20325:
       nb = 20319;
       break;
     case 20326:
-      nb = 20339;
+      nb = 20338;
       break;
     case 20327:
       nb = 20320;
@@ -205,7 +206,7 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       nb = 20332;
       break;
     case 20329:
-      nb = 20340;
+      nb = 20339;
       break;
     case 20330:
       nb = 20336;
@@ -220,7 +221,7 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       nb = 20323;
       break;
     case 20334:
-      nb = 20337;
+      nb = 20334;
       break;
     case 20335:
       nb = 20324;
@@ -245,6 +246,8 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       break;
     }
   }
+  
+
   /*
    * Conquerors AI names start at 5800 (5800 = 4660+1140, so offset 1140 in the
    * xml file) However, there's only space for 10 civ AI names. We'll shift AI
