@@ -10,8 +10,7 @@ void siegeTowerPatch(genie::DatFile* aocDat) {
 
   size_t const siegeTowerUnitId = 1105;
   aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].ActionType = 12;
-  aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].TargetDiplomacy =
-      0; // targets all objects
+  aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].CarryCheck = 0;
 }
 
 DatPatch siegeTowerFix = {&siegeTowerPatch, "Siege Tower Fix"};
