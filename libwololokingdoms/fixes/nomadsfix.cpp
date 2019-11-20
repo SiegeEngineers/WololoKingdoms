@@ -49,9 +49,16 @@ void nomadsFixPatch(genie::DatFile * aocDat) {
 
   for (auto & civ : aocDat->Civs) {
     auto house1 = civ.Units[unitIdHouseC];
+    house1.ID = unitIdRubble1;
+    house1.CopyID = unitIdRubble1;
+    house1.BaseID = unitIdRubble1;
     house1.ResourceStorages[0].Paid = genie::ResourceStoreMode::UpResourceType; // `Paid` is the Store Mode.
     civ.Units[unitIdRubble1] = house1;
+
     auto house2 = civ.Units[unitIdHouseI];
+    house2.ID = unitIdRubble2;
+    house2.CopyID = unitIdRubble2;
+    house2.BaseID = unitIdRubble2;
     house2.ResourceStorages[0].Paid = genie::ResourceStoreMode::UpResourceType; // `Paid` is the Store Mode.
     civ.Units[unitIdRubble2] = house2;
   }

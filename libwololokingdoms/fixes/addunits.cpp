@@ -20,6 +20,8 @@ void addRoamingWolf(genie::DatFile * df) {
 
   auto unit = df->Civs[civIdGaia].Units[unitIdWolf];
   unit.LanguageDLLName = langFileNameRoamingWolf;
+  unit.LanguageDLLCreation = langFileNameRoamingWolf + 1000;
+  unit.LanguageDLLHelp = langFileNameRoamingWolf + 100000;
 
   auto headerId = df->UnitHeaders.size();
   df->UnitHeaders.push_back(df->UnitHeaders[unitIdWolf]);
@@ -40,6 +42,11 @@ void addRoamingWolf(genie::DatFile * df) {
     auto task = &(*taskList)[i];
     task->ID = i;
   }
+
+  //id fix
+  unit.ID = headerId;
+  unit.CopyID = headerId;
+  unit.BaseID = headerId;
 
   for (auto& civ : df->Civs) {
     civ.Units.push_back(unit);
@@ -68,6 +75,10 @@ void addTransportSharkatzor(genie::DatFile * df) {
   unit.GarrisonCapacity = sharkatzorTransportGarrisonCapacity;
   unit.InterfaceKind = genie::Unit::InterfaceKinds::TransportShipInterface;
   unit.Trait = genie::Unit::Traits::GarrisonableTrait;
+  
+  unit.LanguageDLLName = 5655;
+  unit.LanguageDLLCreation = 6655;
+  unit.LanguageDLLHelp = 105655;
 
   auto headerId = df->UnitHeaders.size();
   df->UnitHeaders.push_back(df->UnitHeaders[unitIdSharkatzor]);
@@ -85,6 +96,11 @@ void addTransportSharkatzor(genie::DatFile * df) {
     auto task = &(*taskList)[i];
     task->ID = i;
   }
+
+  // id fix
+  unit.ID = headerId;
+  unit.CopyID = headerId;
+  unit.BaseID = headerId;
 
   for (auto& civ : df->Civs) {
     civ.Units.push_back(unit);
@@ -137,10 +153,17 @@ void addUnitSpawner(genie::DatFile * df) {
   std::vector<genie::unit::BuildingAnnex> annexes = {annexC, annexD, annexE,
                                                      annexF};
   unitA.Building.Annexes = annexes;
-
+  int langId = 5039;
   auto units = {unitA, unitB, unitC, unitD, unitE, unitF};
   for (auto unit : units) {
     df->UnitHeaders.push_back(df->UnitHeaders[unitIdLlamaBuilding]);
+    unit.ID = df->Civs[0].Units.size();
+    unit.CopyID = unit.ID;
+    unit.BaseID = unit.ID;
+    unit.LanguageDLLName = langId;
+    unit.LanguageDLLCreation = langId + 1000;
+    unit.LanguageDLLHelp = langId + 100000;
+    ++langId;
     for (auto& civ : df->Civs) {
       civ.Units.push_back(unit);
       civ.UnitPointers.push_back(1);
