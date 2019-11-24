@@ -49,7 +49,6 @@ Temporary Items
 
 # Built files
 lib/release_libgenieutils.dll.a
-*.dll
 *.so
 steam_api.lib
 
