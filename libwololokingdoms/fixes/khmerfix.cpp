@@ -8,6 +8,10 @@ void khmerPatch(genie::DatFile* aocDat) {
   // Civ Bonus Fix
   size_t const khmerBonusTechId = 693;
   size_t const ballistaElephantId = 1120;
+  size_t const eliteBallistaElephantId = 1122;
+  size_t const ballistaElephantBoltId = 1167;
+  size_t const petardId = 440;
+  size_t const treePetardId = 1225;
   size_t const newElephantId = 946;
   size_t const chemistryId = 47;
   size_t const siegeEngineersId = 375;
@@ -39,15 +43,52 @@ void khmerPatch(genie::DatFile* aocDat) {
   // use in CtR maps
   aocDat->UnitHeaders[newElephantId] = aocDat->UnitHeaders[ballistaElephantId];
   aocDat->UnitHeaders[newElephantId].TaskList.pop_back();
+  aocDat->UnitHeaders[treePetardId] = aocDat->UnitHeaders[petardId];
+  aocDat->UnitHeaders[treePetardId].TaskList.pop_back();
+  aocDat->UnitHeaders[treePetardId].TaskList.pop_back();
+  aocDat->UnitHeaders[treePetardId].TaskList.pop_back();
+
+  aocDat->Civs[0].Units[treePetardId] = aocDat->Civs[0].Units[petardId];
+  aocDat->Civs[0].Units[treePetardId].ID = treePetardId;
+  aocDat->Civs[0].Units[treePetardId].CopyID = treePetardId;
+  aocDat->Civs[0].Units[treePetardId].BaseID = treePetardId;
+  aocDat->Civs[0].Units[treePetardId].HitPoints = 0;
+  aocDat->Civs[0].Units[treePetardId].Combat.BlastAttackLevel = 1;
+  aocDat->Civs[0].Units[treePetardId].StandingGraphic = {-1, -1};
+  aocDat->Civs[0].Units[treePetardId].Moving.WalkingGraphic = -1;
+  aocDat->Civs[0].Units[treePetardId].DyingGraphic = -1;
+  aocDat->Civs[0].Units[treePetardId].LanguageDLLName = 0;
+  aocDat->Civs[0].Units[treePetardId].Name = "TREEFELLER";
+  aocDat->Civs[0].Units[treePetardId].DyingGraphic = -1;
+  aocDat->Civs[0].Units[treePetardId].Creatable.TrainLocationID = -1;
+  aocDat->Civs[0].Units[treePetardId].Creatable.HeroMode = 32;
+  aocDat->Civs[0].Units[treePetardId].HideInEditor = 1;
+  aocDat->Civs[0].Units[treePetardId].DyingSound = -1;
+  aocDat->Civs[0].Units[treePetardId].Action.AttackSound = -1;
+  aocDat->Civs[0].Units[treePetardId].Action.MoveSound = -1;
+  aocDat->Civs[0].Units[treePetardId].Combat.AttackGraphic = -1;
+  aocDat->Civs[0].Units[treePetardId].Combat.BlastWidth = 0.1;
+  aocDat->Civs[0].Units[treePetardId].Combat.Armours.clear();
+  aocDat->Civs[0].Units[treePetardId].Combat.Attacks.resize(1);
+  aocDat->Civs[0].Units[treePetardId].Combat.Attacks[0].Class = genie::unit::AttackOrArmor::Trees;
+  aocDat->Civs[0].Units[treePetardId].Combat.Attacks[0].Amount = 100;    
+	
   for (size_t i = 0; i < aocDat->Civs.size(); i++) {
+    aocDat->Civs[i].Units[treePetardId] = aocDat->Civs[0].Units[treePetardId];
+    aocDat->Civs[i].Units[ballistaElephantBoltId].DeadUnitID = treePetardId;
+    
+    aocDat->Civs[i].Units[ballistaElephantId].Combat.BlastWidth = 0;
+    aocDat->Civs[i].Units[eliteBallistaElephantId].Combat.BlastWidth = 0;
+
     aocDat->Civs[i].Units[newElephantId] =
         aocDat->Civs[i].Units[ballistaElephantId];
     aocDat->Civs[i].Units[newElephantId].Combat.Attacks.erase(
         aocDat->Civs[i].Units[newElephantId].Combat.Attacks.begin() + 4);
+
     aocDat->Civs[i].Units[newElephantId].Combat.BlastAttackLevel = 2;
-    aocDat->Civs[i].Units[newElephantId].LanguageDLLCreation += 508;
-    aocDat->Civs[i].Units[newElephantId].LanguageDLLHelp += 508;
-    aocDat->Civs[i].Units[newElephantId].LanguageDLLName += 508;
+    aocDat->Civs[i].Units[newElephantId].LanguageDLLName = 5654;
+    aocDat->Civs[i].Units[newElephantId].LanguageDLLCreation = 6654;
+    aocDat->Civs[i].Units[newElephantId].LanguageDLLHelp = 105654;
   }
   aocDat->Effects[doubleCrossbowId].EffectCommands.push_back(
       aocDat->Effects[doubleCrossbowId].EffectCommands[0]);
@@ -66,6 +107,7 @@ void khmerPatch(genie::DatFile* aocDat) {
       aocDat->Effects[eliteBallistaTechId].EffectCommands[0]);
   aocDat->Effects[eliteBallistaTechId].EffectCommands[1].TargetUnit =
       newElephantId;
+
 
   for (size_t i = 24; i < 28; i++) {
     aocDat->Effects[siegeEngineersId].EffectCommands.push_back(

@@ -36,6 +36,7 @@ std::vector<std::pair<int, int>> const unitsIDtoSwap = {
     {1104, 653}, // Demolition Ship, HFALS_D
     //{947, 699}, // Cutting Mangonel, HSUBO_D
     {948, 701},  // Cutting Onager, HWOLF_D
+    {550, 701}, // switching onagers
     {1079, 732}, // Genitour placeholder, HKHAN_D
     {1021, 734}, // Feitoria, Nonexistent
     {1120, 760}, // Ballista Elephant, BHUSK_D

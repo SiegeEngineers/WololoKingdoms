@@ -1,5 +1,6 @@
 #include "smallfixes.h"
 #include "wololo/datPatch.h"
+#include <cassert>
 
 namespace wololo {
 
@@ -56,6 +57,7 @@ void smallPatches(genie::DatFile* aocDat) {
                                1043, 1044, 1045, 1046, 1047};
   int16_t const gates[] = {85,  88,  90,  91,  490, 491,
                            667, 688, 669, 670, 673, 674};
+  int16_t const gateFoundations[] = {487, 488};
   // int16_t const gateposts[] = {80,81,92,95,663,664,671,672};
 
   // unpackable TC
@@ -64,6 +66,14 @@ void smallPatches(genie::DatFile* aocDat) {
   aocDat->UnitHeaders[PTWC].TaskList[0].TargetDiplomacy = 0;
   aocDat->UnitHeaders[PTWC].TaskList[0].EnableTargeting = 0;
 
+  assert(aocDat->Civs[1].Units[gateFoundations[0]].Combat.Armours[2].Class ==
+         genie::unit::AttackOrArmor::BaseMelee);
+  assert(aocDat->Civs[1].Units[gateFoundations[0]].Combat.Armours[3].Class ==
+         genie::unit::AttackOrArmor::BasePierce);
+  assert(aocDat->Civs[1].Units[gateFoundations[1]].Combat.Armours[2].Class ==
+         genie::unit::AttackOrArmor::BaseMelee);
+  assert(aocDat->Civs[1].Units[gateFoundations[1]].Combat.Armours[3].Class ==
+         genie::unit::AttackOrArmor::BasePierce);
   for (size_t civIndex = 0; civIndex < aocDat->Civs.size(); civIndex++) {
     // fixes faulty elite camel archer data for non-gaia civs
     aocDat->Civs[civIndex].Units[eliteCamelArcherID] =
@@ -92,6 +102,17 @@ void smallPatches(genie::DatFile* aocDat) {
     // fix gate rubbles
     for (size_t i = 0; i < sizeof(gates) / sizeof(gates[0]); i++) {
       aocDat->Civs[civIndex].Units[gates[i]].DeadUnitID = 144;
+    }
+    for (size_t i = 0; i < sizeof(gateFoundations) / sizeof(gateFoundations[0]);
+         i++) {
+      aocDat->Civs[civIndex]
+          .Units[gateFoundations[i]]
+          .Combat.Armours[2]
+          .Amount = 6;
+      aocDat->Civs[civIndex]
+          .Units[gateFoundations[i]]
+          .Combat.Armours[3]
+          .Amount = 6;
     }
   }
   // Fix longboats having an unload ability that could mess with attacks

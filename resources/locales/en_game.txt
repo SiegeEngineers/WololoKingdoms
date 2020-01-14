@@ -16,6 +16,14 @@
 9542=http://www.aoe2sheet.info/link_collection.html
 17440=Uprooting
 28440=Research <b>Uprooting<b> (<cost>) \n Mangonels and Onagers can cut down trees
+5639=Unit Spawner A
+5640=Unit Spawner B
+5641=Unit Spawner C
+5642=Unit Spawner D
+5643=Unit Spawner E
+5644=Unit Spawner F
+5645=Roaming Wolf
+5655=Sharkatzor Transport
 5653=Onager (NoCut)
 14653=Onager (NoCut)
 6653=Build Onager (NoCut)

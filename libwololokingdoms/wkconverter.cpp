@@ -152,16 +152,17 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
     // skip the old civ descriptions
     throw std::invalid_argument("uncentered achievement screen stuff");
   }
+  
   if (nb >= 20312 && nb <= 20341) {
     switch (nb) {
     case 20312:
-      nb = 20334;
+      nb = 20337;
       break;
     case 20313:
       nb = 20312;
       break;
     case 20314:
-      nb = 20338;
+      nb = 20340;
       break;
     case 20315:
       nb = 20313;
@@ -185,19 +186,19 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       nb = 20318;
       break;
     case 20322:
-      nb = 20329;
+      nb = 20331;
       break;
     case 20323:
       nb = 20330;
       break;
     case 20324:
-      nb = 20331;
+      nb = 20329;
       break;
     case 20325:
       nb = 20319;
       break;
     case 20326:
-      nb = 20339;
+      nb = 20338;
       break;
     case 20327:
       nb = 20320;
@@ -206,7 +207,7 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       nb = 20332;
       break;
     case 20329:
-      nb = 20340;
+      nb = 20339;
       break;
     case 20330:
       nb = 20336;
@@ -221,7 +222,7 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       nb = 20323;
       break;
     case 20334:
-      nb = 20337;
+      nb = 20334;
       break;
     case 20335:
       nb = 20324;
@@ -246,6 +247,8 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
       break;
     }
   }
+  
+
   /*
    * Conquerors AI names start at 5800 (5800 = 4660+1140, so offset 1140 in the
    * xml file) However, there's only space for 10 civ AI names. We'll shift AI
@@ -1253,7 +1256,8 @@ void WKConverter::patchArchitectures(genie::DatFile* aocDat) {
   const std::array unitIDs = {17,  21,  420, 442, 527,  528, 529,
                               532, 539, 545, 691, 1103, 1104};
   const std::array civIDs = {13, 23, 7, 17, 14, 31, 21, 6,  11,
-                             12, 27, 1, 4,  18, 9,  8,  16, 24};
+                             12, 27, 1, 4,  18, 9,  8,  16, 24,
+                            29, 30, 26};
   const auto& burmese = aocDat->Civs[30]; // These are used for ID reference
   for (size_t c = 0; c < civIDs.size(); c++) {
     const auto civId = civIDs[c];
@@ -1314,18 +1318,19 @@ void WKConverter::patchArchitectures(genie::DatFile* aocDat) {
 
   // Separate Units into 4 major regions (Europe, Asian, Southern, American)
   const std::vector<std::vector<int32_t>> civGroups = {
-      {3, 4, 11},
-      {7, 23},
-      {14, 19, 24}, // Central Eu, Orthodox, Mediterranean
+      {3},
+      {7},
+      {14}, // Central Eu, Orthodox, Mediterranean
       {5},
-      {6, 18},
-      {28, 29, 30, 31}, // Japanese, East Asian, SE Asian
-      {8, 9, 10, 27},
+      {6},
+      {28}, // Japanese, East Asian, SE Asian
+      {8},
       {20},
-      {25, 26},     // Middle Eastern, Indian, African
-      {15, 16, 21}, // American
-      {17, 12},
-      {22} // Steppe, Magyars
+      {25},     // Middle Eastern, Indian, African
+      {15}, // American
+      {17},
+      {22}, // Steppe, Magyars
+      {4}, {11}, {23}, {19}, {24}, {18}, {29}, {30}, {31}, {9}, {10}, {27}, {26}, {16}, {21}, {12}, {2}, {13} //This line could be reordered if it makes more sense
   };
   // std::map<int,int> slpIdConversion =
   // {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},

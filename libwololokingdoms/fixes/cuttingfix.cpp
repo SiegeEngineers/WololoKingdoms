@@ -40,9 +40,9 @@ void cuttingPatch(genie::DatFile* aocDat) {
     aocDat->Civs[i].Units[newOnagerID] = aocDat->Civs[i].Units[onagerID];
     // TODO replace onagerID in here with newOnagerID with the new data upate
     aocDat->Civs[i].Units[onagerID].Combat.BlastAttackLevel = 2;
-    aocDat->Civs[i].Units[onagerID].LanguageDLLCreation += 205;
-    aocDat->Civs[i].Units[onagerID].LanguageDLLHelp += 205;
-    aocDat->Civs[i].Units[onagerID].LanguageDLLName += 205;
+    aocDat->Civs[i].Units[onagerID].LanguageDLLName = 5653;
+    aocDat->Civs[i].Units[onagerID].LanguageDLLCreation = 6653;
+    aocDat->Civs[i].Units[onagerID].LanguageDLLHelp = 105653;
   }
   effect.UnitClassID = newOnagerID;
   aocDat->Effects[onagerCuttingEffectID].EffectCommands.push_back(effect);
