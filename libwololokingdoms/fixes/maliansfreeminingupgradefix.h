@@ -1,5 +1,4 @@
-#ifndef MALIANSFREEMININGUPGRADEFIX_H
-#define MALIANSFREEMININGUPGRADEFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch maliansFreeMiningUpgradeFix;
 
 }
-
-#endif // MALIANSFREEMININGUPGRADEFIX_H

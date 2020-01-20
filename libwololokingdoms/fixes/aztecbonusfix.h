@@ -1,5 +1,4 @@
-#ifndef AZTECBONUSFIX_H
-#define AZTECBONUSFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch aztecBonusFix;
 
 }
-
-#endif // AZTECBONUSFIX_H

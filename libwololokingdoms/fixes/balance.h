@@ -1,5 +1,4 @@
-#ifndef BALANCE_H
-#define BALANCE
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch balance;
 
 }
-
-#endif // SEPARATESHIPGRAPHICS_H

@@ -1,5 +1,4 @@
-#ifndef CUTTINGFIX_H
-#define CUTTINGFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch cuttingFix;
 
 }
-
-#endif // CUTTINGFIX_H

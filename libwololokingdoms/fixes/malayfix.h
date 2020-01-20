@@ -1,5 +1,4 @@
-#ifndef MALAYFIX_H
-#define MALAYFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch malayFix;
 
 }
-
-#endif // MALAYFIX_H

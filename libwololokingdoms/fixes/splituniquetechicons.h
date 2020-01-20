@@ -1,5 +1,4 @@
-#ifndef SPLITUNIQUETECHICONS_H
-#define SPLITUNIQUETECHICONS_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch splitUniqueTechIcons;
 
 }
-
-#endif // SPLITUNIQUETECHICONS_H

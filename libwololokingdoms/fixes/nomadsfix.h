@@ -1,5 +1,4 @@
-#ifndef NOMADSFIX_H
-#define NOMADSFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch nomadsFix;
 
 }
-
-#endif // NOMADSFIX_H

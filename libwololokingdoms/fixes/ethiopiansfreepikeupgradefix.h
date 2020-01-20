@@ -1,5 +1,4 @@
-#ifndef ETHIOPIANSFREEPIKEUPGRADEFIX_H
-#define ETHIOPIANSFREEPIKEUPGRADEFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch ethiopiansFreePikeUpgradeFix;
 
 }
-
-#endif // ETHIOPIANSFREEPIKEUPGRADEFIX_H

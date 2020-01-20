@@ -1,5 +1,4 @@
-#ifndef QUEUETECHS_H
-#define QUEUETECHS_H
+#pragma once
 #include "wololo/datPatch.h"
 
 // The number of unit icons, plus a small buffer.
@@ -10,5 +9,3 @@ namespace wololo {
 extern DatPatch queueTechs;
 
 }
-
-#endif // QUEUETECHS_H

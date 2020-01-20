@@ -1,5 +1,4 @@
-#ifndef PORTUGUESEFIX_H
-#define PORTUGUESEFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch portugueseFix;
 
 }
-
-#endif // PORTUGUESEFIX_H

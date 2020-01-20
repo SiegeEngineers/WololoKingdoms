@@ -1,5 +1,4 @@
-#ifndef HOTKEYSFIX_H
-#define HOTKEYSFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch hotkeysFix;
 
 }
-
-#endif // HOTKEYSFIX_H

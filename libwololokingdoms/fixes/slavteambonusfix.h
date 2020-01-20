@@ -1,5 +1,4 @@
-#ifndef SLAVTEAMBONUSFIX_H
-#define SLAVTEAMBONUSFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch slavTeamBonusFix;
 
 }
-
-#endif // SLAVTEAMBONUSFIX_H

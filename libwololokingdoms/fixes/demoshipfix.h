@@ -1,5 +1,4 @@
-#ifndef DEMOSHIPFIX_H
-#define DEMOSHIPFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch demoShipFix;
 
 }
-
-#endif // DEMOSHIPFIX_H

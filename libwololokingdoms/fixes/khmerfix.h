@@ -1,5 +1,4 @@
-#ifndef KHMERFIX_H
-#define KHMERFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch khmerFix;
 
 }
-
-#endif // KHMERFIX_H

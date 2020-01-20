@@ -1,5 +1,4 @@
-#ifndef BERBERSUTFIX_H
-#define BERBERSUTFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch berbersUTFix;
 
 }
-
-#endif // BERBERSUTFIX_H

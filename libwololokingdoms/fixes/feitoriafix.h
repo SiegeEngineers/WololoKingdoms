@@ -1,5 +1,4 @@
-#ifndef FEITORIAFIX_H
-#define FEITORIAFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch feitoriaFix;
 
 }
-
-#endif // FEITORIAFIX_H

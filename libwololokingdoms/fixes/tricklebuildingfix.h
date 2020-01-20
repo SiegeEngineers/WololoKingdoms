@@ -1,5 +1,4 @@
-#ifndef TRICKLEBUILDINGFIX_H
-#define TRICKLEBUILDINGFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -9,4 +8,4 @@ int getNewGraphicId(genie::DatFile* aocDat, int i);
 
 } // namespace wololo
 
-#endif // TRICKLEBUILDINGFIX_H
+

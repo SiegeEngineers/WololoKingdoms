@@ -1,5 +1,4 @@
-#ifndef AI900UNITIDFIX_H
-#define AI900UNITIDFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch ai900UnitIdFix;
 
 }
-
-#endif // AI900UNITIDFIX_H

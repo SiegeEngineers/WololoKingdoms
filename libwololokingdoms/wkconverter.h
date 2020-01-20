@@ -119,7 +119,7 @@ private:
   fs::path vooblyDir;
   fs::path upDir;
   fs::path installDir;
-  std::string baseModName = "WololoKingdoms";
+  std::string baseModName = "WololoKingdoms Beta";
   fs::path resourceDir = "resources";
 
   enum TerrainType {

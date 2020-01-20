@@ -1,5 +1,4 @@
-#ifndef SEPARATESHIPGRAPHICS_H
-#define SEPARATESHIPGRAPHICS_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch separateShipGraphics;
 
 }
-
-#endif // SEPARATESHIPGRAPHICS_H

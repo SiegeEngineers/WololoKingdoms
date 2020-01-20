@@ -1,5 +1,4 @@
-#ifndef BURMESEFIX_H
-#define BURMESEFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch burmeseFix;
 
 }
-
-#endif // BURMESEFIX_H

@@ -1,5 +1,4 @@
-#ifndef UPROOTINGFIX_H
-#define UPROOTINGFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch uprootingFix;
 
 }
-
-#endif // UPROOTINGFIX_H

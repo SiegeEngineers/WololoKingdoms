@@ -1,5 +1,4 @@
-#ifndef HOUSEATTACKFIX_H
-#define HOUSEATTACKFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch houseAttackFix;
 
 }
-
-#endif // HOUSEATTACKFIX_H

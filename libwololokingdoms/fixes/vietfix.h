@@ -1,5 +1,4 @@
-#ifndef VIETFIX_H
-#define VIETFIX_H
+#pragma once
 #include "wololo/datPatch.h"
 
 namespace wololo {
@@ -7,5 +6,3 @@ namespace wololo {
 extern DatPatch vietFix;
 
 }
-
-#endif // VIETFIX_H
