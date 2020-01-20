@@ -78,6 +78,7 @@ set(ALL_SRC
 	fixes/addunits.cpp
     fixes/ai900unitidfix.cpp
 	fixes/aztecbonusfix.cpp
+    fixes/balance.cpp
     fixes/berbersutfix.cpp
     fixes/burmesefix.cpp
     fixes/cuttingfix.cpp

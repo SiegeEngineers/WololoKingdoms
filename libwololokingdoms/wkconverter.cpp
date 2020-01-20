@@ -5,6 +5,7 @@
 #include "fixes/addunits.h"
 #include "fixes/ai900unitidfix.h"
 #include "fixes/aztecbonusfix.h"
+#include "fixes/balance.h"
 #include "fixes/berbersutfix.h"
 #include "fixes/burmesefix.h"
 #include "fixes/cuttingfix.h"
@@ -2690,6 +2691,7 @@ int WKConverter::run() {
         wololo::aztecBonusFix,
         wololo::separateShipGraphics,
         wololo::addUnits,
+        wololo::balance,
         wololo::queueTechs,
     };
 
