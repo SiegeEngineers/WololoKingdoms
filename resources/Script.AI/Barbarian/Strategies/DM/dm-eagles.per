@@ -1,0 +1,66 @@
+#load-if-not-defined MAYAN-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-eagles)
+	(set-goal gl-dm-barracks-number 15)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 2500)
+	(set-goal gl-dm-stone-to-sell 1000)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit elite-eagle-warrior)
+	(disable-self)
+)
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-eagles)
+	(set-goal gl-dm-barracks-number 8)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 2500)
+	(set-goal gl-dm-wood-to-sell 2000)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit elite-eagle-warrior)
+	(set-strategic-number sn-dm-low-housing-time 120)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-const gv-meso-civ-enemy == 1)
+=>
+	(set-goal gl-dm-food-to-sell 3500)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count castle < 1)
+	(not	(players-civ focus-player mayan))
+	(or	(up-compare-goal gl-enemy-infantry-count > 1)
+		(up-compare-const dm-infantry-threat-likelihood == 1))
+=>
+	(up-modify-goal gl-dm-range-number c:max 1)
+)
+
+(defrule
+	(building-type-count castle < 1)
+	(building-type-count-total barracks > 0)
+	(not	(players-civ focus-player mayan))
+	(or	(up-compare-goal gl-enemy-infantry-count > 1)
+		(or	(up-compare-const dm-infantry-threat-likelihood == 1)
+			(or	(players-civ focus-player aztec)
+				(or	(players-civ focus-player gothic)
+					(or	(players-civ focus-player japanese)
+						(players-civ focus-player viking))))))
+=>
+	(up-modify-goal gl-dm-range-number c:max 4)
+)
+#end-if

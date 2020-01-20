@@ -1,0 +1,5485 @@
+#load-if-not-defined WONDER-RACE
+#load-if-not-defined ISLANDS-MAP
+(defrule
+	(up-pending-objects c: town-center == 0)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total town-center < 5)
+	(goal underattack yes)
+	(players-military-population any-ally >= 18)
+	(can-build town-center)
+=>
+	(set-strategic-number sn-placement-to-center 1);test
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 2); 3
+; nn	(up-assign-builders c: town-center-foundation c: 4)
+	(set-strategic-number sn-town-center-placement 0)
+	(set-strategic-number sn-placement-zone-size 20); 25
+	(up-set-placement-data this-any-ally -1 c: -25)
+	(up-build place-control 0 c: town-center))
+(defrule
+	(up-pending-objects c: town-center == 0)
+	(building-type-count-total town-center == 4)
+(or	(civilian-population >= up-max-civ)
+(or	(population >= max-civ-pop); intended
+	(goal defend yes)))
+	(players-military-population any-ally >= 18)
+	(can-build town-center)
+=>
+	(set-strategic-number sn-placement-to-center 1);test
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 2); 3
+; nn	(up-assign-builders c: town-center-foundation c: 1)
+	(set-strategic-number sn-town-center-placement 0)
+	(set-strategic-number sn-placement-zone-size 20); 25
+	(up-set-placement-data this-any-ally -1 c: -25)
+	(up-build place-control 0 c: town-center))
+#end-if
+#else
+(defrule
+	(up-compare-goal wwonder != yes)
+=>
+	(set-goal wwonder yes)
+;	(disable-self)
+)
+(defrule
+;	(goal fleet yes)
+	(strategic-number sn-current-age == dark)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= 110))
+(or	(cc-players-unit-type-count 0 933 >= 1)
+	(cc-players-unit-type-count 0 ocean-fish-class >= 1))
+	(unit-type-count-total fishing-ship < 16)
+	(civilian-population < up-max-civ)
+	(goal increase-ts 0)
+	(building-type-count-total dock == 0)
+	(can-build dock)
+=>
+	(build dock))
+(defrule
+        (building-type-count-total market < 1)
+	(wood-amount >= 175)
+	(building-available market)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts market)
+	(enable-timer increase-ts-timer 7))
+(defrule
+        (building-type-count-total blacksmith < 1)
+        (building-type-count-total market >= 1)
+	(wood-amount >= 150)
+	(building-available blacksmith)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts blacksmith)
+	(enable-timer increase-ts-timer 7))
+(defrule
+        (building-type-count-total monastery < 1)
+	(wood-amount >= 175)
+	(building-available monastery)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(strategic-number sn-current-age >= imperial)
+	(strategic-number sn-military-superiority >= 0))
+        (building-type-count-total siege-workshop < 1)
+	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+#end-if
+
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+	(building-type-count-total town-center <= 0)
+;	(building-type-count lumber-camp <= 0)
+	(game-time >= 180)
+	(wood-amount < 275)
+	(dropsite-min-distance wood >= 6)
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 2)
+	(build lumber-camp))
+
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found stone)
+	(building-type-count-total town-center <= 0)
+;	(building-type-count mining-camp <= 0)
+(or	(wood-amount >= 275)
+	(building-type-count-total lumber-camp >= 1))
+	(stone-amount < 100)
+	(dropsite-min-distance stone >= 6)
+	(dropsite-min-distance stone < 255)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 2)
+	(build mining-camp))
+
+(defrule
+	(up-pending-objects c: town-center == 0)
+	(building-type-count-total town-center < 1)
+(or	(players-military-population every-ally <= 0)
+	(not	(player-in-game any-ally)))
+	(game-time >= 600); no nomad
+	(can-build town-center)
+=>
+	(set-strategic-number sn-placement-to-center 1);test
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 2); 3
+	(up-assign-builders c: town-center-foundation c: 1)
+	(set-strategic-number sn-town-center-placement 0)
+	(up-set-placement-data my-player-number -1 c: market-neg-dist); -50)
+	(up-build place-control 0 c: town-center))
+
+(defrule
+;	(up-pending-objects c: town-center < 2)
+(or	(goal kloster yes)
+	(wood-amount >= 195))
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total town-center < 3)
+	(wood-amount >= tc-wood)
+	(stone-amount >= 100)
+	(building-available town-center)
+	(goal increase-ts 0)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 3)
+	(set-strategic-number sn-town-center-placement 0)
+; nn	(up-assign-builders c: town-center-foundation c: 4)
+	(set-goal increase-ts town-center)
+	(enable-timer increase-ts-timer 7))
+
+#load-if-not-defined WONDER-RACE
+(defrule
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop))
+	(goal uugoal yes)
+	(building-type-count-total town-center >= 2)
+(or	(building-type-count-total town-center >= 3)
+	(building-type-count-total castle <= 0))
+	(building-type-count-total castle <= 1)
+	(stone-amount < castle-tc-stone)
+=>
+	(up-jump-rule 2))
+(defrule
+;	(up-pending-objects c: town-center < 2); 1
+	(building-type-count-total town-center == 3)
+(or	(building-type-count-total farm g:>= maxfarms)
+(or	(civilian-population < up-max-civ);	(unit-type-count-total villager < up-max-civ)
+	(building-type-count-total castle >= 1))); 2
+	(wood-amount >= tc-wood)
+	(stone-amount >= 100)
+	(building-available town-center)
+	(goal increase-ts 0)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 3)
+;	(set-strategic-number sn-town-center-placement 0)
+; nn	(up-assign-builders c: town-center-foundation c: 4)
+	(set-goal increase-ts town-center)
+	(enable-timer increase-ts-timer 7))
+(defrule
+;	(up-pending-objects c: town-center < 2); 1
+	(building-type-count-total town-center == 3)
+(or	(wood-amount >= tc-175-wood)
+(or	(strategic-number sn-current-age >= imperial)
+	(up-research-status c: imperial-age >= research-available)))
+	(wood-amount >= tc-wood)
+	(stone-amount >= 100)
+	(building-available town-center)
+	(goal increase-ts 0)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 3)
+;	(set-strategic-number sn-town-center-placement 0)
+; nn	(up-assign-builders c: town-center-foundation c: 4)
+	(set-goal increase-ts town-center)
+	(enable-timer increase-ts-timer 7)); end jump
+
+(defrule
+	(timer-triggered MSuperiority); twentysec
+	(goal increase-ts town-center)
+	(building-type-count-total town-center >= 1)
+	(housing-headroom < 2)
+	(population-headroom > 0)
+=>
+	(up-reset-placement c: town-center)
+	(set-goal increase-ts 0)
+	(chat-local-to-self "Clearing TC from building queue."))
+(defrule
+	(goal increase-ts town-center)
+	(death-match-game)
+	(game-time < 210)
+	(building-type-count-total dm-building < 8); 10
+	(unit-type-count-total villager < 16)
+	(building-type-count town-center >= 1)
+=>
+	(set-goal increase-ts 0))
+#else; wonder-race
+(defrule
+	(building-type-count-total wonder > 0)
+=>
+	(up-assign-builders c: wonder c: 100)
+	(up-delete-objects c: mill c: 32767)
+	(up-delete-objects c: lumber-camp c: 32767)
+	(up-delete-objects c: mining-camp c: 32767)
+	(up-delete-objects c: blacksmith c: 32767)
+	(up-delete-objects c: market c: 32767)
+	(up-delete-objects c: monastery c: 32767)
+;tread-	(delete-building university)
+	(up-delete-objects c: town-center c: 32767))
+#end-if
+#load-if-not-defined WONDER-RACE
+#load-if-defined VICTORY-STANDARD
+(defrule
+(or	(unit-type-count villager >= up-max-civ)
+	(unit-type-count villager >= 5))
+	(building-type-count-total wonder >= 1)
+	(building-type-count-total castle < 20)
+;	(goal increase-ts 0)
+	(can-build castle)
+=>
+	(up-set-placement-data my-player-number wonder c: 2)
+	(up-build place-control 0 c: castle))
+#load-if-not-defined ISLANDS-MAP
+(defrule
+(or	(unit-type-count villager >= up-max-civ)
+	(unit-type-count villager >= 5))
+	(players-building-type-count any-ally wonder >= 1)
+	(building-type-count-total castle < 20)
+;	(goal increase-ts 0)
+	(can-build castle)
+=>
+	(up-set-placement-data this-any-ally wonder c: 2)
+	(up-build place-control 0 c: castle))
+#end-if
+(defrule
+	(building-type-count-total castle >= 1)
+	(building-type-count-total wonder >= 1)
+(or	(players-building-type-count any-ally bombard-tower >= 1)
+(or	(players-building-type-count any-enemy bombard-tower >= 1)
+	(not	(death-match-game))))
+	(building-type-count-total bombard-tower < 20)
+;	(goal increase-ts 0)
+	(can-build bombard-tower)
+=>
+	(set-strategic-number sn-ignore-tower-elevation 1)
+	(up-set-placement-data my-player-number wonder c: 2)
+	(up-build place-control 0 c: bombard-tower))
+#load-if-not-defined ISLANDS-MAP
+(defrule
+	(building-type-count-total castle >= 2)
+	(players-building-type-count any-ally wonder >= 1)
+(or	(players-building-type-count any-ally bombard-tower >= 1)
+(or	(players-building-type-count any-enemy bombard-tower >= 1)
+	(not	(death-match-game))))
+	(building-type-count-total bombard-tower < 20)
+;	(goal increase-ts 0)
+	(can-build bombard-tower)
+=>
+	(set-strategic-number sn-ignore-tower-elevation 1)
+	(up-set-placement-data this-any-ally wonder c: 2)
+	(up-build place-control 0 c: bombard-tower))
+#end-if
+#end-if
+
+#end-if ; wonder-race
+
+
+(defrule
+	(population > max-civ-pop)
+	(strategic-number sn-military-superiority >= 3)
+	(strategic-number teamsuperiority >= -2); not thaaaat bad
+	(goal attacking yes)
+	(goal underattack no)
+	(goal wwonder no)
+	(building-type-count-total castle >= 3)
+	(building-type-count-total castle < 12)
+;	(goal increase-ts 0)
+	(can-build castle)
+=>
+	(up-build place-forward 0 c: castle))
+(defrule
+(or	(and	(death-match-game)
+		(and	(players-building-type-count every-enemy bombard-tower <= 0)
+			(players-building-type-count every-ally bombard-tower <= 0)))
+(or	(building-type-count-total castle < 3)
+(or	(up-compare-goal increase-ts != 0)
+(or	(goal underattack yes)
+	(goal wwonder yes)))))
+=>
+	(up-jump-rule 2))
+(defrule
+	(population >= max-civ-pop)
+	(strategic-number sn-military-superiority >= 2)
+	(strategic-number teamsuperiority >= -2); not thaaat bad
+	(goal attacking yes)
+	(building-type-count-total bombard-tower < 12)
+(or	(building-type-count-total bombard-tower < 6)
+(or	(goal uugoal no)
+	(building-type-count-total castle >= 4)))
+	(can-build bombard-tower)
+=>
+	(set-strategic-number sn-ignore-tower-elevation 1)
+	(up-assign-builders c: bombard-tower c: 2)
+	(up-build place-forward 0 c: bombard-tower))
+(defrule
+	(up-pending-objects c: bombard-tower <= 0)
+	(unit-type-count-total trade-cart >= 15)
+	(building-type-count-total bombard-tower < 8)
+(or	(building-type-count-total bombard-tower < 4)
+(or	(goal uugoal no)
+	(building-type-count-total castle >= 4)))
+(or	(building-type-count-total bombard-tower < 2)
+	(strategic-number sn-preferred-trade-distance > 60))
+	(can-build bombard-tower)
+=>
+	(up-set-placement-data my-player-number trade-cart c: 2); 3
+	(up-build place-control 0 c: bombard-tower)); end jump
+
+(defrule
+(or	(up-compare-goal strategy != r-flush)
+(or	(up-compare-goal increase-ts != 0)
+(or	(up-compare-goal attacking != yes)
+(or	(up-compare-goal underattack != no)
+(or	(up-compare-goal wwonder != no)
+(or	(building-available castle)
+(or	(strategic-number sn-military-superiority < 2)
+	(players-current-age target-player >= castle-age))))))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(goal strategy r-flush)
+;	(military-population >= 7); 5
+	(players-current-age every-enemy <= feudal-age); test
+	(players-military-population target-player >= 5); 2
+	(strategic-number sn-military-superiority < 4); hmm
+	(up-research-status c: castle-age <= research-available); hmmmm
+	(building-type-count-total watch-tower < 4)
+(or	(stone-amount >= 225)
+	(building-type-count-total watch-tower < 1))
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-ignore-tower-elevation 1)
+	(up-assign-builders c: watch-tower c: 3)
+	(up-build place-forward 0 c: watch-tower))
+
+
+(defrule
+	(strategic-number sn-current-age == feudal)
+	(housing-headroom >= 3)
+	(building-type-count-total blacksmith <= 0)
+	(up-compare-goal strategy-type >= castle-war)
+	(up-compare-goal total-food-amount >= 620); 660
+	(up-research-status c: castle-age != research-available); hmmmm
+	(gold-amount >= 140); 130
+	(wood-amount < 150)
+=>
+	(up-jump-rule 18))
+(defrule
+;(or	(up-compare-goal increase-ts != 0)
+(or	(wood-amount < house-cost)
+(or	(not	(building-available house))
+	(population-headroom <= 0)));)
+=>
+	(up-jump-rule 17))
+(defrule
+;(or
+	(game-time < 14)
+;	(and	(goal nomad yes)
+;		(up-compare-goal landnomad >= yes)))
+	(goal nomad no);
+	(goal landnomad no);
+	(housing-headroom < 3)
+;(or
+	(building-type-count-total town-center >= 1)
+;	(wood-amount >= housetc-cost))
+	(building-type-count-total house == 0)
+	(can-build house)
+=>
+;init	(up-assign-builders c: house c: 2)
+	(up-set-placement-data my-player-number villager-class c: 1)
+	(set-strategic-number sn-placement-zone-size 3); 2
+	(up-build place-control 0 c: house)
+	(disable-self))
+(defrule
+(or	(building-type-count town-center <= 0)
+(or	(game-time >= 14)
+(or	(death-match-game)
+	(and	(nand	(resource-found food)
+			(goal buildmill yes))
+		(and	(up-compare-goal mysheep < 1)
+			(and	(up-gaia-type-count c: livestock-class < 1)
+				(unit-type-count villager-wood < 1)))))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(unit-type-count villager-builder >= 2)
+	(civ-selected mayan)); test
+	(up-pending-objects c: house == 1)
+	(unit-type-count villager >= 3)
+(or	(can-build house)
+	(up-pending-placement c: house))
+=>
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-build -1 -1)
+	(up-find-local c: villager-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object building-point-x)
+	(up-lerp-tiles building-point-x position-self-x c: -1); idea by II2N <3
+	(up-set-target-point building-point-x))
+(defrule
+(or	(unit-type-count villager-builder >= 2)
+	(civ-selected mayan)); test
+	(up-pending-objects c: house == 1)
+	(unit-type-count villager >= 3)
+	(up-set-target-object search-local c: 0)
+	(can-build house)
+=>
+	(set-strategic-number sn-placement-zone-size 3); 2
+	(up-assign-builders c: house c: 1)
+	(up-build place-point 0 c: house)
+	(disable-self))
+
+(defrule
+	(up-pending-objects c: house == 0)
+	(housing-headroom < 4)
+(or	(food-amount >= 100);	(up-compare-goal total-food-amount >= 100);	(food-amount >= 50)
+(or	(housing-headroom < 3)
+(or	(population >= 8)
+	(up-pending-objects c: villager >= 2)))); 1
+;(or
+	(building-type-count-total town-center >= 1)
+;	(wood-amount >= housetc-cost))
+; test	(strategic-number sn-current-age == dark)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+
+(defrule
+	(up-pending-objects c: house == 0)
+	(housing-headroom < 5)
+(or	(building-type-count-total dock >= 1)
+	(and	(goal strategy drush)
+		(building-type-count-total barracks >= 1)))
+;(or
+	(building-type-count-total town-center >= 1)
+;	(wood-amount >= housetc-cost))
+	(strategic-number sn-current-age == dark)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+
+(defrule
+	(up-pending-objects c: house == 0)
+(or	(and	(housing-headroom < 7); 7
+		(strategic-number sn-current-age <= dfeudal))
+	(and	(housing-headroom < 9); 13
+		(strategic-number sn-current-age >= feudal)))
+	(building-type-count-total town-center >= 2)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+
+(defrule
+	(up-pending-objects c: house == 0)
+	(housing-headroom < 6)
+(or	(or	(building-type-count-total blacksmith >= 1)
+		(and	(goal strategy sling)
+			(building-type-count-total market >= 1)))
+	(housing-headroom < 3)); 5
+;(or
+	(building-type-count-total town-center >= 1)
+;	(wood-amount >= housetc-cost))
+	(strategic-number sn-current-age == feudal)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+
+(defrule
+(or	(up-compare-goal strategy-type != feudal-war)
+(or	(up-compare-goal strategy == sling)
+	(up-compare-goal strategy == s-flush)))
+	(building-type-count-total barracks < 2)
+	(building-type-count-total archery-range < 2)
+	(building-type-count-total stable < 2)
+	(up-compare-goal strategy != r-flush)
+=>
+	(up-jump-rule 5))
+(defrule
+	(up-pending-objects c: house == 0)
+(or	(housing-headroom < 7)
+	(and	(building-type-count blacksmith >= 1)
+		(housing-headroom < 8)))
+	(building-type-count-total town-center >= 1)
+	(strategic-number sn-current-age == feudal)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-pending-objects c: house < 2)
+;	(goal strategy r-flush)
+	(building-type-count-total blacksmith >= 1)
+	(building-type-count-total archery-range >= 2)
+(or	(housing-headroom < 9)
+	(building-type-count-total archery-range >= 3))
+(or	(housing-headroom < 10)
+	(building-type-count-total archery-range >= 4))
+	(housing-headroom < 11)
+	(building-type-count-total town-center >= 1)
+;	(strategic-number sn-current-age == feudal)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-pending-objects c: house < 2)
+;	(building-type-count-total blacksmith >= 1)
+	(building-type-count-total stable >= 2)
+(or	(housing-headroom < 9)
+	(building-type-count-total stable >= 3))
+(or	(housing-headroom < 10)
+	(building-type-count-total stable >= 4))
+	(housing-headroom < 11)
+	(building-type-count-total town-center >= 1)
+;	(strategic-number sn-current-age == feudal)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-pending-objects c: house < 2)
+;	(building-type-count-total blacksmith >= 1)
+	(building-type-count-total dock >= 2)
+(or	(housing-headroom < 9)
+	(building-type-count-total dock >= 3))
+(or	(housing-headroom < 10)
+	(building-type-count-total dock >= 4))
+	(housing-headroom < 11)
+	(building-type-count-total town-center >= 1)
+;	(strategic-number sn-current-age == feudal)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-pending-objects c: house < 2)
+;	(building-type-count-total blacksmith >= 1)
+	(building-type-count-total barracks >= 2)
+(or	(housing-headroom < 9)
+	(building-type-count-total barracks >= 3))
+(or	(housing-headroom < 10)
+	(building-type-count-total barracks >= 4))
+	(housing-headroom < 11)
+	(building-type-count-total town-center >= 1)
+;	(strategic-number sn-current-age == feudal)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7)); end mini jump
+
+(defrule
+	(up-pending-objects c: house < 2)
+(or	(and	(or	(population >= 40);	(goal kloster yes)
+			(goal dreitc yes))
+		(housing-headroom < 20))
+	(housing-headroom < 10))
+	(building-type-count-total town-center >= 1)
+	(strategic-number sn-current-age >= fcastlea)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-pending-objects c: house < 3)
+	(housing-headroom < 30); 25
+(or	(housing-headroom < 25); 20
+(or	(goal strategy stonewall)
+(or	(up-compare-goal excessWood >= 300)
+(or	(up-compare-goal excessFood >= 300)
+	(up-compare-goal excessGold >= 300)))))
+	(building-type-count-total town-center >= 1)
+	(strategic-number sn-current-age >= imperial)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-pending-objects c: house < 5)
+(or	(and	(up-pending-objects c: house < 3); 4
+		(unit-type-count-total villager >= 7)); 6
+	(unit-type-count-total villager >= 10)); 8
+	(housing-headroom < 40)
+	(up-compare-goal excessWood >= 900)
+	(up-compare-goal excessFood >= 900)
+	(up-compare-goal excessGold >= 900)
+	(building-type-count-total town-center >= 1)
+; tl hm	(strategic-number sn-current-age >= fcastlea)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts house)
+	(enable-timer increase-ts-timer 7)); jump end
+
+(defrule
+(or	(death-match-game)
+	(and	(up-pending-objects c: house >= 2)
+		(housing-headroom >= 8)))
+	(up-pending-objects c: house >= 1)
+	(building-type-count town-center <= 1)
+	(unit-type-count villager < 10)
+	(game-time < 45)
+	(goal increase-ts house)
+=>
+	(set-goal increase-ts 0))
+
+
+
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(goal buildlumber yes)
+	(resource-found wood)
+	(dropsite-min-distance wood > 5)
+	(dropsite-min-distance wood < 255)
+;(or	(building-type-count-total mill >= 1)
+;	(goal buildmill no))
+	(building-type-count-total lumber-camp >= 1);
+	(building-type-count-total town-center >= 1)
+	(strategic-number sn-camp-max-distance <= 30)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(up-modify-sn sn-camp-max-distance c:+ 4)
+;	(up-modify-sn sn-camp-max-distance c:min 255)
+	(chat-local-to-self "Wood far away: New camp.")
+	(build lumber-camp))
+
+(defrule
+(or	(resource-found wood)
+	(and	(wood-amount >= 400)
+		(game-time >= 30)))
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp < 1)
+	(goal buildlumber yes)
+	(wood-amount >= 300); 600
+	(strategic-number sn-current-age <= dark)
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)
+	(disable-self))
+
+(defrule
+	(game-time < 960)
+(or	(dropsite-min-distance wood <= 5)
+	(strategic-number sn-wood-gatherer-percentage <= 4))
+(or	(game-time < 30)
+	(and	(building-type-count-total lumber-camp >= 1)
+		(and	(unit-type-count villager-wood < 3)
+			(and	(civilian-population < up-max-civ)
+				(and	(population < max-civ-pop)
+					(wood-amount < farmcamp-cost))))))
+=>
+	(up-jump-rule 5))
+(defrule
+(or	(up-compare-goal buildlumber != yes)
+(or	(building-type-count-total mill <= 0)
+(or	(building-type-count-total town-center <= 0)
+	(building-type-count-total lumber-camp >= 2))))
+=>
+	(up-jump-rule 4))
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined PERSIAN-CIV
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+	(goal buildlumber yes)
+(or	(housing-headroom >= 3)
+(or	(wood-amount >= 130)
+	(unit-type-count-total villager >= 12)))
+(or	(building-type-count-total mill >= 1)
+	(goal buildmill no))
+;	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp < 1)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp))
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+	(game-time > 90); scout
+(or	(housing-headroom >= 3)
+	(wood-amount >= 130))
+	(building-type-count-total mill >= 1)
+	(building-type-count-total dock >= 1)
+(or	(strategic-number sn-current-age == dark)
+	(building-type-count-total mining-camp >= 1))
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)
+	(disable-self))
+#else; Persians
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+	(goal buildlumber yes)
+(or	(housing-headroom >= 6)
+(or	(wood-amount >= 130)
+	(unit-type-count-total villager >= 16)))
+(or	(building-type-count-total mill >= 1)
+	(goal buildmill no))
+;	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp < 1)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp))
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+	(game-time > 90); scout
+(or	(housing-headroom >= 6)
+	(wood-amount >= 130))
+	(building-type-count-total mill >= 1)
+	(building-type-count-total dock >= 1)
+(or	(strategic-number sn-current-age == dark)
+	(building-type-count-total mining-camp >= 1))
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)
+	(disable-self))
+#end-if
+#else; Japanese
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+;	(game-time >= 90)
+	(unit-type-count villager-wood >= 1)
+	(goal buildlumber yes)
+(or	(housing-headroom >= 4)
+;(or
+	(wood-amount >= 80)
+;	(unit-type-count-total villager >= 12))
+)
+(or	(building-type-count-total mill >= 1)
+	(goal buildmill no))
+;	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp < 1)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp))
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+	(game-time > 90); scout
+(or	(housing-headroom >= 4)
+	(wood-amount >= 80))
+	(building-type-count-total mill >= 1)
+	(building-type-count-total dock >= 1)
+(or	(strategic-number sn-current-age == dark)
+	(building-type-count-total mining-camp >= 1))
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)
+	(disable-self))
+#end-if
+
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined PERSIAN-CIV
+#else; persian
+#end-if
+#else; jap
+#end-if
+(defrule
+(or	(and	(housing-headroom < 6)
+		(wood-amount < 130))
+(or	(game-time < 90); scout
+(or	(and	(goal strategy drush)
+		(building-type-count-total barracks <= 0))
+	(and	(goal map water)
+		(and	(wood-amount < 170); to be sure
+			(building-type-count-total dock <= 0))))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(goal buildlumber yes)
+	(resource-found wood)
+	(building-type-count-total mill >= 1)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp == 1)
+(or	(strategic-number sn-current-age <= dfeudal); == dark)
+	(building-type-count-total mining-camp >= 1))
+	(dropsite-min-distance wood >= 0)
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)) ; END JUMP
+
+(defrule
+(or	(up-compare-goal buildlumber != yes)
+(or	(unit-type-count villager-wood < 6)
+(or	(building-type-count-total town-center <= 0)
+	(building-type-count-total lumber-camp >= 3))))
+=>
+	(up-jump-rule 2))
+(defrule
+	(resource-found wood)
+(or	(building-type-count-total blacksmith >= 1)
+(or	(strategic-number sn-current-age != feudal)
+(or	(research-available castle-age)
+	(wood-amount >= 425))))
+	(dropsite-min-distance wood > 3)
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp))
+(defrule
+	(strategic-number sn-current-age == feudal)
+	(resource-found wood)
+(or	(building-type-count-total blacksmith >= 1)
+	(up-research-status c: castle-age >= research-available))
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(dropsite-min-distance wood >= 0)
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)
+	(disable-self)); end jump
+
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(goal buildlumber yes)
+	(resource-found wood)
+	(building-type-count-total mill > 0)
+	(building-type-count-total town-center >= 1)
+(or	(up-compare-goal strategy-type == feudal-war)
+	(building-type-count-total lumber-camp < 3))
+	(strategic-number sn-current-age <= fcastlea)
+	(unit-type-count villager-wood >= 6)
+	(dropsite-min-distance wood > 4); 5
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp))
+
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+;	(strategic-number sn-military-superiority >= 0)
+	(goal underattack no)
+	(goal defend no)
+	(game-time < 4800)
+;	(goal buildlumber yes)
+;	(building-type-count-total mill >= 1)
+	(game-time > 2100); 2400
+(or	(building-type-count-total lumber-camp < 4); 5
+	(game-time > 3300)); 3600
+	(building-type-count-total lumber-camp < 6); 7
+	(unit-type-count villager-wood >= 18); 6
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp))
+
+(defrule
+(or	(up-compare-goal buildlumber != yes)
+	(building-type-count-total town-center <= 0))
+=>
+	(up-jump-rule 4))
+(defrule
+	(up-pending-objects c: lumber-camp == 0)
+	(resource-found wood)
+	(building-type-count-total mill > 0)
+; test	(building-type-count-total lumber-camp < 100)
+(or	(up-compare-goal strategy-type <= feudal-war)
+(or	(goal strategy sling)
+(or	(dropsite-min-distance wood > 5)
+	(strategic-number sn-current-age >= fcastlea)))); castlea
+	(dropsite-min-distance wood > 3)
+	(dropsite-min-distance wood < 255)
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp))
+(defrule
+; tl	(up-pending-objects c: lumber-camp == 0)
+	(goal rebuildcamp yes)
+	(resource-found wood)
+	(dropsite-min-distance wood >= 0)
+	(dropsite-min-distance wood < 255)
+	(building-type-count-total lumber-camp < timer-lcs)
+(or	(unit-type-count 219 >= 1);Dead Lumberjacks
+	(unit-type-count 228 >= 1))
+	(can-build lumber-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1); lower fail percentage for camps
+	(set-strategic-number sn-dropsite-separation-distance 10);
+	(build lumber-camp)
+	(set-goal rebuildcamp no)
+	(enable-timer rebuild-camp 306)
+	(enable-timer upwood 180); test
+	(chat-local-to-self "Building emergency lumber-camp."))
+(defrule
+	(timer-triggered upwood)
+	(resource-found wood)
+	(goal islands no); hm
+	(unit-type-count villager-wood <= 24)
+	(unit-type-count villager-wood >= 18)
+	(game-time >= 60)
+	(strategic-number sn-current-age >= feudal)
+	(dropsite-min-distance wood >= 0)
+	(dropsite-min-distance wood < 255); 128?
+	(building-type-count-total lumber-camp < timer-lcs)
+	(can-build lumber-camp)
+=>
+	(disable-timer upwood)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)
+	(enable-timer upwood 270)); 240
+(defrule
+	(timer-triggered upwood)
+	(resource-found wood)
+	(goal islands no); hm
+	(unit-type-count villager-wood >= 25); (unit-type-count-total villager > 75)
+	(game-time >= 60)
+	(dropsite-min-distance wood >= 0)
+	(dropsite-min-distance wood < 255); 128?
+	(building-type-count-total lumber-camp < timer-lcs)
+	(can-build lumber-camp)
+=>
+	(disable-timer upwood)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4)
+	(build lumber-camp)
+	(enable-timer upwood 180)); end jump
+
+
+(defrule
+	(goal strategy s-flush)
+(or	(and	(building-type-count-total farm g:< maxfarms)
+		(building-type-count-total farm < 13))
+	(and	(strategic-number sn-gold-gatherer-percentage <= 0)
+		(unit-type-count-total scout-cavalry-line < 5)))
+=>
+	(up-jump-rule 6))
+(defrule
+(or	(and	(goal sk-var yes)
+		(strategic-number sn-gold-gatherer-percentage <= 0))
+(or	(building-type-count-total town-center <= 0)
+	(and	(goal strategy drush)
+		(and	(strategic-number sn-current-age <= dark)
+			(building-type-count-total barracks <= 0)))))
+=>
+	(up-jump-rule 5))
+(defrule
+;	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(goal map land)
+   	(building-type-count-total lumber-camp >= 2)
+   	(building-type-count-total mill >= 1)
+	(unit-type-count-total villager >= 20)
+	(up-compare-goal total-food-amount >= 440); 460
+(or	(strategic-number sn-enable-training-queue != 1); (up-pending-objects c: villager <= 0)
+	(up-compare-goal strategy-type == feudal-war))
+	(building-type-count-total mining-camp < 1)
+	(dropsite-min-distance gold > 5)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
+	(can-build mining-camp)
+=>
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+(defrule
+;	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(goal map land)
+   	(building-type-count-total lumber-camp >= 1)
+   	(building-type-count-total mill >= 1)
+(or	(strategic-number sn-current-age >= dfeudal)
+(or	(building-type-count-total barracks >= 1)
+(or	(unit-type-count-total villager >= darkvills)
+	(up-compare-goal total-food-amount >= 700))))
+; tl	(up-compare-goal total-food-amount >= 440); 460
+	(building-type-count-total mining-camp < 1)
+	(dropsite-min-distance gold > 5)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
+	(can-build mining-camp)
+=>
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+(defrule
+;	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(goal map land)
+   	(building-type-count-total lumber-camp >= 2)
+	(strategic-number sn-current-age >= feudal)
+	(building-type-count-total barracks >= 1)
+	(unit-type-count-total villager >= 22)
+	(up-compare-goal total-food-amount >= 440); 460
+;	(goal underattack no)
+	(building-type-count-total mining-camp < 1)
+	(dropsite-min-distance gold > 5)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp)
+	(disable-self))
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(goal map water)
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mill >= 1)
+(or	(strategic-number sn-current-age >= dfeudal)
+(or	(wood-amount >= 185)
+	(building-type-count-total dock >= 1)))
+	(building-type-count-total mining-camp < 1)
+	(dropsite-min-distance gold > 5)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
+	(can-build mining-camp)
+=>
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+(defrule
+;	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(strategic-number sn-current-age >= dfeudal)
+	(building-type-count-total barracks >= 1)
+	(unit-type-count-total villager >= 22)
+	(goal underattack no)
+	(building-type-count-total mining-camp < 4)
+	(building-type-count-total mining-camp >= 1); -total
+	(dropsite-min-distance stone < 5)
+	(dropsite-min-distance gold > 5)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+;	(up-modify-sn sn-camp-max-distance c:+ 1);
+;	(up-modify-sn sn-camp-max-distance c:min 255);
+	(build mining-camp)
+	(chat-local-to-self "Misplaced camp, build a new one.")
+	(disable-self)); end jump
+
+;#load-if-not-defined GOLD-RUSH-MAP
+;(defrule
+;(or	(building-type-count-total lumber-camp >= 2)
+;	(strategic-number sn-current-age >= dfeudal))
+;	(building-type-count-total town-center >= 1)
+;	(building-type-count-total mining-camp < 1)
+;	(strategic-number sn-camp-max-distance < 30)
+;=>
+;	(set-strategic-number sn-camp-max-distance 30)
+;	(chat-local-to-self "Camp-max-distance 30.")
+;	(disable-self))
+;#end-if
+
+(defrule
+;(or	(building-type-count-total lumber-camp >= 2)
+;tc+40	(strategic-number sn-current-age >= dfeudal))
+	(resource-found wood);
+	(building-type-count-total town-center >= 1)
+	(dropsite-min-distance wood > 5)
+	(dropsite-min-distance wood < 40)
+	(dropsite-min-distance wood s:>= sn-camp-max-distance)
+	(strategic-number sn-camp-max-distance < 40)
+=>
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+	(up-jump-rule 2))
+(defrule
+(or	(building-type-count-total lumber-camp >= 2)
+	(strategic-number sn-current-age >= dfeudal))
+	(resource-found gold);
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total mining-camp < 1)
+	(dropsite-min-distance gold > 5)
+	(dropsite-min-distance gold < 40)
+	(dropsite-min-distance gold s:>= sn-camp-max-distance)
+	(strategic-number sn-camp-max-distance < 40)
+=>
+	(up-modify-sn sn-camp-max-distance c:+ 1)
+	(up-jump-rule 1))
+(defrule
+(or	(building-type-count-total lumber-camp >= 2)
+	(strategic-number sn-current-age >= dfeudal))
+	(resource-found stone);
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total mining-camp < 4)
+	(goal strategy castledrop); <---
+	(dropsite-min-distance stone > 5)
+	(dropsite-min-distance stone < 40); 35
+	(dropsite-min-distance stone s:>= sn-camp-max-distance)
+	(strategic-number sn-camp-max-distance < 40); 35
+=>
+	(up-modify-sn sn-camp-max-distance c:+ 1)); (end jump)
+
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mill >= 1)
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+;testo	(building-type-count-total mining-camp <= 2)
+	(building-type-count-total mining-camp >= 1)
+	(dropsite-min-distance gold > 8)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance); < 255
+	(can-build mining-camp)
+=>
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+
+(defrule
+(or	(goal enemy-goal drush)
+	(players-current-age target-player <= dark-age))
+	(players-current-age every-enemy <= castle-age)
+	(strategic-number sn-current-age < imperial)
+=>
+	(up-jump-rule 2))
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(goal rebuildcamp yes)
+	(building-type-count town-center >= 1)
+	(dropsite-min-distance gold >= 0)
+	(dropsite-min-distance gold < 255)
+(or	(unit-type-count-total 229 >= 1); dead miners
+	(unit-type-count-total 221 >= 1))
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1); lower fail percentage for camps
+	(set-strategic-number sn-dropsite-separation-distance 10)
+	(build mining-camp)
+	(set-goal rebuildcamp no)
+	(enable-timer rebuild-camp 306)
+; tl	(chat-local-to-self "Building emergency mining-camp. 1")
+)
+(defrule; almost useless for now
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found stone)
+	(goal rebuildcamp yes)
+	(building-type-count town-center >= 1)
+	(dropsite-min-distance stone >= 0)
+	(dropsite-min-distance stone < 255)
+(or	(unit-type-count-total 229 >= 1); dead miners
+	(unit-type-count-total 221 >= 1))
+	(can-build mining-camp)
+	(strategic-number sn-stone-gatherer-percentage >= 1)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1); lower fail percentage for camps
+	(set-strategic-number sn-dropsite-separation-distance 10)
+	(build mining-camp)
+	(set-goal rebuildcamp no)
+	(enable-timer rebuild-camp 306)
+; tl	(chat-local-to-self "Building emergency mining-camp. 2"); end jump
+)
+
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found stone)
+	(goal dreitc no)
+	(stone-amount < 100)
+	(goal underattack no)
+	(strategic-number sn-current-age >= fcastlea)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp >= 1)
+	(strategic-number sn-stone-gatherer-percentage >= 1)
+; test	(building-type-count-total mining-camp < 2)
+	(dropsite-min-distance stone > 5)
+	(dropsite-min-distance stone < 255)
+	(can-build mining-camp)
+=>
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+
+;(defrule
+;	(up-pending-objects c: mining-camp == 0)
+;	(resource-found stone)
+;	(building-type-count-total town-center < 5)
+;	(goal milunits no)
+;	(stone-amount < 100)
+;	(strategic-number sn-current-age >= fcastlea)
+;;	(goal kloster yes)
+;	(building-type-count-total town-center >= 1)
+;	(building-type-count-total lumber-camp >= 1)
+;; test	(building-type-count-total mining-camp < 2)
+;	(dropsite-min-distance stone > 5)
+;	(dropsite-min-distance stone < 255)
+;	(can-build mining-camp)
+;=>
+;	(build mining-camp))
+
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found stone)
+(or	(up-compare-goal strategy == castledrop)
+	(and	(strategic-number sn-current-age >= imperial)
+		(goal uugoal yes)))
+	(building-type-count-total castle < 1)
+	(stone-amount < castle-stone)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp >= 1)
+;	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total mining-camp < 4)
+	(dropsite-min-distance stone > 5)
+	(dropsite-min-distance stone < 255)
+	(can-build mining-camp)
+=>
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found stone)
+	(up-compare-goal strategy == sling)
+	(strategic-number sn-current-age >= dfeudal)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total mining-camp < 4)
+(or	(wood-amount >= 275)
+	(building-type-count-total market >= 1))
+	(dropsite-min-distance stone > 5)
+	(dropsite-min-distance stone < 255)
+	(can-build mining-camp)
+=>
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+
+#load-if-defined TINY-MAP
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+(or	(game-time >= 2400)
+	(building-type-count mining-camp >= 2))
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mining-camp < 14)
+	(dropsite-min-distance gold > 6)
+	(dropsite-min-distance gold < 255)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+
+
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found stone)
+;(or	(game-time >= 3300)
+(or	(strategic-number sn-current-age >= imperial)
+	(building-type-count mining-camp >= 3));)
+(or	(goal dreitc yes)
+	(stone-amount < 100))
+	(building-type-count-total town-center >= 1)
+; tl	(building-type-count-total lumber-camp >= 1)
+	(goal kloster yes)
+	(building-type-count-total mining-camp < 13)
+	(dropsite-min-distance stone > 6)
+	(dropsite-min-distance stone < 255)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+#else
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+;(or	(game-time >= 2400)
+(or	(strategic-number sn-current-age >= imperial)
+	(building-type-count mining-camp >= 2));)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mining-camp < 25)
+	(dropsite-min-distance gold > 5)
+	(dropsite-min-distance gold < 255)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+
+(defrule
+	(up-pending-objects c: mining-camp == 0)
+	(resource-found stone)
+(or	(game-time >= 3300)
+	(building-type-count mining-camp >= 3))
+	(building-type-count-total town-center >= 1)
+; tl	(building-type-count-total lumber-camp >= 1)
+	(goal kloster yes)
+	(building-type-count-total mining-camp < 22)
+	(dropsite-min-distance stone > 6)
+	(dropsite-min-distance stone < 255)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(build mining-camp))
+#end-if
+
+(defrule
+(or	(goal strategy stonewall)
+	(strategic-number sn-gold-gatherer-percentage >= 24)); test
+;	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(building-type-count-total town-center >= 3)
+	(strategic-number sn-current-age >= imperial)
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+	(building-type-count-total lumber-camp > 0)
+	(building-type-count-total mining-camp < 5)
+	(dropsite-min-distance gold >= 0)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 3); 4
+	(build mining-camp))
+(defrule
+;	(up-pending-objects c: mining-camp == 0)
+	(resource-found gold)
+	(building-type-count-total town-center >= 1)
+	(strategic-number sn-gold-gatherer-percentage >= 10);	(unit-type-count villager-gold >= 6);	(strategic-number sn-current-age >= fcastlea); imperial
+;	(strategic-number sn-gold-gatherer-percentage >= 1)
+(or	(and	(building-type-count-total town-center >= 3)
+		(building-type-count-total mining-camp < 3))
+	(up-research-status c: imperial-age == research-pending))
+; tl	(building-type-count-total lumber-camp >= 1)
+	(goal kloster yes)
+	(building-type-count-total mining-camp < 4)
+	(dropsite-min-distance gold >= 0)
+	(dropsite-min-distance gold s:<= sn-camp-max-distance)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-dropsite-separation-distance 4); 6
+	(build mining-camp))
+
+(defrule
+(or	(cc-players-unit-type-count 0 deer <= 0)
+(or	(building-type-count-total lumber-camp <= 0)
+(or	(and	(up-compare-goal buildmill != yes)
+		(wood-amount < 300))
+(or	(building-type-count town-center <= 0)
+	(building-type-count-total mill >= 1)))))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(and	(up-compare-goal forage-count < 1)
+		(game-time s:>= sn-home-exploration-time))
+(or	(cc-players-unit-type-count 0 forage-bush <= 0)
+	(map-type scandanavia)))
+(or	(wood-amount >= 300); 200
+(or	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance)
+	(dropsite-min-distance deer-hunting <= 30))); 30
+=>
+	(chat-local-to-self "Scandi mill.")
+	(set-strategic-number sn-mill-max-distance 25)
+	(set-strategic-number sn-preferred-mill-placement 1)
+	(build mill)
+;	(up-jump-rule 6)
+)
+(defrule
+(or	(up-compare-goal forage-count < 1)
+	(cc-players-unit-type-count 0 forage-bush <= 0)); tbs
+	(cc-players-unit-type-count 0 deer > 0)
+(or	(game-time s:< sn-home-exploration-time)
+	(game-time < 300))
+(nand	(unit-type-count villager >= 7)
+	(unit-type-count villager-food < 3)); 6
+	(wood-amount < 300); 200
+	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance)
+	(dropsite-min-distance deer-hunting > 30); 30
+=>
+	(up-jump-rule 5))
+(defrule
+(or	(and	(wood-amount < 230); 130
+		(and	(building-type-count-total house <= 0)
+			(and	(housing-headroom < 3)
+				(population-headroom >= 1))))
+(or	(up-compare-goal buildmill != yes)
+;tl(or	(not	(can-build mill))
+(or	(building-type-count town-center < 1)
+	(building-type-count-total mill >= 1))));)
+=>
+	(up-jump-rule 4))
+(defrule
+	(resource-found food)
+(or	(unit-type-count villager-forager >= 1)
+	(building-type-count-total lumber-camp >= 2))
+	(can-build mill)
+=>
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill)
+	(chat-local-to-self "Building mill. 0")
+	(disable-self))
+(defrule
+	(resource-found food)
+	(game-time >= 120)
+	(unit-type-count villager >= 7)
+(or	(unit-type-count villager-food < 6)
+(or	(unit-type-count-total villager >= 18)
+(or	(wood-amount >= 200)
+	(building-type-count-total lumber-camp >= 1))))
+	(can-build mill)
+=>
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill)
+	(chat-local-to-self "Building mill. 1")
+	(disable-self))
+(defrule
+(not	(resource-found food)); test
+	(game-time >= 125)
+;	(military-population >= 1); scout
+(or	(unit-type-count villager-food < 6)
+(or	(unit-type-count-total villager >= 19)
+(or	(wood-amount >= 220)
+	(building-type-count-total lumber-camp >= 2))))
+	(can-build mill)
+=>
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill)
+	(chat-local-to-self "Building mill. 2")
+	(disable-self))
+(defrule
+	(up-timer-status embassy != timer-triggered); debug
+	(game-time >= 130)
+	(unit-type-count scout-unit <= 0)
+(or	(unit-type-count-total villager >= 20)
+(or	(building-type-count-total lumber-camp >= 2); (building-type-count-total barracks >= 1)
+	(wood-amount >= 240)))
+	(building-available mill)
+	(wood-amount >= 100)
+=>
+	(set-strategic-number sn-placement-zone-size 9)
+	(up-set-placement-data my-player-number -1 c: -3)
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(up-build place-control 0 c: mill)
+	(chat-local-to-self "Building mill. 3"); end jump
+	(set-goal increase-ts 2))
+
+(defrule
+(or	(and	(building-type-count-total blacksmith <= 0)
+		(strategic-number sn-current-age == feudal)); <=
+(or	;(and
+	(up-compare-goal forage-count < 1)
+	;	(up-gaia-type-count c: forage-bush < 1)); test
+(or	(building-type-count-total lumber-camp < 1)
+(or	(building-type-count-total town-center < 1)
+	(building-type-count-total mill != 1)))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(resource-found food)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= 110))
+(or	(map-type yucatan)
+	(and	(unit-type-count villager-forager >= 1); hmm
+		(sheep-and-forage-too-far))); foragers + forage too far = more berries / badly placed first mill
+	(can-build mill)
+=>
+; dbg	(set-strategic-number sn-preferred-mill-placement 0)
+	(chat-local-to-self "2nd mill for 2nd forage.")
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill)
+	(disable-self)); end mini jump
+(defrule
+(or	(building-type-count-total town-center <= 0)
+;(or
+	(goal underattack yes)
+;	(and	(and	(building-type-count-total blacksmith <= 0)
+;			(up-compare-goal strategy != sling))
+;		(strategic-number sn-current-age < imperial))); fcastlea
+)
+=>
+	(up-jump-rule 2))
+(defrule
+	(building-type-count-total farm >= 32); 28 + 8
+(or	(building-type-count-total mill < 2)
+	(building-type-count-total farm >= 40))
+(or	(building-type-count-total mill < 3)
+	(building-type-count-total farm >= 48))
+(or	(building-type-count-total mill < 4)
+	(building-type-count-total farm >= 56))
+	(building-type-count-total mill < 5)
+	(can-build mill)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill))
+(defrule
+	(building-type-count-total farm >= 64)
+(or	(building-type-count-total mill < 6)
+	(building-type-count-total farm >= 72))
+(or	(building-type-count-total mill < 7)
+	(building-type-count-total farm >= 80))
+(or	(building-type-count-total mill < 8)
+	(building-type-count-total farm >= 88))
+	(building-type-count-total mill < 9)
+	(can-build mill)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill)); end jump
+(defrule
+	(building-type-count-total town-center < 3)
+	(building-type-count-total town-center >= 1)
+;(or	(strategic-number sn-current-age <= fcastlea); feudal
+;(or	(goal strategy s-flush)
+;(or	(goal strategy r-flush)
+;	(goal strategy krush))))
+(or	(and	(building-type-count-total farm >= 12)
+		(building-type-count-total mill < 1))
+	(building-type-count-total farm >= 24)); 20
+	(building-type-count-total mill < 2)
+	(can-build mill)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill))
+#load-if-defined DARK-AGE-END
+(defrule
+	(building-type-count-total town-center >= 1)
+	(goal researchplan yes)
+	(building-type-count barracks >= 2)
+	(strategic-number sn-current-age >= imperial)
+(or	(strategic-number sn-military-superiority >= 0)
+(or	(goal milunits no)
+	(military-population > 20)))
+	(building-type-count-total farm >= 18)
+	(building-type-count-total mill < 8)
+	(can-build mill)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill))
+#end-if
+#load-if-defined FEUDAL-AGE-END
+(defrule
+	(building-type-count-total town-center >= 1)
+	(goal researchplan yes)
+	(building-type-count barracks >= 2)
+	(strategic-number sn-current-age >= imperial)
+(or	(strategic-number sn-military-superiority >= 0)
+(or	(goal milunits no)
+	(military-population > 20)))
+	(building-type-count-total farm >= 18)
+	(building-type-count-total mill < 8)
+	(can-build mill)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;	(set-strategic-number sn-dropsite-separation-distance 6)
+	(set-strategic-number sn-mill-max-distance 18)
+	(build mill))
+#end-if
+;(defrule
+;	(building-type-count-total town-center >= 1)
+;	(strategic-number sn-current-age >= imperial)
+;(or	(strategic-number sn-military-superiority >= 0)
+;	(population > del-civ-pop))
+;(or	(dropsite-min-distance wood > 254)
+;	(dropsite-min-distance wood == -1))
+;	(building-type-count-total mill < 6)
+;	(can-build mill)
+;=>
+;	(set-strategic-number sn-allow-adjacent-dropsites 1)
+;;	(set-strategic-number sn-dropsite-separation-distance 6)
+;	(set-strategic-number sn-mill-max-distance 18)
+;	(build mill))
+
+
+
+(defrule
+	(goal strategy drush)
+	(wood-amount < farmmb-cost)
+	(building-type-count-total barracks <= 0)
+(or	(idle-farm-count >= 1)
+(or	(up-compare-goal total-food-amount >= 100)
+	(unit-type-count villager-food >= 7)))
+=>
+	(up-jump-rule 4))
+(defrule
+;(or	(up-compare-goal forage-count >= 7); 6
+(or	(idle-farm-count >= 1)
+(or	(up-compare-goal mysheep >= 3); 2
+(or	(strategic-number sn-current-age > dark)
+(or	(building-type-count-total farm g:>= maxfarms)
+(or	(building-type-count town-center <= 0); total
+	(building-type-count-total lumber-camp <= 0))))));)
+=>
+	(up-jump-rule 3))
+(defrule
+	(unit-type-count villager >= 7)
+(or	(wood-amount >= farmcamp-cost); farmmb-cost); 335
+	(unit-type-count villager-food < 7)); 6
+(or	(building-type-count dock <= 0)
+	(wood-amount >= farmfish-cost))
+	(up-compare-goal total-food-amount < 500); 50
+; test	(up-pending-objects c: villager <= 1)
+;	(up-compare-flag escrow-flag == 64)
+;(not	(up-compare-goal threat-time < 10000)); 12000
+	(building-type-count-total farm < 7); 6
+	(dropsite-min-distance wood < 5)
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(building-type-count-total lumber-camp >= 2)
+	(up-compare-goal total-food-amount < 500)
+	(up-pending-objects c: villager <= 0)
+	(goal trainvillager no)
+	(up-compare-flag escrow-flag != 64)
+;(not	(up-compare-goal threat-time < 10000)); 12000
+(or	(unit-type-count-total fishing-ship < 16)
+(or	(building-type-count dock <= 0)
+	(wood-amount >= farmfish-cost)))
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(building-type-count-total lumber-camp >= 2)
+	(up-compare-goal total-food-amount < 500)
+(or	(wood-amount >= farmcamp-cost); farmmb-cost); 335
+	(unit-type-count villager-food < 7)); 6
+	(up-compare-goal mysheep <= 0)
+	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance)
+	(dropsite-min-distance boar-hunting > 35)
+	(sheep-and-forage-too-far)	
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(can-build farm)
+=>
+	(build farm)); end jump
+
+;(defrule
+;	(goal map water)
+;	(strategic-number sn-current-age == dark)
+;	(building-type-count-total dock <= 0)
+;	(unit-type-count villager-food < 6)
+;;(or	(building-type-count-total mining-camp >= 1)
+;;	(wood-amount >= farmcamp-cost))
+;	(building-type-count town-center >= 1); -total
+;	(building-type-count-total lumber-camp >= 1)
+;	(up-gaia-type-count-total c: shore-fish-class <= 0)
+;	(up-gaia-type-count-total c: ocean-fish-class <= 0)
+;	(building-type-count-total farm < 6)
+;(or	(dropsite-min-distance wood < 5)
+;	(wood-amount >= farmcamp-cost))
+;	(building-type-count-total farm g:< maxfarms)
+;	(idle-farm-count <= 0)
+;	(can-build farm)
+;=>
+;	(build farm))
+
+(defrule
+;nn(or	(dropsite-min-distance wood >= 5)
+;nn(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count town-center <= 0); total
+(or	(building-type-count-total farm g:>= maxfarms)
+	(idle-farm-count >= 2))););); 1
+=>
+	(up-jump-rule 3))
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+	(up-research-status c: castle-age >= research-pending)
+	(goal dreitc no)
+	(wood-amount < 710)
+(or	(wood-amount < 435)
+	(stone-amount >= 200))
+	(stone-amount >= 100)
+	(civilian-population < up-max-civ)
+	(population < max-civ-pop)
+	(building-type-count-total town-center <= 4)
+=>
+	(up-jump-rule 2))
+(defrule
+	(wood-amount >= farmmb-cost)
+(or	(strategic-number sn-current-age >= fcastlea); ^
+	(and	(strategic-number sn-current-age <= feudal)
+		(or	(strategic-number sn-current-age <= dark)
+			(wood-amount >= 385))))
+(or	(up-research-status c: ri-horse-collar <= research-unavailable)
+(or	(up-research-status c: ri-horse-collar >= research-complete)
+	(wood-amount >= 195))); 135
+	(up-research-status c: ri-heavy-plow <= research-unavailable)
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(wood-amount >= farmmb-cost)
+(or	(strategic-number sn-current-age >= fcastlea); ^
+	(and	(strategic-number sn-current-age <= feudal)
+		(or	(strategic-number sn-current-age <= dark)
+			(wood-amount >= 385))))
+	(up-research-status c: ri-horse-collar >= research-complete)
+(or	(up-research-status c: ri-heavy-plow <= research-unavailable)
+(or	(up-research-status c: ri-heavy-plow >= research-complete);!= research-available)
+	(wood-amount >= 225))); 185
+	(can-build farm)
+=>
+	(build farm)); end jump
+
+
+(defrule
+(or	(building-type-count town-center <= 0); total
+(or	(building-type-count-total farm g:>= maxfarms)
+(or	(and	(up-compare-goal total-food-amount >= 250); 250
+		(building-type-count-total farm >= 12)); 10
+(or	(up-compare-goal strategy-type == feudal-war)
+	(and	(goal strategy drush)
+		(and	(wood-amount < farmmb-cost)
+			(building-type-count-total barracks <= 0)))))))
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(and	(up-compare-goal map != land)
+		(or	(building-type-count-total dock >= 1)
+			(wood-amount < farmdock-cost)))
+(or	(and	(building-type-count-total dock >= 1)
+		(wood-amount < farmfish-cost))
+(or	(up-compare-goal mysheep >= 5);(up-compare-goal totalsheep >= 8)
+(or	(building-type-count-total lumber-camp < 2)
+	(strategic-number sn-current-age != dark)))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(up-pending-objects c: villager >= 2); test
+(or	(goal milunits no)
+(or	(goal trainvillager yes);	(unit-type-count-total villager <= 26)
+(or	(building-type-count-total barracks >= 1)
+	(wood-amount >= farmmb-cost))))); 185
+	(dropsite-min-distance wood < 5)
+	(idle-farm-count <= 0)
+	(can-build farm)
+=>
+	(build farm)); fc
+(defrule
+(or	(building-type-count-total mining-camp >= 1)
+	(wood-amount >= farmcamp-cost))
+	(unit-type-count villager-hunter <= 0)
+	(unit-type-count villager-shepherd <= 0)
+(or	(up-compare-goal forage-count <= 2)
+	(up-compare-goal total-food-amount < 830))
+	(up-compare-goal forage-count <= 4)
+	(up-compare-goal total-food-amount < 1100)
+	(building-type-count-total farm < 7)
+	(dropsite-min-distance wood < 5)
+	(idle-farm-count <= 0)
+	(can-build farm)
+=>
+	(build farm)); fc ; end jump
+
+(defrule
+(or	(building-type-count-total farm g:>= maxfarms)
+(or	(up-compare-goal map != land)
+;(or	(up-compare-goal strategy-type != feudal-war)
+(or	(building-type-count town-center <= 0); total
+(or	(up-compare-goal mysheep >= 5);(up-compare-goal totalsheep >= 8)
+	(and	(goal strategy drush)
+		(and	(wood-amount < farmmb-cost)
+			(building-type-count-total barracks <= 0)))))));)
+=>
+	(up-jump-rule 1))
+(defrule
+	(building-type-count-total lumber-camp >= 2); 1
+	(strategic-number sn-current-age == dark)
+(or	(up-pending-objects c: villager >= 2); test
+(or	(building-type-count-total mining-camp >= 1)
+	(wood-amount >= farmcamp-cost)))
+	(building-type-count-total farm < 3); 5
+	(dropsite-min-distance wood < 5)
+	(unit-type-count villager-wood >= 1)
+	(idle-farm-count <= 0)
+	(can-build farm)
+=>
+	(build farm)); fl ; end jump
+
+(defrule
+(or	(building-type-count-total farm g:>= maxfarms)
+(or	(building-type-count-total dock >= 1); (up-compare-goal map != land)
+(or	(building-type-count town-center <= 0); total
+(or	(building-type-count-total lumber-camp <= 1)
+(or	(strategic-number sn-current-age > dark)
+	(building-type-count-total mining-camp < 1))))))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(building-type-count-total barracks >= 1)
+(or	(wood-amount >= farmmb-cost)
+	(goal milunits no)))
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm < 7)
+(or	(up-compare-goal strategy-type != feudal-war)
+	(building-type-count-total farm < 3)); 4
+	(idle-farm-count <= 0)
+	(can-build farm)
+=>
+	(build farm)); end jump
+
+(defrule
+	(goal map water)
+	(strategic-number sn-current-age == dark)
+	(building-type-count-total dock >= 1)
+	(wood-amount >= farmfish-cost)
+(or	(building-type-count-total mining-camp >= 1)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 2)
+;	(building-type-count-total farm < 6)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 0); 2
+	(can-build farm)
+=>
+	(build farm))
+
+(defrule
+;	(up-pending-objects c: farm < 3)
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total mining-camp >= 1)
+(or	(building-type-count-total barracks >= 1)
+	(goal milunits no))
+	(wood-amount >= feudalprep-cost)
+	(strategic-number sn-current-age <= dfeudal)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 10); 9
+	(idle-farm-count <= 1); 2
+	(can-build farm)
+=>
+	(build farm))
+#load-if-defined KHMER-CIV
+(defrule
+;	(up-pending-objects c: farm < 3)
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total mining-camp >= 1)
+	(strategic-number sn-current-age <= dfeudal)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 10); 9
+	(idle-farm-count <= 1); 2
+	(can-build farm)
+=>
+	(build farm))
+#end-if
+
+(defrule
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 1)
+	(unit-type-count-total fishing-ship < 5)
+	(strategic-number sn-current-age == dfeudal)
+	(up-compare-goal total-food-amount < 369)
+	(up-compare-goal strategy-type >= castle-war)
+;	(up-compare-goal enemy-goal != flush)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 10); 4
+	(unit-type-count villager-food < 14); 6
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); fc
+
+(defrule
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 1)
+	(unit-type-count-total fishing-ship < 3)
+(or	(strategic-number sn-current-age == dfeudal)
+	(strategic-number sn-current-age == feudal))
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 2); 4
+	(up-compare-goal total-food-amount < 150); 150
+	(unit-type-count villager-food < 7); 6
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); hmm
+
+(defrule
+(or	(and	(dropsite-min-distance wood >= 5)
+		(wood-amount < farmcamp-cost))
+(or	(building-type-count town-center <= 0); -total
+(or	(building-type-count-total lumber-camp <= 0)
+(or	(up-compare-goal strategy-type == feudal-war)
+	(and	(up-research-status c: ri-horse-collar < research-complete);research-pending)
+		(wood-amount < 195)))))); for now; 200; 135
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(building-type-count-total blacksmith >= 1)
+	(wood-amount >= farmsmith-cost))
+(or	(building-type-count-total archery-range >= 1)
+(or	(building-type-count-total market >= 1)
+	(building-type-count-total stable >= 1)))
+	(strategic-number sn-current-age == feudal)
+	(current-age == feudal-age); insurance
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); fc ; end jump
+(defrule
+(or	(strategic-number sn-current-age < feudal)
+(or	(building-type-count-total farm g:>= maxfarms)
+(or	(and	(dropsite-min-distance wood >= 5)
+		(wood-amount < farmcamp-cost))
+(or	(building-type-count town-center <= 0); -total
+(or	(building-type-count-total lumber-camp <= 0)
+	(up-compare-goal strategy-type != feudal-war))))))
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(and	(up-research-status c: ri-horse-collar >= research-complete);(building-type-count-total farm < 3); 4
+		(building-type-count-total archery-range >= 2))
+(or	(building-type-count-total blacksmith >= 1)
+	(wood-amount >= farmsmith-cost)))
+;(or
+	(building-type-count-total archery-range >= 1); 2 but doesn't matter
+;	(building-type-count-total stable >= 1))
+(or	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
+	(and	(building-type-count-total farm < 3); 4
+		(wood-amount >= 195))); 135
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); fl
+(defrule
+(or	(and	(unit-type-count villager-food < 6)
+		(building-type-count-total farm < 6)); 7
+	(and	(goal sk-var yes)
+		(building-type-count-total archery-range >= 2)))
+	(building-type-count-total archery-range >= 1)
+(or	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
+	(and	(building-type-count-total farm < 3); 4
+		(wood-amount >= 195))); 135
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); fl
+(defrule
+	(goal maa-var yes)
+(or	(building-type-count-total barracks >= 1)
+	(wood-amount >= farmmb-cost))
+	(up-research-status c: ri-horse-collar >= research-complete)
+(or	(building-type-count-total farm < 15)
+(or	(building-type-count-total archery-range >= 1)
+(or	(wood-amount >= farmmb-cost)
+	(up-research-status c: castle-age >= research-available))))
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); maa-fl ; end jump
+
+(defrule
+	(building-type-count-total farm g:< maxfarms)
+	(strategic-number sn-current-age == feudal)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 1)
+(or	(wood-amount >= farmsmith-cost)
+	(building-type-count-total blacksmith >= 1)); test
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+;(or	(up-compare-goal total-food-amount < 800)
+	(idle-farm-count <= 1);); 0
+	(can-build farm)
+=>
+	(build farm)); all
+
+(defrule
+(or	(and	(up-compare-goal strategy-type == feudal-war)
+		(and	(building-type-count-total stable < 2)
+			(and	(building-type-count-total archery-range < 2)
+				(wood-amount < farmmb-cost))))
+	(and	(up-compare-goal strategy-type != feudal-war)
+		(and	(up-research-status c: castle-age <= research-unavailable)
+			(wood-amount < farmmb-cost))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(strategic-number sn-current-age == feudal)
+	(up-research-status c: ri-double-bit-axe >= research-pending)
+	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 1)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+(or	(up-compare-goal total-food-amount < 800); test
+	(idle-farm-count <= 1)); 0
+	(can-build farm)
+=>
+	(build farm)); all ; end jump
+
+(defrule
+(or	(and	(building-type-count-total farm >= 23)
+		(and	(building-type-count-total mill < 3); 3
+			(building-type-count-total town-center < 2))); 3
+(or	(building-type-count town-center <= 0); -total
+(or	(building-type-count-total lumber-camp <= 0)
+	(up-compare-goal strategy != s-flush))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(building-type-count-total farm < 16)
+	(building-type-count-total mill >= 2))
+(or	(wood-amount >= 315); stable, house, double-bit
+	(building-type-count-total stable >= 1))
+(or	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 13))
+;(or
+	(building-type-count-total farm < 13)
+;	(building-type-count-total mining-camp >= 1))
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); s-flush
+(defrule
+(or	(building-type-count-total farm < 16)
+	(building-type-count-total mill >= 2))
+	(building-type-count-total stable >= 1)
+(or	(building-type-count-total archery-range >= 1)
+	(building-type-count-total blacksmith >= 1))
+(or	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 14))
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); end mini jump s-flush
+
+(defrule
+	(goal strategy sling)
+	(building-type-count town-center >= 1); -total
+	(building-type-count-total lumber-camp >= 1)
+	(strategic-number sn-current-age >= feudal)
+(or	(wood-amount >= 195); 135
+	(up-research-status c: ri-horse-collar >= research-complete));research-pending)
+(or	(wood-amount >= farmmb-cost)
+	(building-type-count-total market >= 1)); test
+(or	(dropsite-min-distance wood < 4)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+;	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm))
+
+
+(defrule
+(or	(building-type-count town-center < 1); -total
+(or	(building-type-count-total lumber-camp < 1)
+(or	(and	(dropsite-min-distance wood >= 5)
+		(wood-amount < farmcamp-cost))
+(or	(building-type-count-total farm g:>= maxfarms)
+	(and	(up-research-status c: ri-horse-collar < research-complete);research-pending)
+		(wood-amount < 195)))))); for now; 200; 135
+=>
+	(up-jump-rule 2))
+(defrule
+	(strategic-number sn-current-age == fcastlea)
+(or	(wood-amount >= 195); 135
+	(up-research-status c: ri-horse-collar >= research-complete));research-pending)
+(or	(building-type-count-total farm < 7)
+(or	(wood-amount >= 785); 2 TCs, monastery and farm
+	(and	(wood-amount >= 610)
+		(building-type-count-total farm < 12)))); TC, b-s, monastery and farm
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(up-compare-goal strategy == castledrop)
+	(strategic-number sn-current-age >= fcastlea)
+(or	(wood-amount >= 195); 135
+	(and	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
+		(up-research-status c: ri-double-bit-axe >= research-pending)))
+	(building-type-count-total castle < 1)
+	(stone-amount < castle-stone)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); end jump
+
+(defrule
+(or	(up-research-status c: ri-horse-collar == research-pending)
+(or	(up-research-status c: ri-heavy-plow == research-pending)
+(or	(strategic-number sn-current-age < castlea)
+(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count town-center <= 0); -total
+	(and	(dropsite-min-distance wood >= 5)
+		(wood-amount < farmcamp-cost)))))))
+=>
+	(up-jump-rule 5))
+(defrule
+	(strategic-number sn-current-age == castlea)
+(or	(goal tc no)
+	(building-type-count-total town-center <= 1))
+(or	(research-completed ri-heavy-plow)
+(or	(wood-amount >= farmtc-cost)
+(or	(food-amount < 50)
+	(up-compare-goal total-food-amount < 300)))); test
+	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 12); 10
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+(or	(goal tc yes)
+	(building-type-count-total town-center >= 2))
+(or	(stone-amount < 100)
+(or	(wood-amount >= farmtc-cost)
+	(building-type-count-total farm < 18))); 16
+(or	(wood-amount >= farmtc-cost)
+	(up-compare-goal total-food-amount < 300)); test
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+(or	(goal dreitc yes)
+	(building-type-count-total town-center >= 3))
+(or	(building-type-count-total farm < 24); 22
+(or	(wood-amount >= farmtc-cost)
+	(up-compare-goal total-food-amount < 300)))
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+	(goal dreitc yes)
+(or	(wood-amount >= farmmb-cost)
+(or	(building-type-count-total stable >= 2)
+(or	(building-type-count-total archery-range >= 2)
+	(building-type-count-total barracks >= 2))))
+(or	(stone-amount < 100)
+	(building-type-count-total town-center >= 3))
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+;	(goal dreitc yes)
+	(building-type-count-total castle >= 1)
+(or	(stone-amount < 100)
+(or	(wood-amount >= farmtc-cost)
+	(goal dreitc yes))); (building-type-count-total town-center >= 3)
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); end jump
+
+(defrule
+(or	(and	(strategic-number sn-current-age != castlea)
+		(strategic-number sn-current-age != fcastlea))
+(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count town-center <= 0); -total
+	(and	(civilian-population < up-max-civ)
+		(and	(building-type-count-total town-center <= 2)
+			(and	(wood-amount < farmtc-cost); 610
+				(stone-amount >= 100)))))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(goal milunits no)
+	(building-type-count town-center >= 1); -total
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+(or	(up-research-status c: ri-horse-collar >= research-complete);research-pending)
+	(wood-amount < 195)); 135
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+	(can-build farm)
+=>
+	(build farm)); end jump
+
+(defrule
+(or	(up-compare-goal milunits == no)
+(or	(building-type-count town-center <= 0); -total
+(or	(building-type-count-total lumber-camp <= 0); 1
+	(and	(strategic-number sn-current-age != castlea)
+		(strategic-number sn-current-age != fcastlea)))))
+=>
+	(up-jump-rule 2))
+(defrule
+	(strategic-number sn-military-superiority <= -1); 0
+	(wood-amount < farmmb-cost)
+	(building-type-count-total stable < number-stables)
+	(building-type-count-total archery-range < number-archery-ranges)
+	(building-type-count-total barracks < number-barracks)
+	(building-type-count-total stable < 4)
+	(building-type-count-total archery-range < 4)
+	(building-type-count-total barracks < 4)
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(goal dreitc yes)
+(or	(stone-amount < 100)
+(or	(wood-amount >= farmtc-cost)
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop)))))
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+;(or
+	(building-type-count-total farm g:< maxfarms)
+	(idle-farm-count <= 1); 0
+;)
+	(can-build farm)
+=>
+	(build farm)); end jump
+
+(defrule
+(or	(strategic-number sn-current-age < feudal)
+(or	(building-type-count town-center <= 0); -total
+(or	(building-type-count-total lumber-camp <= 0)
+	(and	(up-research-status c: ri-horse-collar < research-complete);research-pending)
+		(wood-amount < 195))))); 135
+=>
+	(up-jump-rule 2))
+(defrule
+	(up-compare-goal strategy == krush)
+(or	(wood-amount >= farmsmith-cost)
+	(building-type-count-total blacksmith >= 1))
+	(building-type-count-total stable >= 1)
+;(or	(wood-amount >= farmmb-cost)
+;	(building-type-count-total stable >= 2))
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+(or	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 12)); 13
+	(idle-farm-count <= 4); 1
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+(or	(up-compare-goal strategy == a-rush)
+	(up-compare-goal strategy == ca-rush))
+(or	(wood-amount >= farmsmith-cost)
+	(building-type-count-total blacksmith >= 1))
+	(building-type-count-total archery-range >= 1)
+;(or	(wood-amount >= farmmb-cost)
+;	(building-type-count-total archery-range >= 2))
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+(or	(building-type-count-total farm g:< maxfarms)
+	(building-type-count-total farm < 11)); 11.1 ; 12
+; snbn	(building-type-count-total farm < 13); 13 ; 14
+	(idle-farm-count <= 2); 1
+	(can-build farm)
+=>
+	(build farm)); end mini jump
+
+#load-if-not-defined WONDER-RACE
+(defrule
+(or	(building-type-count town-center <= 0); -total
+	(building-type-count-total lumber-camp <= 0))
+=>
+	(up-jump-rule 2))
+(defrule
+;	(up-pending-objects c: farm < 8); hmm
+	(strategic-number sn-current-age >= imperial)
+(or	(up-research-status c: ri-heavy-plow <= research-unavailable)
+	(up-research-status c: ri-heavy-plow >= research-complete))
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+(or	(up-research-status c: ri-heavy-plow >= research-complete);
+	(idle-farm-count <= 4)); hmm; 0
+	(can-build farm)
+=>
+	(build farm))
+(defrule
+;	(up-pending-objects c: farm < 8); hmm
+(or	(wood-amount >= farmtc-cost)
+(or	(up-compare-goal excessFood < 200)
+	(goal dreitc yes)))
+	(up-research-status c: ri-heavy-plow >= research-complete)
+(or	(dropsite-min-distance wood < 5)
+	(wood-amount >= farmcamp-cost))
+	(building-type-count-total farm g:< maxfarms)
+	(can-build farm)
+=>
+	(build farm)); end mini jump
+#end-if
+
+
+
+#load-if-not-defined WONDER-RACE
+(defrule
+	(gold-amount < 100)
+	(strategic-number sn-gold-gatherer-percentage <= 0)
+	(current-age <= castle-age)
+	(current-age-time < 300)
+	(up-compare-goal tradeunits <= 0)
+	(unit-type-count villager-gold <= 9)
+	(unit-type-count-total villager < 45)
+=>
+	(up-jump-rule 12)) ; all of them
+(defrule
+	(death-match-game)
+(or	(not	(civ-selected aztec))
+(or	(players-unit-type-count any-enemy eagle-warrior-line >= 18)
+	(players-unit-type-count any-enemy scout-cavalry-line >= 16)))
+	(game-time < 300)
+	(unit-type-count-total villager < 30)
+=>
+	(up-jump-rule 11)) ; all of them
+(defrule
+(or	(civilian-population >= up-max-civ)
+(or	(population >= max-civ-pop)
+(or	(and	(not	(player-in-game any-ally))
+		(and	(building-type-count-total monastery < 1)
+			(and	(cc-players-unit-type-count 0 relic >= 1)
+				(game-time < 1800))))
+	(up-compare-goal strategy-type != castle-war))))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(and	(wood-amount < tc-175-wood);	(and	(wood-amount < 350)
+		(and	(building-type-count-total town-center < 3);	(building-type-count-total stable < 2))
+			(stone-amount >= 100)))
+	(and	(gold-amount < 100); 200
+		(unit-type-count villager-gold < 9)))
+	(current-age-time < 300); test ; 270
+=>
+	(up-jump-rule 9)) ; all of them ; end mini-jump
+(defrule
+(or	(up-compare-goal increase-ts != 0)
+(or	(strategic-number archers >= 20)
+(or	(players-unit-type-count any-enemy eagle-warrior-line >= 20)
+(or	(players-unit-type-count any-enemy scout-cavalry-line >= 16)
+(or	(building-type-count-total town-center <= 0)
+	(and	(strategic-number sn-current-age < imperial)
+		(wood-amount < 350))))))); hmm
+=>
+	(up-jump-rule 2)) ; Part 1
+(defrule
+;	(goal milunits yes)
+(or	(players-unit-type-count focus-player war-elephant-line >= 4)
+(or	(players-unit-type-count focus-player knight-line >= 24)
+(or	(players-unit-type-count focus-player boyar >= 18)
+(or	(players-unit-type-count focus-player elephant-archer >= 6)
+	(players-unit-type-count focus-player teutonic-knight-line >= 6)))))
+;	(unit-type-count-total monastery-class < 16)
+	(gold-amount >= 100);	(gold-amount > 200)
+	(building-type-count-total monastery < 4); 3
+	(wood-amount >= 175)
+	(building-available monastery)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7))
+(defrule
+;	(goal milunits yes)
+(or	(cc-players-unit-type-count 0 tree-class < 200)
+(or	(players-unit-type-count focus-player huskarl-line >= 8)
+	(players-unit-type-count focus-player b-husk-line >= 8)))
+;	(unit-type-count-total monastery-class < 16)
+;	(gold-amount > 200)
+	(building-type-count-total monastery < 4); 3
+	(wood-amount >= 175)
+	(building-available monastery)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7)); end jump
+
+(defrule
+(or	(wood-amount < 175)
+(or	(up-compare-goal increase-ts != 0)
+(or	(building-type-count-total town-center <= 0)
+(not	(building-available monastery)))))
+=>
+	(up-jump-rule 5)) ; Part 2
+(defrule
+	(civ-selected aztec)
+	(building-type-count-total town-center >= 1)
+(or	(strategic-number archers < 20)
+	(building-type-count-total archery-range >= number-archery-ranges))
+(or	(wood-amount >= tc-175-wood)
+	(population >= up-max-civ)); civilian
+(or	(gold-amount > 1100)
+	(strategic-number sn-current-age >= imperial))
+	(building-type-count-total barracks >= number-barracks)
+	(building-type-count-total monastery < 6)
+	(building-available monastery)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(goal milunits no)
+(or	(building-type-count-total stable >= 2)
+(or	(building-type-count-total archery-range >= 3)
+(or	(and	(current-age >= castle-age)
+		(current-age-time < 45)); 30
+	(building-type-count-total town-center >= 3))))))
+	(building-type-count-total monastery < 1)
+;	(building-available monastery)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(cc-players-unit-type-count 0 relic >= 3); 5
+	(goal islands no)
+(not	(player-in-game any-ally))
+(or	(wall-completed-percentage 2 >= 100)
+	(wall-completed-percentage 1 >= 100))
+	(goal underattack no)
+	(goal defend no)
+	(strategic-number sn-military-superiority >= 0)
+	(game-time < 1800)
+	(building-type-count-total monastery < 1)
+;	(building-available monastery)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-compare-goal relic-count >= 10)
+(or	(building-type-count-total monastery < 2)
+	(up-compare-goal relic-count >= 20))
+(or	(building-type-count-total monastery < 3)
+	(up-compare-goal relic-count >= 30))
+(or	(building-type-count-total monastery < 4)
+	(up-compare-goal relic-count >= 40))
+	(building-type-count-total monastery < 5)
+	(building-available monastery)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(up-pending-objects c: monk >= 2)
+	(up-pending-objects c: missionary >= 2))
+(or	(gold-amount > 500)
+(or	(and	(wood-amount >= 330)
+		(current-age-time >= 15))
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total monastery < 2)
+	(building-available monastery)
+=>
+	(set-goal increase-ts monastery)
+	(enable-timer increase-ts-timer 7)); end jump
+
+
+
+(defrule
+	(up-pending-objects c: castle < 2); 1
+(or	(unit-type-count villager >= up-max-civ)
+	(unit-type-count villager >= 7)); 5
+	(building-type-count-total castle < 14)
+	(goal wwonder no)
+(or	(building-type-count-total wonder <= 0)
+	(and	(player-in-game any-ally)
+		(players-building-type-count any-ally wonder <= 0)))
+	(building-available castle)
+	(stone-amount >= castle-stone)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts castle)
+	(enable-timer increase-ts-timer 7))
+
+
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined SLAVIC-CIV
+
+#load-if-not-defined BERBERS-CIV
+#load-if-not-defined BURMESE-CIV
+#load-if-not-defined ETHIOPIAN-CIV
+#load-if-not-defined KHMER-CIV
+#load-if-not-defined MALAY-CIV
+#load-if-not-defined MALIAN-CIV
+#load-if-not-defined PORTUGUESE-CIV
+#load-if-not-defined VIETNAMESE-CIV
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined MONGOL-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined VIKING-CIV ; Koreans, Celts
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(strategic-number sn-current-age >= imperial)
+	(and	(building-type-count-total barracks >= number-barracks)
+		(and	(building-type-count-total archery-range >= number-archery-ranges)
+			(building-type-count-total stable >= number-stables))))
+        (building-type-count-total barracks >= 1)
+        (building-type-count-total siege-workshop < 6)
+	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-not-defined POST-IMPERIAL-AGE-START
+(defrule
+(or	(goal strategy sling)
+(or	(building-type-count-total town-center <= 0)
+(or	(building-type-count-total blacksmith >= 1)
+	(up-compare-goal strategy-type == feudal-war))))
+=>
+	(up-jump-rule 1))
+(defrule
+;	(up-compare-goal strategy != r-flush)
+(or	(goal enablesmith yes)
+	(and	(wood-amount >= 445); 415
+		(current-age <= feudal-age)))
+(or	(building-type-count-total archery-range >= 1)
+(or	(building-type-count-total stable >= 1)
+	(building-type-count-total market >= 1)))
+	(building-available blacksmith)
+	(wood-amount >= 150)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts blacksmith)
+	(enable-timer increase-ts-timer 7)); end jump
+
+(defrule
+(or	(goal strategy sling)
+(or	(building-type-count-total town-center <= 0)
+(or	(building-type-count-total blacksmith >= 1)
+(or	(and	(or	(up-research-status c: ri-horse-collar == research-available); test
+			(up-research-status c: ri-horse-collar == research-pending))
+		(and	(building-type-count-total farm g:< maxfarms)
+			(wood-amount < farmsmith-cost)))
+	(up-compare-goal strategy-type != feudal-war)))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(goal enablesmith yes)
+	(and	(wood-amount >= 445); 415
+		(current-age <= feudal-age)))
+(or	(building-type-count-total market >= 1)
+(or	(building-type-count-total archery-range >= 2)
+	(building-type-count-total stable >= 2)))
+	(building-available blacksmith)
+	(wood-amount >= 150)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts blacksmith)
+	(enable-timer increase-ts-timer 7)); end jump
+(defrule
+(or	(goal enablesmith yes)
+	(and	(wood-amount >= 445); 415
+		(current-age <= feudal-age)))
+	(goal maa-var yes)
+	(building-type-count-total archery-range >= 1)
+	(building-available blacksmith)
+	(wood-amount >= 150)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts blacksmith)
+	(enable-timer increase-ts-timer 7)); end jump
+
+(defrule
+	(goal strategy s-flush)
+	(building-type-count-total town-center >= 1)
+	(goal position-goal pocket)
+	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total stable >= 1)
+	(building-type-count-total blacksmith < 1)
+	(building-available blacksmith)
+	(wood-amount >= 150)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts blacksmith)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy grush)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total blacksmith < 1)
+	(building-available blacksmith)
+	(wood-amount >= 150)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts blacksmith)
+	(enable-timer increase-ts-timer 7))
+
+(defrule
+(or	(up-research-status c: imperial-age != research-pending)
+(or	(and	(up-research-status c: ri-fletching >= research-pending)
+		(or	(up-research-status c: ri-scale-barding >= research-pending)
+			(up-research-status c: ri-scale-mail >= research-pending)))
+(or	(wood-amount < 150)
+(or	(up-compare-goal increase-ts != 0)
+	(building-type-count-total blacksmith >= 2)))))
+=>
+	(up-jump-rule 1))
+(defrule; testing~
+	(civilian-population >= 100)
+(or	(unit-type-count archery-class >= 16)
+(or	(unit-type-count archery-cannon-class >= 16)
+	(unit-type-count cavalry-archer-class >= 16)))
+(or	(unit-type-count infantry-class >= 16); test
+(or	(unit-type-count cavalry-class >= 16)
+	(unit-type-count cavalry-cannon-class >= 16)))
+	(building-type-count-total town-center >= 1)
+	(building-available blacksmith)
+=>
+	(set-goal increase-ts blacksmith)
+	(enable-timer increase-ts-timer 7)
+	(disable-self))
+
+(defrule
+	(goal dreitc yes)
+(or	(strategic-number sn-current-age >= imperial)
+(or	(strategic-number sn-military-superiority >= 2)
+(or	(building-type-count-total town-center >= 5)
+(or	(population >= max-civ-pop)
+	(unit-type-count archery-class >= 20)))))
+        (building-type-count-total university < 1)
+	(building-available university)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts university)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal dreitc yes)
+(or	(goal strategy grush)
+(or	(unit-type-count-total galley-line >= 10)
+	(unit-type-count-total longboat-line >= 10)))
+        (building-type-count-total university < 1)
+	(building-available university)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts university)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal milunits no)
+	(strategic-number sn-current-age == castlea)
+	(population >= up-max-civ)
+        (building-type-count-total university < 1)
+        (building-type-count-total siege-workshop < 1)
+        (building-type-count-total castle < 1)
+	(building-available university)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts university)
+	(enable-timer increase-ts-timer 7)
+	(disable-self))
+
+
+#load-if-defined UP-GAME-WK
+#load-if-defined PORTUGUESE-CIV
+(defrule
+(or	(up-compare-goal increase-ts != 0)
+(or	(up-compare-goal tradeunits >= 24)
+(or	(building-type-count-total feitoria g:>= feitoria-cap)
+(or	(and	(housing-headroom < 20)
+		(population-headroom < 20))
+	(and	(stone-amount < castle-stone)
+		(and	(goal uugoal yes)
+			(building-type-count-total castle < 2)))))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(population < max-civ-pop)
+(or	(up-compare-goal custom-civ-pop < up-max-civ)
+	(up-compare-goal tradeunits < 16))
+(or	(up-compare-goal excessWood < 800)
+(or	(up-compare-goal excessFood < 800)
+(or	(up-compare-goal excessGold < 800)
+	(up-compare-goal excessStone < castle-stone)))); twocastle-stone
+	(gold-amount >= 250)
+	(stone-amount >= 250)
+	(building-available feitoria)
+	(current-age >= imperial-age)
+=>
+	(set-goal increase-ts feitoria))
+#end-if
+#end-if
+
+
+(defrule
+(or	(building-type-count-total market >= 1)
+(or	(wood-amount < market-cost)
+(or	(not	(building-available market))
+	(up-compare-goal increase-ts != 0))))
+=>
+	(up-jump-rule 9))
+(defrule
+;	(goal dreitc yes)
+(or	(goal strategy sling)
+(or	(wood-amount >= 900)
+(or	(and	(food-amount < 100)
+		(gold-amount >= 800))
+	(and	(food-amount >= 800)
+		(gold-amount < 100)))))
+=>
+	(set-goal increase-ts market))
+(defrule
+(or	(players-building-type-count any-ally market >= 1)
+(or	(building-type-count-total town-center >= 4)
+(or	(research-available imperial-age)
+(or	(building-type-count-total castle >= 1)
+	(wood-amount >= 750)))))
+	(building-type-count-total town-center >= 3)
+=>
+	(set-goal increase-ts market))
+(defrule
+	(building-type-count-total town-center < 3)
+	(goal dreitc no)
+	(goal underattack no)
+	(strategic-number sn-current-age >= castlea)
+	(current-age-time >= 60)
+	(unit-type-count villager-stone <= 0)
+	(wood-amount >= 315)
+	(stone-amount < 100)
+=>
+	(set-goal increase-ts market))
+(defrule
+(or	(strategic-number sn-current-age >= imperial)
+(or	(civilian-population >= up-max-civ)
+(or	(population >= max-civ-pop)
+	(unit-type-count-total trade-cart >= 10))))
+	(building-type-count-total town-center >= 1)
+	(players-building-type-count any-ally market >= 1)
+=>
+	(set-goal increase-ts market))
+(defrule
+	(strategic-number sn-current-age <= feudal)
+;	(current-age-time >= 12)
+	(building-type-count-total blacksmith >= 1)
+(or	(wood-amount >= 350); 250
+(or	(building-type-count-total archery-range >= 3)
+	(building-type-count-total stable >= 2)))
+(or	(up-compare-goal total-food-amount < 800)
+	(gold-amount < 200))
+(or	(wood-amount >= farmmb-cost)
+	(building-type-count-total farm g:>= maxfarms))
+=>
+	(set-goal increase-ts market))
+(defrule
+	(research-available castle-age)
+(or	(goal underattack no)
+	(up-compare-goal threat-time >= 12000)); test
+;(or	(building-type-count-total archery-range >= 1)
+;	(building-type-count-total stable >= 1))
+	(up-compare-goal total-food-amount >= 600)
+	(gold-amount <= 100)
+	(unit-type-count villager-gold <= 0)
+=>
+	(set-goal increase-ts market))
+(defrule
+(or	(and	(goal strategy grush)
+		(building-type-count-total blacksmith >= 1))
+(or	(up-compare-goal strategy == castledrop)
+	(goal milunits no)))
+	(building-type-count-total town-center >= 1)
+=>
+	(set-goal increase-ts market))
+(defrule
+(or	(cc-players-unit-type-count 0 tree-class < 150); 125
+(or	(dropsite-min-distance wood s:> sn-maximum-wood-drop-distance)
+	(dropsite-min-distance wood > 20)))
+	(building-type-count-total town-center >= 1)
+=>
+	(set-goal increase-ts market))
+(defrule
+(or	(players-building-type-count any-ally market >= 1)
+(or	(research-available imperial-age)
+	(strategic-number sn-military-superiority >= 0))); 800+ wood
+(or	(building-type-count-total town-center >= 3)
+	(civilian-population >= up-max-civ))
+=>
+	(set-goal increase-ts market)); end jump
+
+(defrule
+	(goal increase-ts market)
+(or	(building-type-count-total market >= 1)
+(or	(wood-amount < market-cost)
+	(not	(building-available market))))
+=>
+;	(chat-local-to-self "Debugging market-construction.")
+	(set-goal increase-ts 0))
+
+(defrule
+	(goal islands yes)
+	(up-compare-goal increase-ts == 0)
+(or	(strategic-number sn-current-age >= imperial)
+	(unit-type-count-total trade-cog >= 6)); 8
+	(building-type-count-total town-center >= 1)
+	(players-building-type-count any-ally dock >= 1)
+	(goal tradecarts no)
+	(goal increase-ts 0)
+	(building-type-count-total dock == 10)
+	(can-build dock)
+=>
+	(set-strategic-number sn-dock-placement-mode -1); back
+	(build dock))
+#end-if
+
+
+(defrule
+	(up-compare-goal excessWood < 5000)
+(or	(building-type-count-total town-center <= 0)
+(or	(building-type-count-total lumber-camp <= 0)
+	(up-compare-goal increase-ts != 0)))
+=>
+	(up-jump-rule 9))
+(defrule
+	(goal islands yes)
+(or	(goal map water);wbody?
+	(goal enemy-boats yes))
+(or	(goal defend no)
+(or	(goal attacking yes)
+	(up-compare-goal biggestenemynavy <= 0)))
+	(building-type-count-total dock == 0)
+	(can-build dock)
+=>
+	(build dock))
+(defrule
+	(up-compare-goal strategy-type2 == water)
+	(goal fishing yes)
+(or	(goal defend no)
+(or	(goal attacking yes)
+	(up-compare-goal biggestenemynavy <= 0)))
+	(building-type-count-total dock == 0)
+	(can-build dock)
+=>
+	(build dock))
+(defrule
+(or	(and	(strategic-number sn-current-age < fcastlea)
+		(and	(cc-players-unit-type-count 0 shore-fish-class < shorefishreq2)
+			(cc-players-unit-type-count 0 ocean-fish-class < deepfishreq2)))
+	(and	(strategic-number sn-current-age == feudal)
+		(building-type-count-total blacksmith <= 0)))
+=>
+	(up-jump-rule 1))
+(defrule
+; test	(goal fleet yes)
+	(strategic-number sn-current-age == dark)
+(or	(goal map water);wbody?
+	(goal enemy-boats yes))
+(or	(goal defend no)
+(or	(goal attacking yes)
+	(up-compare-goal biggestenemynavy <= 0)))
+	(building-type-count-total dock == 0)
+	(can-build dock)
+=>
+	(build dock)); end jump
+(defrule
+	(goal fleet yes)
+	(goal defend no)
+(or	(building-type-count-total town-center >= 3)
+	(population >= up-max-civ)); civilian ;	(up-compare-goal strategy-type >= imperial-war)); for now
+(or	(and	(building-type-count-total market >= 1)
+		(building-type-count-total blacksmith >= 1))
+	(strategic-number sn-current-age >= fcastlea));(goal dreitc yes)
+;(or	(goal map water);wbody?
+	(goal enemy-boats yes);)
+	(building-type-count-total dock < 3)
+	(can-build dock)
+=>
+	(build dock))
+(defrule
+;	(goal fleet yes)
+	(goal defend no)
+	(goal strategy grush)
+(or	(strategic-number sn-current-age >= dfeudal)
+	(up-compare-goal gr-var >= 2))
+	(building-type-count-total dock < 5)
+(or	(building-type-count-total dock < 3)
+(or	(building-type-count-total market >= 1)
+	(wood-amount >= 325)))
+	(can-build dock)
+=>
+	(build dock))
+(defrule
+	(goal islands no)
+	(wood-amount < 445); 295
+(or	(wood-amount < 325); 235
+	(up-compare-goal navycount g:>= maxnavy))
+	(building-type-count-total stable < number-stables); or?
+	(building-type-count-total archery-range < number-archery-ranges)
+	(building-type-count-total barracks < number-barracks)
+	(building-type-count-total stable < 6); or?
+	(building-type-count-total archery-range < 6)
+	(building-type-count-total barracks < 6)
+	(building-type-count-total siege-workshop < 3)
+=>
+	(up-jump-rule 1))
+(defrule
+	(goal fleet yes)
+	(goal defend no)
+(or	(wood-amount >= 2200)
+(or	(building-type-count-total town-center >= 5)
+(or	(civilian-population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial))))
+;	(goal map water)
+(or	(goal islands yes)
+	(goal enemy-boats yes))
+	(building-type-count-total dock < 10)
+	(can-build dock)
+=>
+	(build dock))
+(defrule
+	(goal fleet yes)
+	(goal defend no)
+	(strategic-number sn-current-age >= imperial)
+(or	(wood-amount >= 325)
+	(goal enemy-boats yes))
+	(building-type-count-total dock < 1)
+	(can-build dock)
+=>
+	(build dock)); end jump
+
+(defrule
+(or	(wood-amount < 175)
+(or	(building-type-count-total lumber-camp <= 0)
+(or	(building-type-count-total mill <= 0)
+	(building-type-count-total town-center <= 0))))
+=>
+	(up-jump-rule 8))
+(defrule
+	(up-compare-goal strategy != r-flush)
+	(up-compare-goal strategy != s-flush)
+	(up-compare-goal strategy != krush)
+	(up-compare-goal strategy != a-rush)
+	(up-compare-goal strategy != ca-rush)
+	(up-compare-goal milunits != yes)
+=>
+	(up-jump-rule 7))
+(defrule
+(or	(building-type-count-total mining-camp >= 1)
+(or	(and	(or	(goal strategy s-flush)
+			(goal sk-var yes))
+		(building-type-count-total lumber-camp >= 2))
+	(wood-amount >= 275)))
+	(building-type-count-total barracks < 1)
+	(building-available barracks)
+; j	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy r-flush)
+	(building-type-count-total archery-range < 5)
+(or	(building-type-count-total siege-workshop >= 1)
+(or	(wood-amount >= 220)
+	(current-age <= feudal-age)))
+(or	(wood-amount >= 550)
+	(strategic-number sn-current-age >= fcastlea))
+	(building-available archery-range)
+; j	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy r-flush)
+	(building-type-count-total archery-range < 3)
+(or	(building-type-count-total archery-range < 2)
+	(and	(strategic-number sn-military-superiority <= 0); 3
+		(goal trainskirm yes))); test
+(or	(building-type-count-total archery-range < 2)
+(or	(up-research-status c: ri-wheel-barrow >= research-pending); test
+	(building-type-count-total market >= 1)))
+	(building-available archery-range)
+; j	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy a-rush)
+(or	(building-type-count-total archery-range < 1)
+	(building-type-count-total blacksmith >= 1))
+(or	(building-type-count-total archery-range < 2)
+	(or	(goal dreitc yes)
+		(building-type-count-total town-center >= 3))); 2
+	(building-type-count-total archery-range < 3)
+	(building-available archery-range)
+; j	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal strategy a-rush)
+	(goal strategy ca-rush))
+	(building-type-count-total town-center >= 3)
+	(building-type-count-total siege-workshop >= 1)
+	(building-type-count-total archery-range < 6)
+	(building-available archery-range)
+; j	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy ca-rush)
+(or	(building-type-count-total archery-range < 1)
+	(building-type-count-total blacksmith >= 1))
+(or	(and	(building-type-count-total archery-range < 2)
+		(or	(building-type-count-total town-center >= 2)
+			(goal dreitc yes)))
+	(building-type-count-total town-center >= 3)); 2
+	(building-type-count-total archery-range < 3)
+	(building-available archery-range)
+; j	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal strategy r-flush)
+	(goal strategy a-rush))
+(or	(strategic-number cavalry >= 7)
+	(players-building-type-count target-player stable >= 2))
+	(strategic-number sn-current-age >= fcastlea)
+	(building-type-count-total archery-range >= 2)
+	(building-type-count-total barracks < 2)
+	(building-available barracks)
+; j	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7)); end jump
+(defrule
+	(goal strategy s-flush)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total stable < 1)
+	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy s-flush)
+	(building-type-count-total town-center >= 1)
+	(goal position-goal flank)
+	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total archery-range < 1)
+	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(up-compare-goal strategy != krush)
+(or	(not	(building-available stable))
+(or	(wood-amount < 175)
+(or	(up-compare-goal increase-ts != 0)
+(or	(building-type-count-total stable >= 4)
+	(building-type-count-total town-center <= 0))))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(building-type-count-total stable < 1)
+(or	(and	(building-type-count-total stable < 2)
+		(and	(up-compare-goal kr-var >= 2)
+			(or	(current-age >= castle-age)
+				(or	(building-type-count-total farm g:>= maxfarms)
+					(wood-amount >= 235))))); farmmb-cost
+; j	(and	(building-type-count-total stable < 4)
+		(building-type-count-total town-center >= 3)));)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(building-type-count-total town-center >= 2); 2
+	(civilian-population >= 40)); 40
+	(up-pending-objects c: knight-line >= 2); 3
+	(strategic-number ep-civilian-superiority >= 3)
+	(strategic-number ep-military-superiority <= -5)
+	(building-type-count-total stable < 3)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+
+(defrule
+(or	(up-compare-goal strategy == stonewall)
+(or	(up-compare-goal strategy == krush)
+(or	(up-compare-goal strategy == a-rush)
+(or	(up-compare-goal strategy == ca-rush)
+(or	(up-compare-goal strategy == r-flush)
+	(up-compare-goal strategy == s-flush))))))
+=>
+	(up-jump-rule 7))
+(defrule
+(or	(up-compare-goal milunits == no)
+	(up-compare-goal milunits == castledrop))
+(or	(wood-amount < 350)
+	(and	(current-age <= feudal-age)
+		(and	(strategic-number sn-current-age < imperial)
+			(wood-amount < 1000))))
+	(up-research-status c: ri-heavy-plow < research-pending)
+	(building-type-count-total town-center < 5);
+	(civilian-population < up-max-civ)
+	(population < del-civ-pop)
+	(goal underattack no)
+=>
+	(up-jump-rule 6))
+(defrule
+	(goal enemy-goal2 klew)
+	(unit-type-count-total militiaman-line >= 2)
+	(building-type-count-total blacksmith >= 1)
+(or	(building-type-count-total barracks < 2)
+	(and	(strategic-number sn-military-superiority <= -1)
+		(building-type-count-total barracks < 3)))
+	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(and	(goal enemy-goal rush)
+		(players-building-type-count focus-player archery-range >= 2))
+(or	(and	(players-building-type-count focus-player archery-range >= 2)
+		(strategic-number archers >= 7))
+		(strategic-number archers >= 10)))
+	(building-type-count-total archery-range < 2)
+	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total archery-range < 2)
+(or	(and	(goal enemy-goal rush)
+		(players-building-type-count focus-player barracks >= 2))
+(or	(and	(players-building-type-count focus-player barracks >= 2)
+		(strategic-number infantry >= 7))
+		(strategic-number infantry >= 10)))
+	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total barracks < 2)
+(or	(players-building-type-count focus-player stable >= 2)
+	(strategic-number cavalry >= 10))
+	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total barracks < 3)
+(or	(players-building-type-count focus-player stable >= 3)
+	(strategic-number cavalry >= 15))
+	(wood-amount >= 175)
+	(building-available barracks)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(goal enemy-goal rush)
+	(players-unit-type-count focus-player conquistador >= 5)
+	(building-type-count-total stable < 2)
+	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7)); end jump
+
+
+(defrule
+(or	(up-compare-goal tradecarts != yes)
+(or	(and	(up-compare-goal excessWood < 450)
+		(and	(building-type-count-total market >= 1)
+			(and	(strategic-number sn-current-age < imperial)
+				(goal traincart no))))
+	(and	(not	(player-in-game any-ally))
+		(players-building-type-count every-ally market <= 0))))
+=>
+	(up-jump-rule 5))
+(defrule
+	(strategic-number sn-current-age < imperial)
+	(up-research-status c: ri-caravan < research-pending)
+	(building-type-count-total town-center < 5); 4
+	(civilian-population < up-max-civ)
+	(population < max-civ-pop)
+(or	(building-type-count-total town-center < 3)
+	(up-compare-goal custom-civ-pop < 120))
+	(up-compare-goal excessWood < 850)
+	(game-time < 2400)
+=>
+	(up-jump-rule 4))
+(defrule
+(or	(building-type-count-total town-center <= 0)
+(or	(up-compare-goal increase-ts != 0)
+	(and	(strategic-number sn-current-age <= castlea); ==
+		(and	(up-compare-goal excessWood < 375)
+			(up-research-status c: imperial-age <= research-unavailable)))))
+=>
+	(up-jump-rule 3))
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(up-compare-goal excessWood < 350)
+	(building-type-count-total stable < 6)
+	(building-type-count-total archery-range < 6)
+	(building-type-count-total barracks < 6)
+	(building-type-count-total stable < number-stables)
+	(building-type-count-total archery-range < number-archery-ranges)
+	(building-type-count-total barracks < number-barracks)
+	(building-type-count-total siege-workshop < 3)
+=>
+	(up-jump-rule 2))
+(defrule
+	(building-type-count-total market < 4); 3
+	(can-build market)
+=>
+;	(set-strategic-number sn-placement-zone-size 20); test
+	(set-strategic-number sn-placement-to-center 1)
+	(up-set-placement-data my-player-number -1 c: market-neg-dist)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-build place-control 0 c: market))
+(defrule
+(or	(building-type-count-total market == 4); 3
+	(building-type-count-total market == 0))
+	(players-population any-ally >= max-civ-pop)
+	(can-build market)
+=>
+;	(set-strategic-number sn-placement-zone-size 20); test
+	(set-strategic-number sn-placement-to-center 1); testo 2
+	(up-set-placement-data this-any-ally -1 c: market-neg-dist)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-build place-control 0 c: market)
+;	(disable-self); end jump
+)
+
+
+(defrule
+	(goal position-goal pocket)
+	(strategic-number sn-current-age <= castlea)
+(or	(up-research-status c: imperial-age == research-unavailable)
+	(building-type-count-total market <= 0))
+	(up-compare-goal excessWood < 400)
+(or	(building-type-count-total stable >= 2)
+(or	(building-type-count-total archery-range >= 2)
+	(building-type-count-total barracks >= 2)))
+=>
+	(up-jump-rule 11))
+(defrule
+(or	(up-compare-goal strategy == krush)
+(or	(up-compare-goal strategy == a-rush)
+(or	(up-compare-goal strategy == ca-rush)
+(or	(building-type-count-total town-center <= 0)
+(not	(building-available stable))))))
+=>
+	(up-jump-rule 10))
+(defrule
+	(up-compare-goal milunits != no)
+	(up-compare-goal strategy != krush)
+	(goal enemy-goal rush)
+(or	(players-unit-type-count focus-player scorpion-line >= 3)
+	(players-unit-type-count focus-player mangonel-line >= 3))
+	(unit-type-count-total knight-line < 8)
+	(unit-type-count-total scout-cavalry-line < 20)
+	(building-type-count-total stable < 2)
+	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(and	(strategic-number moenche >= 10)
+		(building-type-count-total stable < 2))
+	(and	(strategic-number moenche >= 15)
+		(building-type-count-total stable < 3)))
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(and	(strategic-number moenche >= 20)
+		(building-type-count-total stable < 4))
+	(and	(strategic-number moenche >= 25)
+		(building-type-count-total stable < 5)))
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal enemy-goal rush)
+	(players-unit-type-count focus-player spearman-line < 20)
+	(strategic-number sn-military-superiority <= 0)
+(or
+;	(and
+	(building-type-count-total stable < 1)
+;		(goal kloster yes))
+	(and	(strategic-number sn-military-superiority <= -2)
+		(building-type-count-total stable < 2)))
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(strategic-number sn-current-age >= fcastlea)
+	(strategic-number sn-military-superiority <= 0)
+(or	(up-compare-goal enemy-goal != 0)
+(or	(and	(wood-amount >= 350)
+		(strategic-number sn-military-superiority <= -1))
+	(strategic-number sn-military-superiority <= -2)))
+	(building-type-count-total stable < 1)
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(building-type-count castle == 0)
+	(strategic-number sn-current-age >= fcastlea)
+(or	(and	(goal strategy r-flush)
+		(or	(strategic-number sn-military-superiority <= 1)
+			(civ-selected turkish)))
+	(goal dreitc yes))
+	(building-type-count-total stable < 1)
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal position-goal flank)
+;	(goal Multiplayer yes)
+	(building-type-count castle == 0)
+	(strategic-number sn-current-age >= fcastlea)
+	(strategic-number sn-military-superiority <= 0)
+	(strategic-number moenche < 10)
+	(players-unit-type-count every-enemy spearman-line < 16)
+	(building-type-count-total stable < 1)
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+        (building-type-count-total stable < 2)
+	(goal dreitc yes)
+(or	(building-type-count castle == 0)
+	(strategic-number sn-current-age >= imperial))
+(or	(wood-amount > 220)
+	(building-type-count-total siege-workshop > 0))
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(cc-players-unit-type-count 0 gold-mine < 2)
+	(wood-amount >= 500)
+(or	(building-type-count castle == 0)
+	(strategic-number sn-current-age >= imperial))
+        (building-type-count-total stable < 2)
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(and	(cc-players-unit-type-count 0 gold-mine < 6)
+		(building-type-count-total market >= 1))
+(or	(wood-amount >= 1000); 745
+	(strategic-number sn-current-age >= imperial)))
+;	(strategic-number sn-maximum-town-size >= 22)
+	(goal allowdmstable yes)
+	(building-type-count-total stable < number-stables)
+;	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7)) ; end jump
+
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined SLAVIC-CIV
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined TEUTONIC-CIV ; Mongols, 
+#load-if-not-defined VIKING-CIV ; Huns, Spanish, Franks, Turks, Saracens, Magyars, Indians
+
+(defrule
+	(building-type-count-total town-center >= 1)
+	(strategic-number sn-current-age >= castlea)
+	(strategic-number spears < 15)
+	(goal milunits yes)
+(or	(strategic-number sn-military-superiority <= -2)
+(or	(building-type-count archery-range >= 3)
+;(or	(not	(goal enemy-goal 0))
+	(goal dreitc yes)));)
+	(building-type-count-total stable < 1)
+	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined TURKISH-CIV
+(defrule
+	(building-type-count-total town-center >= 1)
+        (building-type-count-total stable < 1)
+	(goal milunits yes); new
+	(strategic-number sn-military-superiority <= -1)
+(or	(players-building-type-count focus-player stable >= 3)
+(or	(and	(players-building-type-count focus-player stable >= 2)
+		(strategic-number cavalry >= 10))
+	(strategic-number cavalry >= 15)))
+	(building-available stable)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts stable)
+	(enable-timer increase-ts-timer 7))
+#end-if
+
+(defrule
+	(goal position-goal pocket)
+	(strategic-number sn-current-age <= castlea)
+(or	(up-research-status c: imperial-age == research-unavailable)
+	(building-type-count-total market <= 0))
+	(up-compare-goal excessWood < 400)
+(or	(building-type-count-total stable >= 2)
+(or	(building-type-count-total archery-range >= 2)
+	(building-type-count-total barracks >= 2)))
+=>
+	(up-jump-rule 9))
+(defrule
+(or	(up-compare-goal strategy == stonewall)
+(or	(up-compare-goal strategy == krush)
+(or	(up-compare-goal strategy == s-flush)
+(or	(building-type-count-total town-center <= 0)
+(not	(building-available archery-range))))))
+=>
+	(up-jump-rule 8))
+(defrule
+	(building-type-count-total archery-range < 1)
+;	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total archery-range < 2)
+(or	(goal dreitc yes)
+(or	(goal enemy-goal flush)
+	(strategic-number sn-military-superiority <= -1)))
+;	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal enemy-goal flush)
+	(strategic-number sn-military-superiority <= -2))
+	(players-current-age focus-player == feudal-age)
+	(strategic-number sn-military-superiority <= 0)
+(or	(strategic-number sn-current-age >= fcastlea)
+(or	(building-type-count-total market >= 1)
+	(strategic-number sn-military-superiority <= -1)))
+	(building-type-count-total archery-range < 4)
+;	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total archery-range < 4)
+(or	(building-type-count-total siege-workshop >= 1)
+(or	(building-type-count-total university >= 1)
+(or	(wood-amount >= 375); 275
+	(strategic-number sn-current-age >= imperial))))
+;	(building-available archery-range)
+	(goal dreitc yes)
+	(goal tc yes)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(building-type-count-total archery-range < 3)
+	(and	(goal position-goal flank)
+		(and	(strategic-number sn-current-age >= fcastlea)
+			(and	(not	(building-available stable))
+				(strategic-number sn-military-superiority <= -1))))); -2
+;	(building-type-count-total archery-range < 4)
+	(building-type-count-total archery-range < number-archery-ranges)
+	(goal dreitc yes)
+;	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(wood-amount > 275)
+	(not	(building-available town-center)))
+	(strategic-number sn-current-age >= fcastlea)
+(or	(strategic-number infantry >= 10)
+	(strategic-number archers >= 15))
+	(building-type-count-total archery-range < 4)
+;	(building-available archery-range)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(wood-amount >= 220)
+	(cc-players-unit-type-count 0 gold-mine < 4)
+	(building-type-count-total archery-range < 6)
+;	(building-available archery-range)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(and	(cc-players-unit-type-count 0 gold-mine < 6)
+		(building-type-count-total market >= 1))
+(or	(wood-amount >= 1000); 745
+	(strategic-number sn-current-age >= imperial)))
+;	(strategic-number sn-maximum-town-size >= 22)
+	(goal allowdmarchery yes)
+	(building-type-count-total archery-range < number-archery-ranges)
+	(wood-amount >= 175)
+;	(building-available archery-range)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts archery-range)
+	(enable-timer increase-ts-timer 7)) ; end jump
+
+;#load-if-not-defined INCAN-CIV
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined SLAVIC-CIV
+;#load-if-not-defined AZTEC-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KOREAN-CIV
+;#load-if-not-defined MAYAN-CIV
+#load-if-not-defined MONGOL-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined VIKING-CIV ; Aztec, Inca, Maya
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(and	(strategic-number moenche >= 10)
+		(building-type-count-total barracks < 2))
+	(and	(strategic-number moenche >= 15)
+		(building-type-count-total barracks < 3)))
+	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(and	(strategic-number moenche >= 20)
+		(building-type-count-total barracks < 4))
+	(and	(strategic-number moenche >= 25)
+		(building-type-count-total barracks < 5)))
+	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+;#end-if
+;#end-if
+;#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(goal position-goal pocket)
+	(strategic-number sn-current-age <= castlea)
+(or	(up-research-status c: imperial-age == research-unavailable)
+	(building-type-count-total market <= 0))
+	(up-compare-goal excessWood < 400)
+(or	(building-type-count-total stable >= 2)
+(or	(building-type-count-total archery-range >= 2)
+	(building-type-count-total barracks >= 2)))
+=>
+	(up-jump-rule 13))
+(defrule
+(or	(up-compare-goal strategy == krush)
+(or	(up-compare-goal strategy == s-flush)
+(or	(building-type-count-total town-center <= 0)
+(not	(building-available barracks)))))
+=>
+	(up-jump-rule 12))
+(defrule
+(or	(up-compare-goal milunits == no)
+	(up-compare-goal milunits == castledrop))
+(or	(wood-amount < 350)
+	(and	(current-age <= feudal-age)
+		(and	(strategic-number sn-current-age < imperial)
+			(wood-amount < 1000))))
+	(up-research-status c: ri-heavy-plow < research-pending)
+=>
+	(up-jump-rule 11))
+(defrule
+
+	(strategic-number sn-current-age <= dark)
+	(wood-amount >= 650); one of these no-lc maps?
+	(building-type-count-total barracks < 1)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy drush)
+;(or	(goal milunits yes)
+;(or	(population >= up-max-civ)
+;	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total town-center >= 1)
+(or	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mill >= 1))
+	(building-type-count-total barracks < 1)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(up-compare-goal increase-ts == 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(goal strategy stonewall)
+(or	(strategic-number sn-current-age >= imperial)
+	(research-available imperial-age))
+	(building-type-count-total town-center >= 1)
+	(current-age >= castle-age)
+(or	(wood-amount > 220)
+	(building-type-count-total siege-workshop > 0))
+	(building-type-count-total barracks < 6)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total town-center >= 1)
+	(wood-amount >= 220)
+	(cc-players-unit-type-count 0 gold-mine < 4)
+	(building-type-count-total barracks < 6)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(research-available imperial-age)
+(or	(building-type-count-total town-center >= 5)
+	(goal underattack yes)))
+	(building-type-count-total barracks < 1)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(building-type-count-total town-center >= 1)
+(or	(and	(cc-players-unit-type-count 0 gold-mine < 6)
+		(building-type-count-total market >= 1))
+(or	(wood-amount >= 1000); 745
+	(strategic-number sn-current-age >= imperial)))
+;	(strategic-number sn-maximum-town-size >= 22)
+	(goal allowdmbarracks yes)
+	(building-type-count-total barracks < number-barracks)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mill >= 1)
+	(building-type-count-total town-center >= 1)
+(or	(building-type-count-total mining-camp >= 1)
+	(wood-amount >= 275))
+	(building-type-count-total barracks < 1)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total mining-camp >= 1)
+	(building-type-count-total town-center >= 1)
+(or	(players-military-population any-enemy >= 2)
+	(food-amount >= 450)); 25 vils
+	(building-type-count-total barracks < 1)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total town-center >= 1)
+	(goal dreitc yes)
+(or	(building-type-count-total archery-range >= 3)
+	(building-type-count-total stable >= 3))
+	(building-type-count-total siege-workshop >= 1)
+	(building-type-count-total barracks < 2)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total town-center >= 1)
+	(goal dreitc yes)
+(or	(building-type-count-total archery-range >= 4)
+	(building-type-count-total stable >= 4))
+	(building-type-count-total siege-workshop >= 1)
+	(building-type-count-total barracks < 3)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(goal milunits yes)
+(or	(population >= up-max-civ)
+	(strategic-number sn-current-age >= imperial)))
+	(building-type-count-total town-center >= 1)
+	(current-age >= castle-age)
+	(goal dreitc yes)
+(or	(players-building-type-count target-player stable >= 3)
+	(strategic-number cavalry >= 15))
+	(building-type-count-total barracks < 3)
+;	(building-available barracks)
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts barracks)
+	(enable-timer increase-ts-timer 7)) ; end jump
+
+
+
+
+(defrule
+(or	(and	(strategic-number sn-military-superiority <= 0)
+		(and	(unit-type-count-total villager < 16)
+			(game-time < 128)))
+(or	(building-type-count-total town-center <= 0)
+(not	(building-available siege-workshop))))
+=>
+	(up-jump-rule 11))
+(defrule
+(or	(goal strategy krush)
+	(goal milunits castledrop))
+	(building-type-count-total town-center < 3)
+	(players-building-type-count target-player stone-wall-line < 3)
+(nand	(strategic-number sn-maximum-town-size < 40)
+	(or	(and	(up-unit-type-in-town c: archer-line >= 5)
+			(military-population < 3))
+		(or	(up-building-type-in-town c: watch-tower >= 1)
+			(up-building-type-in-town c: castle >= 1))))
+; test	(goal attacking no)
+=>
+	(up-jump-rule 9))
+(defrule
+(or	(building-type-count-total town-center >= 3)
+	(goal dreitc yes))
+(or	(goal milunits no)
+	(goal position-goal pocket))
+	(strategic-number sn-current-age == castlea)
+	(building-type-count-total monastery >= 1)
+	(building-type-count-total university < 1)
+	(building-type-count-total siege-workshop < 1)
+	(building-type-count castle < 1)
+	(wood-amount < 200)
+	(goal increase-ts archery-range)
+=>
+	(set-goal increase-ts 0))
+(defrule ; go up 4 - no esc
+(or	(building-type-count-total town-center >= 3)
+	(goal dreitc yes))
+(or	(goal milunits no)
+	(goal position-goal pocket))
+	(strategic-number sn-current-age == castlea)
+	(building-type-count-total monastery >= 1)
+	(building-type-count-total university < 1)
+	(building-type-count-total siege-workshop < 1)
+	(building-type-count castle < 1)
+;	(building-available siege-workshop)
+	(wood-amount >= 200); was escr
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-compare-goal milunits != no)
+(or	(and	(goal enemy-goal rush)
+		(players-building-type-count focus-player archery-range >= 2))
+(or	(and	(players-building-type-count focus-player archery-range >= 3); 2
+		(strategic-number skirmsarchers >= 7)); archers
+	(strategic-number skirmsarchers >= 10))); archers
+	(building-type-count-total siege-workshop < 1)
+;	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(building-type-count-total archery-range >= 3)
+(or	(building-type-count-total barracks >= 3)
+	(building-type-count-total stable >= 3)))
+(or	(goal dreitc yes)
+(or	(strategic-number sn-current-age >= imperial)
+	(strategic-number sn-military-superiority >= 1))); 2
+	(building-type-count-total siege-workshop < 1)
+;	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(up-compare-goal milunits != no)
+(or	(strategic-number archers >= 10)
+	(players-unit-type-count focus-player skirmisher-line >= 20))
+	(players-unit-type-count every-enemy scout-cavalry-line <= 5)
+	(strategic-number cavalry <= 5)
+	(players-unit-type-count every-enemy huskarl-line <= 5)
+	(players-unit-type-count every-enemy eagle-warrior-line <= 5)
+	(players-unit-type-count every-enemy woad-raider-line <= 5)
+	(strategic-number sn-military-superiority <= -1)
+	(building-type-count-total siege-workshop < 1)
+;	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(and	(strategic-number skirmsarchers >= 16)
+		(up-compare-goal milunits != no))
+(or	(players-building-type-count focus-player castle >= 1)
+(or	(players-building-type-count focus-player bombard-tower >= 1)
+	(players-building-type-count focus-player watch-tower >= 4))))
+	(building-type-count-total siege-workshop < 1)
+;	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(population >= up-max-civ); else we can't really support this anyway
+(or	(goal attacking yes)
+(or	(and	(strategic-number sn-military-superiority >= 0); 1
+		(strategic-number sn-current-age >= imperial))
+	(strategic-number sn-military-superiority >= 2))); 2
+	(building-type-count-total siege-workshop < 2)
+;	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(strategic-number sn-current-age >= imperial)
+	(cc-players-unit-type-count 0 gold-mine < 6))
+	(building-type-count-total siege-workshop < 4)
+(or	(building-type-count-total siege-workshop < 3)
+(or	(goal attacking yes)
+(or	(population >= max-civ-pop); del-
+	(strategic-number sn-military-superiority >= 2))))
+;	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+(or	(players-unit-type-count focus-player mangonel-line > 1)
+	(players-unit-type-count focus-player scorpion-line > 4))
+(or	(goal dreitc yes)
+	(players-unit-type-count focus-player scorpion-line > 6))
+	(building-type-count-total siege-workshop < 1)
+;	(building-available siege-workshop)
+	(wood-amount >= 200)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(building-type-count-total siege-workshop < 2)
+	(goal underattack no)
+	(strategic-number sn-military-superiority >= -1); -2
+(or	(goal increase-ts barracks)
+(or	(goal increase-ts archery-range)
+	(goal increase-ts stable)))
+(or	(building-type-count-total barracks >= 6);number-barracks)
+(or	(building-type-count-total archery-range >= 6);number-archery-ranges)
+	(building-type-count-total stable >= 6)));number-stables)0
+;	(wood-amount >= 200)
+=>
+	(set-goal increase-ts siege-workshop)
+	(enable-timer increase-ts-timer 7)); end jump
+
+
+
+
+#load-if-defined POST-IMPERIAL-AGE-START
+#load-if-defined DEATH-MATCH
+(defrule
+	(game-time < 300)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total dm-building < 8); 10
+(or	(wood-amount >= 2000)
+(or	(food-amount >= 2000)
+	(gold-amount >= 2000)))
+	(wood-amount >= 175)
+	(goal increase-ts 0)
+=>
+	(set-goal increase-ts dm-building)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(game-time < 300)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total dm-building < 8); 10
+(or	(wood-amount >= 2000)
+(or	(food-amount >= 2000)
+	(gold-amount >= 2000)))
+	(wood-amount >= 175)
+	(goal increase-ts archery-range)
+	(up-compare-const dm-building != archery-range)
+=>
+	(set-goal increase-ts dm-building)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(game-time < 300)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total dm-building < 8); 10
+(or	(wood-amount >= 2000)
+(or	(food-amount >= 2000)
+	(gold-amount >= 2000)))
+	(wood-amount >= 175)
+	(goal increase-ts stable)
+	(up-compare-const dm-building != stable)
+=>
+	(set-goal increase-ts dm-building)
+	(enable-timer increase-ts-timer 7))
+(defrule
+	(game-time < 300)
+	(building-type-count-total town-center >= 1)
+	(building-type-count-total dm-building < 8); 10
+(or	(wood-amount >= 2000)
+(or	(food-amount >= 2000)
+	(gold-amount >= 2000)))
+	(wood-amount >= 175)
+	(goal increase-ts barracks)
+	(up-compare-const dm-building != barracks)
+=>
+	(set-goal increase-ts dm-building)
+	(enable-timer increase-ts-timer 7))
+#end-if
+#end-if
+
+
+
+
+(defrule
+(or	(up-research-status c: imperial-age >= research-pending); complete?
+(or	(players-current-age any-enemy >= imperial-age)
+(or	(up-pending-placement c: watch-tower);	(up-pending-objects c: watch-tower >= 1)
+(or	(and	(strategic-number sn-dock-placement-mode == -1); test
+		(and	(up-compare-goal navycount <= 0); test
+			(unit-type-count fishing-ship < 4))); test
+(or	(up-compare-goal strategy == stonewall)
+	(goal position-goal pocket)))))); test
+=>
+	(up-jump-rule 1))
+(defrule
+	(building-type-count-total dock >= 1)
+(or	(unit-type-count-total fishing-ship >= 1)
+	(up-compare-goal navycount >= 1)); test
+(or	(players-building-type-count target-player dock >= 1); enemy-boats
+	(up-compare-goal biggestenemynavy >= 1));	(players-unit-type-count target-player galley-line >= 1))
+;	(building-type-count-total watch-tower < 1)
+;(or	(goal enemy-boats yes)
+;	(stone-amount >= 200))
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-ignore-tower-elevation 1)
+	(set-strategic-number sn-placement-zone-size 2)
+	(up-set-placement-data my-player-number dock c: 2)
+	(up-build place-control 0 c: watch-tower)
+	(disable-self))
+
+#load-if-not-defined ARENA-MAP
+#load-if-not-defined FORTRESS-MAP
+#load-if-not-defined ISLANDS-MAP
+#load-if-not-defined TEAM-ISLANDS-MAP
+(defrule
+;(not	(up-pending-placement c: watch-tower))
+(or	(goal islands yes)
+(or	(building-type-count-total gate-class >= 2)
+	(building-type-count-total stone-wall-line >= 4)))
+(or	(wall-completed-percentage 2 >= 100)
+	(wall-completed-percentage 1 >= 100)); test
+=>
+	(up-jump-rule 12))
+(defrule
+;(not	(up-pending-placement c: watch-tower))
+(or	(players-building-count target-player <= 0)
+(or	(building-type-count-total watch-tower >= 1)
+(or	(building-type-count-total town-center < 1)
+(or	(players-current-age any-enemy >= imperial-age)
+(or	(and	(players-current-age focus-player >= castle-age);	(players-current-age every-enemy >= castle-age)
+		(strategic-number skirmsarchers < 3))
+	(building-type-count-total castle >= 1))))))
+=>
+	(up-jump-rule 11))
+(defrule
+;(not	(up-pending-placement c: watch-tower))
+(or	(strategic-number sn-current-age >= imperial)
+(or	(and	(goal position-goal pocket)
+		(up-compare-goal strategy != sling))
+(or	(or	(unit-type-count-total 213 >= 2)	;(and	(up-compare-goal threat-time < 10000); 12000
+		(unit-type-count-total 225 >= 2))	;	(up-compare-goal threat-time >= 0))
+(or	(building-type-count-total town-center >= 2)
+(or	(goal defend yes); test
+	(goal underattack yes))))))
+=>
+	(up-jump-rule 10))
+(defrule
+;(or
+	(strategic-number target-military-superiority <= -3); number ; ; ;  ; ; ;  ;  pocket
+;	(strategic-number sn-military-superiority <= -1))
+	(players-current-age target-player <= feudal-age)
+	(players-unit-type-count target-player skirmisher-line >= 4)
+	(players-unit-type-count target-player archer-line < 1)
+	(players-unit-type-count target-player militiaman-line < 1)
+	(players-unit-type-count target-player scout-cavalry <= 1)
+	(players-building-type-count target-player stable < 1)
+	(unit-type-count archer-line >= 2)
+	(unit-type-count knight-line < 2)
+	(unit-type-count militiaman-line < 2)
+	(unit-type-count scout-cavalry-line < 2)
+	(strategic-number sn-current-age <= feudal)
+=>
+	(set-goal temporary-goal7 4385)); target-player hmm
+(defrule
+(or	(and	(strategic-number sn-military-superiority <= -1)
+		(players-current-age target-player == feudal-age)); <=
+	(and	(strategic-number sn-military-superiority <= 0); 0
+		(and	(up-compare-goal strategy-type >= castle-war)
+			(and	(players-military-population target-player >= 2)
+				(and	(players-current-age target-player == feudal-age)
+					(and	(players-unit-type-count target-player scout-cavalry-line < 2); (goal enemy-goal flush)
+						(players-unit-type-count target-player militiaman-line < 2)))))))
+=>
+	(set-goal temporary-goal7 4385))
+(defrule
+(or	(and	(strategic-number sn-military-superiority <= 0)
+		(and	(strategic-number target-military-superiority <= -5); test
+			(players-current-age target-player == feudal-age)))
+	(goal strategy sling))
+=>
+	(set-goal temporary-goal7 4385))
+
+(defrule
+	(goal temporary-goal7 4385)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal mining-camp)
+	(set-goal temporary-goal5 lumber-camp)
+	(set-goal temporary-goal6 mill)
+	(up-get-fact building-type-count mining-camp temporary-goal2)
+	(up-get-fact building-type-count lumber-camp temporary-goal3)
+	(up-get-fact building-type-count mill temporary-goal4))
+(defrule
+	(goal temporary-goal7 4385)
+=>
+	(up-find-local g: temporary-goal g: temporary-goal2)
+	(up-get-search-state local-total))
+(defrule
+	(goal temporary-goal7 4385)
+	(up-compare-goal local-total >= 1)
+=>
+	(up-get-point position-target point-x)
+	(up-set-target-point point-x)
+	(up-clean-search search-local object-data-distance search-order-asc)
+	(up-remove-objects search-local object-data-index >= 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object object-point-x)
+	(up-get-point-distance object-point-x point-x temporary-goal8)
+	(up-modify-goal temporary-goal9 g:= targetdistance)
+	(up-modify-goal temporary-goal9 c:- 2)); 5
+(defrule
+	(goal temporary-goal7 4385)
+(or	(up-compare-goal local-total <= 0)
+	(up-compare-goal temporary-goal8 g:> temporary-goal9))
+(or	(goal temporary-goal mining-camp)
+	(goal temporary-goal lumber-camp))
+=>
+	(up-modify-goal temporary-goal g:= temporary-goal5)
+	(up-modify-goal temporary-goal2 g:= temporary-goal3)
+	(up-modify-goal temporary-goal5 g:= temporary-goal6)
+	(up-modify-goal temporary-goal3 g:= temporary-goal4)
+	(up-full-reset-search)
+	(up-jump-rule -3))
+(defrule
+	(goal temporary-goal7 4385)
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal temporary-goal8 g:<= temporary-goal9)
+=>
+	(up-lerp-tiles object-point-x point-x c: 2)
+	(up-copy-point building-point-x object-point-x)
+	(up-set-target-point building-point-x)
+	(set-goal temporary-goal7 4395))
+
+(defrule
+	(players-building-count target-player >= 1)
+	(up-compare-goal temporary-goal7 == 4385)
+;	(players-military-population target-player >= 2)
+;	(up-compare-goal strategy-type != aggressive)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-ignore-tower-elevation 1)
+	(set-strategic-number sn-placement-zone-size 2)
+	(up-set-placement-data my-player-number -1 c: 15); 14
+	(up-build place-control 0 c: watch-tower)
+	(disable-self))
+
+(defrule
+	(goal temporary-goal7 4395)
+	(up-point-distance building-point-x position-self-x < 50)
+;	(up-compare-goal building-point-x g:< map-size)
+;	(up-compare-goal building-point-y g:< map-size)
+;	(up-compare-goal building-point-x > 0)
+;	(up-compare-goal building-point-y > 0)
+	(can-build watch-tower)
+=>
+	(set-strategic-number sn-ignore-tower-elevation 1)
+	(set-strategic-number sn-placement-zone-size 2)
+	(up-build place-point 0 c: watch-tower)
+	(set-goal temporary-goal7 4385))
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(true); disabled for now
+=>
+	(up-jump-rule 8))
+(defrule
+(or	(not	(can-build mining-camp))
+(or	(wood-amount < 100)
+(or	(up-compare-goal increase-ts != 0)
+(or	(strategic-number sn-gold-gatherer-percentage == 0)
+(or	(building-type-count-total mining-camp >= 3)
+(or	(up-pending-objects c: mining-camp >= 1)
+	(unit-type-count villager-gold < 10)))))))
+=>
+	(up-jump-rule 7))
+(defrule
+	(can-build mining-camp)
+	(up-pending-objects c: mining-camp < 1)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal2 1)
+	(set-goal temporary-goal4 11212)
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0)
+	(disable-self)); extra rule, only trigger this once
+(defrule
+	(goal temporary-goal4 11212)
+	(strategic-number sn-camp-max-distance < 40)
+=>
+	(set-strategic-number sn-camp-max-distance 40)
+	(disable-self))
+(defrule
+	(goal temporary-goal4 11212)
+;	(can-build mining-camp)
+;	(up-pending-objects c: mining-camp < 1)
+=>
+	(up-set-target-point position-self-x)
+	(up-filter-distance c: -1 s: sn-camp-max-distance))
+(defrule
+	(goal temporary-goal4 11212)
+;	(can-build mining-camp)
+;	(up-pending-objects c: mining-camp < 1)
+=>
+	(up-find-remote c: gold-mine g: temporary-goal2)
+	(up-modify-goal temporary-goal2 c:- 1)
+;	(up-modify-goal temporary-goal3 g:= temporary-goal2)
+	(up-set-target-object search-remote g: temporary-goal2)
+	(up-modify-goal temporary-goal2 c:+ 2)
+	(up-get-point position-object building-point-x)
+	(up-set-target-point building-point-x)
+	(up-filter-distance c: -1 c: 8))
+(defrule
+	(goal temporary-goal4 11212)
+	(up-compare-goal temporary-goal2 < 50)
+	(up-find-local c: mining-camp c: 1)
+=>
+	(up-jump-rule -3))
+(defrule
+	(goal temporary-goal4 11212)
+	(up-find-local c: mining-camp c: 1)
+	(up-compare-goal temporary-goal2 >= 50)
+;	(not    (up-set-target-object search-remote g: temporary-goal3)
+=>
+	(chat-to-player my-player-number "Ending goldcamp-search.")
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(set-goal temporary-goal4 0))
+(defrule
+	(goal temporary-goal4 11212)
+	(can-build mining-camp)
+=>
+;	(up-set-target-object search-remote c: 0)
+;	(up-get-point position-object building-point-x)
+;	(up-set-target-point building-point-x)
+	(set-strategic-number sn-allow-adjacent-dropsites 1); to be more safe
+	(set-strategic-number sn-placement-zone-size 3); still testing; 4
+	(set-strategic-number sn-dropsite-separation-distance 3); necessary?
+	(up-build place-point 0 c: mining-camp)
+	(chat-to-player my-player-number "Constructing additional goldcamp.")
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(set-goal temporary-goal4 0)) ; end jump
+
+(defrule ; debug rule
+(or	(strategic-number sn-focus-player-number >= 9)
+(or	(strategic-number sn-focus-player-number <= 0)
+	(stance-toward focus-player ally)))
+	(strategic-number sn-target-player-number != 0)
+=>
+	(up-modify-goal temporary-goal s:= sn-target-player-number); to prevent further bugs
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number); should be an enemy
+	(chat-to-player my-player-number "Debugging focus player. 4"))
+
+#end-if; end: no wonder race
+
+
+
+
+(defrule
+	(goal champgoal yes)
+	(building-type-count-total barracks < number-barracks)
+	(wood-amount < 350)
+(or	(goal increase-ts 0)
+(or	(goal increase-ts stable)
+	(goal increase-ts archery-range)))
+(or	(up-research-status c: imperial-age == research-pending)
+	(and	(current-age >= imperial-age)
+		(current-age-time < 180)))
+	(goal underattack no)
+	(building-available barracks)
+=>
+	(set-goal increase-ts barracks))
+(defrule
+	(goal palagoal yes)
+	(building-type-count-total stable < number-stables)
+	(wood-amount < 350)
+(or	(goal increase-ts 0)
+(or	(goal increase-ts barracks)
+	(goal increase-ts archery-range)))
+(or	(up-research-status c: imperial-age == research-pending)
+	(and	(current-age >= imperial-age)
+		(current-age-time < 180)))
+	(goal underattack no)
+	(building-available stable)
+=>
+	(set-goal increase-ts stable))
+
+
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(goal nomad no)
+	(goal landnomad no)
+(or	(building-type-count-total wonder >= 1)
+	(and	(hold-relics)
+		(up-compare-goal relic-count >= 5)))
+(not	(player-in-game any-ally))
+	(building-type-count-total gate < 5)
+	(can-build-gate 2)
+=>
+	(build-gate 2))
+(defrule
+	(goal nomad no)
+	(goal landnomad no)
+(or	(building-type-count-total wonder >= 1)
+	(and	(hold-relics)
+		(up-compare-goal relic-count >= 5)))
+(not	(player-in-game any-ally))
+	(can-build-wall 2 stone-wall-line)
+=>
+	(build-wall 2 stone-wall-line))
+#end-if
+
+#load-if-defined BALTIC-MAP ; testo
+(defrule
+	(goal position-goal flank)
+	(wall-completed-percentage 2 >= 42)
+	(strategic-number sn-current-age < imperial)
+	(current-age < castle-age)
+	(population < up-max-civ)
+	(military-population < 20)
+=>
+	(chat-to-all "Let's try something..")
+	(disable-self))
+(defrule
+	(goal position-goal flank)
+	(wall-completed-percentage 2 >= 42)
+	(strategic-number sn-current-age < imperial)
+	(current-age < castle-age)
+	(population < up-max-civ)
+	(military-population < 20)
+	(building-type-count-total gate < 2)
+	(can-build-gate 2)
+=>
+	(build-gate 2))
+(defrule
+	(goal position-goal flank)
+	(wall-completed-percentage 2 >= 42)
+	(strategic-number sn-current-age < imperial)
+	(current-age < castle-age)
+	(population < up-max-civ)
+	(military-population < 20)
+	(can-build-wall 2 stone-wall-line)
+=>
+	(build-wall 2 stone-wall-line))
+#end-if
+
+#load-if-not-defined DARK-AGE-END
+#load-if-not-defined FEUDAL-AGE-END
+#load-if-not-defined UP-SCENARIO-GAME
+#load-if-defined VICTORY-STANDARD
+(defrule
+(or	(building-type-count-total wonder >= 1)
+	(and	(hold-relics)
+		(up-compare-goal relic-count >= 1))); 5
+=>
+	(up-jump-rule 3))
+#end-if
+(defrule
+(or	(and	(population >= max-pop)
+		(game-time < 300))
+	(and	(building-type-count wall-class <= 0)
+		(building-type-count gate-class <= 0)))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(population >= max-civ-pop); siege-pop
+(or	(and	(population >= up-max-civ)
+		(and	(up-compare-goal tradeunits >= 12)
+			(or	(up-compare-goal tradeunits >= 18)
+				(strategic-number sn-military-superiority >= 0))))
+	(and	(civilian-population >= up-max-civ)
+		(military-population >= 32))))
+=>
+;	(up-delete-objects c: wall-class c: 32767)
+;	(up-delete-objects c: gate-class c: 32767)
+	(set-goal temporary-goal5 599390))
+(defrule
+	(goal temporary-goal5 599390)
+=>
+	(up-set-target-point position-self-x)
+	(up-modify-goal temporary-goal s:= sn-maximum-town-size)
+	(up-modify-goal temporary-goal s:max sn-safe-town-size)
+	(up-modify-goal temporary-goal c:max 42)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 g: temporary-goal)
+;	(up-chat-data-to-all "temporary-goal: %d" g: temporary-goal)
+	(up-find-local c: wall-class c: 120)
+	(up-find-local c: gate-class c: 12)
+;	(chat-local-to-self "Deleting walls.")
+	(up-target-point 0 action-delete -1 -1)); end jump
+
+(defrule
+(or	(and	(building-type-count stone-wall-line <= 0)
+		(and	(building-type-count palisade-wall <= 0)
+			(building-type-count gate <= 0)))
+(or	(game-time <= 6)
+(or	(game-time >= 12)
+	(building-type-count town-center <= 0))))
+=>
+	(up-jump-rule 11))
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 12)
+	(up-find-local c: villager-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-id temporary-goal2)
+	(up-get-search-state local-total)
+;	(up-set-target-point position-self-x)
+	(up-get-point position-center point-x))
+(defrule
+	(up-compare-goal local-total >= 1)
+(or	(or	(up-compare-goal point-x g:>= map-size)
+		(up-compare-goal point-y g:>= map-size))
+	(or	(up-compare-goal point-x < 0)
+		(up-compare-goal point-y < 0)))
+	(up-point-distance position-self-x point-x >= 12)
+=>
+	(up-lerp-tiles point-x position-self-x c: 1)
+	(up-jump-rule -1))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(up-point-explored point-x == explored-no)
+	(up-point-distance position-self-x point-x >= 12)
+=>
+	(up-lerp-tiles point-x position-self-x c: 1)
+	(up-jump-rule -1))
+(defrule
+	(up-compare-goal local-total >= 1)
+(or	(up-point-contains point-x c: tree-class)
+(or	(up-point-contains point-x c: gold-mine-class)
+(or	(up-point-contains point-x c: stone-mine-class)
+(or	(up-point-contains point-x c: forage-bush)
+	(up-point-terrain point-x == terrain-water)))))
+	(up-point-distance position-self-x point-x >= 12)
+=>
+	(up-lerp-tiles point-x position-self-x c: 1)
+	(up-jump-rule -1))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(up-path-distance point-x 0 == 65535)
+=>
+;	(up-full-reset-search)
+;	(up-find-local c: scout-unit c: 1)
+;	(up-set-target-point point-x)
+;	(up-target-point 0 action-move -1 -1)
+;	(up-send-flare point-x)
+	(up-delete-objects c: wall-class c: 32767)
+	(up-delete-objects c: gate-class c: 32767)
+;	(chat-local-to-self "I'm stuck, deleting walls.")
+)
+
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal 0)
+	(up-filter-distance c: -1 c: 16))
+(defrule
+	(true)
+=>
+	(up-copy-point saved-point-x position-self-x)
+	(up-get-point position-center temporary-point-x)
+	(up-lerp-tiles saved-point-x temporary-point-x c: -16)
+	(up-set-target-point saved-point-x)
+	(up-find-local c: wall-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object saved-point-x)
+;	(up-get-point-distance saved-point-x temporary-point-x temporary-goal)
+;	(up-modify-goal temporary-goal c:+ 1)
+	(up-lerp-tiles saved-point-x position-self-x c: -1))
+(defrule
+	(up-set-target-object search-local c: 0)
+;(or	(up-point-distance saved-point-x temporary-point-x g:>= temporary-goal)
+(or	(up-point-explored saved-point-x == explored-no)
+(or	(or	(up-compare-goal saved-point-x g:>= map-size)
+		(up-compare-goal saved-point-y g:>= map-size))
+	(or	(up-compare-goal saved-point-x < 0)
+		(up-compare-goal saved-point-y < 0))));)
+=>
+;	(up-send-flare saved-point-x)
+	(up-reset-search 0 1 0 0)
+	(up-lerp-tiles saved-point-x position-self-x c: 1)
+	(up-jump-rule -2))
+(defrule
+	(up-set-target-object search-local c: 0)
+(or	(up-point-contains saved-point-x c: 934)
+(or	(up-point-contains saved-point-x c: tree-class)
+(or	(up-point-contains saved-point-x c: gold-mine-class)
+(or	(up-point-contains saved-point-x c: stone-mine-class)
+(or	(up-point-contains saved-point-x c: forage-bush)
+	(up-point-terrain saved-point-x == terrain-water))))))
+=>
+;	(up-send-flare saved-point-x)
+	(up-reset-search 0 1 0 0)
+	(up-lerp-tiles saved-point-x position-self-x c: 1)
+	(up-jump-rule -3))
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-by-id g: temporary-goal2)
+	(up-path-distance saved-point-x 0 != 65535)
+=>
+;	(up-send-flare saved-point-x)
+	(up-reset-search 0 1 0 0)
+	(up-lerp-tiles saved-point-x position-self-x c: 1)
+	(up-jump-rule -4))
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-by-id g: temporary-goal2)
+	(up-path-distance saved-point-x 0 == 65535)
+=>
+	(up-lerp-tiles saved-point-x position-self-x c: 1)
+	(up-set-target-point saved-point-x)
+	(up-filter-distance c: -1 c: 1)
+	(up-find-local c: wall-class c: 9)
+;	(up-find-local c: gate-class c: 8)
+;	(up-send-flare saved-point-x)
+	(up-target-point 0 action-delete -1 -1)
+;	(chat-local-to-self "Deleting back walls.")
+); end jump
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(game-time > 300)
+	(goal relocating yes)
+	(building-type-count town-center <= 0)
+	(building-type-count mill >= 1)
+	(building-type-count farm >= 1)
+=>
+	(up-delete-objects c: mill c: 32767)
+;	(chat-local-to-self "Deleting old mills.1")
+)
+;(defrule
+;	(game-time > 300)
+;	(goal relocating yes)
+;	(building-type-count town-center <= 0)
+;	(building-type-count-total town-center >= 1)
+;	(building-type-count mining-camp >= 1)
+;=>
+;	(up-delete-objects c: mining-camp c: 32767)
+;	(chat-local-to-self "Deleting old mining-camps.1"); need to
+;	(disable-self))
+;(defrule
+;	(game-time > 300)
+;	(goal relocating yes)
+;	(building-type-count town-center <= 0)
+;	(building-type-count-total town-center >= 1)
+;	(building-type-count lumber-camp >= 1)
+;=>
+;	(up-delete-objects c: lumber-camp c: 32767)
+;	(chat-local-to-self "Deleting old lumber-camps.2"); rework
+;	(disable-self))
+(defrule
+	(cc-players-unit-type-count 0 gold-mine <= 0)
+	(cc-players-unit-type-count 0 stone-mine <= 0)
+	(building-type-count mining-camp >= 1)
+(or	(dropsite-min-distance gold <= -1)
+	(dropsite-min-distance gold >= 255)); 256
+(or	(dropsite-min-distance stone <= -1)
+	(dropsite-min-distance stone >= 255)); 256
+(or	(unit-type-count-total trade-cart >= 1)
+	(up-compare-goal increase-ts != 0))
+	(up-pending-objects c: mining-camp <= 0)
+=>
+	(up-delete-objects c: mining-camp c: 32767)
+;	(chat-local-to-self "Deleting all mining-camps.")
+	(disable-self))
+(defrule
+	(cc-players-unit-type-count 0 tree-class <= 0)
+	(building-type-count lumber-camp >= 1)
+(or	(dropsite-min-distance wood <= -1)
+	(dropsite-min-distance wood >= 255)); 256
+(or	(unit-type-count-total trade-cart >= 1)
+	(up-compare-goal increase-ts != 0))
+	(up-pending-objects c: lumber-camp <= 0)
+=>
+	(up-delete-objects c: lumber-camp c: 32767)
+	(chat-local-to-self "Deleting all lumber-camps.")
+	(disable-self))
+
+(defrule
+	(timer-triggered one-min)
+	(building-type-count mining-camp >= 9)
+=>
+	(up-full-reset-search)
+	(up-find-local c: mining-camp c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-set-target-point temporary-point-x)
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-filter-distance c: -1 c: 8)
+	(up-find-remote c: gold-mine c: 1)
+	(up-find-remote c: stone-mine c: 1)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-get-search-state local-total))
+(defrule
+	(timer-triggered one-min)
+	(building-type-count mining-camp >= 9)
+	(up-compare-goal local-total == 1)
+	(up-compare-goal remote-total <= 0)
+	(up-set-target-object search-local c: 0)
+=>
+;	(up-send-flare temporary-point-x)
+;	(chat-local-to-self "Deleting an old mining-camp.")
+;	(chat-to-player every-ally "Deleting an old mining-camp.")
+	(up-target-point 0 action-delete -1 -1))
+(defrule
+	(timer-triggered one-min)
+	(building-type-count lumber-camp >= 13)
+=>
+	(up-full-reset-search)
+	(up-find-local c: lumber-camp c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-set-target-point temporary-point-x)
+	(up-filter-distance c: -1 c: 16)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: wood c: 1)
+	(up-filter-status c: status-ready c: list-active)
+	(up-find-resource c: wood c: 1)
+	(up-get-search-state local-total))
+(defrule
+	(timer-triggered one-min)
+	(building-type-count lumber-camp >= 13)
+	(up-compare-goal local-total == 1)
+	(up-compare-goal remote-total <= 0)
+	(up-set-target-object search-local c: 0)
+=>
+;	(up-send-flare temporary-point-x)
+;	(chat-local-to-self "Deleting an old lumber-camp.")
+;	(chat-to-player every-ally "Deleting an old lumber-camp.")
+	(up-target-point 0 action-delete -1 -1))
+(defrule
+	(timer-triggered MSuperiority)
+	(building-type-count town-center >= 1)
+	(building-type-count mill >= 1)
+=>
+	(up-full-reset-search)
+	(up-find-local c: mill c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-set-target-point temporary-point-x)
+	(up-filter-distance c: -1 c: 45)
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-find-remote c: town-center c: 1)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object saved-point-x)
+	(up-get-search-state local-total))
+(defrule
+	(timer-triggered MSuperiority)
+	(building-type-count town-center >= 1)
+	(building-type-count mill >= 1)
+	(up-compare-goal local-total == 1)
+	(up-compare-goal remote-total <= 0)
+=>
+;	(chat-local-to-self "Deleting old mills.2")
+	(up-target-point 0 action-delete -1 -1))
+(defrule
+	(goal relocating yes);	(timer-triggered MSuperiority)
+	(game-time > 600)
+	(building-type-count town-center >= 1)
+; tl(or	(building-type-count lumber-camp >= 1)
+; tl	(building-type-count mining-camp >= 1))
+=>
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-modify-goal temporary-goal s:= sn-maximum-town-size)
+	(up-modify-goal temporary-goal s:max sn-camp-max-distance)
+	(up-modify-goal temporary-goal c:max 70)
+	(up-modify-goal temporary-goal c:+ 10); 8
+	(up-filter-distance g: temporary-goal c: -1)
+	(up-find-local c: lumber-camp c: 32)
+	(up-find-local c: mining-camp c: 32)
+	(up-target-point 0 action-delete -1 -1)
+;	(chat-local-to-self "Deleting old camps, time to pray!"); Please don't delete the wrong ones! :'
+)
+;(defrule
+;	(timer-triggered MSuperiority)
+;	(building-type-count town-center >= 1)
+;=>
+;	(up-send-flare position-self-x)
+;	(chat-to-player my-player-number "test"))
+
+
+;(defrule
+;	(timer-triggered embassy)
+;	(idle-farm-count >= 1)
+;(or	(up-pending-objects c: farm <= 0)
+;(or	(and	(building-type-count farm >= 1)
+;		(unit-type-count villager-farmer <= 0))
+;(or	(town-under-attack)
+;(or	(goal defend yes)
+;(or	(building-type-count town-center == 0)
+;	(unit-type-count-total villager < 3))))))
+;=>
+;	(up-modify-goal temporary-goal s:= sn-maximum-food-drop-distance)
+;	(up-modify-goal temporary-goal c:max 20)
+;	(up-modify-goal temporary-goal c:min 60); <= 127!
+;	(up-delete-distant-farms g: temporary-goal))
+(defrule
+	(idle-farm-count >= 1)
+(or	(timer-triggered embassy)
+	(goal relocating yes)); only true for one pass
+	(strategic-number sn-maximum-food-drop-distance <= 127); !
+=>
+	(up-modify-goal temporary-goal s:= sn-maximum-food-drop-distance)
+	(up-modify-goal temporary-goal c:max 25)
+	(up-modify-goal temporary-goal c:min 50); <= 127!
+	(up-delete-distant-farms g: temporary-goal))
+
+(defrule ; debug
+	(up-pending-objects c: blacksmith >= 1)
+	(goal increase-ts blacksmith)
+=>
+	(set-goal increase-ts 0)
+	(disable-self))
+(defrule ; debug
+	(up-pending-objects c: university >= 1)
+	(goal increase-ts university)
+=>
+	(set-goal increase-ts 0)
+	(disable-self))
+
+(defrule
+	(up-pending-placement c: town-center)
+	(wood-amount >= 335); test
+	(timer-triggered twentysec); fivesec
+	(game-time >= 600)
+=>
+	(set-strategic-number sn-town-center-placement 0)
+	(chat-local-to-self "Resetting tc-placement.")
+	(up-reset-placement c: town-center))
+(defrule
+(or	(building-type-count-total town-center >= 4); test; 3
+;(or	(building-type-count town-center <= 0)
+(not	(building-available town-center)));)
+=>
+	(up-jump-rule 4))
+(defrule
+(or	(up-pending-placement c: town-center); test
+(or	;(and
+	(goal increase-ts town-center)
+;		(can-afford-building town-center))
+	(and	(up-compare-flag escrow-flag2 == 524288)
+		(or	(can-build-with-escrow town-center)
+			(can-afford-building town-center)))))
+=>
+;	(chat-local-to-self "Preparing to place TC."); for now
+	(set-strategic-number sn-town-center-placement 0)
+;	(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
+	(up-modify-sn sn-camp-max-distance s:= sn-safe-town-size)
+	(up-modify-sn sn-camp-max-distance c:+ 2); test
+	(up-modify-sn sn-camp-max-distance c:max 16); 12
+	(up-modify-sn sn-camp-max-distance c:min 42)); 38
+(defrule
+;(or	(up-pending-placement c: town-center); test
+;(or	(and	(goal increase-ts town-center)
+;		(can-afford-building town-center))
+;	(and	(up-compare-flag escrow-flag2 == 524288)
+;		(can-build-with-escrow town-center))))
+	(building-type-count-total town-center <= 0)
+	(game-time < 600)
+;	(dropsite-min-distance food s:<= sn-mill-max-distance)
+=>
+	(set-strategic-number sn-town-center-placement mill))
+(defrule
+;(or	(up-pending-placement c: town-center); test
+;(or	(and	(goal increase-ts town-center)
+;		(can-afford-building town-center))
+;	(and	(up-compare-flag escrow-flag2 == 524288)
+;		(can-build-with-escrow town-center))))
+(or	(building-type-count-total town-center >= 1)
+	(game-time >= 600))
+	(dropsite-min-distance wood s:<= sn-camp-max-distance)
+=>
+	(set-strategic-number sn-town-center-placement lumber-camp)); mining-camp
+(defrule
+;(or	(up-pending-placement c: town-center); test
+;(or	(and	(goal increase-ts town-center)
+;		(can-afford-building town-center))
+;	(and	(up-compare-flag escrow-flag2 == 524288)
+;		(can-build-with-escrow town-center))))
+	(building-type-count-total town-center >= 2)
+(or	(dropsite-min-distance gold s:<= sn-camp-max-distance)
+	(dropsite-min-distance stone s:<= sn-camp-max-distance))
+=>
+	(set-strategic-number sn-town-center-placement mining-camp)); lumber-camp; end jump
+
+(defrule
+	(goal increase-ts town-center)
+;	(up-compare-flag escrow-flag2 != 524288); town-center
+	(can-build town-center)
+=>
+	(set-strategic-number sn-dropsite-separation-distance 2); 3
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	(build town-center)
+	(set-goal increase-ts 2))
+
+
+
+(defrule
+	(goal increase-ts castle)
+(or	(stone-amount < castle-stone)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(unit-type-count villager < 5))))
+=>
+	(set-goal increase-ts 2))
+(defrule
+	(goal increase-ts castle)
+	(stone-amount >= 750)
+	(can-build castle)
+=>
+	(build castle)
+	(set-goal increase-ts 2))
+(defrule
+	(goal increase-ts castle)
+	(stone-amount < 850)
+	(goal underattack no)
+	(unit-type-count-total 213 <= 2)	; Dead female builder
+	(unit-type-count-total 225 <= 2)	; Dead male builder
+	(can-build castle)
+=>
+	(set-strategic-number sn-placement-zone-size 10); 8
+	(up-set-placement-data my-player-number -1 c: 12); 10
+	(up-build place-control 0 c: castle)
+	(set-goal increase-ts 2))
+(defrule
+	(goal increase-ts castle)
+	(stone-amount < 850)
+(or	(goal underattack yes)
+(or	(unit-type-count-total 213 >= 3)	; Dead female builder
+	(unit-type-count-total 225 >= 3)))	; Dead male builder
+	(can-build castle)
+=>
+	(set-strategic-number sn-placement-to-center 1);test
+	(set-strategic-number sn-placement-zone-size 12); 10
+	(up-set-placement-data my-player-number -1 c: -8); 8
+	(up-build place-control 0 c: castle)
+	(set-goal increase-ts 2))
+
+(defrule
+(or	(up-pending-objects c: house == 0)
+(or	(and	(strategic-number sn-current-age >= dfeudal)
+		(up-pending-objects c: house < 3)) ; real up-pending is in the building rules
+	(and	(strategic-number sn-current-age >= fcastlea)
+		(up-pending-objects c: house < 5))))
+	(goal increase-ts house)
+	(can-build house)
+=>
+	(build house)
+	(set-goal increase-ts 2))
+(defrule
+(nor	(up-pending-objects c: house == 0)
+(or	(and	(strategic-number sn-current-age >= dfeudal)
+		(up-pending-objects c: house < 3)) ; real up-pending is in the building rules
+	(and	(strategic-number sn-current-age >= fcastlea)
+		(up-pending-objects c: house < 5))))
+	(goal increase-ts house)
+=>
+	(set-goal increase-ts 2))
+
+(defrule
+	(goal increase-ts market)
+;	(up-timer-status MSuperiority == timer-running)
+	(building-type-count-total market <= 0)
+(or	(player-in-game any-ally)
+	(players-building-type-count any-ally market >= 1))
+	(can-build market)
+=>
+	(set-goal temporary-goal 5)
+	(up-modify-goal temporary-goal s:+ sn-current-age)
+	(up-modify-goal temporary-goal c:max 5)
+	(up-modify-goal temporary-goal c:min 10)
+	(up-modify-sn sn-placement-zone-size g:= temporary-goal)
+	(set-strategic-number sn-placement-to-center 1)
+	(up-set-placement-data my-player-number -1 c: -9)
+	(up-build place-control 0 c: market)
+	(set-goal increase-ts 2)
+	(up-jump-rule 1))
+(defrule
+	(goal increase-ts market)
+	(building-type-count-total market <= 0)
+	(can-build market)
+=>
+	(build market)
+	(set-goal increase-ts 2))
+
+(defrule
+	(up-pending-objects c: blacksmith == 0)
+	(building-type-count lumber-camp >= 1)
+	(goal defend no)
+	(goal underattack no)
+	(building-type-count-total blacksmith <= 0)
+	(goal increase-ts blacksmith)
+	(can-build blacksmith)
+=>
+	(set-strategic-number sn-placement-zone-size 7)
+	(up-set-placement-data my-player-number lumber-camp c: 2)
+	(up-build place-control 0 c: blacksmith)
+	(set-goal increase-ts 2))
+(defrule
+	(up-pending-objects c: blacksmith == 0)
+	(goal increase-ts blacksmith)
+	(can-build blacksmith)
+=>
+	(build blacksmith)
+	(set-goal increase-ts 2))
+
+(defrule
+	(goal increase-ts monastery)
+	(up-timer-status MSuperiority == timer-running)
+	(can-build monastery)
+=>
+	(set-strategic-number sn-placement-zone-size 10)
+	(up-set-placement-data my-player-number -1 c: -8)
+	(up-build place-control 0 c: monastery)
+	(set-goal increase-ts 2))
+(defrule
+	(goal increase-ts monastery)
+	(can-build monastery)
+=>
+	(build monastery)
+	(set-goal increase-ts 2))
+
+(defrule
+	(goal increase-ts barracks)
+	(goal strategy drush)
+	(goal defend no)
+	(goal underattack no)
+	(building-type-count-total barracks <= 0)
+	(can-build barracks)
+=>
+	(set-strategic-number sn-placement-zone-size 7)
+	(up-set-placement-data my-player-number -1 c: 6)
+	(up-build place-control 0 c: barracks)
+	(set-goal increase-ts 2))
+(defrule
+	(goal increase-ts barracks)
+	(can-build barracks)
+=>
+	(build barracks)
+	(set-goal increase-ts 2))
+
+(defrule
+	(goal increase-ts archery-range)
+	(can-build archery-range)
+=>
+	(build archery-range)
+	(set-goal increase-ts 2))
+
+(defrule
+	(goal increase-ts stable)
+	(can-build stable)
+=>
+	(build stable)
+	(set-goal increase-ts 2))
+
+(defrule
+	(up-pending-objects c: university == 0)
+	(goal increase-ts university)
+	(can-build university)
+=>
+	(build university)
+	(set-goal increase-ts 2))
+
+(defrule
+	(goal increase-ts siege-workshop)
+	(can-build siege-workshop)
+=>
+	(build siege-workshop)
+	(set-goal increase-ts 2))
+
+(defrule
+	(goal increase-ts feitoria)
+;	(up-timer-status MSuperiority == timer-running)
+	(building-type-count-total feitoria g:< feitoria-cap)
+	(can-build feitoria)
+=>
+	(set-strategic-number sn-placement-zone-size 10)
+	(up-set-placement-data my-player-number -1 c: -10)
+	(up-build place-control 0 c: feitoria)
+	(set-goal increase-ts 2))
+(defrule
+	(goal increase-ts feitoria)
+	(building-type-count-total feitoria g:< feitoria-cap)
+	(can-build feitoria)
+=>
+	(build feitoria)
+	(set-goal increase-ts 2))
+
+
+#load-if-defined VICTORY-STANDARD
+#load-if-not-defined DEFEND-WONDER
+(defrule
+(not	(hold-relics))
+;	(hold-koh-ruin)
+=>
+	(up-jump-rule 1))
+(defrule
+;	(goal wwonder no)
+;	(game-time >= 4800)
+	(building-available wonder)
+	(strategic-number sn-military-superiority >= 1)
+(nand	(strategic-number sn-military-superiority >= 3)
+	(strategic-number teamsuperiority >= 3)); for now
+	(population >= max-civ-pop)
+	(up-compare-goal excessWood >= 1300)
+	(up-compare-goal excessGold >= 1500)
+;	(stone-amount < 1000)
+	(goal defend no)
+	(goal underattack no)
+	(building-type-count-total castle >= 3)
+	(building-type-count-total wonder <= 0)
+	(players-building-type-count every-ally wonder <= 0)
+=>
+	(set-goal wwonder yes))
+;(defrule
+;	(goal wwonder yes)
+;(or	(wood-amount < 800)
+;(or	(gold-amount < 800)
+;(or	(goal defend yes)
+;(or	(strategic-number sn-military-superiority <= -1)
+;(or	(population < max-civ-pop)
+;	(building-type-count-total castle <= 0))))))
+;=>
+;	(set-goal wwonder no))
+;(defrule
+;	(goal wwonder yes)
+;(or	(stone-amount >= 1650)
+;(or	(building-type-count-total wonder >= 1)
+;	(players-building-type-count any-ally wonder >= 1)))
+;=>
+;	(set-goal wwonder no))
+(defrule
+(or	(population >= max-civ-pop)
+(or	(population >= eightyp-pop)
+(or	(civilian-population >= up-max-civ)
+	(civilian-population >= sixtyp-pop))))
+	(building-type-count-total wonder <= 0)
+	(players-building-type-count every-ally wonder <= 0)
+	(can-build wonder)
+=>
+	(up-set-placement-data my-player-number -1 c: -1)
+	(up-build place-control 0 c: wonder))
+;(defrule
+;(or	(population >= max-civ-pop)
+;(or	(population >= eightyp-pop)
+;(or	(civilian-population >= up-max-civ)
+;	(civilian-population >= sixtyp-pop))))
+;	(building-type-count-total wonder <= 0)
+;	(players-building-type-count every-ally wonder <= 0)
+;	(can-build wonder)
+;=>
+;	(build wonder))
+#end-if
+#end-if
+
+(defrule
+	(up-pending-placement c: farm); test
+	(timer-triggered embassy)
+;	(game-time >= 10)
+	(building-type-count-total farm g:< maxfarms)
+	(up-compare-goal threat-time > 20000)
+	(strategic-number sn-maximum-town-size < 30); 28
+	(up-compare-goal increase-ts == 0)
+=>
+;	(set-goal increase-ts 0)
+	(up-modify-sn sn-maximum-town-size c:+ 1)
+	(up-chat-data-to-player my-player-number text-max-town-size s: sn-maximum-town-size))
+
+(defrule
+	(up-compare-goal wood-amount < 175)
+(or	(goal increase-ts barracks)
+(or	(goal increase-ts archery-range)
+(or	(goal increase-ts stable)
+(or	(goal increase-ts monastery)
+	(goal increase-ts market)))))
+=>
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer)
+;	(chat-to-player my-player-number "No resources to build. 1")
+)
+(defrule
+(or	(and	(wood-amount < 200)
+		(or	(goal increase-ts university)
+			(goal increase-ts siege-workshop)))
+	(and	(wood-amount < 150)
+		(or	(goal increase-ts dock)
+			(goal increase-ts blacksmith))))
+=>
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer)
+;	(chat-to-player my-player-number "No resources to build. 2")
+)
+(defrule
+(or	(and	(goal increase-ts town-center)
+		(or	(or	(wood-amount < tc-wood); 275
+				(and	(current-age < castle-age)
+					(wood-amount < 275)))
+			(stone-amount < 100)))
+;(or	(and	(wood-amount < house-cost)
+;		(goal increase-ts house)); ?
+	(and	(stone-amount < castle-stone)
+		(goal increase-ts castle)));)
+=>
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer)
+;	(chat-to-player my-player-number "No resources to build. 3")
+)
+(defrule
+	(goal increase-ts feitoria)
+(or	(building-type-count-total feitoria g:>= feitoria-cap)
+(or	(stone-amount < 250)
+	(gold-amount < 250)))
+=>
+	(set-goal increase-ts 0)
+;	(chat-local-to-self "Not enough resources to build. 4")
+)
+(defrule
+	(building-type-count-total feitoria g:> feitoria-cap)
+	(up-timer-status one-min != timer-running)
+	(housing-headroom <= minNavy)
+	(population-headroom <= 0)
+=>
+	(delete-building feitoria))
+(defrule
+	(game-time < 300); there may be more building rules than builders
+	(unit-type-count villager < 12)
+	(strategic-number sn-maximum-town-size >= 22)
+	(up-compare-goal increase-ts != 0)
+=>
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer))
+
+(defrule
+	(unit-type-count-total villager < 1)
+=>
+	(set-goal increase-ts 0);
+	(up-jump-rule 3))
+(defrule
+(or	(unit-type-count villager-builder g:>= villagercount); test
+(or	(game-time < 10)
+(or	(and	(death-match-game)
+		(game-time < 45))
+(or	(building-type-count-total town-center < 1)
+	(and	(unit-type-count-total villager < 7)
+		(building-type-count town-center < 1))))))
+=>
+	(set-goal increase-ts 0);
+	(up-jump-rule 2))
+(defrule
+(or	(up-compare-goal increase-ts == 2);reverted
+(or	(up-compare-goal increase-ts == 0)
+(or	(strategic-number sn-maximum-town-size >= 66)
+(or	(and	(strategic-number sn-current-age < imperial)
+		(strategic-number sn-maximum-town-size >= 44))
+	(and	(goal islands no)
+		(strategic-number sn-maximum-town-size >= 50))))))
+=>
+	(set-goal increase-ts 0);
+	(up-jump-rule 1))
+(defrule
+	(timer-triggered increase-ts-timer)
+(or	(and	(military-population <= 1)
+		(and	(population-headroom > 0)
+			(housing-headroom < 0))); !
+	(or	(strategic-number sn-maximum-town-size < 30)
+		(nor	(enemy-buildings-in-town)
+			(goal underattack yes))))
+;(or
+;	(strategic-number sn-maximum-town-size < 48)
+;	(goal islands yes))
+;	(strategic-number sn-maximum-town-size < 60)
+=>
+	(enable-timer increase-ts-timer 7)
+	(set-goal increase-ts 0)
+	(up-modify-sn sn-maximum-town-size c:+ 1)
+	(up-chat-data-to-player my-player-number text-max-town-size s: sn-maximum-town-size))
+
+(defrule
+;(or	(goal increase-ts house)
+	(goal increase-ts 2)
+;)
+=>
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer))
+
+(defrule
+	(timer-triggered MSuperiority)
+	(up-compare-goal excessWood >= house-cost)
+	(up-pending-objects c: house == 0)
+	(housing-headroom <= 0)
+	(population-headroom > 0)
+	(up-compare-goal increase-ts != 0)
+=>
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer)
+	(chat-to-player my-player-number "Trying to debug the building system.")
+)
+(defrule ; not sure anymore
+	(timer-triggered MSuperiority)
+	(up-compare-goal excessWood >= 400)
+(or	(up-compare-goal excessWood >= 1000)
+	(strategic-number sn-current-age >= imperial))
+	(goal underattack no)
+	(unit-type-count villager >= 25)
+(or	(building-type-count-total barracks < number-barracks)
+(or	(building-type-count-total archery-range < number-archery-ranges)
+	(building-type-count-total stable < number-stables)))
+	(up-compare-goal increase-ts != 0)
+=>
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer)
+	(chat-to-player my-player-number "Trying to debug the building system. 2")
+)
+(defrule
+	(timer-triggered MSuperiority)
+	(up-compare-goal excessWood >= 900); something's wrong
+	(building-available castle)
+	(up-pending-objects c: castle <= 0)
+	(building-type-count-total castle < 14)
+	(goal wwonder no)
+	(goal underattack no)
+	(unit-type-count villager >= 25)
+	(up-compare-goal increase-ts != 0)
+=>
+	(up-reset-placement c: castle); just in case
+	(set-goal increase-ts 0)
+	(disable-timer increase-ts-timer)
+	(chat-to-player my-player-number "Trying to debug the building system. 3")
+)
+(defrule; test
+	(timer-triggered one-min)
+	(goal attacking no)
+	(up-compare-goal increase-ts == 0); hmm
+=>
+	(up-modify-sn sn-maximum-town-size c:min 38)); 36

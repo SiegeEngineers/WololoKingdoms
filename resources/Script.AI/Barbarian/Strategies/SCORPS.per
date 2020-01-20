@@ -1,0 +1,24 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy regicide-strategy)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(goal gl-current-age gv-dark)
+	(building-type-count-total castle == 0)
+	(up-compare-const gv-yucatan == 0)
+	(strategic-number sn-strategy-lock == 0)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal gl-rush-suitability-on-map GOOD)
+	(goal POSITION FLANK)
+=>
+	(set-goal gl-strategy scorpion-rush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC)
+	(disable-self)
+)

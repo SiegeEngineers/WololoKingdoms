@@ -1,0 +1,103 @@
+#load-if-not-defined ARENA-MAP
+#load-if-not-defined BLACK-FOREST-MAP
+(defrule
+	(game-time > 2400)
+	(food-amount > 2000)
+	(wood-amount > 2000)
+	(gold-amount > 2000)
+	(stone-amount > 600)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal gl-nothing-style-map != YES)
+	(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)
+	(up-compare-const gv-yucatan == 0)
+	(up-compare-const gv-baltic-style == 0)
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(or	(goal gl-nothing-style-map YES)
+		(or	(enemy-captured-relics)
+			(or	(up-compare-flag gl-flag == wonder-build-attempt)
+				(or	(players-building-type-count any-enemy wonder > 0)
+					(or	(building-type-count-total wonder > 0)
+						(or	(players-building-type-count any-ally wonder > 0)
+							(goal gl-wonder-build-attempt-stage lost)))))))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(game-time > wonder-game-time)
+	(commodity-buying-price stone < 200)
+	(population >= pop-to-full-pop-attack)
+	(player-in-game every-ally)
+	(gold-amount > 3000)
+	(unit-type-count trade-cart > 40)
+	(stone-amount > 600)
+	(goal POSITION POCKET)
+	(strategic-number sn-allow-resource-spending > 5)
+	(dropsite-min-distance stone < 4)
+	(goal gl-strategy default)
+=>
+	(chat-to-allies "1Attempting to build a wonder.")
+	(up-modify-flag gl-flag c:+ wonder-build-attempt)
+	(set-goal gl-wonder-build-attempt-stage saving-resources)
+	(disable-self)
+)
+
+(defrule
+	(game-time > wonder-game-time)
+	(or	(commodity-buying-price stone < 210)
+		(and	(stone-amount > 1000)
+			(wood-amount > 1000)))
+	(population >= pop-to-full-pop-attack)
+	(gold-amount > 3800)
+	(stone-amount > 600)
+	(strategic-number sn-allow-resource-spending > 5)
+	(goal gl-strategy default)
+=>
+	(chat-to-allies "1Attempting to build a wonder.")
+	(up-modify-flag gl-flag c:+ wonder-build-attempt)
+	(set-goal gl-wonder-build-attempt-stage saving-resources)
+	(disable-self)
+)
+
+#load-if-defined DIFFICULTY-HARDEST
+(defrule
+	(current-age == imperial-age)
+	(not	(enemy-captured-relics))
+	(players-building-type-count every-enemy wonder == 0)
+	(players-building-type-count every-ally wonder == 0)
+	(population > 120)
+	(game-time > wonder-game-time)
+	(or	(goal POSITION POCKET)
+		(not	(player-in-game any-ally)))
+	(strategic-number sn-minimum-water-body-size-for-dock <= 1000)
+=>
+	(chat-to-allies "1Attempting to build a wonder.")
+	(up-modify-flag gl-flag c:+ wonder-build-attempt)
+	(set-goal gl-wonder-build-attempt-stage saving-resources)
+	(disable-self)
+)
+
+(defrule
+	(current-age == imperial-age)
+	(game-time > wonder-game-time)
+	(up-compare-flag gl-flag == wonder-build-attempt)
+	(strategic-number sn-minimum-water-body-size-for-dock <= 1000)
+=>
+	(cc-add-resource food 2500)
+	(cc-add-resource wood 2500)
+	(cc-add-resource gold 2500)
+	(cc-add-resource stone 1300)
+	(disable-self)
+)
+#end-if
+
+#end-if
+#end-if

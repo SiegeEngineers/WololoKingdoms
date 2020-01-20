@@ -1,0 +1,338 @@
+; Only for 1v1
+
+; Taunts (send before 3 minutes of game-time have passed):
+
+; 17: tells Promi to perform a flush with archers & skirmishers.
+; 18: tells Promi to perform a flush with skirmishers.
+; 21: tells Promi to perform a drush.
+; 28: tells Promi to perform a krush.
+; 29: tells Promi to perform a defensive castle-drop strategy.
+; 32: tells Promi to perform a crossbowman rush.
+; 42: tells Promi to perform a mini-boom followed by an attack with elite-eagle-warriors.
+
+; 36: tells Promi to reset his strategy (will do a defensive boom to the last age).
+
+
+
+#load-if-not-defined WONDER-RACE
+#load-if-not-defined ARENA-MAP
+#load-if-not-defined FORTRESS-MAP
+#load-if-not-defined ISLANDS-MAP
+#load-if-not-defined TEAM-ISLANDS-MAP
+#load-if-not-defined REGICIDE
+#load-if-not-defined UP-MICHI-STYLE
+
+#load-if-not-defined GOLD-RUSH-MAP; noes
+(defrule
+(or	(taunt-detected my-player-number 21)
+	(taunt-detected any-enemy 21))
+	(goal position-goal flank)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 21)
+	(acknowledge-taunt every-enemy 21)
+	(set-strategic-number sn-gather-defense-units 0)
+	(set-strategic-number sn-home-exploration-time 300);	(up-modify-sn sn-home-exploration-time c:max 300)
+	(set-goal strategy drush)
+	(set-goal milunits yes)
+	(set-goal attackprioritychange yes)
+	(chat-to-player my-player-number text-attempt-drush)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-drush)
+	(set-goal strategylocked yes))
+#end-if
+
+(defrule
+(or	(taunt-detected my-player-number 17)
+	(taunt-detected any-enemy 17))
+; tl	(up-compare-goal strategy != r-flush)
+	(goal islands no)
+	(goal position-goal flank)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 17)
+	(acknowledge-taunt every-enemy 17)
+;	(set-strategic-number sn-home-exploration-time 450)
+	(set-goal strategy r-flush)
+	(set-goal milunits r-flush)
+	(set-goal sk-var no)
+	(set-goal attackprioritychange yes)
+	(chat-to-player my-player-number text-attempt-r-flush)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-r-flush)
+	(set-goal strategylocked yes))
+(defrule
+(or	(taunt-detected my-player-number 18)
+	(taunt-detected any-enemy 18))
+; tl	(up-compare-goal sk-var != yes)
+	(goal islands no)
+	(goal position-goal flank)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 18)
+	(acknowledge-taunt every-enemy 18)
+;	(set-strategic-number sn-home-exploration-time 450)
+	(set-goal strategy r-flush)
+	(set-goal milunits r-flush)
+	(set-goal sk-var yes)
+	(set-goal attackprioritychange yes)
+	(chat-to-player my-player-number text-attempt-r-sk)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-r-sk)
+	(set-goal strategylocked yes))
+
+#load-if-not-defined SPANISH-CIV
+(defrule
+(or	(taunt-detected my-player-number 19)
+	(taunt-detected any-enemy 19))
+	(up-compare-goal strategy != a-rush)
+	(goal islands no)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 19)
+	(acknowledge-taunt every-enemy 19)
+	(set-goal strategy a-rush)
+	(set-goal milunits a-rush)
+	(set-goal attackprioritychange yes)
+	(chat-to-player my-player-number text-attempt-a-rush)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-a-rush)
+	(set-goal strategylocked yes))
+#end-if
+#load-if-not-defined INCAN-CIV ;
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined SLAVIC-CIV
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+;#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined MAYAN-CIV
+;#load-if-not-defined MONGOL-CIV
+#load-if-not-defined PERSIAN-CIV
+;#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined VIKING-CIV; Huns, Saracens, Mongols
+(defrule
+(or	(taunt-detected my-player-number 20)
+	(taunt-detected any-enemy 20))
+	(up-compare-goal strategy != ca-rush)
+	(goal islands no)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 20)
+	(acknowledge-taunt every-enemy 20)
+	(set-goal strategy ca-rush)
+	(set-goal milunits ca-rush)
+	(set-goal attackprioritychange yes)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-ca-rush)
+	(set-goal strategylocked yes))
+;#end-if
+;#end-if
+;#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined MAYAN-CIV
+#load-if-not-defined AZTEC-CIV
+(defrule
+(or	(taunt-detected my-player-number 23)
+	(taunt-detected any-enemy 23))
+	(up-compare-goal strategy != s-flush)
+	(goal islands no)
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 23)
+	(acknowledge-taunt every-enemy 23)
+;	(set-strategic-number sn-home-exploration-time 450)
+	(set-goal strategy s-flush)
+	(set-goal milunits s-flush)
+	(set-goal attackprioritychange yes)
+	(chat-to-player my-player-number text-attempt-s-flush)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-s-flush)
+	(set-goal strategylocked yes))
+
+#load-if-not-defined INDIAN-CIV
+(defrule
+(or	(taunt-detected my-player-number 28)
+	(taunt-detected any-enemy 28))
+;	(up-compare-goal strategy != krush)
+	(goal islands no)
+;(or	(goal position-goal pocket)
+;	(goal Multiplayer no))
+	(game-time < 180)
+=>
+	(set-goal kr-var 2)
+	(acknowledge-taunt my-player-number 28)
+	(acknowledge-taunt every-enemy 28)
+	(set-goal strategy krush)
+	(set-goal milunits krush)
+	(set-goal attackprioritychange yes)
+;	(chat-to-player my-player-number text-attempt-krush)
+;	(chat-to-player my-player-number text-krush-stables2)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-krush)
+	(chat-to-player every-enemy text-krush-stables2)
+	(set-goal strategylocked yes))
+(defrule
+(or	(taunt-detected my-player-number 128)
+	(taunt-detected any-enemy 128))
+;	(up-compare-goal strategy != krush)
+	(goal islands no)
+;(or	(goal position-goal pocket)
+;	(goal Multiplayer no))
+	(game-time < 180)
+=>
+	(set-goal kr-var 1)
+	(acknowledge-taunt my-player-number 128)
+	(acknowledge-taunt every-enemy 128)
+	(set-goal strategy krush)
+	(set-goal milunits krush)
+	(set-goal attackprioritychange yes)
+;	(chat-to-player my-player-number text-attempt-krush)
+;	(chat-to-player my-player-number text-krush-stables1)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-krush)
+	(chat-to-player every-enemy text-krush-stables1)
+	(set-goal strategylocked yes))
+#end-if
+
+#end-if
+#end-if
+#end-if
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+(or	(taunt-detected my-player-number 29)
+	(taunt-detected any-enemy 29))
+	(up-compare-goal strategy != castledrop)
+;	(goal islands no)
+;(or	(goal position-goal pocket)
+;	(goal Multiplayer no))
+	(game-time < 180)
+=>
+	(acknowledge-taunt my-player-number 29)
+	(acknowledge-taunt every-enemy 29)
+	(set-goal strategy castledrop)
+	(set-goal milunits castledrop)
+	(set-goal attackprioritychange yes)
+	(chat-to-player my-player-number text-attempt-castledrop)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-castledrop)
+	(set-goal strategylocked yes))
+
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined SLAVIC-CIV
+#load-if-not-defined BRITON-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined FRANKISH-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined MONGOL-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined TURKISH-CIV
+#load-if-not-defined VIKING-CIV ; meso
+(defrule
+(or	(game-time >= 180)
+(or	(up-compare-goal != nomad no)
+(or	(up-compare-goal != landnomad no)
+	(up-compare-goal map != land))))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(taunt-detected my-player-number 42)
+	(taunt-detected any-enemy 42))
+	(up-compare-goal strategy != stonewall)
+;	(goal milunits yes)
+	(military-population >= 1)
+	(goal position-goal pocket)
+=>
+	(acknowledge-taunt my-player-number 42)
+	(acknowledge-taunt every-enemy 42)
+	(set-goal strategy stonewall)
+	(set-goal milunits no)
+	(set-goal attackprioritychange yes)
+	(chat-to-player my-player-number text-attempt-eew)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-attempt-eew)
+	(set-goal strategylocked yes))
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+
+(defrule
+(or	(taunt-detected my-player-number 36)
+	(taunt-detected any-enemy 36))
+	(up-compare-goal strategy != usual)
+=>
+	(acknowledge-taunt my-player-number 36)
+	(acknowledge-taunt every-enemy 36)
+	(set-goal milunits yes)
+	(set-goal strategy usual)
+	(set-goal attackprioritychange yes)
+	(chat-to-player every-enemy text-understood)
+	(chat-to-player every-enemy text-reset-strategy))

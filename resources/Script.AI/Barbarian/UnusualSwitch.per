@@ -1,0 +1,51 @@
+#load-if-not-defined NOMAD-MAP
+#load-if-not-defined SCANDANAVIA-MAP
+#load-if-not-defined YUCATAN-MAP
+#load-if-not-defined UP-POCKET-POSITION
+(defrule
+	(game-time < 45)
+	(up-compare-const gv-FFA-like-game == 0)
+	(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style)
+	(not	(regicide-game))
+	(building-type-count town-center < 2)
+	(starting-age == dark-age)
+	(goal gl-heavy-water-map YES)
+=>
+	(set-strategic-number sn-allow-new-build-order -2)
+	(set-goal gl-strategy grush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-islands-style YES); False, but allows retargeting to pocket fish if flank has nothing
+	(set-goal DOCK 11)
+)
+
+(defrule
+	(goal gl-islands-style YES)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style)
+	(goal gl-heavy-water-map YES)
+=>
+	(set-goal gl-islands-style NO)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined FEUDAL-AGE-END
+#load-if-defined HUN-CIV
+(load "Barbarian\Strategies\SCOUT1ARCHER1")
+#end-if
+#load-if-defined MONGOL-CIV
+(load "Barbarian\Strategies\SCOUT1ARCHER1")
+#end-if
+#load-if-defined PERSIAN-CIV
+(load "Barbarian\Strategies\SCOUT1ARCHER1")
+#end-if
+#load-if-defined TEUTONIC-CIV
+(load "Barbarian\Strategies\SCOUT1ARCHER1")
+#end-if
+#load-if-defined SARACEN-CIV
+(load "Barbarian\Strategies\SCOUT1ARCHER1")
+#end-if
+#end-if

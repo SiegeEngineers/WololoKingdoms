@@ -1,0 +1,235 @@
+
+#load-if-defined UP-ALLY-IN-GAME
+(defrule
+	(up-compare-flag gl-flag == trade-sling)
+	(or	(up-compare-goal gl-my-villager-count > 0)
+		(or	(building-type-count town-center > 0)
+			(or	(not	(player-in-game any-ally))
+				(building-type-count market == 0))))
+=>
+	(up-modify-flag gl-flag c:- trade-sling)
+	(chat-to-allies "I'll stop the sling now.")
+)
+
+(defrule
+	(or	(building-type-count market == 0)
+		(or	(up-compare-flag gl-flag == trade-sling)
+			(not	(player-in-game any-ally))))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal gl-my-villager-count-total == 0)
+	(building-type-count town-center == 0)
+	(or	(and	(unit-type-count trade-cart > 0)
+			(players-building-type-count any-ally market > 0))
+		(or	(and	(unit-type-count trade-cog > 0)
+				(and	(building-type-count dock > 0)
+					(players-building-type-count any-ally dock > 0)))
+			(up-compare-goal gl-gathered-relics > 0)))
+=>
+	(up-modify-flag gl-flag c:+ trade-sling)
+	(chat-to-allies "I may not have any villagers left but I can still sling you.")
+	(set-strategic-number sn-enable-training-queue 0)
+)
+#end-if
+
+#load-if-not-defined UP-SCENARIO-GAME
+
+#load-if-not-defined UP-TEAM-DISADVANTAGE
+(defrule
+	(up-compare-const gv-real-FFA == 1)
+	(up-compare-goal gl-my-villager-count > 0)
+	(game-time < 3600)
+=>
+	(up-jump-rule 7)
+)
+#end-if
+
+(defrule
+	(or	(and	(victory-condition standard)
+			(or	(building-type-count-total wonder > 0)
+				(or	(players-building-type-count any-ally wonder > 0)
+					(hold-relics))))
+		(up-timer-status 49 != timer-disabled))
+=>
+	(up-jump-rule 6)
+)
+
+(defrule
+	(game-time > 300)
+	(up-compare-flag gl-flag != trade-sling)
+	(or	(building-type-count monastery == 0)
+		(and	(building-type-count house == 0)
+			(and	(building-type-count castle == 0)
+				(and	(up-compare-const main-ranged-unit != cavalry-archer-line)
+					(unit-type-count-total monk == 0)))))
+	(unit-type-count villager == 0)
+	(building-type-count town-center == 0)
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+ 	(disable-self)
+)
+
+(defrule
+	(game-time > 600)
+	(player-valid any-human-ally)
+	(not	(player-in-game any-human))
+	(up-players-in-game enemy >= 2)
+	(or	(up-players-in-game enemy >= 3)
+		(up-players-in-game ally < 1))
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+	(up-jump-rule 4)
+ 	(disable-self)
+)
+
+(defrule
+	(game-time > 600)
+	(population < 100)
+	(players-population every-ally < 100)
+	(players-population every-enemy > 185)
+	(nand	(player-in-game any-ally)
+		(players-current-age focus-player <= castle-age))
+	(player-in-game every-enemy)
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+	(up-jump-rule 3)
+ 	(disable-self)
+)
+
+(defrule
+	(up-compare-const gv-2-player-game == 1)
+	(game-time > 1200)
+	(gold-amount < 1000)
+	(nand	(up-compare-goal gl-current-age >= gv-castle-up)
+		(players-current-age focus-player <= castle-age))
+	(nand	(up-compare-goal gl-current-age >= gv-feudal-up)
+		(players-current-age focus-player <= feudal-age))
+	(up-compare-goal gl-my-villager-count-total < 50)
+	(population < 60)
+	(players-population every-enemy > 110)
+	(players-military-population every-enemy > 20)
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+	(up-jump-rule 2)
+)
+
+#load-if-not-defined DEATH-MATCH
+#load-if-defined UP-1-PLAYER-TEAM
+
+(defrule
+	(or	(and	(up-compare-goal gl-my-villager-count-total < 35)
+			(soldier-count < 5))
+		(players-population any-enemy > 160))
+	(or	(up-compare-goal gl-my-villager-count-total < 25)
+		(players-military-population any-enemy > 40))
+	(population < 75)
+	(players-military-population any-enemy > 20)
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+	(up-jump-rule 1)
+ 	(disable-self)
+)
+
+(defrule
+	(or	(and	(up-compare-goal gl-my-villager-count-total < 5)
+			(population < 10))
+		(and	(players-military-population any-enemy > 25)
+			(players-population any-enemy > 40)))
+	(up-compare-goal gl-my-villager-count-total < 20)
+	(population < 30)
+	(players-military-population any-enemy > 10)
+	(players-population any-enemy > 20)
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+ 	(disable-self)
+)
+#else
+(defrule
+	(or	(and	(up-compare-goal gl-my-villager-count-total < 15)
+			(soldier-count < 8))
+		(players-population any-enemy > 180))
+	(population < 75)
+	(players-military-population any-enemy > 30)
+	(nand	(player-in-game any-ally)
+		(or	(players-population any-ally >= 75)
+			(game-time < 1800)))
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+	(up-jump-rule 1)
+ 	(disable-self)
+)
+
+(defrule
+	(game-time > 600)
+	(players-population any-enemy > 60)
+	(or	(players-population any-enemy > 150)
+		(and	(population < 30)
+			(players-population every-ally < 30)))
+	(population < 50)
+	(players-military-population any-enemy > 20)
+	(nand	(player-in-game any-ally)
+		(players-population any-ally >= 50))
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+ 	(disable-self)
+)
+#end-if
+#else
+(defrule
+	(game-time > 600)
+	(or	(and	(up-compare-goal gl-my-villager-count-total < 15)
+			(soldier-count < 8))
+		(players-population any-enemy > 180))
+	(population < 75)
+	(players-military-population any-enemy > 30)
+	(nand	(player-in-game any-ally)
+		(players-population any-ally >= 75))
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+	(up-jump-rule 1)
+ 	(disable-self)
+)
+
+(defrule
+	(game-time > 600)
+	(players-population any-enemy > 60)
+	(or	(players-population any-enemy > 150)
+		(and	(population < 30)
+			(players-population every-ally < 30)))
+	(population < 50)
+	(players-military-population any-enemy > 20)
+	(nand	(player-in-game any-ally)
+		(players-population any-ally >= 50))
+=>
+	(chat-to-all gg-chat)
+	(enable-timer 49 5)
+ 	(disable-self)
+)
+#end-if
+
+#end-if
+
+(defrule
+	(timer-triggered 49)
+=>
+	(set-goal 6 0)
+	(tribute-to-player any-ally wood 100000)
+	(tribute-to-player any-ally food 100000)
+	(tribute-to-player any-ally gold 100000)
+	(tribute-to-player any-ally stone 100000)
+	(chat-to-allies "98")
+	(chat-to-player my-player-number "gb")
+	(resign)
+)

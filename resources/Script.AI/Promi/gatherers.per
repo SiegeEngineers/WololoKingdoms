@@ -1,0 +1,3920 @@
+(defrule
+(or	(up-compare-goal sk-var != no)
+(or	(up-compare-goal strategy != r-flush)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16)))))
+=>
+	(up-jump-rule 8))
+(defrule
+	(current-age == dark-age)
+(or	(strategic-number sn-current-age > dark)
+	(and	(unit-type-count-total villager >= 22)
+		(up-compare-goal total-food-amount >= 500)))
+	(building-type-count-total archery-range < 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 60)
+	(set-strategic-number sn-food-gatherer-percentage	 30)
+	(set-strategic-number sn-gold-gatherer-percentage 	 10)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal); r-flush feudal arsk
+;(or
+	(building-type-count-total archery-range >= 1)
+;	(wood-amount >= 255))
+	(building-type-count-total blacksmith <= 0)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  50); 49
+	(set-strategic-number sn-food-gatherer-percentage  37); 38
+	(set-strategic-number sn-gold-gatherer-percentage  13); 13
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+	(building-type-count-total archery-range >= 2)
+	(building-type-count-total blacksmith >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 38
+	(set-strategic-number sn-food-gatherer-percentage  44); 46
+	(set-strategic-number sn-gold-gatherer-percentage  16); 16
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+(or	(up-research-status c: ri-wheel-barrow >= research-pending); test
+(or	(up-compare-flag escrow-flag == 1)
+	(building-type-count-total market >= 1)))
+	(building-type-count-total blacksmith >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  38); 38
+	(set-strategic-number sn-food-gatherer-percentage  50); 50
+	(set-strategic-number sn-gold-gatherer-percentage  12); 12
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+(or	(building-type-count-total farm g:>= maxfarms)
+	(civilian-population >= 35))
+(or	(up-research-status c: ri-wheel-barrow >= research-pending); test
+(or	(up-compare-flag escrow-flag == 1)
+	(building-type-count-total market >= 1)))
+	(building-type-count-total blacksmith >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  36); 38
+	(set-strategic-number sn-food-gatherer-percentage  50); 50
+	(set-strategic-number sn-gold-gatherer-percentage  14); 12
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age >= fcastlea)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  46); 44
+	(set-strategic-number sn-food-gatherer-percentage  38); 40
+	(set-strategic-number sn-gold-gatherer-percentage  16); 16
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= castlea); rflush castle
+	(up-compare-flag escrow-flag != 2)
+	(building-type-count-total town-center < 3)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  46); 46
+	(set-strategic-number sn-food-gatherer-percentage  40); 40
+	(set-strategic-number sn-gold-gatherer-percentage  16)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+(or	(up-compare-flag escrow-flag == 2)
+	(building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  37)
+	(set-strategic-number sn-food-gatherer-percentage  45); 45
+	(set-strategic-number sn-gold-gatherer-percentage  16); 16
+	(set-strategic-number sn-stone-gatherer-percentage  2))
+
+
+(defrule
+(or	(up-compare-goal sk-var != yes)
+(or	(up-compare-goal strategy != r-flush)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16)))))
+=>
+	(up-jump-rule 7))
+(defrule
+	(current-age == dark-age)
+(or	(strategic-number sn-current-age > dark)
+	(and	(unit-type-count-total villager >= 22)
+		(up-compare-goal total-food-amount >= 500)))
+	(building-type-count-total archery-range < 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 60); 65
+	(set-strategic-number sn-food-gatherer-percentage	 40); 35
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal); r-flush feudal sk
+;(or
+	(building-type-count-total archery-range >= 1)
+;	(wood-amount >= 255))
+	(building-type-count-total blacksmith <= 0)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  57); 55
+	(set-strategic-number sn-food-gatherer-percentage  43); 45
+	(set-strategic-number sn-gold-gatherer-percentage   0)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+	(building-type-count-total archery-range >= 2)
+	(building-type-count-total blacksmith >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  47); 45
+	(set-strategic-number sn-food-gatherer-percentage  53); 55
+	(set-strategic-number sn-gold-gatherer-percentage   0)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+(or	(civilian-population >= 36); 35
+(or	(up-compare-goal total-food-amount >= castle-f2);	(up-research-status c: ri-wheel-barrow >= research-pending); test
+(or	(up-compare-flag escrow-flag == 1)
+	(building-type-count-total market >= 1))))
+	(gold-amount < castle-gold)
+	(building-type-count-total blacksmith >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  37); 36
+	(set-strategic-number sn-food-gatherer-percentage  54); 56
+	(set-strategic-number sn-gold-gatherer-percentage   9); 8
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+(or	(civilian-population >= 36); 35
+(or	(up-compare-goal total-food-amount >= castle-f2);	(up-research-status c: ri-wheel-barrow >= research-pending); test
+(or	(up-compare-flag escrow-flag == 1)
+	(building-type-count-total market >= 1))))
+	(gold-amount >= castle-gold); 300
+	(up-research-status c: castle-age >= research-available);	(building-type-count-total blacksmith >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 41
+	(set-strategic-number sn-food-gatherer-percentage  60); 59
+	(set-strategic-number sn-gold-gatherer-percentage   0)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age >= fcastlea)
+	(up-compare-flag escrow-flag != 2)
+	(building-type-count-total town-center < 3)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  47); 46
+	(set-strategic-number sn-food-gatherer-percentage  46); 48
+	(set-strategic-number sn-gold-gatherer-percentage   7); 6
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+(or	(up-compare-flag escrow-flag == 2)
+	(building-type-count-total town-center >= 3))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 40
+	(set-strategic-number sn-food-gatherer-percentage  50); 50
+	(set-strategic-number sn-gold-gatherer-percentage  10); 10
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+
+
+
+
+(defrule
+(or	(and	(up-compare-goal strategy != s-flush); sflush feudal
+		(or	(goal scoutmicro no)
+			(goal trainhussar no)));	(strategic-number sn-current-age >= fcastlea)))
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 4))
+(defrule
+	(current-age == dark-age)
+(or	(strategic-number sn-current-age >= dfeudal)
+	(and	(unit-type-count-total villager >= 21)
+		(up-compare-goal total-food-amount >= 500)))
+(or	(building-type-count-total barracks < 1)
+	(wood-amount < 175))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 45)
+	(set-strategic-number sn-food-gatherer-percentage	 55)
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(strategic-number sn-current-age >= dfeudal)
+	(strategic-number sn-current-age <= feudal); s-flush feudal
+	(building-type-count-total barracks >= 1)
+;(or
+	(building-type-count-total stable >= 1)
+;	(wood-amount >= 315)); 175
+	(up-compare-flag escrow-flag != 1)
+	(players-current-age every-enemy < castle-age)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  37)
+	(set-strategic-number sn-food-gatherer-percentage  63)
+	(set-strategic-number sn-gold-gatherer-percentage   0)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(building-type-count-total archery-range <= 0)
+	(building-type-count-total blacksmith <= 0)
+	(strategic-number sn-current-age == feudal)
+(or	(unit-type-count-total scout-cavalry-line >= 5)
+	(up-compare-flag escrow-flag == 1))
+	(gold-amount < castle-gold)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  37)
+	(set-strategic-number sn-food-gatherer-percentage  55)
+	(set-strategic-number sn-gold-gatherer-percentage   8)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+(or	(building-type-count-total archery-range >= 1)
+	(building-type-count-total blacksmith >= 1))
+	(strategic-number sn-current-age == feudal)
+(or	(unit-type-count-total scout-cavalry-line >= 5)
+	(up-compare-flag escrow-flag == 1))
+	(gold-amount < castle-gold)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  29)
+	(set-strategic-number sn-food-gatherer-percentage  60)
+	(set-strategic-number sn-gold-gatherer-percentage  11)
+	(set-strategic-number sn-stone-gatherer-percentage  0)); end jump
+
+
+
+(defrule
+(or	(and	(up-compare-goal strategy != a-rush)
+		(up-compare-goal strategy != ca-rush))
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 6))
+(defrule
+(or	(strategic-number sn-current-age == dfeudal) ; a-rush feud
+	(building-type-count-total archery-range <= 0))
+	(up-research-status c: feudal-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage	43)
+	(set-strategic-number sn-food-gatherer-percentage	44)
+	(set-strategic-number sn-gold-gatherer-percentage	13)
+	(set-strategic-number sn-stone-gatherer-percentage	0))
+(defrule
+	(strategic-number sn-current-age == feudal)
+(or	(and	(building-type-count-total archery-range >= 1)
+		(building-type-count-total blacksmith >= 1))
+	(up-research-status c: castle-age == research-available)); a-rush feud
+=>
+	(set-strategic-number sn-wood-gatherer-percentage	40); 40
+	(set-strategic-number sn-food-gatherer-percentage	47); 47
+	(set-strategic-number sn-gold-gatherer-percentage	13); 13
+	(set-strategic-number sn-stone-gatherer-percentage	0)); 0
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+(or	(strategic-number sn-wood-gatherer-percentage != 40)
+	(strategic-number sn-food-gatherer-percentage != 43))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage	40); feud: 40-47-13-0
+	(set-strategic-number sn-food-gatherer-percentage	43); 43
+	(set-strategic-number sn-gold-gatherer-percentage	17); 17
+	(set-strategic-number sn-stone-gatherer-percentage	0))
+(defrule
+	(strategic-number sn-current-age >= castlea); fcastlea
+	(building-type-count-total archery-range >= 2)
+	(building-type-count-total town-center >= 1)
+	(civilian-population < 40)
+	(population < up-max-civ); civilian?; a-rush castle
+=>
+	(set-strategic-number sn-wood-gatherer-percentage	40); 36
+	(set-strategic-number sn-food-gatherer-percentage	37); 33
+	(set-strategic-number sn-gold-gatherer-percentage	23); 31
+	(set-strategic-number sn-stone-gatherer-percentage	0))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+	(building-type-count-total archery-range >= 2)
+(or	(building-type-count-total town-center >= 2)
+	(and	(building-type-count-total town-center >= 1)
+		(civilian-population >= 40)))
+	(civilian-population < 60)
+	(population < up-max-civ); civilian?
+=>
+	(set-strategic-number sn-wood-gatherer-percentage	40); 39
+	(set-strategic-number sn-food-gatherer-percentage	40); 39
+	(set-strategic-number sn-gold-gatherer-percentage	20); 22
+	(set-strategic-number sn-stone-gatherer-percentage	0)); 0
+(defrule
+	(strategic-number sn-current-age >= castlea)
+(or	(building-type-count-total town-center >= 3)
+(or	(civilian-population >= 60)
+	(population >= up-max-civ))); civilian?
+=>
+	(set-strategic-number sn-wood-gatherer-percentage	40); 40
+	(set-strategic-number sn-food-gatherer-percentage	43); 41
+	(set-strategic-number sn-gold-gatherer-percentage	17); 19
+	(set-strategic-number sn-stone-gatherer-percentage	0)) ; end jump
+
+
+
+(defrule
+(or	(up-compare-goal strategy != krush)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 11))
+(defrule
+(or	(strategic-number sn-current-age >= dfeudal) ; krush feud
+	(building-type-count-total stable <= 0))
+	(up-research-status c: feudal-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 43)
+	(set-strategic-number sn-food-gatherer-percentage	 44)
+	(set-strategic-number sn-gold-gatherer-percentage 	 13)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(up-compare-goal kr-var <= 1)
+=>
+	(up-jump-rule 3))
+(defrule
+	(strategic-number sn-current-age >= feudal); 2 stbl
+(or	(and	(building-type-count-total stable >= 1)
+		(building-type-count-total blacksmith >= 1))
+	(up-research-status c: castle-age == research-available))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 40
+	(set-strategic-number sn-food-gatherer-percentage  47); 47
+	(set-strategic-number sn-gold-gatherer-percentage  13); 13
+	(set-strategic-number sn-stone-gatherer-percentage  0)); 0
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+	(up-research-status c: ri-horse-collar != research-available)
+	(up-research-status c: ri-double-bit-axe != research-available)
+	(building-type-count-total stable >= 2)
+	(building-type-count-total town-center >= 1); krush castle
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  34); 32 ;27 => estimate
+	(set-strategic-number sn-food-gatherer-percentage  47); 49 ;40 
+	(set-strategic-number sn-gold-gatherer-percentage  19); 19 ;33
+	(set-strategic-number sn-stone-gatherer-percentage  0)); for 45 vills in total => 2 busy
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+	(building-type-count-total stable >= 2)
+(or	(building-type-count-total town-center >= 2)
+	(civilian-population >= 40)); 40
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  34); 34 ;27 => estimate
+	(set-strategic-number sn-food-gatherer-percentage  49); 48 ;40 
+	(set-strategic-number sn-gold-gatherer-percentage  17); 18 ;33
+	(set-strategic-number sn-stone-gatherer-percentage  0)); for 45 vills in total => 2 busy ; end jump 1
+(defrule
+	(up-compare-goal kr-var >= 2)
+=>
+	(up-jump-rule 3))
+(defrule
+	(strategic-number sn-current-age >= fcastlea); 1 stbl
+(or	(building-type-count-total stable <= 1)
+	(building-type-count-total town-center >= 1))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  48); 48
+	(set-strategic-number sn-food-gatherer-percentage  44); 44
+	(set-strategic-number sn-gold-gatherer-percentage   8); 8
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+	(building-type-count-total stable <= 1)
+(or	(building-type-count-total town-center >= 2)
+	(civilian-population >= 50)); krush castle
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  44); 44
+	(set-strategic-number sn-food-gatherer-percentage  48); 48
+	(set-strategic-number sn-gold-gatherer-percentage   8); 8
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+	(building-type-count-total stable <= 1)
+(or	(building-type-count-total town-center >= 3)
+(or	(civilian-population >= 75)
+	(population >= up-max-civ))); civilian?
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 40
+	(set-strategic-number sn-food-gatherer-percentage  52); 52
+	(set-strategic-number sn-gold-gatherer-percentage   8); 8
+	(set-strategic-number sn-stone-gatherer-percentage  0)); end jump 2 
+(defrule
+	(strategic-number sn-current-age >= castlea)
+	(building-type-count-total stable >= 2)
+(or	(building-type-count-total town-center >= 3)
+(or	(civilian-population >= 80)
+	(population >= up-max-civ))); civilian?
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  34); 33
+	(set-strategic-number sn-food-gatherer-percentage  52); 52
+	(set-strategic-number sn-gold-gatherer-percentage  14); 15
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+	(building-type-count-total stable >= 2)
+(or	(and	(building-type-count-total town-center >= 3)
+		(building-type-count-total monastery >= 1))
+(or	(civilian-population >= 80)
+	(population >= up-max-civ))); civilian?
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  33); 36
+	(set-strategic-number sn-food-gatherer-percentage  52); 49
+	(set-strategic-number sn-gold-gatherer-percentage  15); 15
+	(set-strategic-number sn-stone-gatherer-percentage  0)); end jump 3
+
+
+
+(defrule
+(or	(up-compare-goal strategy == sling)
+(or	(up-compare-goal milunits != no)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16)))))
+=>
+	(up-jump-rule 3)); 4
+(defrule
+	(strategic-number sn-current-age >= fcastlea); boom castle
+(or	(building-type-count-total town-center < 3)
+	(building-type-count-total monastery < 1)); test
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  52); 50
+	(set-strategic-number sn-food-gatherer-percentage  43); 45
+	(set-strategic-number sn-gold-gatherer-percentage   5); 5
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= fcastlea); boom castle
+(or	(and	(building-type-count-total town-center >= 3)
+		(building-type-count-total monastery >= 1)); test
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop)))
+	(up-research-status c: imperial-age <= research-unavailable)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 39
+	(set-strategic-number sn-food-gatherer-percentage  50); 50
+	(set-strategic-number sn-gold-gatherer-percentage  10); 11
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+(or	(and	(building-type-count-total town-center >= 3)
+		(building-type-count-total monastery >= 1))
+(or	(up-compare-flag escrow-flag == 2)
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop))))
+	(up-research-status c: imperial-age >= research-available)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  35); 36
+	(set-strategic-number sn-food-gatherer-percentage  50)
+	(set-strategic-number sn-gold-gatherer-percentage  15); 14
+	(set-strategic-number sn-stone-gatherer-percentage  0)); end jump
+
+
+
+(defrule
+	(population < max-civ-pop)
+	(civilian-population < up-max-civ)
+	(civilian-population < 16)
+=>
+	(up-jump-rule 12))
+(defrule
+	(up-compare-goal strategy == castledrop)
+	(up-compare-goal total-stone-amount < castle-twotc-stone)
+;(nand	(building-type-count-total castle >= 1)
+;	(or	(building-type-count-total town-center >= 3)
+;		(or	(and	(building-type-count-total town-center >= 1)
+;				(up-compare-goal total-stone-amount >= 200))
+;			(and	(building-type-count-total town-center >= 2)
+;				(up-compare-goal total-stone-amount >= 100)))))
+(or	(building-type-count-total castle < 1)
+	(or	(and	(building-type-count-total town-center < 2)
+			(up-compare-goal total-stone-amount < 200))
+		(and	(building-type-count-total town-center < 3)
+			(up-compare-goal total-stone-amount < 100))))
+=>
+	(up-jump-rule 11))
+(defrule
+	(up-compare-goal strategy == castledrop)
+	(up-compare-goal total-stone-amount < castle-twotc-stone)
+(or	(building-type-count-total town-center < 2)
+	(and	(building-type-count-total town-center < 3)
+		(up-compare-goal total-stone-amount < castle-tc-stone)))
+=>
+	(up-jump-rule 10))
+(defrule
+	(up-compare-goal strategy != usual)
+	(up-compare-goal milunits != yes)
+	(up-compare-goal milunits != 101)
+(or	(up-compare-goal strategy-type <= feudal-war); (up-compare-goal strategy-type < feudal-war)
+(or	(up-compare-goal strategy == sling)
+(or	(up-compare-goal strategy == a-rush)
+(or	(up-compare-goal strategy == ca-rush)
+	(up-compare-goal strategy == krush)))))
+=>
+	(up-jump-rule 9))
+(defrule
+	(current-age == dark-age) ; dfeudal trans
+	(strategic-number sn-current-age > dark)
+	(up-research-status c: feudal-age >= research-pending)
+	(up-compare-goal milunits != castledrop)
+	(up-compare-goal milunits != no)
+	(up-compare-goal strategy-type2 == land);	(goal map land)(building-type-count-total dock <= 0)
+	(gold-amount >= 50)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 43); 41
+	(set-strategic-number sn-food-gatherer-percentage	 44); 50
+	(set-strategic-number sn-gold-gatherer-percentage 	 13); 9
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == dark-age)
+	(strategic-number sn-current-age > dark)
+	(up-research-status c: feudal-age >= research-pending)
+	(up-compare-goal milunits != castledrop)
+	(up-compare-goal milunits != no)
+	(up-compare-goal strategy-type2 == land);	(goal map land)(building-type-count-total dock <= 0)
+	(gold-amount < 50)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 43)
+	(set-strategic-number sn-food-gatherer-percentage	 44)
+	(set-strategic-number sn-gold-gatherer-percentage 	 13)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == dark-age) ; dfeudal trans
+	(strategic-number sn-current-age > dark)
+	(up-research-status c: feudal-age >= research-pending)
+(or	(up-compare-goal milunits == castledrop)
+	(up-compare-goal milunits == no))
+	(up-compare-goal strategy-type2 == land);	(goal map land)(building-type-count-total dock <= 0)
+	(gold-amount >= 50)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 40); 41
+	(set-strategic-number sn-food-gatherer-percentage	 47); 50
+	(set-strategic-number sn-gold-gatherer-percentage 	 13); 9
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == dark-age)
+	(strategic-number sn-current-age > dark)
+	(up-research-status c: feudal-age >= research-pending)
+(or	(up-compare-goal milunits == castledrop)
+	(up-compare-goal milunits == no))
+	(up-compare-goal strategy-type2 == land);	(goal map land)(building-type-count-total dock <= 0)
+	(gold-amount < 50)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 40)
+	(set-strategic-number sn-food-gatherer-percentage	 47)
+	(set-strategic-number sn-gold-gatherer-percentage 	 13)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == dark-age)
+	(strategic-number sn-current-age > dark)
+	(up-research-status c: feudal-age >= research-pending)
+	(up-compare-goal strategy-type2 == water);	(goal map water)(building-type-count-total dock >= 1)
+	(gold-amount >= 50)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 45); 45
+	(set-strategic-number sn-food-gatherer-percentage	 42); 46
+	(set-strategic-number sn-gold-gatherer-percentage 	 13); 9
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == dark-age)
+	(strategic-number sn-current-age > dark)
+	(up-research-status c: feudal-age >= research-pending)
+	(up-compare-goal strategy-type2 == water);	(goal map water)(building-type-count-total dock >= 1)
+	(gold-amount < 50)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 45)
+	(set-strategic-number sn-food-gatherer-percentage	 42)
+	(set-strategic-number sn-gold-gatherer-percentage 	 13)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal) ; usual feud ; normal feud ; standard feud
+(or	(up-compare-flag escrow-flag != 1)
+	(current-age-time < 120))
+;(or
+	(up-compare-goal enemy-goal != flush)
+;	(gold-amount <= 100))
+	(civilian-population < 40)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40)
+	(set-strategic-number sn-food-gatherer-percentage  47); 52
+	(set-strategic-number sn-gold-gatherer-percentage  13); 12
+	(set-strategic-number sn-stone-gatherer-percentage  0)); 36
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+	(up-compare-flag escrow-flag != 1)
+	(up-compare-goal total-food-amount < 650); test
+;(or
+	(goal enemy-goal flush)
+;	(gold-amount >= castle-gold)); 240
+	(civilian-population < 40)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 40
+	(set-strategic-number sn-food-gatherer-percentage  54); 54
+	(set-strategic-number sn-gold-gatherer-percentage   6); 6
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age == feudal)
+(or	(and	(up-compare-flag escrow-flag == 1)
+		(current-age-time >= 120))
+(or	(up-research-status c: ri-wheel-barrow >= research-pending); test
+	(civilian-population >= 40)))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  39); 40
+	(set-strategic-number sn-food-gatherer-percentage  53); 52
+	(set-strategic-number sn-gold-gatherer-percentage   8); 8
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+
+
+
+
+
+(defrule
+	(population < max-civ-pop)
+	(civilian-population < up-max-civ)
+	(civilian-population < 16)
+=>
+	(up-jump-rule 7))
+(defrule
+	(up-compare-goal strategy == castledrop)
+	(up-compare-goal total-stone-amount < castle-twotc-stone)
+;(nand	(building-type-count-total castle >= 1)
+;	(or	(building-type-count-total town-center >= 3)
+;		(or	(and	(building-type-count-total town-center >= 1)
+;				(up-compare-goal total-stone-amount >= 200))
+;			(and	(building-type-count-total town-center >= 2)
+;				(up-compare-goal total-stone-amount >= 100)))))
+(or	(building-type-count-total castle < 1)
+	(or	(and	(building-type-count-total town-center < 2)
+			(up-compare-goal total-stone-amount < 200))
+		(and	(building-type-count-total town-center < 3)
+			(up-compare-goal total-stone-amount < 100))))
+=>
+	(up-jump-rule 6))
+(defrule
+	(up-compare-goal strategy == castledrop)
+	(up-compare-goal total-stone-amount < castle-twotc-stone)
+(or	(building-type-count-total town-center <= 1)
+	(and	(building-type-count-total town-center <= 2)
+		(up-compare-goal total-stone-amount < castle-tc-stone)))
+=>
+	(up-jump-rule 5))
+(defrule
+;(or	(up-timer-status retask-timer > timer-disabled); test
+(or	(goal strategy grush)
+(or	(goal milunits no)
+(or	(goal strategy s-flush)
+(or	(goal strategy r-flush)
+(or	(goal strategy a-rush)
+(or	(goal strategy ca-rush)
+	(goal strategy krush)))))));)
+=>
+	(up-jump-rule 4))
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+	(wood-amount < 885); 795
+	(building-type-count-total town-center < 3)
+	(civilian-population < up-max-civ)
+	(population < max-civ-pop)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  48); 47
+	(set-strategic-number sn-food-gatherer-percentage  44); 43
+	(set-strategic-number sn-gold-gatherer-percentage   8); 10
+	(set-strategic-number sn-stone-gatherer-percentage  0)); 0
+(defrule
+	(strategic-number sn-current-age >= fcastlea) ; usual castle ; normal castle ; standard castle
+(or	(and	(building-type-count-total town-center >= 3)
+		(building-type-count-total monastery >= 1)); test
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop)))
+;(or	(up-research-status c: imperial-age <= research-unavailable)
+;	(civilian-population < 60)); 60
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  38); 40
+	(set-strategic-number sn-food-gatherer-percentage  50); 50
+	(set-strategic-number sn-gold-gatherer-percentage  12); 10
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+(or	(and	(up-research-status c: imperial-age <= research-unavailable)
+		(strategic-number sn-current-age <= castlea))
+	(strategic-number sn-current-age < fcastlea))
+=>
+	(up-jump-rule 1))
+(defrule
+(or	(and	(building-type-count-total town-center >= 3)
+		(building-type-count-total monastery >= 1)); test
+(or	(up-compare-flag escrow-flag == 2)
+(or	(civilian-population >= 65); 60
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop)))))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  35); 35
+	(set-strategic-number sn-food-gatherer-percentage  50); 48
+	(set-strategic-number sn-gold-gatherer-percentage  15); 15
+	(set-strategic-number sn-stone-gatherer-percentage  0)); 2
+
+
+
+(defrule
+(or	(up-compare-goal total-stone-amount >= castle-twotc-stone)
+(or	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16)))
+	(up-compare-goal strategy != castledrop)));(stone-amount >= castle-stone)
+=>
+	(up-jump-rule 4))
+(defrule
+(or	(and	(building-type-count-total town-center >= 2)
+		(or	(up-compare-goal total-stone-amount >= castle-tc-stone)
+			(and	(building-type-count-total castle >= 1)
+				(up-compare-goal total-stone-amount >= 100))))
+	(and	(building-type-count-total town-center >= 3)
+		(or	(up-compare-goal total-stone-amount >= castle-stone)
+			(building-type-count-total castle >= 1))))
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(and	(building-type-count-total town-center >= 1)
+		(or	(up-compare-goal total-stone-amount >= castle-twotc-stone)
+			(and	(building-type-count-total castle >= 1)
+				(up-compare-goal total-stone-amount >= 200))))
+	(and	(building-type-count-total castle >= 1)
+		(up-compare-goal total-stone-amount >= 200)))
+=>
+	(up-jump-rule 2))
+(defrule
+;(or	(current-age == dark-age)
+;	(current-age == feudal-age))
+	(strategic-number sn-current-age >= dfeudal)
+; test	(dropsite-min-distance stone s:<= sn-maximum-stone-drop-distance); castledrop dark, castledrop feud, castledrop castle
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 37); 34
+	(set-strategic-number sn-food-gatherer-percentage	 44); 47
+	(set-strategic-number sn-gold-gatherer-percentage 	 13); 13
+	(set-strategic-number sn-stone-gatherer-percentage 	  6)); 6
+(defrule
+	(strategic-number sn-current-age >= fcastlea)
+	(dropsite-min-distance stone s:<= sn-maximum-stone-drop-distance)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  37); 36
+	(set-strategic-number sn-food-gatherer-percentage  36); 38
+	(set-strategic-number sn-gold-gatherer-percentage  0); 0
+	(set-strategic-number sn-stone-gatherer-percentage 29)); 28
+
+
+(defrule
+(or	(up-compare-goal strategy != stonewall)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 5))
+(defrule
+(or	(and	(building-type-count-total town-center >= 3)
+		(building-type-count-total monastery >= 1))
+(or	(up-compare-flag escrow-flag == 2)
+(or	(civilian-population >= 60)
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop)))))
+	(up-research-status c: imperial-age == research-available)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  32)
+	(set-strategic-number sn-food-gatherer-percentage  50)
+	(set-strategic-number sn-gold-gatherer-percentage  18)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(current-age <= castle-age)
+	(building-type-count-total barracks < 6)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  35)
+	(set-strategic-number sn-food-gatherer-percentage  47)
+	(set-strategic-number sn-gold-gatherer-percentage  18)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(up-research-status c: ri-elite-eagle-warrior < research-pending)
+; test	(research-available ri-elite-eagle-warrior)
+(or	(current-age >= imperial-age)
+	(and	(strategic-number sn-current-age >= imperial)
+		(building-type-count-total barracks >= 6)))
+	(building-type-count-total barracks >= 5)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26); 24
+	(set-strategic-number sn-food-gatherer-percentage 44); 43
+	(set-strategic-number sn-gold-gatherer-percentage 30); 31
+	(set-strategic-number sn-stone-gatherer-percentage 0)); 2
+(defrule
+	(civilian-population < up-max-civ)
+	(population < max-civ-pop)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(building-type-count-total barracks >= 5)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 23); 22
+	(set-strategic-number sn-food-gatherer-percentage 33); 32
+	(set-strategic-number sn-gold-gatherer-percentage 41); 44
+	(set-strategic-number sn-stone-gatherer-percentage 3)); 2
+(defrule
+(or	(civilian-population >= up-max-civ)
+	(population >= max-civ-pop))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(building-type-count-total barracks >= 5)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25); 24
+	(set-strategic-number sn-food-gatherer-percentage 35); 35
+	(set-strategic-number sn-gold-gatherer-percentage 36); 37
+	(set-strategic-number sn-stone-gatherer-percentage 4)); 4
+
+
+(defrule
+(or	(up-compare-goal strategy != sling)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 2))
+(defrule
+	(current-age == dark-age)
+(or	(strategic-number sn-current-age > dark)
+	(and	(unit-type-count-total villager >= 22)
+		(up-compare-goal total-food-amount >= 500)))
+	(building-type-count-total market < 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 43); 42
+	(set-strategic-number sn-food-gatherer-percentage	 57); 58
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age >= feudal); sling feudal+
+	(building-type-count-total market >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  36); 38
+	(set-strategic-number sn-food-gatherer-percentage  47); 46
+	(set-strategic-number sn-gold-gatherer-percentage  13); 12
+	(set-strategic-number sn-stone-gatherer-percentage  4)); 4
+
+
+(defrule
+(or	(up-compare-goal strategy != grush)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 4))
+(defrule
+	(current-age == dark-age)
+(or	(strategic-number sn-current-age > dark)
+	(and	(unit-type-count-total villager >= 22)
+		(up-compare-goal total-food-amount >= 500))); grush dark, grush dfeudal
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	 70)
+	(set-strategic-number sn-food-gatherer-percentage	 15)
+	(set-strategic-number sn-gold-gatherer-percentage 	 15)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(current-age == feudal-age)
+	(strategic-number sn-current-age >= feudal); grush feudal
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  58); 50; 58
+	(set-strategic-number sn-food-gatherer-percentage  27); 33; 25
+	(set-strategic-number sn-gold-gatherer-percentage  15); (20); 17
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age == feudal-age)
+	(building-type-count-total market >= 1)
+	(building-type-count-total blacksmith >= 1)
+(or	(research-available castle-age)
+	(civilian-population >= 57))
+	(civilian-population >= 33); grush fcastlea+
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  45); 42
+	(set-strategic-number sn-food-gatherer-percentage  40); 43
+	(set-strategic-number sn-gold-gatherer-percentage  15)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(current-age >= feudal-age)
+	(strategic-number sn-current-age >= fcastlea); grush fcastlea+
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  49); 45
+	(set-strategic-number sn-food-gatherer-percentage  36); 40
+	(set-strategic-number sn-gold-gatherer-percentage  15)
+	(set-strategic-number sn-stone-gatherer-percentage  0)); end jump
+
+(defrule
+(or	(up-compare-goal maa-var != yes)
+(or	(up-research-status c: castle-age >= research-available)
+(or	(up-research-status c: feudal-age < research-pending)
+(or	(up-compare-flag escrow-flag == 1)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16)))))))
+=>
+	(up-jump-rule 8))
+(defrule
+	(current-age >= dark-age)
+(or	(strategic-number sn-current-age >= dfeudal)
+	(and	(unit-type-count-total villager >= 21)
+		(up-compare-goal total-food-amount >= 500)))
+	(strategic-number sn-wood-gatherer-percentage >= 20); 6
+	(strategic-number sn-gold-gatherer-percentage <= 0)
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 6)
+	(up-modify-sn sn-gold-gatherer-percentage c:+ 6)); 8
+(defrule
+	(current-age >= dark-age)
+(or	(strategic-number sn-current-age >= dfeudal)
+	(and	(unit-type-count-total villager >= 21)
+		(up-compare-goal total-food-amount >= 500)))
+	(strategic-number sn-wood-gatherer-percentage >= 22); 6
+	(strategic-number sn-food-gatherer-percentage < 50)
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 10)
+	(up-modify-sn sn-food-gatherer-percentage c:+ 10))
+(defrule
+	(current-age >= feudal-age)
+	(strategic-number sn-current-age >= feudal); maa feudal
+	(building-type-count-total archery-range >= 1)
+	(building-type-count-total blacksmith <= 0)
+	(strategic-number sn-gold-gatherer-percentage >= 10)
+	(strategic-number sn-food-gatherer-percentage < 55)
+=>
+	(up-modify-sn sn-gold-gatherer-percentage c:- 5)
+	(up-modify-sn sn-food-gatherer-percentage c:+ 5)); end small jump
+(defrule
+	(goal strategy r-flush)
+	(current-age >= dark-age)
+(or	(strategic-number sn-current-age >= dfeudal)
+	(and	(unit-type-count-total villager >= 21)
+		(up-compare-goal total-food-amount >= 500)))
+(or	(current-age <= dark-age)
+	(building-type-count-total blacksmith <= 0)); from above
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  45); 44
+	(set-strategic-number sn-food-gatherer-percentage  47); 48
+	(set-strategic-number sn-gold-gatherer-percentage   8)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(goal strategy r-flush)
+	(goal sk-var yes)
+	(current-age >= feudal-age)
+	(strategic-number sn-current-age >= feudal)
+	(building-type-count-total archery-range >= 1)
+	(building-type-count-total blacksmith <= 0); from above
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  49); 48
+	(set-strategic-number sn-food-gatherer-percentage  47); 48
+	(set-strategic-number sn-gold-gatherer-percentage   4)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(goal strategy r-flush)
+	(goal sk-var yes)
+	(current-age >= feudal-age)
+	(strategic-number sn-current-age >= feudal)
+	(up-research-status c: ri-man-at-arms >= research-pending)
+;(or
+	(unit-type-count-total militiaman-line >= 4); 5
+;	(up-compare-goal trainchamp != yes))
+	(building-type-count-total archery-range >= 1)
+	(building-type-count-total blacksmith <= 0); from above
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  52); 49
+	(set-strategic-number sn-food-gatherer-percentage  44); 47
+	(set-strategic-number sn-gold-gatherer-percentage   4)
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(goal strategy r-flush)
+	(goal sk-var no)
+	(current-age >= feudal-age)
+	(strategic-number sn-current-age >= feudal); maa feudal
+	(building-type-count-total archery-range >= 1)
+	(building-type-count-total blacksmith <= 0); from above
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40); 40
+	(set-strategic-number sn-food-gatherer-percentage  47); 48
+	(set-strategic-number sn-gold-gatherer-percentage  13); 12
+	(set-strategic-number sn-stone-gatherer-percentage  0))
+(defrule
+	(goal strategy r-flush)
+	(goal sk-var no)
+	(current-age >= feudal-age)
+	(strategic-number sn-current-age >= feudal)
+	(up-research-status c: ri-man-at-arms >= research-pending)
+;(or
+	(unit-type-count-total militiaman-line >= 4); 5
+;	(up-compare-goal trainchamp != yes))
+	(building-type-count-total archery-range >= 1)
+	(building-type-count-total blacksmith <= 0); from above
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  43); 44
+	(set-strategic-number sn-food-gatherer-percentage  44); 43
+	(set-strategic-number sn-gold-gatherer-percentage  13)
+	(set-strategic-number sn-stone-gatherer-percentage  0)); end jump
+
+
+(defrule
+(or	(up-compare-goal strategy != usual)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 3))
+(defrule
+	(strategic-number sn-current-age >= imperial)
+; test	(cc-players-unit-type-count 0 gold-mine > 0)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  ig-wood)
+	(set-strategic-number sn-food-gatherer-percentage  ig-food)
+	(set-strategic-number sn-gold-gatherer-percentage  ig-gold)
+	(set-strategic-number sn-stone-gatherer-percentage ig-stone)
+;	(disable-self)
+)
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(cc-players-unit-type-count 0 gold-mine < 1)
+	(cc-players-unit-type-count 0 stone-mine >= 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  39)
+	(set-strategic-number sn-food-gatherer-percentage  57)
+	(set-strategic-number sn-gold-gatherer-percentage  0)
+	(set-strategic-number sn-stone-gatherer-percentage 4))
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(cc-players-unit-type-count 0 gold-mine < 1)
+	(cc-players-unit-type-count 0 stone-mine < 1)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40)
+	(set-strategic-number sn-food-gatherer-percentage  60)
+	(set-strategic-number sn-gold-gatherer-percentage  0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)); end jump
+
+#load-if-defined DARK-AGE-END
+(defrule
+	(building-type-count-total mining-camp >= 1)
+(or	(population >= max-civ-pop)
+(or	(civilian-population >= up-max-civ)
+	(civilian-population >= 16)))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  40)
+	(set-strategic-number sn-food-gatherer-percentage  48)
+	(set-strategic-number sn-gold-gatherer-percentage  12)
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+#end-if
+
+(defrule
+	(building-type-count town-center >= 1)
+(or	(strategic-number sn-wood-gatherer-percentage >= 101)
+(or	(strategic-number sn-food-gatherer-percentage >= 101)
+(or	(strategic-number sn-gold-gatherer-percentage >= 100)
+	(strategic-number sn-stone-gatherer-percentage >= 100))))
+=>
+	(set-strategic-number sn-wood-gatherer-percentage  ig-wood)
+	(set-strategic-number sn-food-gatherer-percentage  ig-food)
+	(set-strategic-number sn-gold-gatherer-percentage  ig-gold)
+	(set-strategic-number sn-stone-gatherer-percentage ig-stone)
+	(chat-to-player my-player-number "Debugging gatherer percentages."))
+
+
+;(defrule
+;	(timer-triggered embassy);retask-timer)
+;	(up-timer-status retask-timer != timer-disabled)
+;=>
+;	(up-chat-data-to-player my-player-number "Wood%: %d." s: sn-wood-gatherer-percentage)
+;	(up-chat-data-to-player my-player-number "Food%: %d." s: sn-food-gatherer-percentage)
+;	(up-chat-data-to-player my-player-number "Gold%: %d." s: sn-gold-gatherer-percentage)
+;	(up-chat-data-to-player my-player-number "Stone%: %d." s: sn-stone-gatherer-percentage))
+
+
+(defrule
+(or	(building-type-count-total town-center <= 0)
+	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16))))
+=>
+	(up-jump-rule 17))
+(defrule
+(or	(up-research-status c: castle-age < research-pending); (current-age >= castle-age)
+(or	(population >= max-civ-pop)
+(or	(civilian-population >= up-max-civ)
+(or	(building-type-count-total town-center >= 4)
+(or	(strategic-number sn-stone-gatherer-percentage >= 1)
+	(cc-players-unit-type-count 0 stone-mine <= 0))))));	(dropsite-min-distance stone s:> sn-maximum-stone-drop-distance)
+=>
+	(up-jump-rule 2))
+(defrule; test
+	(up-compare-goal total-stone-amount < 200)
+(or	(up-compare-goal total-stone-amount < 100)
+	(building-type-count-total town-center == 1))
+	(building-type-count-total town-center <= 2)
+	(strategic-number sn-wood-gatherer-percentage >= 2); 1
+	(strategic-number sn-food-gatherer-percentage >= 2); 1
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 2); 1
+	(up-modify-sn sn-food-gatherer-percentage c:- 2); 1
+	(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 5)); 3
+(defrule; test
+	(up-compare-goal total-stone-amount < 200)
+(or	(up-compare-goal total-stone-amount < 100)
+	(building-type-count-total town-center <= 2))
+	(goal milunits no)
+	(up-compare-goal strategy != stonewall)
+(or	(building-type-count-total farm >= 18)
+	(up-research-status c: ri-heavy-plow >= research-pending))
+	(strategic-number sn-wood-gatherer-percentage >= 2); 1
+	(strategic-number sn-food-gatherer-percentage >= 2); 1
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 2); 1
+	(up-modify-sn sn-food-gatherer-percentage c:- 2); 1
+	(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 5)); 3 end mini jump
+(defrule
+(or	(building-type-count-total castle >= 2); 1
+(or	(up-compare-goal total-stone-amount >= twocastle-stone)
+(or	(and	(up-compare-goal total-stone-amount >= castle-stone)
+		(building-type-count-total castle >= 1)); 0
+(or	(up-compare-goal uugoal != yes)
+	(nor	(up-research-status c: imperial-age == research-pending); (current-age >= castle-age)
+		(and	(current-age >= imperial-age)
+			(current-age-time < 180)))))))
+=>
+	(up-jump-rule 1))
+(defrule; test
+	(cc-players-unit-type-count 0 stone-mine >= 1);	(dropsite-min-distance stone s:<= sn-maximum-stone-drop-distance)
+	(strategic-number sn-wood-gatherer-percentage >= 5); 1
+	(strategic-number sn-food-gatherer-percentage >= 5); 1
+	(strategic-number sn-gold-gatherer-percentage >= 5); 1
+	(strategic-number sn-stone-gatherer-percentage <= 15); 6
+	(strategic-number sn-stone-gatherer-percentage >= 1); test
+	(up-compare-goal strategy != stonewall)
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 5); 1
+	(up-modify-sn sn-food-gatherer-percentage c:- 5); 1
+	(up-modify-sn sn-gold-gatherer-percentage c:- 5); 1
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 15)); 3; end mini jump
+(defrule; test
+(or	(and	(or	(building-type-count-total castle >= 4); 5
+			(up-compare-goal total-stone-amount >= castle-stone)); twocastle-stone
+		(building-type-count-total castle >= 3)); 4; -total
+	(up-compare-goal uugoal != yes))
+;	(building-type-count-total castle >= 2); 3
+	(building-type-count castle >= 1); 2
+	(strategic-number sn-stone-gatherer-percentage >= 3); 2
+=>
+	(up-modify-sn sn-stone-gatherer-percentage c:- 2)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 1)
+	(up-modify-sn sn-food-gatherer-percentage c:+ 1))
+(defrule; test
+(or	(map-type arena)
+	(map-type fortress))
+(not	(player-in-game any-ally))
+	(building-type-count-total town-center >= 2)
+	(building-type-count-total monastery <= 0)
+	(building-available monastery)
+	(cc-players-unit-type-count 0 relic >= 1)
+;	(unit-type-count-total monk <= 0)
+	(strategic-number sn-gold-gatherer-percentage >= 1)
+=>
+	(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 1))
+(defrule; test
+	(strategic-number sn-current-age >= feudal)
+; hmm	(up-compare-goal navycount g:< maxnavy)
+(or	(up-compare-goal navycount >= 1)
+	(building-type-count-total dock >= 2))
+(or	(building-type-count-total stable < number-stables)
+(or	(building-type-count-total archery-range < number-archery-ranges)
+(or	(building-type-count-total barracks < number-barracks)
+	(building-type-count-total siege-workshop < 3))))
+	(strategic-number sn-food-gatherer-percentage >= 1)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 1)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 1))
+(defrule
+	(up-compare-sn sn-current-age s:>= strategy-type)
+	(building-type-count-total stable < 2)
+	(building-type-count-total archery-range < 2)
+	(building-type-count-total barracks < 2)
+	(building-type-count-total siege-workshop < 2)
+	(building-type-count-total monastery < 2)
+	(building-type-count-total castle < 2)
+=>
+	(up-jump-rule 3))
+(defrule; test
+	(civilian-population >= 38); 39
+(or	(and	(research-available castle-age)
+		(gold-amount < 600))
+	(and	(research-available imperial-age)
+		(civilian-population >= 75))); 78
+	(gold-amount < 1200)
+	(strategic-number sn-wood-gatherer-percentage >= 26); 1
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 1)
+	(up-modify-sn sn-gold-gatherer-percentage c:+ 1))
+(defrule; test
+	(civilian-population >= 38)
+(or	(and	(research-available castle-age)
+		(food-amount < 1200))
+	(and	(research-available imperial-age)
+		(civilian-population >= 75)))
+	(food-amount < 1400)
+	(strategic-number sn-wood-gatherer-percentage >= 26); 1
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 1)
+	(up-modify-sn sn-food-gatherer-percentage c:+ 1))
+(defrule; test
+	(research-available imperial-age)
+	(civilian-population >= 56); 38
+(or	(civilian-population >= 75); 50
+(or	(goal uugoal yes)
+	(dropsite-min-distance stone < 6)))
+	(stone-amount < castle-stone)
+	(building-type-count-total castle <= 0)
+	(strategic-number sn-wood-gatherer-percentage >= 26); 1
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 1)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 1)); end mini jump
+(defrule
+(or	(strategic-number sn-current-age <= dark)
+(or	(game-time >= 1800)
+	(strategic-number sn-current-age >= castlea))); >= feudal)
+=>
+	(up-jump-rule 1))
+(defrule; test
+	(unit-type-count fishing-ship >= 1); 4
+	(building-type-count dock >= 1)
+(or	(up-gaia-type-count c: shore-fish-class >= 1)
+	(up-gaia-type-count c: ocean-fish-class >= 1))
+(or	(cc-players-unit-type-count 0 shore-fish-class >= shorefishreq2)
+	(cc-players-unit-type-count 0 ocean-fish-class >= deepfishreq2))
+; hm	(up-compare-goal strategy-type2 != water)
+; nn	(strategic-number sn-food-gatherer-percentage >= 1); 16 ; 7
+=>
+;	(up-modify-sn sn-wood-gatherer-percentage c:+ 7)
+;	(up-modify-sn sn-food-gatherer-percentage c:- 7)
+	(up-get-fact unit-type-count fishing-ship temporary-goal)
+	(up-modify-goal temporary-goal c:* 7); 3
+	(up-modify-goal temporary-goal c:/ 4); 2
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal temporary-goal c:min 16)
+	(up-modify-goal temporary-goal s:min sn-food-gatherer-percentage)
+;	(up-chat-data-to-self "Food to wood: %d." g: temporary-goal)
+	(up-modify-sn sn-food-gatherer-percentage g:- temporary-goal)
+	(up-modify-sn sn-wood-gatherer-percentage g:+ temporary-goal)); end mini jump
+(defrule
+(or	(up-research-status c: castle-age != research-available)
+(or	(building-type-count-total market >= 1)
+	(current-age-time < 120)))
+=>
+	(up-jump-rule 2))
+(defrule; test
+	(gold-amount >= 210); 225; 213
+	(up-compare-goal strategy-type >= castle-war);	(goal strategy usual)
+;nn	(strategic-number sn-gold-gatherer-percentage >= 1) ;
+=>
+	(up-get-fact gold-amount 0 temporary-goal)
+	(up-modify-goal temporary-goal c:- 200)
+	(up-modify-goal temporary-goal c:/ 20); 50; 25
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal temporary-goal c:min 12)
+	(up-modify-goal temporary-goal s:min sn-gold-gatherer-percentage)
+	(up-modify-sn sn-gold-gatherer-percentage g:- temporary-goal)
+;	(up-chat-data-to-self "Reducing gold-gp by %d." g: temporary-goal)
+	(up-modify-goal temporary-goal2 g:= temporary-goal)
+	(up-modify-goal temporary-goal c:z/ 2)
+	(up-modify-sn sn-food-gatherer-percentage g:+ temporary-goal); wood
+	(up-modify-sn sn-food-gatherer-percentage g:+ temporary-goal)
+	(up-modify-goal temporary-goal2 c:mod 2)
+	(up-modify-sn sn-wood-gatherer-percentage g:+ temporary-goal2)); food
+(defrule; test
+	(gold-amount >= 275); 225; 375
+	(up-compare-goal strategy-type <= feudal-war);	(goal strategy usual)
+;nn	(strategic-number sn-gold-gatherer-percentage >= 1) ;
+=>
+	(up-get-fact gold-amount 0 temporary-goal)
+	(up-modify-goal temporary-goal c:- 275); 200; 375
+	(up-modify-goal temporary-goal c:/ 25); 50
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal temporary-goal c:min 12)
+	(up-modify-goal temporary-goal s:min sn-gold-gatherer-percentage)
+	(up-modify-sn sn-gold-gatherer-percentage g:- temporary-goal)
+;	(up-chat-data-to-self "Reducing gold-gp by %d." g: temporary-goal)
+	(up-modify-goal temporary-goal2 g:= temporary-goal)
+	(up-modify-goal temporary-goal c:z/ 2)
+	(up-modify-sn sn-food-gatherer-percentage g:+ temporary-goal); wood
+	(up-modify-sn sn-food-gatherer-percentage g:+ temporary-goal)
+	(up-modify-goal temporary-goal2 c:mod 2)
+	(up-modify-sn sn-wood-gatherer-percentage g:+ temporary-goal2)); food; end mini jump ; end jump
+
+
+
+
+#load-if-not-defined WONDER-RACE
+(defrule
+	(up-timer-status retask-timer == timer-disabled)
+	(strategic-number sn-current-age >= imperial)
+(or	(population >= max-civ-pop)
+(or	(civilian-population >= up-max-civ)
+	(civilian-population >= 16)))
+	(building-type-count-total town-center >= 1)
+	(goal strategy usual)
+=>
+;	(set-goal retask yes)
+;	(chat-local-to-self "Allowing dynamic gatherer percentages.")
+	(enable-timer retask-timer 0))
+#end-if
+
+(defrule; dyng
+(or	(and	(population < max-civ-pop)
+		(and	(civilian-population < up-max-civ)
+			(civilian-population < 16)))
+(or	(strategic-number sn-current-age < imperial)
+(or	(up-compare-goal strategy != usual)
+(or	(up-timer-status retask-timer != timer-triggered)
+	(building-type-count-total town-center <= 0)))))
+=>
+	(up-jump-rule 36))
+(defrule
+	(building-type-count feitoria >= 1)
+	(strategic-number sn-stone-gatherer-percentage >= 2)
+=>
+	(up-get-fact building-type-count feitoria temporary-goal))
+(defrule
+	(building-type-count feitoria >= 1)
+	(strategic-number sn-stone-gatherer-percentage >= 2)
+=>
+	(up-modify-sn sn-stone-gatherer-percentage g:- temporary-goal)
+	(up-modify-sn sn-stone-gatherer-percentage c:max 1))
+(defrule
+	(true)
+=>
+	(up-modify-goal wood-gpp s:= sn-wood-gatherer-percentage)
+	(up-modify-goal food-gpp s:= sn-food-gatherer-percentage)
+	(up-modify-goal gold-gpp s:= sn-gold-gatherer-percentage)
+	(up-modify-goal wood-gpp c:* 10)
+	(up-modify-goal food-gpp c:* 10)
+	(up-modify-goal gold-gpp c:* 10))
+(defrule
+	(civilian-population < up-max-civ)
+	(population < max-civ-pop)
+	(goal trainvillager yes)
+	(up-compare-goal excessFood < 400);
+=>
+	(up-modify-goal food-gpp c:+ 25)); 50
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal g:= maxfarms)
+	(up-modify-goal temporary-goal c:- 3))
+(defrule
+(or	(and	(building-type-count-total farm g:< temporary-goal)
+		(unit-type-count villager-food g:< temporary-goal))
+	(and	(up-compare-goal navycount g:< maxnavy)
+		(and	(building-type-count dock >= 1)
+			(goal map islands))))
+	(up-compare-goal excessWood < 400);
+=>
+	(up-modify-goal wood-gpp c:+ 25)); 50; 30
+(defrule
+	(up-compare-goal tradeunits < 33)
+	(up-compare-goal tradeunits < maxcartspop)
+	(up-compare-goal tradeunits < maxcartssize)
+	(building-type-count-total market >= 1)
+	(players-building-type-count any-ally market >= 1)
+	(player-in-game any-ally)
+(or	(goal traincart yes)
+	(goal traincog yes))
+	(up-compare-goal excessWood < 400);
+=>
+	(up-modify-goal wood-gpp c:+ 50))
+(defrule
+	(up-compare-goal tradeunits < 33)
+	(up-compare-goal tradeunits < maxcartspop)
+	(up-compare-goal tradeunits < maxcartssize)
+	(building-type-count-total market >= 1)
+	(players-building-type-count any-ally market >= 1)
+	(player-in-game any-ally)
+(or	(goal traincart yes)
+	(goal traincog yes))
+	(up-compare-goal excessGold < 400);
+=>
+	(up-modify-goal gold-gpp c:+ 25))
+(defrule
+	(up-compare-goal tradeunits >= 1)
+=>
+	(up-modify-goal temporary-goal g:= tradeunits)
+	(up-modify-goal temporary-goal c:* 33); 25
+	(up-modify-goal temporary-goal c:/ 10)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal temporary-goal c:min 150)
+	(up-modify-goal temporary-goal2 g:= gold-gpp)
+	(up-modify-goal temporary-goal2 c:min 10)
+	(up-modify-goal gold-gpp g:- temporary-goal)
+	(up-modify-goal gold-gpp c:max 10))
+(defrule
+	(strategic-number sn-current-age >= imperial);	(up-research-status c: imperial-age == research-pending)
+	(current-age >= castle-age)
+(or	(building-type-count-total stable < number-stables)
+(or	(building-type-count-total archery-range < number-archery-ranges)
+(or	(building-type-count-total barracks < number-barracks)
+	(building-type-count-total siege-workshop < 3))))
+	(up-compare-goal excessWood < 400)
+=>
+	(up-modify-goal wood-gpp c:+ 5)); 10
+(defrule
+	(strategic-number sn-current-age >= imperial);	(up-research-status c: imperial-age == research-pending)
+(or	(building-available stable)
+(or	(building-available archery-range)
+	(building-available barracks)))
+	(building-type-count-total stable < 3)
+	(building-type-count-total archery-range < 3)
+	(building-type-count-total barracks < 3)
+	(building-type-count-total stable < number-stables)
+	(building-type-count-total archery-range < number-archery-ranges)
+	(building-type-count-total barracks < number-barracks)
+	(up-compare-goal excessWood < 400)
+=>
+	(up-modify-goal wood-gpp c:+ 20)); 10
+(defrule
+	(building-type-count-total stable >= number-stables)
+	(building-type-count-total archery-range >= number-archery-ranges)
+	(building-type-count-total barracks >= number-barracks)
+	(building-type-count-total siege-workshop >= 3)
+	(up-compare-goal excessWood >= 400)
+(or	(up-compare-goal excessFood < 400)
+	(up-compare-goal excessGold < 400))
+=>
+	(up-modify-goal wood-gpp c:- 10)); 5
+(defrule; test
+	(up-compare-goal champgoal != yes);
+(or	(up-research-status c: imperial-age == research-pending)
+	(and	(current-age >= imperial-age)
+		(or	(current-age-time < 180)
+			(and	(up-compare-goal excessGold < 400)
+				(current-age-time < 360)))))
+=>
+	(up-modify-goal gold-gpp c:+ 40)); 25; 50
+(defrule
+	(up-compare-goal excessFood >= 450)
+(or	(up-compare-goal excessWood < 100)
+	(up-compare-goal excessFood >= 600))
+(or	(up-compare-goal excessWood < 200)
+	(up-compare-goal excessFood >= 750))
+(or	(up-compare-goal excessWood < 300)
+	(up-compare-goal excessFood >= 900))
+(or	(up-compare-goal excessWood < 400)
+	(up-compare-goal excessFood >= 1050))
+	(up-compare-goal excessWood < 500)
+=>
+	(up-modify-goal wood-gpp c:+ 25); 50
+	(up-modify-goal food-gpp c:- 25)); 50
+(defrule
+	(up-compare-goal excessFood >= 1200)
+(or	(up-compare-goal excessWood < 600)
+	(up-compare-goal excessFood >= 1350))
+(or	(up-compare-goal excessWood < 700)
+	(up-compare-goal excessFood >= 1500))
+(or	(up-compare-goal excessWood < 800)
+	(up-compare-goal excessFood >= 1650))
+(or	(up-compare-goal excessWood < 900)
+	(up-compare-goal excessFood >= 1800))
+	(up-compare-goal excessWood < 1000)
+=>
+	(up-modify-goal wood-gpp c:+ 25); 50
+	(up-modify-goal food-gpp c:- 25)); 50
+(defrule
+	(up-compare-goal excessFood >= 1950)
+(or	(up-compare-goal excessWood < 1100)
+	(up-compare-goal excessFood >= 2100))
+(or	(up-compare-goal excessWood < 1200)
+	(up-compare-goal excessFood >= 2250))
+(or	(up-compare-goal excessWood < 1300)
+	(up-compare-goal excessFood >= 2400))
+(or	(up-compare-goal excessWood < 1400)
+	(up-compare-goal excessFood >= 2650))
+	(up-compare-goal excessWood < 1500)
+=>
+	(up-modify-goal wood-gpp c:+ 25); 50
+	(up-modify-goal food-gpp c:- 25)); 50
+(defrule
+	(up-compare-goal excessWood >= 450)
+(or	(up-compare-goal excessFood < 100)
+	(up-compare-goal excessWood >= 600))
+(or	(up-compare-goal excessFood < 200)
+	(up-compare-goal excessWood >= 750))
+(or	(up-compare-goal excessFood < 300)
+	(up-compare-goal excessWood >= 900))
+(or	(up-compare-goal excessFood < 400)
+	(up-compare-goal excessWood >= 1050))
+	(up-compare-goal excessFood < 500)
+=>
+	(up-modify-goal wood-gpp c:- 25); 50
+	(up-modify-goal food-gpp c:+ 25)); 50
+(defrule
+	(up-compare-goal excessWood >= 1200)
+(or	(up-compare-goal excessFood < 600)
+	(up-compare-goal excessWood >= 1350))
+(or	(up-compare-goal excessFood < 700)
+	(up-compare-goal excessWood >= 1500))
+(or	(up-compare-goal excessFood < 800)
+	(up-compare-goal excessWood >= 1650))
+(or	(up-compare-goal excessFood < 900)
+	(up-compare-goal excessWood >= 1800))
+	(up-compare-goal excessFood < 1000)
+=>
+	(up-modify-goal wood-gpp c:- 25); 50
+	(up-modify-goal food-gpp c:+ 25)); 50
+(defrule
+	(up-compare-goal excessWood >= 1950)
+(or	(up-compare-goal excessFood < 1100)
+	(up-compare-goal excessWood >= 2100))
+(or	(up-compare-goal excessFood < 1200)
+	(up-compare-goal excessWood >= 2250))
+(or	(up-compare-goal excessFood < 1300)
+	(up-compare-goal excessWood >= 2400))
+(or	(up-compare-goal excessFood < 1400)
+	(up-compare-goal excessWood >= 2650))
+	(up-compare-goal excessFood < 1500)
+=>
+	(up-modify-goal wood-gpp c:- 25); 50
+	(up-modify-goal food-gpp c:+ 25)); 50
+(defrule
+	(up-compare-goal excessWood >= 450)
+	(up-compare-goal excessFood >= 450)
+(or	(up-compare-goal excessGold < 100)
+	(and	(up-compare-goal excessWood >= 600)
+		(up-compare-goal excessFood >= 600)))
+(or	(up-compare-goal excessGold < 200)
+	(and	(up-compare-goal excessWood >= 750)
+		(up-compare-goal excessFood >= 750)))
+	(up-compare-goal excessGold < 300)
+=>
+	(up-modify-goal gold-gpp c:+ 50)); 50
+(defrule
+	(up-compare-goal excessWood >= 900)
+	(up-compare-goal excessFood >= 900)
+(or	(up-compare-goal excessGold < 400)
+	(and	(up-compare-goal excessWood >= 1050)
+		(up-compare-goal excessFood >= 1050)))
+(or	(up-compare-goal excessGold < 500)
+	(and	(up-compare-goal excessWood >= 1200)
+		(up-compare-goal excessFood >= 1200)))
+	(up-compare-goal excessGold < 600)
+=>
+	(up-modify-goal gold-gpp c:+ 50)); 50
+(defrule
+	(up-compare-goal excessWood >= 1350)
+	(up-compare-goal excessFood >= 1350)
+(or	(up-compare-goal excessGold < 700)
+	(and	(up-compare-goal excessWood >= 1500)
+		(up-compare-goal excessFood >= 1500)))
+(or	(up-compare-goal excessGold < 800)
+	(and	(up-compare-goal excessWood >= 1650)
+		(up-compare-goal excessFood >= 1650)))
+	(up-compare-goal excessGold < 900)
+=>
+	(up-modify-goal gold-gpp c:+ 50)); 50
+(defrule
+	(up-compare-goal excessWood >= 1800)
+	(up-compare-goal excessFood >= 1800)
+(or	(up-compare-goal excessGold < 1000)
+	(and	(up-compare-goal excessWood >= 1950)
+		(up-compare-goal excessFood >= 1950)))
+(or	(up-compare-goal excessGold < 1100)
+	(and	(up-compare-goal excessWood >= 2100)
+		(up-compare-goal excessFood >= 2100)))
+	(up-compare-goal excessGold < 1200)
+=>
+	(up-modify-goal gold-gpp c:+ 50)); 50
+(defrule
+	(up-compare-goal excessGold >= 800)
+(or	(or	(up-compare-goal excessWood < 400)
+		(up-compare-goal excessFood < 400))
+(or	(and	(or	(up-compare-goal excessWood < 600)
+			(up-compare-goal excessFood < 600))
+		(up-compare-goal excessGold >= 1200))
+	(up-compare-goal excessGold >= 1600)))
+	(up-compare-goal excessWood < 800)
+	(up-compare-goal excessFood < 800)
+=>
+	(up-modify-goal gold-gpp c:- 50)); 50
+(defrule
+	(up-compare-goal excessGold >= 2000)
+(or	(or	(up-compare-goal excessWood < 1000)
+		(up-compare-goal excessFood < 1000))
+(or	(and	(or	(up-compare-goal excessWood < 1200)
+			(up-compare-goal excessFood < 1200))
+		(up-compare-goal excessGold >= 2400))
+	(up-compare-goal excessGold >= 2800)))
+	(up-compare-goal excessWood < 1400)
+	(up-compare-goal excessFood < 1400)
+=>
+	(up-modify-goal gold-gpp c:- 50)); 50
+
+
+
+
+(defrule; inspired by TheMax
+	(true)
+=>
+	(up-modify-goal wood-gpp c:max 0)
+	(up-modify-goal food-gpp c:max 0)
+	(up-modify-goal gold-gpp c:max 0)
+	(up-modify-goal temporary-goal6 g:= wood-gpp)
+	(up-modify-goal temporary-goal6 g:+ food-gpp)
+	(up-modify-goal temporary-goal g:= excessWood)
+	(up-modify-goal temporary-goal2 g:= excessFood)
+	(up-modify-goal temporary-goal3 g:= excessGold)
+	(up-modify-goal temporary-goal4 g:= temporary-goal)
+	(up-modify-goal temporary-goal4 g:+ temporary-goal2)
+	(up-modify-goal temporary-goal4 c:/ 2)
+	(up-modify-goal temporary-goal4 c:+ 1000)
+	(up-modify-goal temporary-goal4 g:- temporary-goal3)
+	(up-modify-goal temporary-goal4 c:min 0)
+	(up-modify-goal temporary-goal4 c:/ 10))
+(defrule
+	(true)
+=>
+	(up-modify-goal gold-gpp g:+ temporary-goal4)
+	(up-modify-goal temporary-goal g:= excessWood)
+	(up-modify-goal temporary-goal c:- 800)
+	(up-modify-goal temporary-goal c:/ 20)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal temporary-goal2 g:= excessFood)
+	(up-modify-goal temporary-goal2 c:- 800)
+	(up-modify-goal temporary-goal2 c:/ 20)
+	(up-modify-goal temporary-goal2 c:max 0)
+	(up-modify-goal temporary-goal3 g:= temporary-goal)
+	(up-modify-goal temporary-goal3 g:+ temporary-goal2)
+	(up-modify-goal temporary-goal5 g:= temporary-goal3)
+	(up-modify-goal temporary-goal5 g:- temporary-goal)
+	(up-modify-goal wood-gpp g:+ temporary-goal5)
+	(up-modify-goal temporary-goal5 g:= temporary-goal3))
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal5 g:- temporary-goal2)
+	(up-modify-goal food-gpp g:+ temporary-goal5)
+	(up-modify-goal temporary-goal g:= food-gpp)
+	(up-modify-goal temporary-goal g:+ wood-gpp)
+	(up-modify-goal gold-gpp g:* temporary-goal)
+	(up-modify-goal gold-gpp g:/ temporary-goal6)
+	(up-modify-goal wood-gpp c:max 1)
+	(up-modify-goal food-gpp c:max 1)
+	(up-modify-goal gold-gpp c:max 1))
+
+(defrule
+	(up-gaia-type-count c: gold <= 19)
+=>
+	(up-get-fact gaia-type-count gold temporary-goal)
+	(up-modify-goal temporary-goal c:* 50)
+	(up-modify-goal temporary-goal c:max 10)
+	(up-modify-goal gold-gpp g:min temporary-goal))
+(defrule
+	(dropsite-min-distance gold s:> sn-maximum-gold-drop-distance)
+=>
+	(up-modify-goal gold-gpp c:min 10))
+(defrule
+(or	(cc-players-unit-type-count 0 gold-mine <= 0)
+(or	(dropsite-min-distance gold <= -1)
+	(dropsite-min-distance gold >= 255)))
+=>
+	(set-goal gold-gpp 0))
+(defrule
+	(up-gaia-type-count c: stone <= 19)
+=>
+	(up-get-fact gaia-type-count stone temporary-goal)
+	(up-modify-goal temporary-goal c:* 5)
+	(up-modify-goal temporary-goal c:max 1)
+	(up-modify-sn sn-stone-gatherer-percentage g:min temporary-goal))
+(defrule
+	(dropsite-min-distance stone s:> sn-maximum-stone-drop-distance)
+=>
+	(up-modify-sn sn-stone-gatherer-percentage c:min 1))
+(defrule
+(or	(cc-players-unit-type-count 0 stone-mine <= 0)
+(or	(dropsite-min-distance stone <= -1)
+	(dropsite-min-distance stone >= 255)))
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 0))
+
+(defrule
+	(true)
+=>
+;	(up-chat-data-to-player my-player-number "Wood gp: %d" g: wood-gpp)
+;	(up-chat-data-to-player my-player-number "Food gp: %d" g: food-gpp)
+;	(up-chat-data-to-player my-player-number "Gold gp: %d" g: gold-gpp)
+	(up-modify-goal wood-gpp c:* 100)
+	(up-modify-goal food-gpp c:* 100)
+	(up-modify-goal gold-gpp c:* 100)
+	(up-modify-goal temporary-goal g:= wood-gpp)
+	(up-modify-goal temporary-goal g:+ food-gpp)
+	(up-modify-goal temporary-goal g:+ gold-gpp)
+	(up-modify-goal temporary-goal2 g:= temporary-goal)
+	(up-modify-goal temporary-goal2 c:/ 100)
+	(up-modify-goal temporary-goal2 s:* sn-stone-gatherer-percentage)
+	(set-goal temporary-goal3 100)
+	(up-modify-goal temporary-goal3 s:- sn-stone-gatherer-percentage))
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal2 g:%/ temporary-goal3)
+	(up-modify-goal temporary-goal g:+ temporary-goal2)
+	(up-modify-goal wood-gpp g:%/ temporary-goal)
+	(up-modify-goal food-gpp g:%/ temporary-goal)
+	(up-modify-goal gold-gpp g:%/ temporary-goal)
+	(up-modify-goal wood-gpp c:max 0)
+	(up-modify-goal food-gpp c:max 0)
+	(up-modify-goal gold-gpp c:max 0)
+;	(up-chat-data-to-player my-player-number "Wood: %d" g: wood-gpp)
+;	(up-chat-data-to-player my-player-number "Food: %d" g: food-gpp)
+;	(up-chat-data-to-player my-player-number "Gold: %d" g: gold-gpp)
+;	(up-chat-data-to-player my-player-number "Stone: %d" s: sn-stone-gatherer-percentage)
+	(enable-timer retask-timer 70)); end jump
+
+
+(defrule
+	(up-timer-status retask-timer == timer-running)
+=>
+	(up-modify-sn sn-wood-gatherer-percentage g:= wood-gpp)
+	(up-modify-sn sn-food-gatherer-percentage g:= food-gpp)
+	(up-modify-sn sn-gold-gatherer-percentage g:= gold-gpp))
+
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-wood-gatherer-percentage)
+	(up-modify-goal temporary-goal s:+ sn-food-gatherer-percentage)
+	(up-modify-goal temporary-goal s:+ sn-gold-gatherer-percentage)
+	(up-modify-goal temporary-goal s:+ sn-stone-gatherer-percentage))
+(defrule
+	(up-compare-goal temporary-goal <= 99)
+=>
+;	(chat-local-to-self "Debugging gatherer percentages.2")
+	(up-modify-sn sn-food-gatherer-percentage c:+ 1)
+	(up-modify-goal temporary-goal c:+ 1))
+(defrule
+	(up-compare-goal temporary-goal <= 99)
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 1)
+	(up-jump-rule -3))
+(defrule
+	(up-compare-goal temporary-goal >= 101)
+=>
+;	(chat-local-to-self "Debugging gatherer percentages.3")
+	(up-modify-sn sn-wood-gatherer-percentage c:- 1)
+	(up-modify-goal temporary-goal c:- 1))
+(defrule
+	(up-compare-goal temporary-goal >= 101)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 1)
+	(up-jump-rule -5))
+
+
+
+;(defrule
+;	(timer-triggered retask-timer)
+;(or	(strategic-number sn-wood-modifier-percentage != 0)
+;(or	(strategic-number sn-food-modifier-percentage != 0)
+;(or	(strategic-number sn-gold-modifier-percentage != 0)
+;	(strategic-number sn-stone-modifier-percentage != 0))))
+;;(or	(strategic-number sn-wood-gatherer-percentage != ig-wood)
+;;(or	(strategic-number sn-food-gatherer-percentage != ig-food)
+;;(or	(strategic-number sn-gold-gatherer-percentage != ig-gold)
+;;	(strategic-number sn-stone-gatherer-percentage != ig-stone))))
+;	(goal retask no); new percentages
+;=>
+;	(up-chat-data-to-player my-player-number "Wood%: %d." s: sn-wood-gatherer-percentage)
+;	(up-chat-data-to-player my-player-number "Food%: %d." s: sn-food-gatherer-percentage)
+;	(up-chat-data-to-player my-player-number "Gold%: %d." s: sn-gold-gatherer-percentage)
+;	(up-chat-data-to-player my-player-number "Stone%: %d." s: sn-stone-gatherer-percentage))
+
+
+#load-if-defined WONDER-RACE
+(defrule
+	(strategic-number sn-current-age >= imperial)
+	(strategic-number sn-stone-gatherer-percentage < 33)
+=>
+	(set-strategic-number sn-percent-civilian-builders 100)
+	(set-strategic-number sn-percent-civilian-gatherers 100)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-gatherers 1000)
+	(set-strategic-number sn-wood-gatherer-percentage  34)
+	(set-strategic-number sn-food-gatherer-percentage  0)
+	(set-strategic-number sn-gold-gatherer-percentage  33)
+	(set-strategic-number sn-stone-gatherer-percentage 33))
+#end-if
+(defrule
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
+	(strategic-number sn-wood-gatherer-percentage < 100)
+	(wood-amount < 275)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	100)
+	(set-strategic-number sn-food-gatherer-percentage	  0)
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	  0))
+(defrule
+	(building-type-count-total town-center <= 0)
+	(unit-type-count-total villager >= 1)
+	(strategic-number sn-stone-gatherer-percentage < 100)
+	(wood-amount >= 275)
+	(stone-amount < 100)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 	  0)
+	(set-strategic-number sn-food-gatherer-percentage	  0)
+	(set-strategic-number sn-gold-gatherer-percentage 	  0)
+	(set-strategic-number sn-stone-gatherer-percentage 	100))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;(defrule
+;	(goal scouting yes)
+;	(game-time < 60)
+;	(unit-type-count-total villager > 0)
+;	(building-type-count-total town-center == 0)
+;(or	(building-type-count-total lumber-camp == 0)
+;	(and	(wood-amount >= 275)
+;		(stone-amount >= 100)))
+;;d-able	(strategic-number sn-percent-civilian-explorers < 100)
+;=>
+;	(set-strategic-number sn-percent-civilian-explorers 100)
+;	(set-strategic-number sn-cap-civilian-explorers 100)
+;	(set-strategic-number sn-total-number-explorers 101)
+;	(set-strategic-number sn-number-explore-groups 101)
+;	(disable-self))
+
+;(defrule
+;	(goal scouting yes)
+;	(building-type-count-total town-center >= 1)
+;=>
+;	(set-strategic-number sn-percent-civilian-explorers 100)
+;	(set-strategic-number sn-cap-civilian-explorers 3)
+;	(set-strategic-number sn-minimum-civilian-explorers 3)
+;	(set-strategic-number sn-total-number-explorers 4)
+;	(set-strategic-number sn-number-explore-groups 4)
+;	(disable-self))
+
+(defrule
+	(goal scouting yes)
+	(building-type-count-total town-center >= 1)
+(nor	(resource-found food)
+	(up-compare-goal mysheep >= 2))
+;	(military-population >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-cap-civilian-explorers 1)
+	(set-strategic-number sn-minimum-civilian-explorers 1)
+	(set-strategic-number sn-total-number-explorers 2)
+	(set-strategic-number sn-number-explore-groups 2)
+;	(chat-local-to-self "Searching for food source.")
+	(disable-self))
+(defrule
+	(goal scouting yes)
+	(building-type-count-total town-center >= 1)
+(or	(resource-found food)
+	(up-compare-goal mysheep >= 2))
+;	(military-population >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1)
+;	(chat-local-to-self "Food source found.")
+	(disable-self))
+(defrule
+	(game-time < 360)
+	(up-pending-placement c: town-center)
+;	(wood-amount >= 275)
+;	(stone-amount >= 100)
+	(building-type-count-total town-center < 1)
+	(strategic-number sn-cap-civilian-explorers >= 1)
+=>
+	(up-jump-rule 4)); 2
+(defrule
+	(goal scouting yes)
+(or	(unit-type-count scout-unit >= 1)
+	(strategic-number sn-minimum-civilian-explorers >= 1))
+	(current-age-time >= 10)
+(or	(building-type-count-total blacksmith >= 1)
+	(strategic-number sn-current-age >= fcastlea))
+	(building-type-count-total town-center >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1))
+(defrule
+	(goal scouting yes)
+(or	(dropsite-min-distance boar-hunting < 7)
+(or	(and	(dropsite-min-distance deer-hunting < 7)
+		(strategic-number sn-enable-boar-hunting == 1))
+	(up-compare-goal mysheep >= 2)))
+	(strategic-number sn-wood-gatherer-percentage < 5)
+	(strategic-number sn-minimum-civilian-explorers >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1))
+(defrule
+	(goal scouting yes)
+	(building-type-count-total mill >= 1)
+(or	(wood-amount >= 200)
+	(dropsite-min-distance wood s:<= sn-maximum-wood-drop-distance))
+	(strategic-number sn-wood-gatherer-percentage < 5)
+	(strategic-number sn-minimum-civilian-explorers >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1))
+(defrule
+	(goal scouting yes)
+(or	(unit-type-count scout-unit >= 1)
+	(current-age <= dark-age))
+(or	(players-building-count every-enemy >= 1)
+	(current-age <= dark-age))
+	(building-type-count-total mill >= 1)
+	(building-type-count-total lumber-camp >= 1)
+	(dropsite-min-distance wood s:<= sn-maximum-wood-drop-distance)
+	(strategic-number sn-minimum-civilian-explorers >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1))
+
+
+
+
+(defrule
+(or	(game-time >= 180)
+(or	(building-type-count-total mill >= 1)
+(or	(unit-type-count villager-food >= 1)
+(or	(resource-found food)
+	(up-compare-goal mysheep >= 2)))))
+	(unit-type-count scout-unit >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(up-jump-rule 8))
+(defrule
+;	(game-time < 360)
+;	(up-pending-placement c: town-center)
+;;	(wood-amount >= 275)
+;;	(stone-amount >= 100)
+	(building-type-count-total town-center < 1)
+;;jump	(strategic-number sn-cap-civilian-explorers >= 1)
+	(strategic-number sn-minimum-civilian-explorers < 2)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-minimum-civilian-explorers 2)
+	(set-strategic-number sn-cap-civilian-explorers 2)
+	(set-strategic-number sn-total-number-explorers 3)
+	(set-strategic-number sn-number-explore-groups 3))
+;	(up-jump-rule 7))
+(defrule
+;	(cc-players-unit-type-count 0 gold-mine <= 0)
+	(cc-players-unit-type-count 0 deer <= 0)
+	(cc-players-unit-type-count 0 wild-boar <= 0)
+	(cc-players-unit-type-count 0 javelina <= 0)
+	(cc-players-unit-type-count 0 livestock-class <= 0)
+	(cc-players-unit-type-count 0 forage-food <= 0)
+	(cc-players-unit-type-count 0 shore-fish-class <= 0)
+=>
+	(up-jump-rule 4))
+(defrule
+(or	(food-amount >= 50)
+	(unit-type-count villager-food >= 1))
+(or	(building-type-count-total lumber-camp >= 2); 1
+	(and	(building-type-count-total mill >= 1)
+		(dropsite-min-distance wood s:<= sn-maximum-wood-drop-distance)))
+=>
+	(up-jump-rule 1))
+(defrule
+;tv	(goal scouting yes)
+	(unit-type-count-total villager >= 2)
+	(building-type-count-total farm <= 7)
+	(up-compare-goal mysheep < 1)
+	(unit-type-count villager-food <= 7)
+(or	(unit-type-count villager-food <= 0)
+	(not	(resource-found food)))
+	(strategic-number sn-minimum-civilian-explorers < 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-minimum-civilian-explorers 1)
+	(set-strategic-number sn-cap-civilian-explorers 1)
+	(set-strategic-number sn-total-number-explorers 2)
+	(set-strategic-number sn-number-explore-groups 2)); end jump
+(defrule
+(or	(dropsite-min-distance boar-hunting >= 7)
+	(strategic-number sn-enable-boar-hunting < 1))
+(or	(dropsite-min-distance deer-hunting >= 7)
+	(strategic-number sn-enable-boar-hunting < 1))
+	(up-compare-goal mysheep < 2)
+;(nand	(building-type-count-total lumber-camp >= 1)
+;	(building-type-count-total mill >= 1))
+	(building-type-count-total mill <= 0);
+	(strategic-number sn-minimum-civilian-explorers < 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-minimum-civilian-explorers 1)
+	(set-strategic-number sn-cap-civilian-explorers 1)
+	(set-strategic-number sn-total-number-explorers 2)
+	(set-strategic-number sn-number-explore-groups 2))
+(defrule
+;tv	(goal scouting yes)
+	(unit-type-count scout-unit <= 0)
+	(game-time < 600)
+	(players-building-count every-enemy <= 0)
+	(unit-type-count-total villager >= 2)
+	(building-type-count-total farm <= 7)
+	(up-compare-goal mysheep <= 2)
+	(up-compare-goal forage-count <= 2)
+	(dropsite-min-distance boar-hunting > 34)
+	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance)
+	(unit-type-count villager-food <= 7)
+	(strategic-number sn-minimum-civilian-explorers < 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-minimum-civilian-explorers 1)
+	(set-strategic-number sn-cap-civilian-explorers 1)
+	(set-strategic-number sn-total-number-explorers 2)
+	(set-strategic-number sn-number-explore-groups 2)); end mini jump
+(defrule
+(or	(up-resource-percent amount-exploration < 10); test!
+(or	(not	(resource-found wood))
+(or	(unit-type-count villager-wood <= 0)
+	(dropsite-min-distance wood > 7)))); 8
+	(strategic-number sn-wood-gatherer-percentage >= 5)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-minimum-civilian-explorers 1)
+	(set-strategic-number sn-cap-civilian-explorers 1)
+	(set-strategic-number sn-total-number-explorers 2)
+	(set-strategic-number sn-number-explore-groups 2))
+(defrule
+	(building-type-count-total lumber-camp >= 1)
+	(building-type-count-total mill <= 0)
+(or	(wood-amount >= 130)
+	(building-type-count-total barracks >= 1))
+	(game-time < 600)
+	(strategic-number sn-minimum-civilian-explorers < 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-minimum-civilian-explorers 1)
+	(set-strategic-number sn-cap-civilian-explorers 1)
+	(set-strategic-number sn-total-number-explorers 2)
+	(set-strategic-number sn-number-explore-groups 2))
+(defrule
+	(strategic-number sn-current-age == feudal)
+	(current-age-time >= 10)
+	(building-type-count-total blacksmith <= 0)
+	(wood-amount >= 200)
+	(unit-type-count-total villager >= 2)
+	(strategic-number sn-minimum-civilian-explorers < 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 100)
+	(set-strategic-number sn-minimum-civilian-explorers 1)
+	(set-strategic-number sn-cap-civilian-explorers 1)
+	(set-strategic-number sn-total-number-explorers 2)
+	(set-strategic-number sn-number-explore-groups 2)); end jump
+
+
+
+
+(defrule
+(or	(unit-type-count-total villager >= 2)
+	(unit-type-count scout-unit >= 1))
+(nor	(resource-found food)
+	(up-compare-goal mysheep >= 2))
+=>
+	(up-jump-rule 1))
+(defrule
+;(or
+	(goal scouting yes)
+	(dropsite-min-distance food s:<= sn-maximum-food-drop-distance)
+	(dropsite-min-distance wood s:<= sn-maximum-wood-drop-distance);)
+(or	(unit-type-count-total villager <= 1)
+(or	(military-population >= 2)
+(or	(unit-type-count-total spearman-line >= 1)
+	(unit-type-count scout-unit >= 1))))
+	(strategic-number sn-minimum-civilian-explorers >= 1)
+=>
+	(set-strategic-number sn-percent-civilian-explorers 0)
+	(set-strategic-number sn-minimum-civilian-explorers 0)
+	(set-strategic-number sn-cap-civilian-explorers 0)
+	(set-strategic-number sn-total-number-explorers 1)
+	(set-strategic-number sn-number-explore-groups 1))
+
+
+
+
+
+
+#load-if-not-defined DEATH-MATCH
+(defrule
+(or	(up-timer-status sheepscout == timer-running)
+(or	(up-projectile-detected projectile-fortification < 16000)
+(or	(building-type-count town-center <= 0)
+(or	(up-compare-goal deer-luring == 1)
+(or	(game-time >= 840); 720
+(or	(and	(up-timer-status scout != timer-disabled)
+		(players-building-count any-enemy <= 0)); time limit anyway
+	(up-gaia-type-count c: livestock-class <= 0)))))))
+=>
+	(up-jump-rule 5))
+(defrule
+	(game-time >= 1)
+=>
+	(up-modify-goal temporary-goal2 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0))
+(defrule
+	(game-time >= 1)
+	(up-gaia-type-count c: livestock-class >= 1)
+(or	(game-time s:< sn-home-exploration-time)
+	(players-building-count every-enemy <= 0))
+=>
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-filter-distance c: -1 c: kitty-distance)
+	(up-jump-rule 1))
+(defrule
+	(game-time >= 1)
+	(up-gaia-type-count c: livestock-class >= 1)
+	(game-time s:>= sn-home-exploration-time)
+	(players-building-count any-enemy >= 1)
+=>
+	(up-full-reset-search)
+;	(up-set-target-point position-self-x)
+;	(up-filter-distance c: -1 c: kitty-distance); test
+)
+(defrule
+	(game-time >= 1)
+	(up-gaia-type-count c: livestock-class >= 1)
+	(up-find-remote c: livestock-class c: 1)
+=>
+;	(chat-to-player my-player-number "Come here kitty kitty.")
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-find-local c: scout-unit c: 1)
+	(up-set-target-point temporary-point-x)
+	(up-target-point 0 action-move -1 -1)
+	(enable-timer sheepscout 3)); 7
+(defrule
+	(game-time >= 1)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)); end jump
+#end-if
+
+
+(defrule
+(or	(up-timer-status scout == timer-running); test
+(or	(game-time >= 120)
+(or	(unit-type-count villager >= 8)
+(or	(unit-type-count villager-wood <= 0)
+(or	(building-type-count town-center <= 0)
+	(strategic-number sn-wood-gatherer-percentage >= 7))))))
+=>
+	(up-jump-rule 4))
+(defrule
+(or	(resource-found food)
+	(up-compare-goal mysheep >= 1))
+(or	(building-type-count-total mill >= 1)
+	(dropsite-min-distance food <= 6)); 5
+	(dropsite-min-distance food s:<= sn-maximum-food-drop-distance)
+=>
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-filter-distance c: -1 c: 16)
+	(up-find-local c: 123 g: villagercount)
+	(up-find-local c: 218 g: villagercount)
+	(up-remove-objects search-local object-data-carry <= 0)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total >= 1)
+=>
+	(up-modify-goal temporary-goal2 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-find-remote c: town-center c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-target-objects 0 action-default -1 -1); 1
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2))
+(defrule
+(or	(resource-found food)
+	(up-compare-goal mysheep >= 1))
+(or	(building-type-count-total mill >= 1)
+	(dropsite-min-distance food <= 6)); 5
+	(dropsite-min-distance food s:<= sn-maximum-food-drop-distance)
+=>
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-filter-distance c: -1 c: 16)
+	(up-find-local c: 123 g: villagercount)
+	(up-find-local c: 218 g: villagercount)
+	(up-remove-objects search-local object-data-carry >= 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total >= 1)
+=>
+	(up-target-point 0 action-stop -1 -1)); end jump
+
+(defrule
+(or	(game-time >= 960)
+(or	(unit-type-count villager-wood <= 0)
+(or	(unit-type-count villager-wood >= 16)
+(or	(and	(up-compare-goal threat-player >= 1)
+		(up-compare-goal threat-time < 16000))
+(or	(building-type-count lumber-camp >= 3)
+(or	(building-type-count lumber-camp <= 0)
+	(building-type-count town-center != 1)))))))
+=>
+	(up-jump-rule 10))
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal 0)
+	(up-get-fact unit-type-count 123 temporary-goal2)
+	(up-get-fact unit-type-count 218 temporary-goal3)
+	(set-goal temporary-goal4 123)
+	(up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number my-player-number))
+(defrule
+	(true)
+=>
+	(up-find-local g: temporary-goal4 c: 1)
+	(up-remove-objects search-local object-data-target != tree-class)
+	(up-remove-objects search-local object-data-carry >= 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total <= 0)
+	(up-compare-goal temporary-goal g:< temporary-goal2); tbs
+=>
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-reset-filters)
+	(up-find-local g: temporary-goal4 g: temporary-goal)
+	(up-reset-search 0 1 1 1)
+	(up-jump-rule -2))
+(defrule
+	(up-compare-goal local-total <= 0)
+	(up-compare-goal temporary-goal4 <= 123)
+=>
+	(set-goal temporary-goal4 218)
+	(up-modify-goal temporary-goal2 g:= temporary-goal3)
+	(up-full-reset-search)
+	(up-jump-rule -3))
+(defrule
+	(up-compare-goal local-total >= 1)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-get-object-data object-data-target-id temporary-goal5)
+	(up-set-target-by-id g: temporary-goal5)
+	(up-get-point position-object saved-point-x)
+	(up-get-point-distance point-x saved-point-x temporary-goal6)
+	(up-filter-distance c: -1 c: 14)
+	(up-find-remote c: lumber-camp c: 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal temporary-goal6 >= 15)
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal remote-total >= 1)
+=>
+	(set-goal temporary-goal6 15151)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object saved-point-x)
+	(up-set-target-point saved-point-x)
+;	(up-send-flare saved-point-x)
+	(up-reset-search 0 0 1 1)
+	(up-filter-distance c: -1 c: 4)
+	(up-filter-status c: status-resource c: list-active); <
+	(up-find-resource c: wood c: 8)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal temporary-goal6 == 15151)
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal remote-total <= 0)
+=>
+;	(chat-to-player my-player-number "Search.")
+	(up-reset-search 0 0 1 1)
+	(up-filter-status c: status-ready c: list-active); >
+	(up-find-resource c: wood c: 8)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal temporary-goal6 == 15151)
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal remote-total >= 1)
+=>
+;	(chat-to-player my-player-number "Tree found, let's go.")
+	(up-set-target-point point-x)
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(up-remove-objects search-remote object-data-index >= 1)
+	(up-target-objects 0 action-default -1 -1))
+(defrule
+(or	(up-compare-goal temporary-goal g:< temporary-goal2); tbs
+	(up-compare-goal temporary-goal4 <= 123))
+=>
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-reset-filters)
+	(up-find-local g: temporary-goal4 g: temporary-goal)
+	(up-reset-search 0 1 1 1)
+	(up-jump-rule -8))
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7)); end jump
+
+(defrule
+(or	(game-time >= 900)
+(or	(strategic-number sn-current-age >= feudal)
+;(or	(building-type-count mining-camp != 1)
+(or	(building-type-count-total mining-camp != 1)
+(or	(unit-type-count villager-gold <= 0)
+	(building-type-count town-center <= 0)))));)
+=>
+	(up-assign-builders c: mining-camp c: 1)
+	(up-jump-rule 3))
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-find-local c: 579 g: villagercount)
+	(up-find-local c: 581 g: villagercount)
+	(up-remove-objects search-local object-data-carry < 10)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(building-type-count mining-camp <= 0)
+=>
+	(up-get-fact unit-type-count villager-gold temporary-goal)
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-modify-goal temporary-goal c:min 6)
+	(up-assign-builders c: mining-camp g: temporary-goal)
+	(up-jump-rule 1)
+	(disable-self))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(building-type-count mining-camp == 1)
+=>
+	(up-modify-goal temporary-goal2 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-find-remote c: mining-camp c: 1)
+	(up-set-target-object search-remote c: 0)
+	(up-target-objects 0 action-default -1 -1); 1
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(disable-self)); end jump
+
+(defrule
+(or	(game-time >= 1200); needed
+(or	(strategic-number sn-current-age >= castlea); needed
+	(nor	(up-pending-objects c: lumber-camp >= 1)
+		(up-pending-objects c: mining-camp >= 1))))
+=>
+	(up-jump-rule 4))
+(defrule
+	(up-pending-objects c: lumber-camp >= 1)
+=>
+	(up-full-reset-search)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: lumber-camp c: 1)
+	(up-reset-filters)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 c: 4)
+	(up-find-resource c: wood c: 2)
+	(up-get-search-state local-total))
+(defrule
+	(up-pending-objects c: lumber-camp >= 1)
+	(up-compare-goal local-total == 1)
+	(up-object-data object-data-hitpoints <= 1)
+	(up-compare-goal remote-total < 2)
+=>
+;	(chat-local-to-self "Two time's the charm.")
+	(up-target-point 0 action-delete -1 -1)
+	(up-reset-placement c: lumber-camp)
+	(disable-self))
+(defrule
+	(up-pending-objects c: mining-camp >= 1)
+=>
+	(up-full-reset-search)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: mining-camp c: 1)
+	(up-reset-filters)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object point-x)
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 c: 4)
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-find-remote c: gold-mine c: 1)
+	(up-find-remote c: stone-mine c: 1)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(up-get-search-state local-total))
+(defrule
+	(up-pending-objects c: mining-camp >= 1)
+	(up-compare-goal local-total == 1)
+	(up-object-data object-data-hitpoints <= 1)
+	(up-compare-goal remote-total <= 0)
+=>
+;	(chat-local-to-self "Two time's the charm.2")
+	(up-target-point 0 action-delete -1 -1)
+	(up-reset-placement c: mining-camp)
+	(disable-self))
+
+
+;(defrule
+;	(current-age == dark-age)
+;	(unit-type-count villager >= 18)
+;	(dropsite-min-distance deer-hunting s:< sn-maximum-hunt-drop-distance)
+;	(dropsite-min-distance live-boar > 34)
+;	(unit-type-count villager-forager >= 7); 5
+;	(strategic-number sn-enable-boar-hunting == 1)
+;	(unit-type-count villager-hunter < 2)
+;	(strategic-number sn-minimum-number-hunters < 2)
+;=>
+;	(up-modify-sn sn-minimum-number-hunters c:+ 1)
+;	(up-retask-gatherers 907 c: 1)
+;	(chat-local-to-self "Retasking forager to hunt."); retasking one forager to hunt
+;)
+;(defrule
+;	(current-age == dark-age)
+;	(unit-type-count villager >= 13)
+;(or	(dropsite-min-distance deer-hunting < 7)
+;	(and	(dropsite-min-distance boar-hunting < 7)
+;		(dropsite-min-distance live-boar >= 7)))
+;;	(dropsite-min-distance live-boar > 34)
+;	(unit-type-count villager-forager >= 7); 5
+;	(strategic-number sn-enable-boar-hunting == 1)
+;	(unit-type-count villager-hunter < 2)
+;	(strategic-number sn-minimum-number-hunters < 2)
+;=>
+;	(up-modify-sn sn-minimum-number-hunters c:+ 1)
+;	(up-retask-gatherers 907 c: 1)
+;	(chat-local-to-self "Retasking forager to hunt."); retasking one forager to hunt
+;)
+;(defrule
+;	(current-age == dark-age)
+;	(unit-type-count villager >= 13)
+;(or	(dropsite-min-distance deer-hunting < 7)
+;	(and	(dropsite-min-distance boar-hunting < 7)
+;		(dropsite-min-distance live-boar >= 7)))
+;;	(dropsite-min-distance live-boar > 34)
+;	(unit-type-count villager-farmer >= 1)
+;	(strategic-number sn-enable-boar-hunting == 1)
+;	(unit-type-count villager-hunter < 2)
+;	(strategic-number sn-minimum-number-hunters < 2)
+;=>
+;	(up-modify-sn sn-minimum-number-hunters c:+ 1)
+;	(up-retask-gatherers 50 c: 1)
+;	(chat-local-to-self "Retasking farmer to hunt.")); retasking one farmer to hunt
+;(defrule
+;	(current-age == dark-age)
+;	(unit-type-count villager >= 13)
+;	(dropsite-min-distance deer-hunting < 7)
+;;	(dropsite-min-distance live-boar > 34)
+;	(unit-type-count villager-shepherd >= 4)
+;	(strategic-number sn-enable-boar-hunting == 1)
+;	(unit-type-count villager-hunter < 2)
+;	(strategic-number sn-minimum-number-hunters < 2)
+;=>
+;	(up-retask-gatherers 958 c: 1)
+;	(up-modify-sn sn-minimum-number-hunters c:+ 1)
+;	(chat-local-to-self "Retasking shepherd to hunt.")); retasking one shepherd to hunt
+
+
+(defrule
+(or	(unit-type-count villager >= 45)
+(or	(and	(unit-type-count villager-forager <= 4)
+		(unit-type-count villager-shepherd <= 6)); 7
+(or	(building-type-count town-center != 1)
+	(game-time >= 1500))))
+=>
+	(up-jump-rule 16))
+(defrule
+	(true)
+=>
+	(set-goal point-x -1)
+	(set-goal temporary-goal 1)
+	(set-goal temporary-goal2 0)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 -1)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal6 0)
+	(set-goal temporary-goal7 0)
+	(set-goal temporary-goal8 0)
+	(up-full-reset-search))
+(defrule
+	(up-gaia-type-count c: forage-bush >= 2)
+	(unit-type-count villager-forager < 4)
+	(unit-type-count villager-shepherd >= 7); 8
+	(idle-farm-count <= 0)
+	(building-type-count mill >= 1)
+=>
+	(up-full-reset-search)
+	(up-find-local c: mill c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-set-target-point temporary-point-x)
+	(up-get-point-distance temporary-point-x position-self-x temporary-goal)
+	(up-filter-distance c: -1 c: 4)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: forage-bush c: 8)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal remote-total >= 1)
+	(up-gaia-type-count c: forage-bush >= 2)
+	(unit-type-count villager-forager < 4)
+	(unit-type-count villager-shepherd >= 7); 8
+	(idle-farm-count <= 0)
+	(building-type-count mill >= 1)
+	(up-compare-goal temporary-goal <= 20)
+=>
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(up-remove-objects search-remote object-data-index >= 1)
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-id temporary-goal4)
+	(up-get-point position-object point-x)
+	(set-goal temporary-goal8 1)
+	(up-jump-rule 8))
+(defrule
+(or	(idle-farm-count <= 0)
+(or	(up-pending-objects c: barracks >= 1); test
+(or	(up-pending-objects c: house >= 1); test
+	(building-type-count farm >= 15)))); 13 ; check below
+=>
+	(up-jump-rule 12))
+(defrule
+	(true)
+=>
+	(up-copy-point point-x position-self-x)
+	(up-get-fact building-type-count farm temporary-goal)
+	(up-get-fact idle-farm-count 0 temporary-goal2)
+	(up-modify-goal temporary-goal g:- temporary-goal2)
+	(set-goal temporary-goal2 0)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 -1)
+	(up-get-fact unit-type-count villager-farmer temporary-goal6)
+	(set-goal temporary-goal7 0)
+	(set-goal temporary-goal8 0)
+	(up-full-reset-search)
+	(up-find-local c: farm c: 1))
+
+(defrule; end neg jump
+	(up-set-target-object search-local g: temporary-goal2)
+=>
+	(up-get-point position-object temporary-point-x)
+	(up-reset-search 1 1 1 1)
+	(up-set-target-point temporary-point-x)
+	(up-filter-distance c: -1 c: 1); 5/9
+	(up-find-local c: 259 c: 1); male farmer
+	(up-find-local c: 214 c: 1); female farmer
+	(up-modify-goal temporary-point-x c:+ 1)
+	(up-modify-goal temporary-point-y c:+ 1); ec
+	(up-filter-distance c: -1 c: 0)
+	(up-set-target-point temporary-point-x)
+	(up-find-local c: 259 c: 1)
+	(up-find-local c: 214 c: 1))
+(defrule
+	(building-type-count farm g:> temporary-goal2)
+=>
+	(up-modify-goal temporary-point-y c:- 2); nc
+	(up-set-target-point temporary-point-x)
+	(up-find-local c: 259 c: 1)
+	(up-find-local c: 214 c: 1)
+	(up-modify-goal temporary-point-x c:- 2); wc
+	(up-set-target-point temporary-point-x)
+	(up-find-local c: 259 c: 1)
+	(up-find-local c: 214 c: 1)
+	(up-modify-goal temporary-point-y c:+ 2); sc
+	(up-set-target-point temporary-point-x)
+	(up-find-local c: 259 c: 1)
+	(up-find-local c: 214 c: 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(building-type-count farm g:> temporary-goal2)
+=>
+	(up-modify-goal temporary-goal3 c:+ 1))
+(defrule
+	(goal local-total 0)
+	(goal temporary-goal4 -1)
+	(building-type-count farm g:> temporary-goal2)
+=>
+	(up-get-object-data object-data-id temporary-goal4)
+	(up-get-point position-object point-x))
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal2 c:+ 1)
+	(up-full-reset-search)
+	(up-find-local c: farm c: 16)); check jump above
+(defrule
+(or	(up-compare-goal temporary-goal3 g:< temporary-goal)
+	(goal temporary-goal4 -1))
+	(up-set-target-object search-local g: temporary-goal2)
+	(up-compare-goal temporary-goal2 < 240); just to be sure
+=>
+	(up-jump-rule -6)); end opt jump
+
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-set-target-point point-x)
+	(set-goal temporary-goal5 4)
+	(up-filter-distance c: -1 g: temporary-goal5))
+
+(defrule
+	(up-compare-goal temporary-goal8 <= 0)
+	(up-find-local c: villager-class c: 1)
+	(up-set-target-object search-local c: 0)
+(or	(and	(up-object-data object-data-target == forage-food)
+		(unit-type-count villager-forager >= 5))
+	(and	(up-object-data object-data-target == sheep-food)
+		(unit-type-count villager-shepherd >= 7))); 8
+	(up-compare-goal temporary-goal3 g:== temporary-goal); didn't miss
+	(up-compare-goal temporary-goal g:== temporary-goal6); any farmers
+	(up-set-target-by-id g: temporary-goal4)
+=>
+;	(chat-local-to-self "Sending forager/shepherd to farm.")
+	(up-target-objects 1 action-default -1 -1)
+	(up-jump-rule 3))
+(defrule
+	(up-compare-goal temporary-goal8 >= 1)
+	(up-find-local c: villager-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-target == sheep-food)
+	(unit-type-count villager-shepherd >= 7); 8
+	(unit-type-count villager-forager < 5)
+	(up-set-target-by-id g: temporary-goal4)
+=>
+;	(chat-local-to-self "Sending shepherd to forage.")
+	(up-target-objects 1 action-default -1 -1)
+	(up-jump-rule 2))
+(defrule
+(or	(unit-type-count villager-forager >= 5)
+	(unit-type-count villager-shepherd >= 7)); 8
+	(up-set-target-object search-local c: 0)
+(or	(and	(up-compare-goal temporary-goal3 g:== temporary-goal); didn't miss
+		(up-compare-goal temporary-goal g:== temporary-goal6)); any farmers
+	(up-compare-goal temporary-goal8 >= 1))
+	(up-compare-goal temporary-goal7 g:< villagercount)
+=>
+	(up-modify-goal temporary-goal7 c:+ 1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -3))
+(defrule
+(or	(unit-type-count villager-forager >= 5)
+	(unit-type-count villager-shepherd >= 7)); 8
+(or	(and	(up-compare-goal temporary-goal3 g:== temporary-goal); didn't miss
+		(up-compare-goal temporary-goal g:== temporary-goal6)); any farmers
+	(up-compare-goal temporary-goal8 >= 1))
+	(up-compare-goal temporary-goal5 < 24)
+=>
+	(up-reset-search 1 1 1 1)
+	(set-goal temporary-goal7 0)
+	(up-modify-goal temporary-goal5 c:+ 2); 1
+	(up-filter-distance c: -1 g: temporary-goal5)
+	(up-jump-rule -4)); end jump
+
+(defrule
+(or	(up-compare-goal livestock-place >= 64)
+(or	(unit-type-count villager >= 45)
+(or	(unit-type-count villager-shepherd >= 15)
+(or	(building-type-count town-center != 1)
+(or	(game-time >= 1500)
+	(up-compare-goal mysheep >= 11))))))
+=>
+	(up-modify-goal livestock-place c:max 64)
+	(up-jump-rule 17))
+(defrule
+	(up-set-target-by-id g: current-livestock)
+(nor	(up-object-data object-data-player == 0)
+	(up-object-data object-data-player == my-player-number))
+=>
+;	(chat-local-to-self "Livestock was stolen.")
+	(up-full-reset-search)
+	(up-find-local c: 590 g: villagercount)
+	(up-find-local c: 592 g: villagercount)
+	(up-remove-objects search-local object-data-target-id g:!= current-livestock)
+	(set-goal current-livestock -1)
+	(up-target-point 0 action-stop -1 -1))
+(defrule
+	(up-set-target-by-id g: next-livestock)
+(nor	(up-object-data object-data-player == 0)
+	(up-object-data object-data-player == my-player-number))
+=>
+;	(chat-local-to-self "Livestock was stolen.2")
+	(up-full-reset-search)
+	(up-find-local c: 590 g: villagercount)
+	(up-find-local c: 592 g: villagercount)
+	(up-remove-objects search-local object-data-target-id g:!= next-livestock)
+	(set-goal next-livestock -1)
+	(up-target-point 0 action-stop -1 -1))
+(defrule
+(or	(not	(up-set-target-by-id g: next-livestock))
+	(up-compare-goal current-livestock g:== next-livestock))
+=>
+	(set-goal next-livestock -1))
+(defrule
+(or	(goal current-livestock -1)
+(not	(up-set-target-by-id g: current-livestock)))
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-full-reset-search)
+	(up-set-target-point position-self-x)
+	(up-filter-distance c: -1 c: 8)
+	(up-filter-status c: status-gather c: list-inactive)
+	(up-find-status-remote c: livestock-class c: 1)
+	(up-get-search-state local-total)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal))
+(defrule
+	(up-compare-goal remote-total >= 1)
+(or	(goal current-livestock -1)
+(not	(up-set-target-by-id g: current-livestock)))
+=>
+	(up-set-target-object search-remote c: 0)
+	(up-get-object-data object-data-id current-livestock)
+;	(up-chat-data-to-player my-player-number "DL: %d." g: current-livestock)
+)
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal 900)
+	(set-goal temporary-goal4 0)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal6 -1)
+	(up-copy-point point-x position-self-x)
+	(up-modify-goal point-x c:- 2)
+	(up-modify-goal point-y c:- 2)
+	(up-copy-point saved-point-x position-self-x)
+	(up-modify-goal saved-point-x g:+ livestock-place)
+	(up-modify-goal saved-point-y c:+ 1)
+	(up-full-reset-search)
+	(up-jump-rule 5))
+
+(defrule; end neg jump
+(not	(up-set-target-object search-local c: 0))
+=>
+	(up-jump-rule 5))
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(up-get-point position-object object-point-x)
+	(up-get-point-distance object-point-x point-x temporary-goal2)
+	(up-get-point-distance object-point-x saved-point-x temporary-goal3)
+	(up-get-object-data object-data-precise-distance temporary-goal5))
+(defrule
+	(goal next-livestock -1)
+	(up-object-data object-data-id g:!= current-livestock)
+	(up-compare-goal temporary-goal5 < 600); 1200; 800
+	(up-compare-goal temporary-goal5 g:< temporary-goal)
+=>
+	(up-modify-goal temporary-goal g:= temporary-goal5)
+	(up-get-object-data object-data-id temporary-goal6))
+(defrule
+	(up-timer-status fivesec != timer-running)
+	(up-object-data object-data-id g:!= current-livestock)
+	(up-object-data object-data-id g:!= next-livestock)
+	(up-compare-goal temporary-goal2 >= 2)
+=>
+	(up-set-target-point point-x)
+	(up-target-point 0 action-move -1 -1)
+	(up-jump-rule 1))
+(defrule
+	(up-timer-status threesec != timer-running)
+(or	(up-object-data object-data-id g:== current-livestock)
+	(up-object-data object-data-id g:== next-livestock))
+	(up-compare-goal temporary-goal3 >= 1)
+=>
+	(up-set-target-point saved-point-x)
+	(up-target-point 0 action-move -1 -1))
+(defrule
+	(true)
+=>
+	(up-set-target-point saved-point-x)
+	(up-reset-search 0 1 0 0)
+	(up-find-local c: livestock-class c: 1)
+	(up-jump-rule -6))
+
+(defrule
+	(goal next-livestock -1)
+	(up-compare-goal temporary-goal6 != -1)
+=>
+	(up-modify-goal next-livestock g:= temporary-goal6)
+;	(up-chat-data-to-player my-player-number "NL: %d." g: next-livestock)
+;	(up-modify-goal livestock-place c:- 1)
+)
+
+(defrule
+	(goal livestock-switch 1)
+(or	(not	(up-set-target-by-id g: current-livestock))
+	(up-object-data object-data-status != 2))
+=>
+;	(chat-to-player my-player-number "Switch livestock place.")
+	(up-modify-goal livestock-place g:neg livestock-place)
+	(set-goal livestock-switch -1))
+(defrule
+	(up-compare-goal next-livestock != -1)
+(or	(goal current-livestock -1)
+(not	(up-set-target-by-id g: current-livestock)))
+=>
+	(up-modify-goal current-livestock g:= next-livestock)
+;	(up-chat-data-to-player my-player-number "CL: %d." g: current-livestock)
+	(set-goal livestock-switch 1))
+
+(defrule
+	(unit-type-count villager-shepherd >= 1)
+	(unit-type-count villager-shepherd <= 7)
+	(up-compare-goal current-livestock != -1)
+	(up-set-target-by-id g: current-livestock)
+=>
+;	(up-chat-data-to-player my-player-number "Target %d." g: current-livestock)
+	(up-full-reset-search)
+;	(up-filter-exclude -1 actionid-hunt -1 -1)
+	(set-goal temporary-goal4 7)
+	(up-find-local c: 590 g: temporary-goal4)
+	(up-get-search-state local-total)
+	(up-modify-goal temporary-goal4 g:- local-last)
+	(up-find-local c: 592 g: temporary-goal4)
+	(up-remove-objects search-local object-data-target-id g:== current-livestock);	(up-remove-objects search-local object-data-carry >= 1)
+;	(up-remove-objects search-local object-data-target-id g:== next-livestock)
+	(up-set-target-by-id g: current-livestock)
+	(up-target-objects 1 action-default -1 -1))
+(defrule
+	(unit-type-count villager-shepherd >= 8)
+	(up-compare-goal next-livestock != -1);	(up-compare-goal current-livestock != -1)
+	(up-set-target-by-id g: next-livestock)
+=>
+;	(up-chat-data-to-player my-player-number "Target2 %d." g: next-livestock)
+	(up-full-reset-search)
+;	(up-filter-exclude -1 actionid-hunt -1 -1)
+;	(up-get-fact unit-type-count villager-shepherd temporary-goal4)
+;	(up-modify-goal temporary-goal4 c:- 7)
+	(set-goal temporary-goal4 14)
+	(up-find-local c: 590 g: temporary-goal4)
+	(up-get-search-state local-total)
+	(up-modify-goal temporary-goal4 g:- local-last)
+	(up-find-local c: 592 g: temporary-goal4)
+	(up-remove-objects search-local object-data-target-id g:== current-livestock);	(up-remove-objects search-local object-data-carry >= 1)
+	(up-remove-objects search-local object-data-target-id g:== next-livestock)
+	(up-set-target-by-id g: next-livestock)
+	(up-target-objects 1 action-default -1 -1)); end jump
+
+(defrule
+	(up-compare-goal livestock-place != 64)
+=>
+	(up-jump-rule 7))
+(defrule; idea for compact setup of this by II2N
+	(building-type-count town-center >= 1)
+=>
+	(set-goal temporary-goal 0)
+	(set-goal temporary-goal2 0)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 4)
+	(set-goal temporary-goal5 0)
+	(up-full-reset-search)
+	(up-copy-point point-x position-self-x)
+	(up-modify-goal point-x c:- 2)
+	(up-modify-goal point-y c:- 2)
+	(up-copy-point saved-point-x position-self-x)
+	(up-modify-goal saved-point-x c:- 1)
+;	(up-modify-goal saved-point-y c:+ 1)
+	(up-find-local c: livestock-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x))
+(defrule
+	(building-type-count town-center >= 1)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance temporary-point-x point-x > 0)
+=>
+	(up-target-point point-x action-move -1 -1))
+(defrule
+	(building-type-count town-center >= 1)
+	(up-set-target-object search-local c: 0)
+	(up-compare-goal temporary-goal < 4)
+=>
+	(up-reset-search 0 1 0 0)
+	(up-modify-goal temporary-goal c:+ 2)
+	(up-find-local c: livestock-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-modify-goal point-y c:+ 2)
+	(up-get-point position-object temporary-point-x)
+	(up-jump-rule -2))
+(defrule
+	(building-type-count town-center >= 1)
+	(up-set-target-object search-local c: 0)
+	(goal temporary-goal2 0)
+=>
+	(up-reset-search 0 1 0 0)
+	(up-modify-goal temporary-goal g:= temporary-goal5)
+	(set-goal temporary-goal2 1)
+	(up-modify-goal point-y g:- temporary-goal4)
+	(up-find-local c: livestock-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-modify-goal point-x c:+ 1)
+	(up-get-point position-object temporary-point-x)
+	(up-jump-rule -3))
+(defrule
+	(building-type-count town-center >= 1)
+	(up-set-target-object search-local c: 0)
+	(up-compare-goal temporary-goal3 < 2)
+=>
+	(up-reset-search 0 1 0 0)
+	(set-goal temporary-goal 2)
+	(set-goal temporary-goal2 0)
+	(up-modify-goal temporary-goal3 c:+ 1)
+	(set-goal temporary-goal4 2)
+	(set-goal temporary-goal5 2)
+	(up-modify-goal point-y c:- 2)
+	(up-find-local c: livestock-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-modify-goal point-x c:+ 1)
+	(up-get-point position-object temporary-point-x)
+	(up-jump-rule -4))
+(defrule
+	(building-type-count town-center >= 1)
+	(up-set-target-object search-local c: 0)
+	(up-point-distance temporary-point-x saved-point-x > 0)
+=>
+	(up-target-point saved-point-x action-move -1 -1)
+	(up-reset-search 0 1 0 0)
+	(up-find-local c: livestock-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object temporary-point-x)
+	(up-jump-rule -1))
+(defrule
+	(true);	(building-type-count town-center >= 1)
+=>
+;	(chat-to-to-player my-player-number "End sheep micro.")
+	(set-goal current-livestock -1)
+	(set-goal next-livestock -1)
+	(set-goal livestock-place 128)); end jump
+
+(defrule
+	(unit-type-count villager-hunter >= 3); 2
+	(up-compare-goal last-boar != -1)
+	(dropsite-min-distance live-boar >= 8);
+	(up-set-target-by-id g: last-boar)
+=>
+	(up-full-reset-search)
+	(up-get-fact unit-type-count villager-hunter temporary-goal)
+	(up-modify-goal temporary-goal c:min 240)
+	(up-find-local c: 122 g: temporary-goal)
+	(up-find-local c: 216 g: temporary-goal)
+	(up-remove-objects search-local object-data-target-id g:!= last-boar)
+	(up-get-search-state local-total)
+;	(up-chat-data-to-player my-player-number "current-boar: %d." g: current-boar)
+;	(up-chat-data-to-player my-player-number "last-boar: %d." g: last-boar)
+;	(up-chat-data-to-player my-player-number "local-total: %d." g: local-total)
+)
+(defrule
+	(up-compare-goal local-total <= 0)
+	(unit-type-count villager-hunter >= 3); 2
+	(up-compare-goal last-boar != -1)
+	(dropsite-min-distance live-boar >= 8);
+	(up-set-target-by-id g: last-boar)
+=>
+;	(up-chat-data-to-player my-player-number "Target last-boar: %d." g: last-boar)
+	(up-full-reset-search)
+	(up-set-target-by-id g: last-boar)
+	(up-get-point position-object temporary-point-x)
+	(up-set-target-point temporary-point-x)
+;	(up-get-fact unit-type-count villager-hunter temporary-goal)
+;	(up-modify-goal temporary-goal c:min 240)
+;	(up-find-local c: 122 g: temporary-goal)
+;	(up-find-local c: 216 g: temporary-goal)
+	(up-find-local c: villager-class g: villagercount);
+	(up-remove-objects search-local object-data-gather-type != food);
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index >= 1)
+	(up-target-objects 1 action-default -1 -1))
+
+(defrule
+(or	(game-time >= 1200)
+(or	(dropsite-min-distance food >= 5)
+(or	(not	(up-set-target-by-id g: current-livestock))
+(or	(up-compare-goal current-livestock == -1)
+(or	(up-compare-goal mysheep <= 0)
+(or	(building-type-count-total town-center >= 2)
+	(unit-type-count villager-shepherd >= 7)))))))
+=>
+	(up-jump-rule 4))
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal 7)
+	(up-find-local c: 590 c: 7)
+	(up-find-local c: 592 c: 7)
+	(up-get-search-state local-total)
+	(up-modify-goal temporary-goal g:- local-total)
+	(up-full-reset-search)
+	(up-set-target-by-id g: current-livestock)
+	(up-get-point position-object object-point-x)
+	(up-set-target-point object-point-x)
+	(up-filter-distance c: -1 c: 20)
+	(up-find-local c: 120 c: 7)
+	(up-find-local c: 354 c: 7)
+	(up-remove-objects search-local object-data-carry >= 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(game-time < 120)
+	(up-compare-goal mysheep >= 2); 1
+	(unit-type-count villager-forager >= 1)
+	(unit-type-count villager <= 9)
+	(up-set-target-by-id g: current-livestock)
+=>
+;	(chat-local-to-self "Retasking forager to sheep.2")
+	(up-remove-objects search-local object-data-distance >= 8)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index g:>= temporary-goal)
+	(up-target-objects 1 action-default -1 -1)
+	(up-jump-rule 2))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(game-time < 120)
+	(up-compare-goal mysheep >= 2); 1
+	(unit-type-count villager-forager >= 1)
+	(unit-type-count villager <= 9)
+	(building-type-count-total mill <= 0);
+	(up-set-target-by-id g: current-livestock)
+=>
+;	(chat-local-to-self "Retasking forager to sheep.3")
+	(up-remove-objects search-local object-data-distance >= 16)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index g:>= temporary-goal)
+	(up-target-objects 1 action-default -1 -1)
+	(up-jump-rule 1))
+(defrule
+	(up-compare-goal local-total >= 1)
+	(up-compare-goal mysheep >= 3); 2
+	(unit-type-count villager-forager >= 5)
+	(up-set-target-by-id g: current-livestock)
+=>
+;	(chat-local-to-self "Retasking forager to sheep.")
+	(up-remove-objects search-local object-data-distance >= 16)
+	(up-clean-search search-local object-data-precise-distance search-order-asc)
+	(up-remove-objects search-local object-data-index g:>= temporary-goal)
+	(up-target-objects 1 action-default -1 -1)); end jump
+
+;(defrule
+;	(unit-type-count villager-shepherd <= 0)
+;	(up-set-target-by-id g: current-livestock)
+;	(up-object-data object-data-carry > 10)
+;	(unit-type-count villager-hunter >= 2)
+;=>
+;	(up-chat-data-to-player my-player-number "Retasking hunter to sheep: %d." g: current-livestock)
+;	(up-full-reset-search)
+;	(set-goal temporary-goal4 1)
+;	(up-find-local c: 122 g: temporary-goal4)
+;	(up-get-search-state local-total)
+;	(up-modify-goal temporary-goal4 g:- local-last)
+;	(up-find-local c: 216 g: temporary-goal4)
+;	(up-set-target-by-id g: current-livestock)
+;	(up-target-objects 1 action-default -1 -1))
+
+(defrule
+	(goal livestock-place 128)
+(or	(game-time > sheep-exploration-time)
+(or	(up-compare-goal mysheep <= 2)
+	(up-compare-goal targetdistance <= 44)))
+=>
+	(set-goal livestock-place 64)
+	(disable-self))
+(defrule
+(or	(game-time > sheep-exploration-time)
+(or	(game-time <= 0)
+(or	(up-compare-goal mysheep <= 2)
+(or	(up-compare-const grouped-and-allied >= 1)
+(or	(up-timer-status fivesec == timer-running)
+	(up-compare-goal targetdistance <= 44))))))
+=>
+	(up-jump-rule 9))
+(defrule
+	(true)
+=>
+	(up-copy-point point-x position-self-x)
+	(up-full-reset-search)
+	(set-goal temporary-goal 1); 5
+	(set-goal temporary-goal2 8)
+	(up-modify-goal temporary-goal3 g:= targetdistance)
+	(up-modify-goal temporary-goal3 c:/ 2)
+	(up-modify-goal temporary-goal3 c:- 2)
+	(up-modify-goal temporary-goal3 c:min 32)
+	(up-modify-goal temporary-goal4 g:= loom-dist)
+	(up-modify-goal temporary-goal4 c:min 20);; 18
+	(up-modify-goal temporary-goal4 g:min temporary-goal3)
+	(up-set-target-point position-self-x))
+(defrule
+	(up-find-local c: livestock-class c: 1)
+	(up-set-target-object search-local c: 0)
+(or	(up-object-data object-data-id g:== current-livestock)
+	(up-object-data object-data-id g:== next-livestock))
+=>
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -1))
+(defrule
+	(up-set-target-object search-local c: 0)
+=>
+	(up-copy-point point-x position-self-x)
+;	(up-get-search-state local-total)
+	(up-get-point position-object object-point-x)
+	(up-lerp-tiles point-x object-point-x g: temporary-goal4)
+	(up-cross-tiles point-x position-self-x g: temporary-goal2))
+(defrule
+	(up-set-target-object search-local c: 0)
+(or	(or	(up-compare-goal point-x g:>= map-size)
+		(up-compare-goal point-y g:>= map-size))
+	(or	(up-compare-goal point-x < 0)
+		(up-compare-goal point-y < 0)))
+	(up-point-distance position-self-x point-x >= 7)
+=>
+	(up-lerp-tiles point-x position-self-x c: 1)
+	(up-jump-rule -1))
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-point-explored point-x != explored-no)
+	(up-point-distance position-self-x point-x g:< temporary-goal3)
+	(up-point-distance position-self-x point-x g:< map-size)
+	(up-point-distance position-self-x point-x > 0)
+	(up-compare-goal point-x g:<= map-size)
+	(up-compare-goal point-y g:<= map-size)
+	(up-compare-goal point-x >= 0)
+	(up-compare-goal point-y >= 0)
+=>
+	(up-lerp-tiles point-x position-self-x c: -2); -1
+	(up-jump-rule -1))
+(defrule
+	(up-set-target-object search-local c: 0)
+(or	(up-point-contains point-x c: tree-class)
+(or	(up-point-contains point-x c: gold-mine-class)
+(or	(up-point-contains point-x c: stone-mine-class)
+(or	(up-point-contains point-x c: forage-bush)
+	(up-point-terrain point-x == terrain-water)))))
+	(up-point-distance position-self-x point-x >= 7)
+=>
+	(up-lerp-tiles point-x position-self-x c: 1)
+	(up-jump-rule -1))
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-by-id g: current-livestock)
+	(up-set-target-by-id g: next-livestock)
+	(game-time < sheep-exploration-time)
+	(up-point-distance position-self-x point-x >= 7)
+=>
+;	(chat-local-to-self "Hoarse.")
+	(up-set-target-point point-x)
+	(up-target-point 0 action-move -1 -1))
+(defrule
+	(up-set-target-object search-local c: 0)
+(nor	(up-set-target-by-id g: current-livestock)
+(or	(up-set-target-by-id g: next-livestock)
+(or	(game-time < sheep-exploration-time)
+	(up-point-distance position-self-x point-x >= 7))))
+=>
+	(up-full-reset-search)
+	(up-copy-point point-x position-self-x)
+	(up-modify-goal point-x c:- 2)
+	(up-modify-goal point-y c:- 2)
+	(up-set-target-point point-x)
+	(up-target-point 0 action-move -1 -1))
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-compare-goal mysheep >= 4)
+	(up-compare-goal temporary-goal >= 1)
+=>
+	(up-modify-goal temporary-goal c:- 1)
+	(up-modify-goal temporary-goal2 c:* -1)
+	(up-reset-search 0 1 0 0)
+	(up-jump-rule -8)); end jump
+
+(defrule
+(or	(up-compare-goal wood-villagers >= 6)
+(or	(unit-type-count villager-wood >= 6)
+(or	(unit-type-count villager-wood g:>= wood-villagers)
+(or	(unit-type-count villager >= 24)
+(or	(building-type-count-total lumber-camp >= 1)
+(or	(building-type-count town-center != 1)
+	(game-time >= 1500)))))))
+=>
+	(up-jump-rule 4))
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(set-goal temporary-goal -1)
+	(up-copy-point temporary-point-x position-self-x)
+	(up-modify-goal temporary-point-x c:- 2); 2
+	(up-modify-goal temporary-point-y c:+ 2); 2
+	(up-set-target-point temporary-point-x)
+	(up-filter-distance c: -1 c: 1)
+	(up-find-local c: villager-class c: 24)
+	(up-remove-objects search-local object-data-target == tree-class)
+	(up-remove-objects search-local object-data-carry >= 1)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal local-total >= 1)
+=>
+;	(chat-to-player my-player-number "Villager found, let's go?")
+	(up-copy-point point-x position-self-x)
+	(up-modify-goal point-x c:- 1); 2
+	(up-modify-goal point-y c:+ 1); 2
+	(up-set-target-point point-x)
+	(up-filter-distance c: -1 c: 8)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource c: wood c: 8)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal remote-total <= 0)
+	(up-compare-goal local-total >= 1)
+=>
+;	(chat-to-player my-player-number "Search.")
+	(up-reset-search 0 0 1 1)
+	(up-filter-status c: status-ready c: list-active)
+	(up-find-resource c: wood c: 8)
+	(up-get-search-state local-total))
+(defrule
+	(up-compare-goal remote-total >= 1)
+	(up-compare-goal local-total >= 1)
+=>
+;	(chat-to-player my-player-number "Tree found, let's go.")
+	(up-clean-search search-remote object-data-precise-distance search-order-asc)
+	(up-remove-objects search-remote object-data-index >= 1)
+	(up-target-objects 0 action-default -1 -1)); end jump
+
+
+;(defrule
+;	(unit-type-count villager-hunter >= 6)
+;	(dropsite-min-distance boar-hunting > 18); hopefully not just a failed lure
+;	(dropsite-min-distance deer-hunting > 18); else it should be alright
+;	(strategic-number sn-enable-boar-hunting <= 1); no pure boar hunting
+;(or	(dropsite-min-distance deer-hunting s:<= sn-maximum-hunt-drop-distance)
+;	(dropsite-min-distance deer-hunting <= 30))
+;=>
+;	(up-full-reset-search)
+;	(up-filter-exclude -1 609 -1 -1); even gathering hunters are 613 and not 609, need a workaround
+;	(up-find-local c: 122 c: 2)
+;	(up-find-local c: 216 c: 2)
+;	(up-target-point 0 action-stop -1 -1)
+;	(chat-local-to-self "Retasking buggy hunters. 1")
+;	(disable-self))
+(defrule
+	(unit-type-count villager-hunter >= 1)
+	(dropsite-min-distance boar-hunting s:> sn-maximum-hunt-drop-distance)
+	(dropsite-min-distance deer-hunting s:> sn-maximum-hunt-drop-distance)
+	(dropsite-min-distance boar-hunting >= 37); 33
+	(dropsite-min-distance deer-hunting >= 37); 33
+=>
+	(up-full-reset-search)
+	(up-filter-exclude -1 609 -1 -1); even gathering hunters are 613 and not 609, need a workaround
+	(up-find-local c: 122 g: villagercount)
+	(up-find-local c: 216 g: villagercount)
+	(up-remove-objects search-local object-data-carry >= d-carry2)
+	(up-target-point 0 action-stop -1 -1)
+;	(chat-local-to-self "Retasking buggy hunters. 2")
+	(disable-self))
+(defrule
+	(unit-type-count villager-forager >= 1)
+	(up-compare-goal forage-count <= 0)
+;(or	(up-compare-goal forage-count < 1)
+(or	(dropsite-min-distance food s:> sn-maximum-food-drop-distance)
+(or	(up-gaia-type-count c: forage-bush < 1); test
+	(cc-players-unit-type-count 0 forage-bush <= 0)));)
+	(up-gaia-type-count c: forage-bush < 1)
+=>
+	(up-full-reset-search)
+;	(up-filter-exclude -1 609 -1 -1)
+	(up-find-local c: 120 g: villagercount)
+	(up-find-local c: 354 g: villagercount)
+	(up-remove-objects search-local object-data-carry >= d-carry)
+	(up-target-point 0 action-stop -1 -1)
+;	(chat-local-to-self "Retasking buggy foragers.")
+	(disable-self))
+(defrule
+	(unit-type-count villager-fisherman >= 1)
+	(up-compare-goal shore-count <= 0)
+	(up-gaia-type-count c: shore-fish-class < 1)
+	(dropsite-min-distance shore-fish-class s:> sn-maximum-food-drop-distance)
+	(dropsite-min-distance shore-fish-class >= 17); 32
+=>
+	(up-full-reset-search)
+	(up-filter-exclude -1 609 -1 -1)
+	(up-find-local c: 56 g: villagercount)
+	(up-find-local c: 57 g: villagercount)
+	(up-remove-objects search-local object-data-carry >= d-carry)
+	(up-target-point 0 action-stop -1 -1)
+;	(chat-local-to-self "Retasking buggy fishers.")
+	(disable-self))
+(defrule
+(or	(game-time >= 1200)
+(or	(unit-type-count villager >= 80)
+	(strategic-number sn-current-age >= castlea)))
+=>
+	(up-jump-rule 3))
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal 0)
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-explore orderid-explore -1)
+	(up-find-local c: villager-class g: villagercount))
+(defrule
+	(up-set-target-object search-local g: temporary-goal)
+	(up-object-data object-data-target-id == -1)
+(or	(up-object-data object-data-order == orderid-attack)
+(or	(up-object-data object-data-order == orderid-gather);
+(or	(up-object-data object-data-order == orderid-hunt);
+(or	(up-object-data object-data-order == orderid-build)
+(or	(up-object-data object-data-order == orderid-repair)
+	(up-object-data object-data-order == orderid-enter))))));
+=>
+	(up-remove-objects search-local object-data-index g:!= temporary-goal)
+	(up-remove-objects search-local object-data-idling != 0);
+;	(chat-local-to-self "Retasking buggy villager.")
+	(up-target-point 0 action-stop -1 -1))
+(defrule
+	(up-compare-goal temporary-goal g:< villagercount)
+=>
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-jump-rule -2)); end jump
+
+
+(defrule
+	(strategic-number sn-current-age <= feudal)
+	(up-timer-status FDrop != timer-running)
+	(up-timer-status FDrop != timer-triggered)
+	(goal enablesmith yes)
+=>
+	(enable-timer FDrop 14)
+	(disable-self))
+(defrule
+	(goal FDTaunt yes)
+=>
+;	(disable-timer FDrop)
+;;	(enable-timer FDrop 2)
+;;	(chat-local-to-self "Denying forced drop.1")
+	(set-goal FDTaunt no))
+(defrule
+	(timer-triggered FDrop);(up-timer-status FDrop != timer-disabled)
+	(up-pending-objects c: villager >= 2)
+(or	(building-type-count town-center <= 1)
+	(up-pending-objects c: villager >= 4))
+(or	(building-type-count town-center <= 2)
+	(up-pending-objects c: villager >= 6))
+(or	(building-type-count town-center <= 3)
+	(up-pending-objects c: villager >= 8))
+(or	(building-type-count town-center <= 4)
+	(up-pending-objects c: villager >= 10))
+	(building-type-count town-center <= 5)
+=>
+;	(chat-local-to-self "Denying forced drop.2")
+	(disable-timer FDrop));	(enable-timer FDrop 25))
+
+(defrule
+(or	(up-compare-flag escrow-flag == 64)
+(or	(and	(up-research-status c: feudal-age <= research-unavailable)
+		(food-amount >= 50))
+	(up-pending-objects c: villager >= 2)))
+=>
+	(up-jump-rule 4))
+(defrule
+	(strategic-number sn-current-age != dark)
+(or	(civilian-population >= up-max-civ)
+(or	(population >= max-civ-pop)
+(or	(food-amount >= 50)
+	(unit-type-count villager-food >= 18)))); 12
+=>
+	(up-jump-rule 3))
+(defrule
+(or	(game-time >= 76)
+	(civ-selected chinese))
+	(up-pending-objects c: villager <= 1)
+	(timer-triggered FDrop)
+;	(unit-type-count-total villager >= 7);7
+	(up-research-status c: ri-loom != research-pending)
+	(up-research-status c: ri-wheel-barrow != research-pending)
+	(up-research-status c: ri-hand-cart != research-pending)
+	(up-research-status c: ri-town-watch != research-pending)
+	(up-research-status c: feudal-age != research-pending)
+	(up-research-status c: castle-age != research-pending)
+	(up-compare-flag escrow-flag != 64)
+	(food-amount < 50)
+	(up-compare-goal total-food-amount >= 50)
+	(housing-headroom > 0)
+=>
+	(set-goal FDTaunt yes))
+(defrule
+(or	(game-time >= 76)
+	(civ-selected chinese))
+	(up-pending-objects c: villager == 0)
+	(up-timer-status FDrop != timer-running)
+	(up-research-status c: ri-loom != research-pending)
+	(up-research-status c: ri-wheel-barrow != research-pending)
+	(up-research-status c: ri-hand-cart != research-pending)
+	(up-research-status c: ri-town-watch != research-pending)
+	(up-research-status c: feudal-age != research-pending)
+	(up-research-status c: castle-age != research-pending)
+	(up-compare-flag escrow-flag != 64)
+	(food-amount < 50)
+	(up-compare-goal total-food-amount >= 50)
+	(housing-headroom > 0)
+=>
+	(set-goal FDTaunt yes))
+(defrule
+	(goal trainvillager no)
+	(up-pending-objects c: villager <= 1)
+(or	(timer-triggered FDrop);
+	(and	(up-pending-objects c: villager <= 0)
+		(up-research-status c: ri-loom != research-pending)));
+	(research-available feudal-age)
+	(food-amount < 500)
+	(up-compare-goal total-food-amount >= 500)
+(or	(and	(up-compare-goal strategy-type == feudal-war)
+		(unit-type-count-total villager >= 20))
+	(unit-type-count-total villager >= 27))
+=>
+	(set-goal FDTaunt yes)) ; end jump
+
+
+(defrule
+	(up-pending-objects c: villager <= 1)
+(or	(timer-triggered FDrop);
+	(up-pending-objects c: villager <= 0));
+(or	(and	(up-compare-flag escrow-flag == 16)
+		(and	(food-amount < 175)
+			(up-compare-goal total-food-amount >= 175)))
+	(and	(up-compare-flag escrow-flag2 == 128)
+		(and	(food-amount < 100); 100
+			(up-compare-goal total-food-amount >= 150)))); 100
+=>
+	(set-goal FDTaunt yes))
+(defrule
+	(up-pending-objects c: villager <= 1)
+(or	(timer-triggered FDrop);
+	(and	(up-pending-objects c: villager <= 0)
+		(up-research-status c: ri-loom != research-pending)));
+	(current-age == feudal-age)
+(or	(building-type-count-total blacksmith >= 1)
+	(research-available castle-age))
+	(food-amount < 800)
+	(up-compare-goal total-food-amount >= 800)
+	(up-research-status c: ri-wheel-barrow != research-pending)
+	(gold-amount >= 165)
+=>
+	(set-goal FDTaunt yes))
+
+
+(defrule
+	(goal FDTaunt yes)
+	(up-pending-objects c: villager >= 2)
+(or	(building-type-count town-center <= 1)
+	(up-pending-objects c: villager >= 4))
+(or	(building-type-count town-center <= 2)
+	(up-pending-objects c: villager >= 6))
+(or	(building-type-count town-center <= 3)
+	(up-pending-objects c: villager >= 8))
+(or	(building-type-count town-center <= 4)
+	(up-pending-objects c: villager >= 10))
+	(building-type-count town-center <= 5)
+=>
+;	(chat-local-to-self "Denying forced drop.3")
+	(set-goal FDTaunt no))
+
+(defrule
+	(goal FDTaunt yes)
+(or	(research-available feudal-age)
+	(research-available castle-age))
+(or	(and	(food-amount < 800)
+		(up-compare-goal total-food-amount >= 800))
+	(and	(food-amount < 500)
+		(up-compare-goal total-food-amount >= 500)))
+=>
+	(set-goal FDTaunt no)
+	(disable-timer FDrop)
+;	(enable-timer FDrop 2)
+;	(chat-local-to-self "Forced drop.1")
+	(up-drop-resources food c: 1))
+(defrule
+	(goal FDTaunt yes)
+	(dropsite-min-distance deer-hunting <= 12); 11
+;	(food-amount < 50)
+;	(up-compare-goal total-food-amount >= 50)
+=>
+;	(set-goal FDTaunt no)
+;	(disable-timer FDrop)
+;	(enable-timer FDrop 2)
+;	(chat-local-to-self "Forced drop.2")
+	(up-drop-resources deer-food c: 1))
+(defrule
+	(goal FDTaunt yes)
+;	(food-amount < 50)
+;	(up-compare-goal total-food-amount >= 50)
+=>
+	(set-goal FDTaunt no)
+	(disable-timer FDrop)
+;	(enable-timer FDrop 2)
+;	(chat-local-to-self "Forced drop.3")
+	(up-drop-resources forage-food c: 1)
+	(up-drop-resources sheep-food c: 1)
+	(up-drop-resources boar-food c: 1)
+	(up-drop-resources farm-food c: 1)
+	(up-drop-resources shore-fish-class c: 1)
+	(up-drop-resources ocean-fish-class c: 1))
+
+
+(defrule
+(or	(up-research-status c: castle-age == research-available)
+	(timer-triggered FDrop))
+(or	(up-research-status c: castle-age == research-available)
+	(building-type-count-total blacksmith >= 1))
+	(up-research-status c: ri-wheel-barrow != research-pending)
+	(strategic-number sn-current-age == feudal)
+;(or	(food-amount >= 740)
+	(up-compare-goal total-food-amount >= 800);)
+	(gold-amount < castle-gold)
+	(gold-amount >= 165)
+=>
+;	(disable-timer FDrop)
+;	(enable-timer FDrop 2)
+;	(chat-local-to-self "Forced drop.")
+	(up-drop-resources gold c: 5))
+
+
+(defrule
+(or	(timer-triggered FDrop)
+	(goal FDTaunt yes))
+	(strategic-number sn-current-age > feudal)
+=>
+	(disable-timer FDrop)
+	(set-goal FDTaunt no)
+;	(disable-self)
+)
+
+
+(defrule
+(or	(building-type-count town-center >= 1)
+	(building-type-count mill >= 1))
+	(strategic-number sn-enable-boar-hunting >= 1)
+(or	(and	(game-time < 960)
+		(and	(dropsite-min-distance live-boar <= 34)
+			(strategic-number sn-maximum-hunt-drop-distance >= 11)))
+	(strategic-number sn-maximum-hunt-drop-distance < 12))
+=>
+;	(chat-local-to-self "sn-maximum-hunt-drop-distance: 12.")
+	(set-strategic-number sn-maximum-hunt-drop-distance 12))
+(defrule
+(or	(building-type-count town-center >= 1)
+	(building-type-count mill >= 1))
+	(strategic-number sn-enable-boar-hunting == 1)
+	(dropsite-min-distance live-boar >= 35)
+(or	(game-time > 420)
+(or	(unit-type-count-total villager >= 15)
+	(up-compare-goal mysheep <= 1)))
+	(strategic-number sn-enable-boar-hunting >= 1)
+	(strategic-number sn-maximum-hunt-drop-distance < 16)
+=>
+;	(chat-local-to-self "sn-maximum-hunt-drop-distance: 16.")
+	(set-strategic-number sn-maximum-hunt-drop-distance 16))
+(defrule
+	(current-age <= feudal-age)
+	(strategic-number sn-current-age <= fcastlea)
+	(population < max-civ-pop)
+	(strategic-number sn-military-superiority <= 1); 0
+(or	(goal defend yes)
+(or	(goal underattack yes)
+(or	(strategic-number sn-military-superiority <= -1); -2
+	(up-compare-goal enemy-goal != 0))))
+	(strategic-number sn-maximum-hunt-drop-distance > 12)
+=>
+;	(chat-local-to-self "sn-maximum-hunt-drop-distance: 12.")
+	(set-strategic-number sn-maximum-hunt-drop-distance 12)
+	(disable-self))
+(defrule
+	(unit-type-count-total villager < 7)
+	(game-time < 30)
+	(strategic-number sn-enable-boar-hunting <= 0)
+	(strategic-number sn-maximum-hunt-drop-distance > 6)
+=>
+;	(chat-local-to-self "sn-maximum-hunt-drop-distance: 6.")
+	(set-strategic-number sn-maximum-hunt-drop-distance 6))
+
+(defrule
+(or	(game-time >= 12000); 12600
+	(and	(game-time >= 11400); 12000
+		(strategic-number sn-military-superiority >= 1)))
+=>
+	(up-modify-sn sn-maximum-wood-drop-distance c:max  255)
+	(up-modify-sn sn-maximum-food-drop-distance c:max  50) ; 127 max !
+	(up-modify-sn sn-maximum-hunt-drop-distance c:max  50)
+	(up-modify-sn sn-maximum-gold-drop-distance c:max  255)
+	(up-modify-sn sn-maximum-stone-drop-distance c:max 255)
+	(up-jump-rule 6))
+(defrule
+(or	(game-time >= 9000); 9900
+	(and	(game-time >= 8400); 9300
+		(strategic-number sn-military-superiority >= 1)))
+=>
+	(up-modify-sn sn-maximum-wood-drop-distance c:max  60)
+	(up-modify-sn sn-maximum-food-drop-distance c:max  33)
+	(up-modify-sn sn-maximum-hunt-drop-distance c:max  33)
+	(up-modify-sn sn-maximum-gold-drop-distance c:max  25)
+	(up-modify-sn sn-maximum-stone-drop-distance c:max 25)
+	(up-jump-rule 5))
+(defrule
+(or	(game-time >= 6600); 7200
+	(and	(game-time >= 6000); 6600
+		(strategic-number sn-military-superiority >= 1)))
+=>
+	(up-modify-sn sn-maximum-wood-drop-distance c:max  45)
+	(up-modify-sn sn-maximum-food-drop-distance c:max  30)
+	(up-modify-sn sn-maximum-hunt-drop-distance c:max  30)
+	(up-modify-sn sn-maximum-gold-drop-distance c:max  16)
+	(up-modify-sn sn-maximum-stone-drop-distance c:max 18)
+	(up-jump-rule 4))
+(defrule
+(or	(game-time >= 4500); 4800
+	(and	(game-time >= 3900); 4200
+		(strategic-number sn-military-superiority >= 1)))
+=>
+	(up-modify-sn sn-maximum-wood-drop-distance c:max  30)
+	(up-modify-sn sn-maximum-food-drop-distance c:max  27)
+	(up-modify-sn sn-maximum-hunt-drop-distance c:max  27)
+	(up-modify-sn sn-maximum-gold-drop-distance c:max  13)
+	(up-modify-sn sn-maximum-stone-drop-distance c:max 15)
+	(up-jump-rule 3))
+(defrule
+(or	(game-time >= 3300); 3600
+	(and	(game-time >= 3000)
+		(strategic-number sn-military-superiority >= 1)))
+=>
+	(up-modify-sn sn-maximum-wood-drop-distance c:max 26)
+	(up-modify-sn sn-maximum-food-drop-distance c:max 24)
+	(up-modify-sn sn-maximum-hunt-drop-distance c:max 24)
+	(up-modify-sn sn-maximum-gold-drop-distance c:max 12)
+	(up-modify-sn sn-maximum-stone-drop-distance c:max 14)
+	(up-jump-rule 2))
+(defrule
+(or	(game-time >= 2400); 2700
+	(and	(game-time >= 2100)
+		(strategic-number sn-military-superiority >= 1)))
+=>
+	(up-modify-sn sn-maximum-wood-drop-distance c:max 23)
+	(up-modify-sn sn-maximum-food-drop-distance c:max 21)
+	(up-modify-sn sn-maximum-hunt-drop-distance c:max 21)
+	(up-modify-sn sn-maximum-gold-drop-distance c:max 11)
+	(up-modify-sn sn-maximum-stone-drop-distance c:max 13)
+	(up-jump-rule 1))
+(defrule
+(or	(game-time >= 1320)
+	(and	(game-time >= 1050)
+		(or	(strategic-number sn-military-superiority >= 1)
+			(or	(up-compare-const grouped-and-allied == 1)
+				(death-match-game)))))
+=>
+	(up-modify-sn sn-maximum-wood-drop-distance c:max 20)
+	(up-modify-sn sn-maximum-food-drop-distance c:max 18)
+	(up-modify-sn sn-maximum-hunt-drop-distance c:max 18)
+	(up-modify-sn sn-maximum-gold-drop-distance c:max 10)
+	(up-modify-sn sn-maximum-stone-drop-distance c:max 12))
+
+(defrule
+(or	(strategic-number sn-current-age == dfeudal)
+	(current-age == feudal-age))
+	(unit-type-count-total 579 < 1) ;Male gold miner
+	(unit-type-count-total 581 < 1) ;female gold miner
+;	(building-type-count-total mining-camp < 1)   
+	(strategic-number sn-gold-gatherer-percentage >= 1);
+	(strategic-number sn-maximum-gold-drop-distance < 20)   
+=>
+	(set-strategic-number sn-maximum-gold-drop-distance 20)
+	(disable-self))
+(defrule
+	(game-time < 3300)
+	(strategic-number sn-maximum-gold-drop-distance >= 20)
+	(dropsite-min-distance gold < 10)
+=>
+	(set-strategic-number sn-maximum-gold-drop-distance 12)
+;	(disable-self)
+)
+
+(defrule
+	(current-age <= feudal-age)
+	(unit-type-count-total villager >= 10)
+	(unit-type-count-total 123 < 1) ;Male lumberjack
+	(unit-type-count-total 218 < 1) ;female lumberjack
+;	(building-type-count-total lumber-camp < 1)
+	(strategic-number sn-wood-gatherer-percentage >= 1);
+	(strategic-number sn-maximum-wood-drop-distance < 30)   
+=>
+	(set-strategic-number sn-maximum-wood-drop-distance 30)
+	(disable-self))
+(defrule
+	(game-time < 4200)
+	(current-age <= feudal-age)
+	(strategic-number sn-maximum-wood-drop-distance >= 30)
+	(dropsite-min-distance wood < 20)
+=>
+	(set-strategic-number sn-maximum-wood-drop-distance 20)
+	(disable-self))
+
+
+(defrule
+	(game-time >= 3600)
+(or	(game-time >= 8400); 12000
+(or	(strategic-number sn-military-superiority >= 3)
+	(goal attacking yes)))
+(or	(population >= del-civ-pop)
+	(strategic-number sn-current-age >= imperial))
+=>
+	(up-modify-sn sn-camp-max-distance c:max 255)
+	(up-jump-rule 4))
+(defrule
+	(game-time >= 3000); 3000
+(or	(goal relocating yes); test
+(or	(game-time >= 4200); 6000
+(or	(strategic-number sn-military-superiority >= 2)
+	(goal attacking yes))))
+(or	(goal relocating yes); test
+(or	(population >= del-civ-pop)
+	(strategic-number sn-current-age >= imperial)))
+=>
+	(up-modify-sn sn-camp-max-distance c:max 100)
+	(up-jump-rule 3))
+(defrule
+	(game-time >= 1800); 1800
+(or	(strategic-number sn-current-age >= imperial)
+(or	(game-time >= 2100); 2700
+	(strategic-number sn-military-superiority >= 2)))
+(or	(goal strategy stonewall)
+(or	(strategic-number sn-military-superiority >= 0)
+(or	(game-time >= 2700); 3000
+	(population >= up-max-civ))))
+=>
+	(up-modify-sn sn-camp-max-distance c:max 70)
+	(up-jump-rule 2))
+(defrule
+	(game-time >= 600); 600
+(or	(strategic-number sn-current-age >= imperial)
+(or	(game-time >= 1440); 1500
+	(goal dreitc yes)))
+(or	(game-time >= 1200)
+	(and	(goal underattack no)
+		(strategic-number sn-military-superiority >= 1)))
+=>
+	(up-modify-sn sn-camp-max-distance c:max 40)
+	(up-jump-rule 1))
+(defrule
+(or	(game-time >= 300); 300
+(or	(unit-type-count-total villager >= min-number-vills)
+(or	(building-type-count-total town-center >= 2)
+(or	(building-type-count-total lumber-camp >= 2)
+	(building-type-count-total mining-camp >= 2)))))
+(or	(game-time >= 900); 300
+	(strategic-number sn-current-age >= feudal)); (current-age >= feudal-age); test
+=>
+	(up-modify-sn sn-camp-max-distance c:max 28)); 30
+
+(defrule
+	(building-type-count-total town-center >= 1)
+	(game-time > 13)
+	(strategic-number sn-camp-max-distance <= 17)
+(not	(resource-found wood))
+	(cc-players-unit-type-count gaia shore-fish-class > 0)
+	(map-type arabia)
+=>
+	(set-strategic-number sn-camp-max-distance 17)
+	(disable-self))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(game-time > 13)
+	(strategic-number sn-camp-max-distance <= 17)
+(not	(resource-found wood))
+	(cc-players-unit-type-count gaia shore-fish-class < 1)
+	(map-type arabia)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 17)
+	(disable-self))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(game-time > 13)
+	(strategic-number sn-camp-max-distance <= 18)
+(not	(resource-found wood))
+(not	(map-type arabia))
+=>
+	(up-modify-sn sn-camp-max-distance c:max 18)
+	(disable-self))
+(defrule
+	(building-type-count-total town-center >= 1)
+(nor	(map-type arena)
+	(map-type fortress))
+	(game-time < 3)
+	(strategic-number sn-camp-max-distance <= 12)
+	(resource-found wood)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 12); 11
+	(disable-self))
+(defrule
+	(building-type-count-total town-center >= 1)
+(nor	(map-type arena)
+	(map-type fortress))
+	(game-time >= 3)
+	(game-time < 5)
+	(strategic-number sn-camp-max-distance <= 13); 12
+	(resource-found wood)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 13); 12
+	(disable-self))
+(defrule
+	(building-type-count-total town-center >= 1)
+(nor	(map-type arena)
+	(map-type fortress))
+	(game-time >= 5)
+	(game-time < 10)
+	(strategic-number sn-camp-max-distance <= 14)
+	(resource-found wood)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 14)
+	(disable-self))
+(defrule
+	(building-type-count-total town-center >= 1)
+	(game-time >= 10)
+	(game-time < 14)
+	(strategic-number sn-camp-max-distance <= 16)
+	(resource-found wood)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 16)
+	(disable-self))
+(defrule
+	(building-type-count-total lumber-camp >= 1)
+	(cc-players-unit-type-count gaia shore-fish-class > 0); desert
+	(strategic-number sn-camp-max-distance <= 19); 18
+	(map-type arabia)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 19); 18
+	(disable-self))
+(defrule
+	(building-type-count-total lumber-camp >= 1)
+	(cc-players-unit-type-count gaia shore-fish-class < 1); green
+	(strategic-number sn-camp-max-distance <= 19); 18
+	(map-type arabia)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 19); 18
+	(disable-self))
+#load-if-not-defined GOLD-RUSH-MAP
+(defrule
+	(building-type-count-total lumber-camp >= 1)
+	(strategic-number sn-camp-max-distance <= 20)
+(not	(map-type arabia))
+=>
+	(up-modify-sn sn-camp-max-distance c:max 20)
+	(disable-self))
+
+#else
+(defrule
+	(building-type-count-total lumber-camp >= 1)
+	(map-type gold-rush)
+=>
+	(up-modify-sn sn-camp-max-distance c:max 14)
+	(disable-self))
+(defrule
+	(dropsite-min-distance live-boar > 35)
+	(strategic-number sn-current-age <= fcastlea)
+	(strategic-number sn-maximum-hunt-drop-distance > 15)
+=>
+	(set-strategic-number sn-maximum-hunt-drop-distance 15); 24
+	(disable-self))
+#end-if

@@ -1,0 +1,58 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy regicide-strategy)
+	(disable-self)
+)
+
+(defrule
+	(or	(game-time >= 50)
+		(or	(goal gl-nothing-style-map YES)
+			(or	(up-compare-const gv-michi-style == 1)
+				(or	(and	(game-time > 20)
+					(up-compare-goal POSITION != POCKET))
+					(or	(up-compare-const gv-yucatan == 1)
+						(goal gl-rush-suitability-on-map GOOD))))))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(current-age == dark-age)
+	(game-time > 40)
+	(goal SLING 0)
+	(up-allied-goal every-ally gl-identity == Barbarian)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+;	(goal POSITION POCKET)
+	(up-allied-goal every-ally SLING == 0)
+	(nor	(taunt-detected any-ally 103)
+		(taunt-detected any-ally 104))
+	(nor	(taunt-detected my-player-number 103)
+		(taunt-detected my-player-number 104))
+=>
+	(acknowledge-taunt every-ally 1)
+	(chat-to-allies "176Does anyone want a castle age sling?")
+	(disable-self)
+)
+
+(defrule
+	(goal gl-current-age gv-dark)
+	(game-time > 20)
+	(goal SLING 0)
+	(up-allied-goal every-ally gl-identity == 4651)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal POSITION POCKET)
+	(taunt-detected my-player-number 176)
+	(taunt-detected any-ally 1)
+=>
+	(acknowledge-taunt every-ally 1)
+	(up-get-player-fact this-any-ally player-number 0 temporary-goal)
+	(up-modify-goal gl-sling-target-player g:= temporary-goal)
+	(set-goal gl-slinging slinging)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy castle-sling)
+	(disable-self)
+)

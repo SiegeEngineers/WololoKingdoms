@@ -1,0 +1,1178 @@
+(defrule
+	(true)
+=>
+	(set-goal next-rule-id 0)
+	(set-goal jump-rule-goal 0)
+	(up-modify-goal temporary-goal7 s:= sn-focus-player-number))
+#load-if-defined UP-MULTIPLE-ENEMIES
+(defrule
+(or	(goal underattack yes);
+(or	(strategic-number sn-focus-player-number s:!= sn-target-player-number)
+(or	;(and	(up-compare-goal strategy-type == feudal-war)
+		(strategic-number sn-current-age <= feudal);)
+(or	(not	(player-in-game every-enemy))
+(or	(players-building-count any-enemy <= 0)
+(or	(strategic-number sn-target-player-number <= 0)
+	(players-military-population focus-player >= 7))))))); 3
+=>
+	(up-jump-rule 2)); test
+(defrule
+	(players-building-count any-enemy >= 1)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-find-player enemy find-closest temporary-goal2)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(up-get-focus-fact military-population 0 temporary-goal3)
+	(up-find-next-player enemy find-closest temporary-goal2)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(up-get-focus-fact military-population 0 temporary-goal4)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal))
+(defrule
+	(players-military-population target-player <= 10); (up-compare-goal temporary-goal3 <= 10)
+	(up-compare-goal temporary-goal4 >= 9); 12
+(or	(players-military-population target-player <= 2); (up-compare-goal temporary-goal3 <= 2)
+(or	(and	(players-military-population target-player <= 6); (up-compare-goal temporary-goal3 <= 6)
+		(up-compare-goal temporary-goal4 >= 18)); 24
+	(up-compare-goal temporary-goal4 >= 27))); 36
+(or	(up-compare-goal temporary-goal4 g:>= my-mpop)
+	(up-compare-goal temporary-goal4 >= 27)); 36
+=>
+	(up-find-player enemy find-closest temporary-goal);
+	(up-find-next-player enemy find-closest temporary-goal)
+	(up-modify-sn sn-target-player-number g:= temporary-goal)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal))
+(defrule ; debug rule
+(or	(not	(player-in-game focus-player))
+(or	(strategic-number sn-focus-player-number >= 9)
+(or	(strategic-number sn-focus-player-number <= 0)
+(or	(players-building-count focus-player <= 0)
+	(stance-toward focus-player ally)))))
+;	(strategic-number sn-target-player-number != 0); none
+=>
+;	(up-chat-data-to-player my-player-number "sn-focus-player-number: %d" s: sn-focus-player-number)
+	(up-modify-goal temporary-goal s:= sn-target-player-number); to prevent further bugs
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number); should be an enemy
+;	(chat-to-player my-player-number "Debugging threat focus player.1")
+)
+
+
+(defrule
+(or	(up-compare-goal attacking-enemy >= 9)
+(or	(up-compare-goal attacking-enemy <= 0)
+(or	(strategic-number sn-target-player-number g:== attacking-enemy)
+(or	(strategic-number sn-focus-player-number g:== attacking-enemy)
+(or	(players-building-count every-enemy <= 0)
+(or	(up-compare-goal attacking-enemy == my-player-number)
+(or	(strategic-number sn-target-player-number <= 0)
+	(strategic-number sn-target-player-number s:!= sn-focus-player-number))))))))
+=>
+	(up-jump-rule 2))
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= attacking-enemy)
+	(up-full-reset-search)
+	(up-modify-goal temporary-goal3 g:= attacking)
+	(up-modify-goal temporary-goal3 g:* map-size); 200
+	(up-modify-goal temporary-goal2 s:= sn-maximum-town-size)
+	(up-modify-goal temporary-goal2 c:+ 12); 10
+	(up-modify-goal temporary-goal2 g:+ temporary-goal3)
+	(up-modify-goal temporary-goal2 c:max 40)
+	(up-modify-goal temporary-goal2 s:max sn-safe-town-size)
+	(up-set-target-point position-self-x)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-distance c: -1 g: temporary-goal2)
+	(up-find-remote c: all-units-class c: 16)
+	(set-goal temporary-goal2 54683)
+	(up-get-search-state local-total))
+(defrule
+	(goal temporary-goal2 54683)
+	(player-in-game focus-player)
+(not	(stance-toward focus-player ally))
+	(up-compare-goal attacking-enemy g:!= temporary-goal7)
+	(up-compare-goal remote-total >= 4)
+(or	(up-compare-goal remote-total >= 8)
+(or	(players-military-population focus-player >= min-number-vills)
+(or	(players-military-population focus-player g:>= target-mpop)
+	(players-military-population focus-player g:>= my-mpop))))
+=>
+	(up-modify-goal next-rule-id g:= attacking-enemy)); end jump
+(defrule
+	(strategic-number sn-focus-player-number g:!= temporary-goal7)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7))
+
+(defrule ; debug rule
+(or	(not	(player-in-game focus-player))
+(or	(strategic-number sn-focus-player-number >= 9)
+(or	(strategic-number sn-focus-player-number <= 0)
+(or	(players-building-count focus-player <= 0)
+	(stance-toward focus-player ally)))))
+;	(strategic-number sn-target-player-number != 0); none
+=>
+;	(up-chat-data-to-player my-player-number "sn-focus-player-number: %d" s: sn-focus-player-number)
+	(up-modify-goal temporary-goal s:= sn-target-player-number); to prevent further bugs
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number); should be an enemy
+;	(chat-to-player my-player-number "Debugging threat focus player.2")
+)
+
+
+(defrule
+(or	(game-time >= 2400)
+(or	(up-compare-goal feinde >= 2);	(up-timer-status fivesec == timer-running)
+	(players-building-count every-enemy <= 0)))
+=>
+	(set-goal enemy-pocket -1)
+	(set-goal ep-pop 0)
+	(set-goal ep-cpop 0)
+	(set-goal ep-mpop 0)
+	(set-goal ep-stables 0)
+	(up-jump-rule 10))
+(defrule
+	(true)
+=>
+	(up-find-player enemy find-closest temporary-goal2)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal2)
+	(up-get-point position-focus temporary-point-x)
+	(up-set-target-point temporary-point-x)
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal3 20)
+	(set-goal temporary-goal4 0)
+	(set-goal temporary-goal5 0)
+	(up-reset-filters))
+(defrule
+	(strategic-number sn-focus-player-number != my-player-number)
+	(up-compare-goal temporary-goal2 s:!= sn-focus-player-number)
+(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+	(player-in-game focus-player)
+=>
+	(up-reset-search 1 1 1 1)
+	(up-filter-distance c: -1 g: temporary-goal3)
+	(up-find-remote c: building-class c: 1)
+	(up-find-remote c: wall-class c: 1)
+	(set-goal temporary-goal4 1))
+(defrule
+	(goal temporary-goal4 1)
+	(goal temporary-goal5 0)
+	(up-set-target-object search-remote c: 0)
+=>
+	(up-modify-goal enemy-pocket s:= sn-focus-player-number)
+	(up-jump-rule 4))
+(defrule
+	(goal temporary-goal4 1)
+	(goal temporary-goal5 1)
+	(players-building-count focus-player == 0)
+=>
+	(up-modify-goal enemy-pocket s:= sn-focus-player-number)
+	(up-jump-rule 3))
+(defrule
+	(up-compare-goal temporary-goal3 >= 100)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal temporary-goal5 1)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -4))
+(defrule
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -5))
+(defrule
+	(strategic-number sn-focus-player-number >= 8)
+	(goal temporary-goal5 0)
+	(up-compare-goal temporary-goal3 < 100)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+	(up-modify-goal temporary-goal3 c:+ 5)
+	(set-goal temporary-goal4 0)
+	(up-jump-rule -6))
+(defrule
+(or	(players-building-count focus-player <= 0)
+(or	(strategic-number sn-focus-player-number == my-player-number)
+(or	(not	(player-in-game focus-player))
+	(stance-toward focus-player ally))))
+	(up-compare-goal enemy-pocket g:!= temporary-goal7)
+=>
+	(set-goal enemy-pocket -1); (up-modify-goal enemy-pocket g:= temporary-goal)
+	(set-goal ep-pop 0)
+	(set-goal ep-cpop 0)
+	(set-goal ep-mpop 0)
+	(set-goal ep-stables 0))
+(defrule
+	(up-compare-goal enemy-pocket >= 1)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(player-in-game focus-player)
+(not	(stance-toward focus-player ally))
+=>
+	(up-chat-data-to-player my-player-number "Enemy-pocket: %d." g: enemy-pocket)
+	(up-get-focus-fact population 0 ep-pop)
+	(up-get-focus-fact civilian-population 0 ep-cpop)
+	(up-get-focus-fact military-population 0 ep-mpop)
+	(up-get-focus-fact building-type-count stable ep-stables)
+	(up-modify-sn ep-civilian-superiority g:= my-cpop)
+	(up-modify-sn ep-civilian-superiority g:- ep-cpop)
+	(up-modify-sn ep-military-superiority g:= my-mpop)
+	(up-modify-sn ep-military-superiority g:- ep-mpop))
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7)); end jump
+(defrule
+	(up-compare-goal next-rule-id <= 0)
+	(up-compare-goal enemy-pocket <= 8)
+	(up-compare-goal enemy-pocket >= 1)
+	(up-compare-goal ep-mpop >= 3)
+	(up-compare-goal enemy-pocket g:!= temporary-goal7)
+(or	(up-compare-goal enemy-pocket g:== threat-player)
+(or	(up-compare-goal enemy-pocket g:== attacking-enemy)
+(or	(up-compare-goal feinde >= 4); 3
+	(up-compare-goal ep-mpop g:>= my-mpop))))
+=>
+	(up-modify-goal next-rule-id g:= enemy-pocket))
+
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= next-rule-id)
+	(up-modify-goal temporary-goal2 g:= my-mpop)
+	(up-modify-goal temporary-goal2 g:- target-mpop)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(set-goal temporary-goal5 0)
+	(set-goal temporary-goal6 0))
+(defrule
+(or	(strategic-number sn-focus-player-number s:== sn-target-player-number)
+(or	(strategic-number sn-focus-player-number == my-player-number)
+(or	(not	(player-in-game focus-player))
+(or	(strategic-number sn-focus-player-number >= 9)
+(or	(strategic-number sn-focus-player-number <= 0)
+(or	(players-building-count focus-player <= 0)
+	(stance-toward focus-player ally)))))))
+=>
+	(up-jump-rule 1))
+(defrule
+	(up-timer-status sup-focus-timer != timer-running)
+=>
+	(up-get-focus-fact player-number 0 alt-focus)
+	(enable-timer sup-focus-timer 180)); 150; 120
+(defrule
+	(up-timer-status sup-focus-timer == timer-running)
+=>
+	(up-modify-goal temporary-goal3 s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= alt-focus))
+(defrule
+	(up-timer-status sup-focus-timer == timer-running)
+	(players-building-count focus-player > 0)
+	(strategic-number sn-focus-player-number != my-player-number)
+(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+	(player-in-game focus-player)
+	(player-valid focus-player)
+=>
+	(up-get-focus-fact population 0 alt-focus-pop)
+	(up-get-focus-fact civilian-population 0 alt-focus-cpop)
+	(up-get-focus-fact military-population 0 alt-focus-mpop)
+	(up-modify-goal temporary-goal6 g:= alt-focus-mpop)
+	(up-modify-goal temporary-goal6 c:- 12)); 16
+(defrule
+	(up-compare-goal temporary-goal6 g:>= target-mpop)
+	(up-timer-status sup-focus-timer == timer-running)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(players-building-count focus-player > 0)
+(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+	(player-in-game focus-player)
+	(player-valid focus-player)
+=>
+	(up-modify-goal temporary-goal4 g:= alt-focus)
+	(up-modify-goal temporary-goal2 g:= my-mpop)
+	(up-modify-goal temporary-goal2 g:- alt-focus-mpop))
+(defrule
+	(up-timer-status sup-focus-timer == timer-running)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal3))
+(defrule
+	(up-compare-goal temporary-goal4 != 0)
+=>
+	(up-modify-goal temporary-goal5 s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal4))
+(defrule
+	(up-compare-goal temporary-goal4 == 0)
+=>
+	(up-modify-goal temporary-goal5 s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-modify-goal temporary-goal4 s:= sn-target-player-number))
+(defrule
+	(up-compare-goal next-rule-id <= 0)
+	(up-compare-goal temporary-goal4 g:!= temporary-goal7)
+	(up-compare-goal temporary-goal4 <= 8)
+	(up-compare-goal temporary-goal4 >= 1)
+=>
+	(up-modify-goal next-rule-id g:= temporary-goal4))
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7))
+;(defrule
+;	(up-compare-goal next-rule-id s:!= sn-focus-player-number)
+;	(up-compare-goal next-rule-id >= 1)
+;	(up-compare-goal next-rule-id <= 8)
+;	(up-compare-goal next-rule-id != my-player-number)
+;=>
+;	(up-chat-data-to-self text-counter-player g: next-rule-id)); "Attempting to counter player #%d's army too."
+#end-if
+(defrule
+	(true)
+=>
+;	(up-chat-data-to-self "jumpgoal: %d" g: jump-rule-goal)
+	(set-strategic-number camels 0)
+	(set-strategic-number cavalry 0)
+	(set-strategic-number infantry 0)
+	(set-strategic-number spears 0)
+	(set-strategic-number husks 0)
+	(set-strategic-number eagles 0)
+	(set-strategic-number archers 0)
+	(set-strategic-number skirms 0)
+	(set-strategic-number skirmsarchers 0)
+	(set-strategic-number gunpowder 0)
+	(set-strategic-number siege 0)
+	(set-strategic-number moenche 0)
+	(set-strategic-number moenchesiege 0)
+	(up-get-rule-id current-rule-id))
+(defrule ; debug rule
+(or	(not	(player-in-game target-player))
+(or	(strategic-number sn-target-player-number >= 9)
+(or	(strategic-number sn-target-player-number <= 0)
+(or	(players-building-count target-player <= 0)
+	(stance-toward target-player ally)))))
+;	(strategic-number sn-target-player-number != 0); none
+=>
+;	(up-chat-data-to-player my-player-number "sn-focus-player-number: %d" s: sn-focus-player-number)
+	(up-find-player enemy find-closest temporary-goal)
+	(up-modify-sn sn-target-player-number g:= temporary-goal); should be an enemy
+	(up-modify-sn sn-focus-player-number g:= temporary-goal); should be an enemy
+;	(chat-to-player my-player-number "Debugging threat focus&target player.")
+)
+;=========================================================
+; Cavalry
+;=========================================================
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count imperial-camel temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn camels g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count camel-line temporary-goal)
+	(up-modify-sn camels g:+ temporary-goal)
+	(up-modify-sn cavalry c:+ 0);s:= camels)
+	(up-get-focus-fact unit-type-count boyar temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count magyar-huszar temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count tarkan-line temporary-goal)
+	(up-modify-sn cavalry g:+ temporary-goal))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count knight-line temporary-goal)
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count scout-cavalry-line temporary-goal)
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count war-elephant-line temporary-goal)
+	(up-modify-goal temporary-goal c:* 3)
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count cataphract-line temporary-goal)
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count mameluke-line temporary-goal); test
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count battle-elephant temporary-goal)
+	(up-get-focus-fact unit-type-count elite-battle-elephant temporary-goal8)
+	(up-modify-goal temporary-goal g:+ temporary-goal8)
+	(up-modify-goal temporary-goal c:* 2))
+#load-if-defined UP-GAME-WK
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavalry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count ballista-elephant temporary-goal)
+	(up-get-focus-fact unit-type-count elite-ballista-elephant temporary-goal8)
+	(up-modify-goal temporary-goal g:+ temporary-goal8)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn cavalry g:+ temporary-goal))
+#end-if
+(defrule
+(or	(civ-selected aztec)
+(or	(civ-selected mayan)
+	(civ-selected incan)))
+	(strategic-number camels <= 9)
+=>
+	(up-jump-rule 1))
+(defrule
+	(strategic-number camels >= 1)
+=>
+	(up-modify-sn cavalry s:+ camels))
+;=========================================================
+; Archers
+;=========================================================
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count genoese-crossbowman temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count plumed-archer-line temporary-goal)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count mangudai-line temporary-goal)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count longbowman-line temporary-goal)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count chu-ko-nu-line temporary-goal)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count cavalry-archer-line temporary-goal)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count archer-line temporary-goal)
+	(up-modify-sn archers g:+ temporary-goal))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count slinger temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count war-wagon-line temporary-goal)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elephant-archer temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count camel-archer temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count arambai temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal))
+#load-if-defined UP-GAME-WK
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count rattan-archer temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-rattan-archer temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-camel-archer temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-arambai temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn archers g:+ temporary-goal))
+#end-if
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count skirmisher-line temporary-goal)
+	(up-modify-sn skirms g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count genitour temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn skirms g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-genitour temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn skirms g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count 732 temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn skirms g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count imperial-skirmisher temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn skirms g:+ temporary-goal))
+;=========================================================
+; Gunpowder
+;=========================================================
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count hand-cannoneer temporary-goal)
+	(up-modify-sn gunpowder g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count conquistador-line temporary-goal)
+	(up-modify-sn gunpowder g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count janissary-line temporary-goal)
+	(up-modify-sn gunpowder g:+ temporary-goal))
+;#load-if-not-defined GOTHIC-CIV
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-modify-sn archers s:+ gunpowder)); for now
+;#end-if
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-modify-sn skirmsarchers s:+ archers)
+	(up-modify-sn skirmsarchers s:+ skirms))
+;=========================================================
+; Infantry
+;=========================================================
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count kamayuk temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn spears g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count spearman-line temporary-goal)
+	(up-modify-sn spears g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count b-husk-line temporary-goal)
+	(up-modify-sn husks g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count huskarl-line temporary-goal)
+	(up-modify-sn husks g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count eagle-warrior-line temporary-goal)
+	(up-modify-sn eagles g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count heavy-eagle-warrior temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn eagles g:+ temporary-goal))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count militiaman-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count samurai-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count jaguar-man-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count teutonic-knight-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count throwing-axeman-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count berserk-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count woad-raider-line temporary-goal)
+	(up-modify-sn infantry g:+ temporary-goal))
+#load-if-defined UP-GAME-WK
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count gbeto temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count shotel-warrior temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count karambit-warrior temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-karambit-warrior temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count condottiero temporary-goal);
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count elite-gbeto temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-shotel-warrior temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count 882 temporary-goal);
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn infantry g:+ temporary-goal))
+#end-if
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined MAYAN-CIV
+(defrule
+(or	(unit-type-count-total cavalry-class >= 3)
+(or	(unit-type-count-total cavalry-archer-class >= 3)
+(or	(unit-type-count-total cavalry-cannon-class >= 3)
+(or	(unit-type-count-total scout-cavalry-class >= 3);	(unit-type-count-total siege-weapon-class >= 6)
+(or	(unit-type-count-total magyar-huszar >= 3)
+(or	(unit-type-count-total boyar >= 3)
+	(unit-type-count-total elephant-archer >= 3)))))))
+	(strategic-number spears >= 1)
+=>
+	(up-modify-sn infantry s:+ spears))
+(defrule
+(or	(unit-type-count-total ballista-elephant >= 3)
+(or	(unit-type-count-total elite-ballista-elephant >= 3)
+	(up-compare-goal battle-elephant-set >= 3)))
+	(strategic-number spears >= 1)
+=>
+	(up-modify-sn infantry s:+ spears))
+#end-if
+#end-if
+#end-if
+(defrule
+	(strategic-number camels >= 1)
+=>
+	(up-modify-sn spears s:+ camels))
+;=========================================================
+; Monks
+;=========================================================
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-fact-max any-enemy unit-type-count monk temporary-goal); for now
+	(up-modify-sn moenche g:+ temporary-goal)
+	(up-get-fact-max any-enemy unit-type-count missionary temporary-goal)
+	(up-modify-sn moenche g:+ temporary-goal)
+	(up-modify-sn moenchesiege s:+ moenche))
+;=========================================================
+; Siege
+;=========================================================
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count scorpion-line temporary-goal)
+	(up-modify-sn siege g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count mangonel-line temporary-goal)
+	(up-modify-sn siege g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count bombard-cannon temporary-goal)
+	(up-modify-sn siege g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count organ-gun temporary-goal)
+	(up-modify-goal temporary-goal c:/ 4)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn siege g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-organ-gun temporary-goal)
+	(up-modify-goal temporary-goal c:/ 4)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn siege g:+ temporary-goal))
+#load-if-defined UP-GAME-WK
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count 699 temporary-goal); double
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn siege g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count 701 temporary-goal); double
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn siege g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count ballista-elephant temporary-goal); double
+	(up-modify-goal temporary-goal c:/ 4)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn siege g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count elite-ballista-elephant temporary-goal)
+	(up-modify-goal temporary-goal c:/ 4)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn siege g:+ temporary-goal))
+#end-if
+;#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-modify-sn moenchesiege s:+ siege))
+;#end-if
+;=========================================================
+(defrule
+	(up-compare-goal jump-rule-goal <= 0)
+	(up-compare-goal current-rule-id >= 0)
+	(up-compare-goal current-rule-id <= 9998)
+	(up-compare-goal next-rule-id >= 1)
+	(up-compare-goal next-rule-id <= 8)
+	(up-compare-goal next-rule-id != my-player-number)
+	(up-compare-sn sn-focus-player-number g:!= next-rule-id)
+=>
+	(up-modify-sn sn-focus-player-number g:= next-rule-id)
+	(up-modify-goal jump-rule-goal c:+ 1)
+	(up-modify-goal current-rule-id c:+ 1)
+	(up-jump-direct g: current-rule-id)
+;	(up-chat-data-to-player my-player-number "jump-rule-goal: %d" g: jump-rule-goal)
+;	(up-chat-data-to-player my-player-number "jt1: %d" g: current-rule-id)
+)
+(defrule
+	(true);	(up-compare-goal retargetenemy != 4)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7)
+;	(chat-to-player my-player-number "Resetting threat focus player.")
+)
+;=========================================================
+; Warboats
+;=========================================================
+(defrule
+	(up-compare-goal jump-rule-goal >= 1)
+=>
+	(up-jump-rule 2))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-focus-fact unit-type-count galley-line temporary-goal); target-
+	(up-modify-goal enemyfocusnavy g:= temporary-goal)
+	(up-get-focus-fact unit-type-count fire-ship-line temporary-goal)
+	(up-modify-goal enemyfocusnavy g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count longboat-line temporary-goal)
+	(up-modify-goal enemyfocusnavy g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count turtle-ship-line temporary-goal)
+	(up-modify-goal temporary-goal c:* 3)
+	(up-modify-goal enemyfocusnavy g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count cannon-galleon-line temporary-goal)
+	(up-modify-goal enemyfocusnavy g:+ temporary-goal)
+	(up-get-focus-fact unit-type-count caravel-line temporary-goal)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-sn enemyfocusnavy g:+ temporary-goal))
+(defrule; c.p.c.
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+	(up-get-fact-max any-enemy unit-type-count galley-line temporary-goal)
+	(up-modify-goal biggestenemynavy g:= temporary-goal)
+	(up-get-fact-max any-enemy unit-type-count fire-ship-line temporary-goal)
+	(up-modify-goal biggestenemynavy g:+ temporary-goal)
+	(up-get-fact-max any-enemy unit-type-count longboat-line temporary-goal)
+	(up-modify-goal biggestenemynavy g:+ temporary-goal)
+	(up-get-fact-max any-enemy unit-type-count turtle-ship-line temporary-goal)
+	(up-modify-goal temporary-goal c:* 3)
+	(up-modify-goal biggestenemynavy g:+ temporary-goal)
+	(up-get-fact-max any-enemy unit-type-count cannon-galleon-line temporary-goal)
+	(up-modify-goal biggestenemynavy g:+ temporary-goal))
+;=========================================================
+; Military Superiority
+;=========================================================
+(defrule
+(taunt-detected my-player-number 132)
+=>
+(up-chat-data-to-player my-player-number "sn-focus-player-number: %d" s: sn-focus-player-number)
+(acknowledge-taunt my-player-number 132))
+(defrule
+	(strategic-number sn-current-age >= castlea)
+=>
+	(up-jump-rule 8))
+(defrule
+	(up-compare-goal temporary-goal2 >= 28)
+	(strategic-number sn-military-superiority != 4)
+=>
+	(set-strategic-number sn-military-superiority 4))
+(defrule
+	(up-compare-goal temporary-goal2 <= 27)
+	(up-compare-goal temporary-goal2 >= 20)
+	(strategic-number sn-military-superiority != 3)
+=>
+	(set-strategic-number sn-military-superiority 3))
+(defrule
+	(up-compare-goal temporary-goal2 <= 19)
+	(up-compare-goal temporary-goal2 >= 12)
+	(strategic-number sn-military-superiority != 2)
+=>
+	(set-strategic-number sn-military-superiority 2))
+(defrule
+	(up-compare-goal temporary-goal2 <= 11)
+	(up-compare-goal temporary-goal2 >= 6)
+	(strategic-number sn-military-superiority != 1)
+=>
+	(set-strategic-number sn-military-superiority 1))
+(defrule
+	(up-compare-goal temporary-goal2 <= 5)
+	(up-compare-goal temporary-goal2 >= -3)
+	(strategic-number sn-military-superiority != 0)
+=>
+	(set-strategic-number sn-military-superiority 0))
+(defrule
+	(up-compare-goal temporary-goal2 <= -4)
+	(up-compare-goal temporary-goal2 >= -10)
+	(strategic-number sn-military-superiority != -1)
+=>
+	(set-strategic-number sn-military-superiority -1))
+(defrule
+	(up-compare-goal temporary-goal2 <= -11)
+	(up-compare-goal temporary-goal2 >= -18)
+	(strategic-number sn-military-superiority != -2)
+=>
+	(set-strategic-number sn-military-superiority -2))
+(defrule
+	(up-compare-goal temporary-goal2 <= -19)
+	(strategic-number sn-military-superiority != -3)
+=>
+	(set-strategic-number sn-military-superiority -3))
+
+(defrule
+	(strategic-number sn-current-age < castlea)
+=>
+	(up-jump-rule 8))
+(defrule
+	(up-compare-goal temporary-goal2 >= 34)
+	(strategic-number sn-military-superiority != 4)
+=>
+	(set-strategic-number sn-military-superiority 4))
+(defrule
+	(up-compare-goal temporary-goal2 <= 33)
+	(up-compare-goal temporary-goal2 >= 23)
+	(strategic-number sn-military-superiority != 3)
+=>
+	(set-strategic-number sn-military-superiority 3))
+(defrule
+	(up-compare-goal temporary-goal2 <= 22)
+	(up-compare-goal temporary-goal2 >= 15)
+	(strategic-number sn-military-superiority != 2)
+=>
+	(set-strategic-number sn-military-superiority 2))
+(defrule
+	(up-compare-goal temporary-goal2 <= 14)
+	(up-compare-goal temporary-goal2 >= 7)
+	(strategic-number sn-military-superiority != 1)
+=>
+	(set-strategic-number sn-military-superiority 1))
+(defrule
+	(up-compare-goal temporary-goal2 <= 6)
+	(up-compare-goal temporary-goal2 >= -6)
+	(strategic-number sn-military-superiority != 0)
+=>
+	(set-strategic-number sn-military-superiority 0))
+(defrule
+	(up-compare-goal temporary-goal2 <= -7)
+	(up-compare-goal temporary-goal2 >= -14)
+	(strategic-number sn-military-superiority != -1)
+=>
+	(set-strategic-number sn-military-superiority -1))
+(defrule
+	(up-compare-goal temporary-goal2 <= -15)
+	(up-compare-goal temporary-goal2 >= -22)
+	(strategic-number sn-military-superiority != -2)
+=>
+	(set-strategic-number sn-military-superiority -2))
+(defrule
+	(up-compare-goal temporary-goal2 <= -23)
+	(strategic-number sn-military-superiority != -3)
+=>
+	(set-strategic-number sn-military-superiority -3))
+
+(defrule
+	(true)
+=>
+	(up-get-fact-sum any-ally military-population 0 temporary-goal)
+	(up-modify-goal temporary-goal g:+ my-mpop)
+;	(up-chat-data-to-self "Team 1: %d." g: temporary-goal)
+	(up-get-fact-sum any-enemy military-population 0 temporary-goal8)
+;	(up-chat-data-to-self "Team 2: %d." g: temporary-goal8)
+	(up-modify-goal temporary-goal g:- temporary-goal8)
+	(up-modify-goal Team-milgoal g:= temporary-goal)
+;	(up-chat-data-to-self "Team-superiority-number: %d." g: Team-milgoal)
+;	(up-chat-data-to-self "Team-superiority-level: %d." s: teamsuperiority)
+)
+
+(defrule
+	(strategic-number teamsuperiority != 0)
+	(up-compare-goal Team-milgoal <= 7)
+	(up-compare-goal Team-milgoal >= -7)
+=>
+	(set-strategic-number teamsuperiority 0))
+(defrule
+	(strategic-number teamsuperiority != 1)
+	(up-compare-goal Team-milgoal >= 8)
+ (or	(and	(current-age >= castle-age)
+		(up-compare-goal Team-milgoal <= 21))
+	(and	(current-age <= feudal-age)
+		(up-compare-goal Team-milgoal <= 14))); 12
+=>
+	(set-strategic-number teamsuperiority 1))
+(defrule
+	(strategic-number teamsuperiority != 2)
+	(up-compare-goal Team-milgoal <= 49)
+(or	(and	(current-age >= castle-age)
+		(up-compare-goal Team-milgoal >= 22))
+	(and	(current-age <= feudal-age)
+		(up-compare-goal Team-milgoal >= 15))); 13
+=>
+	(set-strategic-number teamsuperiority 2))
+(defrule
+	(strategic-number teamsuperiority != 3)
+	(up-compare-goal Team-milgoal >= 50)
+=>
+	(set-strategic-number teamsuperiority 3))
+(defrule
+	(strategic-number teamsuperiority != -1)
+	(up-compare-goal Team-milgoal <= -8)
+	(up-compare-goal Team-milgoal >= -21)
+=>
+	(set-strategic-number teamsuperiority -1))
+(defrule
+	(strategic-number teamsuperiority != -2)
+	(up-compare-goal Team-milgoal <= -22)
+	(up-compare-goal Team-milgoal >= -49)
+=>
+	(set-strategic-number teamsuperiority -2))
+(defrule
+	(strategic-number teamsuperiority != -3)
+	(up-compare-goal Team-milgoal <= -50)
+=>
+	(set-strategic-number teamsuperiority -3))
+
+
+(defrule
+	(up-research-status c: ri-man-at-arms >= research-pending)
+	(unit-type-count-total militiaman-line >= 3)
+	(players-current-age focus-player <= feudal-age)
+	(strategic-number skirms >= 5)
+	(strategic-number sn-military-superiority <= 1)
+	(strategic-number archers <= 2)
+	(strategic-number cavalry <= 0)
+	(strategic-number infantry <= 0)
+	(strategic-number siege <= 0)
+	(strategic-number moenche <= 0)
+	(strategic-number gunpowder <= 0)
+	(players-unit-type-count focus-player genoese-crossbowman <= 0)
+	(players-unit-type-count focus-player elephant-archer <= 0)
+	(players-unit-type-count focus-player organ-gun <= 0)
+=>
+	(up-modify-sn sn-military-superiority c:+ 1)
+	(up-jump-rule 1))
+(defrule
+	(up-compare-goal armytech >= castlea)
+	(players-current-age focus-player <= feudal-age)
+	(unit-type-count cavalry-class >= 4)
+	(strategic-number skirms >= 7)
+	(strategic-number sn-military-superiority <= 1)
+	(strategic-number spears <= 1)
+	(strategic-number camels <= 0)
+	(strategic-number archers <= 4)
+	(strategic-number cavalry <= 0)
+	(strategic-number eagles <= 0)
+	(strategic-number infantry <= 0)
+	(strategic-number siege <= 0)
+	(strategic-number moenche <= 0)
+	(strategic-number gunpowder <= 0)
+	(players-unit-type-count focus-player genoese-crossbowman <= 0)
+=>
+	(up-modify-sn sn-military-superiority c:+ 1))
+
+(defrule
+	(players-building-count focus-player > 0)
+	(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+	(player-in-game focus-player)
+	(player-valid focus-player)
+(or	(military-population >= 8)
+	(population >= max-civ-pop))
+(or	(and	(up-compare-goal armytech >= imperial)
+		(players-current-age focus-player <= castle-age))
+	(and	(up-compare-goal armytech >= castlea)
+		(players-current-age focus-player <= feudal-age)))
+=>
+	(up-modify-sn sn-military-superiority c:+ 1))
+(defrule
+	(players-building-count focus-player > 0)
+	(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+	(player-in-game focus-player)
+	(player-valid focus-player)
+(or	(players-military-population focus-player >= 8)
+	(population < max-civ-pop))
+(or	(and	(up-compare-goal armytech <= castlea)
+		(players-current-age focus-player >= imperial-age))
+	(and	(up-compare-goal armytech <= feudal)
+		(players-current-age focus-player >= castle-age)))
+=>
+	(up-modify-sn sn-military-superiority c:- 1))
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal5))
+
+(defrule
+	(goal strategy r-flush)
+	(goal sk-var no)
+	(players-building-count target-player > 0)
+	(not	(stance-toward target-player ally));	(stance-toward target-player enemy)
+	(player-in-game target-player)
+; tl	(player-valid target-player)
+	(players-current-age target-player <= feudal-age)
+	(players-current-age every-ally <= feudal-age)
+	(players-unit-type-count target-player skirmisher-line >= 5)
+	(players-unit-type-count target-player scout-cavalry < 2)
+	(players-unit-type-count target-player militiaman-line < 1)
+	(players-unit-type-count target-player archer-line < 1)
+	(building-type-count siege-workshop <= 0)
+	(population < max-civ-pop)
+;	(up-compare-goal threat-time > 12000); 20000
+	(strategic-number sn-military-superiority <= 0); test
+=>
+	(up-modify-sn sn-military-superiority c:- 1))
+(defrule
+	(goal assistance yes)
+	(up-compare-goal siegereq != no)
+(or	(military-population >= 12); 15
+	(population >= max-civ-pop))
+;	(current-age-time >= 30)
+(or	(strategic-number teamsuperiority >= -2); -1; 0
+	(and	(strategic-number sn-current-age >= imperial)
+		(and	(up-research-status c: imperial-age != research-pending)
+			(population >= siege-pop))))
+=>
+	(up-modify-sn sn-military-superiority c:+ 1)); testing for now
+(defrule
+	(up-compare-goal assistance != yes)
+	(up-compare-goal attacking != yes)
+(or	(up-research-status c: feudal-age == research-pending)
+(or	(up-research-status c: castle-age == research-pending)
+	(up-research-status c: imperial-age == research-pending)))
+;(or	(strategic-number teamsuperiority >= -1); 0
+;	(and	(current-age >= imperial-age)
+;		(population > del-civ-pop)))
+	(strategic-number sn-military-superiority >= 1)
+	(strategic-number teamsuperiority <= 2); test
+=>
+	(up-modify-sn sn-military-superiority c:- 1)); testing for now
+
+(defrule
+	(population >= del-civ-pop)
+	(goal siegereq yes)
+	(goal escrowing no)
+	(up-research-status c: imperial-age != research-pending)
+(or	(strategic-number sn-current-age >= imperial)
+	(game-time >= 6000)); test
+(or	(goal attacking yes)
+(or	(current-age-time >= 360);	(cc-players-unit-type-count 0 gold-mine > 0)
+(or	(unit-type-count-total villager <= res-vills-d); lots of military
+	(goal researchplan yes))))
+=>
+	(up-modify-sn sn-military-superiority c:max 1))
+
+#load-if-defined UP-PLAYER-1
+(defrule
+(or	(strategic-number sn-military-superiority != 0)
+(or	(military-population >= 2)
+(or	(players-military-population any-ally >= 2)
+	(players-military-population any-enemy >= 2))))
+	(timer-triggered MSuperiority)
+=>
+	(up-chat-data-to-self text-mil-sup-number g: temporary-goal2);	(up-chat-data-to-self text-mil-sup-number s: target-military-superiority)
+	(up-chat-data-to-self text-mil-sup-level s: sn-military-superiority)
+	(up-chat-data-to-self text-civ-sup-number s: target-civilian-superiority)
+;	(up-chat-data-to-self text-team-sup-number g: Team-milgoal)
+	(up-chat-data-to-self text-team-sup-level s: teamsuperiority)
+;	(up-chat-data-to-self text-mil-sup-player g: temporary-goal4)
+;	(up-chat-data-to-self text-assisting-ally g: assistance)
+)
+#end-if
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal7))
+;=========================================================
+; Allow counters
+;=========================================================
+(defrule
+(or	(up-compare-goal allowspears != yes)
+	(up-compare-goal allowskirms != yes))
+=>
+	(set-goal allowskirms yes)
+	(set-goal allowspears yes))
+(defrule
+	(up-unit-type-in-town c: cavalry-class < 5)
+	(strategic-number cavalry < 7); 5
+	(not	(stance-toward focus-player ally));	(stance-toward focus-player enemy)
+(or	(players-civ focus-player aztec)
+(or	(players-civ focus-player mayan)
+	(players-civ focus-player incan)))
+(or	(players-civ target-player aztec)
+(or	(players-civ target-player mayan)
+	(players-civ target-player incan)))
+=>
+	(set-goal allowspears no))
+(defrule
+	(up-unit-type-in-town c: cavalry-class < 5)
+	(strategic-number cavalry < 7); 5
+(or	(players-civ every-enemy aztec)
+(or	(players-civ every-enemy mayan)
+	(players-civ every-enemy incan)))
+=>
+	(set-goal allowspears no))
+(defrule
+(or	(up-research-status c: imperial-age < research-pending); (current-age < imperial-age); castle-age;	(strategic-number sn-current-age < imperial)
+	(not	(player-in-game any-ally)))
+;	(players-building-type-count every-ally market <= 0)
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(unit-type-count cavalry-class >= 33); 36
+(or	(unit-type-count-total huskarl-set >= 8); 10
+(or	(unit-type-count-total scorpion-line >= 7); 8
+(or	(up-compare-goal mangonel-set >= 4); 5
+(or	(up-compare-goal excessGold >= 250);	(gold-amount >= 250); 200
+(or	(unit-type-count villager-gold >= 15); 12
+(or	(up-compare-goal relic-count >= 5); 5
+	(up-compare-goal tradeunits >= 45)))))))); 33
+=>
+	(set-goal allowskirms no))
+(defrule
+	(and	(population >= eightyp-pop)
+		(population >= max-civ-pop))
+(or	(unit-type-count villager-gold >= 9)
+(or	(up-compare-goal relic-count >= 3)
+	(up-compare-goal tradeunits >= 27)))
+=>
+	(set-goal allowskirms no))
+;=========================================================
+(defrule ; debug rule
+(or	(not	(player-in-game focus-player))
+(or	(strategic-number sn-focus-player-number >= 9)
+(or	(strategic-number sn-focus-player-number <= 0)
+(or	(players-building-count focus-player <= 0)
+	(stance-toward focus-player ally)))))
+;	(strategic-number sn-target-player-number != 0); none
+=>
+;	(up-chat-data-to-player my-player-number "sn-focus-player-number: %d" s: sn-focus-player-number)
+;	(up-modify-goal temporary-goal s:= sn-target-player-number); to prevent further bugs
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number); should be an enemy
+;	(chat-to-player my-player-number "Debugging threat focus player.3")
+)
+;=========================================================
+; Navy
+;=========================================================
+;(defrule
+;	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+;(or	(up-compare-goal navycount <= 0)
+;	(up-compare-goal enemyfocusnavy <= 0))
+;=>
+;	(up-get-fact-sum any-ally warboat-count 0 temporary-goal)
+;	(up-modify-goal temporary-goal g:+ navycount)
+;	(up-get-fact-sum any-enemy warboat-count 0 temporary-goal2)
+;	(up-modify-goal temporary-goal g:- temporary-goal2)
+;	(up-modify-goal temporary-goal3 c:= 15)
+;	(up-modify-goal temporary-goal3 c:max minNavy)
+;	(up-modify-goal temporary-goal3 g:* feinde)
+;	(up-modify-goal temporary-goal3 c:+ 10)
+;	(up-modify-goal temporary-goal g:- temporary-goal3)
+;	(up-modify-goal temporary-goal c:max 0))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+=>
+;	(set-goal temporary-goal 0)
+	(up-get-fact-sum any-ally warboat-count 0 temporary-goal4)
+	(up-modify-goal temporary-goal4 g:+ navycount)
+	(up-get-fact-sum any-enemy warboat-count 0 temporary-goal2)
+	(up-modify-goal temporary-goal4 g:- temporary-goal2)
+	(up-modify-goal temporary-goal3 c:= minNavy)
+	(up-modify-goal temporary-goal3 g:* feinde)
+	(up-modify-goal temporary-goal4 g:- temporary-goal3))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+	(up-compare-goal temporary-goal4 >= 0)
+;	(goal enemy-boats yes)
+=>
+	(up-modify-goal maxnavy g:= enemyfocusnavy)
+;;	(up-modify-goal maxnavy g:- temporary-goal)
+	(up-modify-goal maxnavy c:+ minNavy)
+	(up-modify-goal maxnavy c:max 0))
+(defrule
+	(strategic-number sn-target-player-number > 0); (strategic-number sn-focus-player-number > 0)
+	(up-compare-goal temporary-goal4 < 0)
+;	(goal enemy-boats yes)
+=>
+	(up-modify-goal maxnavy g:= biggestenemynavy)
+;	(up-modify-goal maxnavy g:- temporary-goal)
+	(up-modify-goal maxnavy c:+ minNavy)
+	(up-modify-goal maxnavy c:max 0))
+(defrule
+(or	(goal islands yes)
+(or	(up-compare-goal strategy-type2 == water)
+	(goal strategy grush)))
+(or	(population < max-civ-pop)
+	(soldier-count >= 50)); 20; 40
+=>
+;	(up-modify-goal maxnavy c:max 900)
+;	(up-modify-goal maxnavy c:= max-civ-pop)
+	(up-modify-goal temporary-goal c:= max-pop)
+	(up-modify-goal temporary-goal c:- up-max-civ)
+	(up-modify-goal temporary-goal c:- 20)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal maxnavy g:max temporary-goal)
+	(up-modify-goal maxnavy c:max minNavy)); 0

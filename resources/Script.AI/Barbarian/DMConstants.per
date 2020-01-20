@@ -1,0 +1,4288 @@
+#load-if-defined AZTEC-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined BRITON-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -4)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -3)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -2)
+#end-if
+
+#end-if
+
+#load-if-defined VIKING-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+;
+
+
+#load-if-defined BERBERS-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+
+#load-if-defined BURMESE-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+
+#load-if-defined ETHIOPIAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+
+#load-if-defined KHMER-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+
+#load-if-defined MALAY-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+
+#load-if-defined MALIAN-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+
+#load-if-defined PORTUGUESE-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+
+
+#load-if-defined VIETNAMESE-CIV
+
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-defined UP-AZTEC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BRITON-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BYZANTINE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-CELTIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-CHINESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-FRANKISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-GOTHIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-HUN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-INCAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ITALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-JAPANESE-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KOREAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAYAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MAGYAR-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MONGOL-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PERSIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SLAVIC-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-SPANISH-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-TURKISH-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-TEUTONIC-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-VIKING-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BERBERS-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-BURMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ETHIOPIAN-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-KHMER-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-MALAY-CIV-ENEMY
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+#load-if-defined UP-MALIAN-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-PORTUGUESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-VIETNAMESE-CIV-ENEMY
+(defconst dm-early-threat-level -2)
+(defconst dm-default-threat-level -2)
+#end-if
+#load-if-defined UP-ALLY-IN-GAME
+(defconst dm-early-threat-level 0)
+(defconst dm-default-threat-level 0)
+#end-if
+#else
+(defconst dm-early-threat-level -1)
+(defconst dm-default-threat-level -1)
+#end-if
+
+#end-if
+

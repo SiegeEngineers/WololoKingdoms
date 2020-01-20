@@ -1,0 +1,52 @@
+#load-if-defined UP-2-PLAYER-GAME
+(defrule
+	(game-time < 10)
+	(building-type-count town-center == 1)
+	(up-compare-const mush-strength >= mush-resistance)
+	(up-compare-const mush-resistance < 100)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy fi-monk-rush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI2)
+	(disable-self)
+)
+#else
+#load-if-not-defined UP-TEUTONIC-CIV-ENEMY
+(defrule
+	(goal SLING 0)
+	(goal gl-current-age gv-dark)
+	(goal POSITION FLANK)
+	(up-compare-goal gl-target-player-distance < 80)
+	(up-compare-goal gl-rush-suitability-on-map <= LOW)
+	(or	(players-civ focus-player japanese)
+		(or	(players-civ focus-player korean)
+			(players-civ focus-player persian)))
+	(up-compare-const mush-strength >= 60)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy fi-monk-rush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI2)
+	(disable-self)
+)
+
+(defrule
+	(goal SLING 0)
+	(goal gl-current-age gv-dark)
+	(building-type-count-total stone-wall-line > 0)
+	(up-compare-goal gl-target-player-distance < 80)
+	(up-compare-goal gl-rush-suitability-on-map <= LOW)
+	(or	(players-civ focus-player japanese)
+		(or	(players-civ focus-player korean)
+			(players-civ focus-player persian)))
+	(up-compare-const mush-strength >= 60)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy fi-monk-rush)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI2)
+	(disable-self)
+)
+#end-if
+#end-if

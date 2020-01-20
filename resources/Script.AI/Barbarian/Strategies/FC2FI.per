@@ -1,0 +1,26 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy eew-strategy)
+	(set-goal gl-eew-strategy-type fast-imp)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(up-compare-const gv-aofe-game == 1)
+	(or	(player-valid 3)
+		(up-compare-goal gl-rush-suitability-on-map <= AVERAGE))
+=>
+	(set-goal gl-strategy eew-strategy)
+	(set-goal gl-eew-strategy-type boom)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+
+
+

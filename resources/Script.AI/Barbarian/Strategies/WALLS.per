@@ -1,0 +1,34 @@
+#load-if-defined GOTHIC-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy castle-drop)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy castle-drop)
+	(current-age == castle-age)
+	(dropsite-min-distance stone > 3)
+	(building-type-count-total castle == 0)
+	(current-age-time < 40)
+	(stone-amount < 201)
+=>
+	(set-goal gl-strategy knight-rush)
+	(chat-to-player my-player-number "The castle drop was a total failure")
+	(disable-self)
+)
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy wall-boom)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC)
+	(set-strategic-number sn-home-exploration-time 600)
+	(set-strategic-number sn-target-evaluation-hitpoints 1)
+	(disable-self)
+)
+#end-if

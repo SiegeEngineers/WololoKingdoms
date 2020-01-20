@@ -1,0 +1,108 @@
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+
+#load-if-not-defined OASIS-MAP
+#load-if-not-defined UP-MICHI-STYLE
+#load-if-not-defined BLACK-FOREST-MAP
+(defrule
+	(or	(game-time g:< gl-camp-raid-time)
+		(or	(and	(up-compare-const raid-unit == skirmisher-line)
+				(and	(up-compare-goal threat-time < 10000)
+					(up-compare-goal TSA != 1)))
+			(and	(up-compare-const raid-unit == eagle-warrior-line)
+				(up-research-status c: ri-elite-eagle-warrior != research-complete))))
+=>
+	(up-jump-rule 5)
+)
+
+(defrule
+	(unit-type-count raid-unit > 4)
+	(up-compare-goal gl-gathering-inside < MOST)
+	(building-type-count-total wonder == 0)
+	(players-building-type-count every-ally wonder == 0)
+	(population > 165)
+	(players-building-type-count target-player lumber-camp > 2); Something to target
+	(players-population target-player > 90); Worth raiding
+	(up-timer-status 35 != timer-running)
+	(or	(up-compare-goal gl-enemy-units-in-town < 10)
+		(goal MILITARY 1))
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+=>
+	(enable-timer 35 camp-raid-time-variance)
+	(set-goal gl-camp-raid YES)
+	(up-get-fact unit-type-count raid-unit temporary-goal2)
+)
+
+(defrule
+	(goal gl-camp-raid YES)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-get-target-fact building-type-count lumber-camp temporary-goal3)
+	(up-modify-goal temporary-goal3 c:- 5)
+	(up-get-target-fact building-type-count mining-camp temporary-goal4)
+	(up-modify-goal temporary-goal4 c:- 2)
+	(acknowledge-taunt every-ally 31)
+	(up-reset-unit c: raid-unit)
+	(up-reset-search 1 1 1 1)
+	(up-reset-filters)
+	(up-filter-exclude -1 -1 orderid-explore -1)
+	(up-modify-goal temporary-goal2 c:min 25)
+	(up-modify-goal temporary-goal3 c:max 0)
+	(up-modify-goal temporary-goal4 c:max 0)
+)
+
+(defrule
+	(goal gl-camp-raid YES)
+	(up-compare-goal temporary-goal2 >= 8)
+=>
+	(up-find-remote c: mining-camp g: temporary-goal4)
+	(up-reset-search 0 0 0 1)
+	(up-find-remote c: mining-camp c: 2)
+	(up-find-local c: raid-unit g: temporary-goal2)
+	(up-target-objects 0 action-move -1 aggressive)
+	(up-reset-search 1 1 1 1)
+	(up-modify-goal temporary-goal2 c:- 6)
+)
+
+(defrule
+	(goal gl-camp-raid YES)
+	(or	(game-time < 3600)
+		(up-compare-const gv-multiple-enemies == 0))
+=>
+	(up-find-remote c: lumber-camp g: temporary-goal3)
+	(up-reset-search 0 0 0 1)
+	(up-find-remote c: lumber-camp c: 5)
+	(up-find-local c: raid-unit g: temporary-goal2)
+	(up-target-objects 0 action-move -1 aggressive)
+	(set-goal gl-camp-raid NO)
+	(chat-to-player my-player-number "1Sending raid")
+	(chat-to-player chat-recipient "Sending raid")
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+(defrule
+	(goal gl-camp-raid YES)
+	(game-time >= 3600)
+=>
+	(up-find-remote c: lumber-camp g: temporary-goal3)
+	(up-reset-search 0 0 0 1)
+	(up-find-remote c: lumber-camp c: 5)
+	(up-find-remote c: market c: 1)
+	(up-find-local c: raid-unit g: temporary-goal2)
+	(up-target-objects 0 action-move -1 aggressive)
+	(set-goal gl-camp-raid NO)
+	(chat-to-player my-player-number "1Sending raid")
+	(chat-to-player chat-recipient "Sending raid")
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+

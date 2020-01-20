@@ -1,0 +1,50 @@
+#load-if-not-defined TURBO-RANDOM-MAP
+#load-if-defined DARK-AGE-START
+#load-if-not-defined REGICIDE
+#load-if-not-defined UP-MICHI-STYLE
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined YUCATAN-MAP
+(defrule
+	(current-age == dark-age)
+	(strategic-number sn-strategy-lock == 0)
+	(or	(map-type arabia)
+		(or	(map-type oasis)
+			(goal gl-rush-suitability-on-map GOOD)))
+	(game-time < 10)
+	(building-type-count-total town-center < 2)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal gl-new-scouting-style 1)
+	(goal POSITION POCKET)
+=>
+	(set-goal gl-DRUSH YES)
+	(set-strategic-number sn-allow-new-build-order 4)
+	(disable-self)
+)
+
+#load-if-not-defined DARK-AGE-END
+(defrule
+	(game-time > 240)
+	(goal gl-DRUSH YES)
+	(strategic-number sn-strategy-lock == 0)
+	(or	(strategic-number sn-sheep-count < 6)
+		(or	(up-gaia-type-count c: forage-bush < 4)
+			(and	(up-gaia-type-count g: gl-boar-unit < 1)
+				(up-compare-goal gl-boar-eaten < 1))))
+	(building-type-count-total barracks == 0)
+=>
+	(set-goal gl-DRUSH NO)
+	(set-strategic-number sn-allow-new-build-order 1)
+	(disable-self)
+)
+#end-if
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if

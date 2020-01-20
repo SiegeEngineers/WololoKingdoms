@@ -1,0 +1,978 @@
+;Scrush
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(true)
+=>
+	(set-strategic-number sn-maximum-food-drop-distance 10)
+	(set-strategic-number sn-maximum-wood-drop-distance 10)
+	(set-strategic-number sn-maximum-gold-drop-distance 10)
+	(set-goal gl-flush-type scrush)
+	(disable-self)
+)
+(defrule
+	(unit-type-count scout-cavalry-line >= 4)
+	(up-compare-goal gl-threat-time > 8000)
+	(strategic-number sn-allow-direct-unit-control != 1)
+=>
+	(set-strategic-number sn-allow-direct-unit-control 1)
+	(chat-local-to-self "allow duc")
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(population-headroom > 0)
+	(housing-headroom < 3)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(population-headroom > 0)
+	(building-type-count-total stable > 0)
+	(housing-headroom < 3)
+	(up-pending-objects c: house < 2)
+	(can-build house)
+=>
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(population-headroom > 0)
+	(building-type-count-total stable > 0)
+	(housing-headroom < 6)
+	(up-pending-objects c: house < 1)
+	(can-build house)
+=>
+	(build house)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	
+	(unit-type-count villager < 11)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	
+	(unit-type-count villager >= 11)
+	(up-research-status c: ri-loom < research-pending)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	
+	(unit-type-count villager >= 11)
+	(food-amount <= 199) ;249
+	(unit-type-count-total villager < 24)
+	(up-research-status c: ri-loom >= research-pending)
+=>
+	(set-strategic-number sn-enable-training-queue 1)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)	
+	(unit-type-count-total villager >= 19)
+	(or(food-amount >= 200) ; 250
+	   (unit-type-count-total villager >= 24))
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age >= feudal-age)
+=>
+	(set-strategic-number sn-enable-training-queue 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(unit-type-count-total villager < max-civ)
+	(up-research-status c: ri-loom < research-pending)
+	(unit-type-count villager < 10)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	
+	(or(and(food-amount >= 500)
+	       (unit-type-count villager >= 21))
+	(or(unit-type-count-total villager >= 24)
+	   (game-time > 560)))
+	(can-research feudal-age)
+=>
+	(research feudal-age)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	
+	(or(food-amount < 50)
+	   (and(civ-selected mayan)(housing-headroom == 0)))
+	(not(can-train villager))
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	
+	(unit-type-count-total villager >= 10)
+	(can-research ri-loom)
+=>
+	(research ri-loom)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(unit-type-count-total villager < max-civ)
+	(up-research-status c: ri-loom >= research-pending)
+	(food-amount < 450)
+	(unit-type-count villager < 24)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(unit-type-count-total villager < max-civ)
+	(food-amount < 450)
+	(up-research-status c: ri-loom >= research-pending)
+	(unit-type-count-total villager < 24) ; (unit-type-count-total villager < 26)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(wood-amount > 130)
+	(housing-headroom > 3)
+	(building-type-count-total mill == 0)
+	(game-time > 30)
+	(resource-found food)
+	(can-build mill)
+=>
+	(build mill)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(wood-amount > 130)
+	(housing-headroom > 3)
+	(building-type-count-total mill > 0)
+	(building-type-count-total lumber-camp == 0)
+	(game-time > 30)
+	(resource-found wood)
+	(can-build lumber-camp)
+=>
+	(build lumber-camp)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(housing-headroom > 3)
+	(building-type-count-total mill > 0)
+	(building-type-count-total lumber-camp < 2)
+	(or(unit-type-count-total villager > 21)
+	   (dropsite-min-distance wood > 6)) ;3
+	(resource-found wood)
+	(can-build lumber-camp)
+=>
+	(build lumber-camp)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(up-research-status c: feudal-age >= research-pending)
+	(building-type-count-total barracks == 0)
+	(can-build barracks)
+=>
+	(build barracks)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(building-type-count-total mill > 0)
+	(building-type-count lumber-camp > 0)
+	(dropsite-min-distance wood < 3)
+	(building-type-count-total farm < 3)
+	(or(up-compare-goal gl-berries-left < 4)
+	   (unit-type-count-total villager-forager > 4))
+	(or(up-research-status c: feudal-age < research-pending)
+	   (wood-amount >= 210))
+	(up-compare-goal gl-slain-deer < 3)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager < 8)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 0)
+	(set-strategic-number sn-food-gatherer-percentage 100)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 9)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 14)
+	(set-strategic-number sn-food-gatherer-percentage 85)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 10)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 75)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 11)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 12)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 13)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 27)
+	(set-strategic-number sn-food-gatherer-percentage 73)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 14)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 75)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 15)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 23)
+	(set-strategic-number sn-food-gatherer-percentage 77)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 16)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 21)
+	(set-strategic-number sn-food-gatherer-percentage 79)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 17)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-food-gatherer-percentage 80)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 18)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 27)
+	(set-strategic-number sn-food-gatherer-percentage 73)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 19)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 69)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 20)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-food-gatherer-percentage 65)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 21)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-food-gatherer-percentage 67)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 22)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-food-gatherer-percentage 69)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(unit-type-count villager == 23)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 70)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	;(up-compare-goal gl-strategy == mix)
+	(current-age == dark-age)
+	(unit-type-count villager >= 24)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 29)
+	(set-strategic-number sn-food-gatherer-percentage 71)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(up-research-status c: feudal-age >= research-pending)
+	(current-age == dark-age)
+	(unit-type-count-total villager == 21)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-food-gatherer-percentage 52)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(up-research-status c: feudal-age >= research-pending)
+	(current-age == dark-age)
+	(unit-type-count-total villager == 22)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(up-research-status c: feudal-age >= research-pending)
+	(current-age == dark-age)
+	(unit-type-count-total villager == 23)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 53)
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(up-research-status c: feudal-age >= research-pending)
+	(current-age == dark-age)
+	(unit-type-count-total villager == 24)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 55)
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(current-age == feudal-age)
+	(building-type-count-total stable == 0)
+	(can-build stable)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build stable)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(building-type-count-total mill > 0)
+	(building-type-count lumber-camp > 0)
+	(building-type-count-total stable > 0)
+	(building-type-count-total farm < 7)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(current-age == feudal-age)
+	(building-type-count-total stable > 0)
+	(building-type-count-total archery-range < 1)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(current-age == feudal-age)
+	(building-type-count-total stable > 0)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total archery-range < 3)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(building-type-count-total mill > 0)
+	(building-type-count lumber-camp > 0)
+	(building-type-count-total archery-range > 0)
+	(building-type-count-total farm < 11)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER) 
+	(current-age == feudal-age)
+	(building-type-count-total archery-range > 0)
+	(building-type-count-total blacksmith == 0)
+	(can-build blacksmith)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build blacksmith)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(building-type-count-total mill > 0)
+	(building-type-count lumber-camp > 0)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total farm < 17)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(building-type-count-total mill > 0)
+	(building-type-count lumber-camp > 0)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total farm >= 17)
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 2)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(up-research-status c: castle-age < research-pending)
+	(game-time < 1200) ;960
+	(strategic-number sn-military-level < 1)
+	;(players-unit-type-count target-player spearman-line < 1)
+	;(unit-type-count-total scout-cavalry-line < 5)
+	(can-train scout-cavalry-line)
+=>
+	(train scout-cavalry-line)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(up-research-status c: castle-age < research-pending)
+	(or(players-unit-type-count any-enemy spearman-line > 0)
+	   (players-military-population target-player > 4))
+	;(or(unit-type-count villager < 31)
+	;   (players-unit-type-count target-player skirmisher-line > 0))
+	(food-amount < 650)
+	(game-time < 1155)
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(or(military-population < 30)
+	   (military-population g:< gl-data-enemy-military-population))
+	(up-research-status c: castle-age < research-pending)
+	(current-age == feudal-age)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(or(military-population < 30)
+	   (military-population g:< gl-data-enemy-military-population))
+	(up-research-status c: castle-age < research-pending)
+	(current-age == feudal-age)
+	(food-amount < 650)
+	(not(can-afford-unit archer-line))
+	(can-train-with-escrow skirmisher-line)
+=>
+	(release-escrow food)
+	(release-escrow wood)
+	(train skirmisher-line)
+)
+(defrule
+	(up-compare-goal gl-data-civilian-population g:> gl-data-military-population)
+	(up-compare-goal gl-map-style != WATER)
+	(or(military-population < 30)
+	   (military-population g:< gl-data-enemy-military-population))
+	(current-age == feudal-age)
+	(up-pending-objects c: archer-line < 2)
+	(up-research-status c: castle-age >= research-pending)
+	(up-timer-status 19 == timer-running)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(game-time > 960)
+	(can-research-with-escrow ri-wheel-barrow)
+=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-wheel-barrow)
+)	
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(up-research-status c: castle-age < research-pending)
+	(or(food-amount < 650)
+	   (gold-amount < 160))
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(or(unit-type-count-total scout-cavalry-line >= 5)
+	   (game-time > 870))
+	(can-research ri-double-bit-axe)
+=>
+	(research ri-double-bit-axe)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(or(unit-type-count-total scout-cavalry-line >= 5)
+	   (game-time > 870))
+	(can-research ri-horse-collar)
+=>
+	(research ri-horse-collar)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(up-research-status c: castle-age >= research-pending)
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(unit-type-count-total villager >= 31)
+	(building-type-count-total mining-camp == 0)
+	(resource-found gold)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 21)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-food-gatherer-percentage 52)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 22)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 23)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 53)
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 24)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 55)
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 25)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 56)
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 26)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 58)
+	(set-strategic-number sn-food-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 27)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 60)
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 28)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 61)
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 29)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 63)
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 30)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 60)
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 0)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 31)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 59)
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 3)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 32)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 54)
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 6)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 33)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 49)
+	(set-strategic-number sn-food-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 9)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 34)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 35)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 36)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 37)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager == 38)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 41)
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age == feudal-age)
+	(unit-type-count villager >= 39)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule
+	(or(unit-type-count-total skirmisher-line > 0)
+	(or(unit-type-count-total archer-line > 5)
+	   (up-compare-goal gl-enable-tsa > 0)))
+	(can-research-with-escrow ri-fletching)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-fletching)
+)
+(defrule
+	(or(unit-type-count-total skirmisher-line > 0)
+	(or(unit-type-count-total archer-line > 5)
+	   (up-compare-goal gl-enable-tsa > 0)))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research-with-escrow ri-padded-archer-armor)
+=>
+	(release-escrow food)
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(current-age == feudal-age)
+	(military-population >= 5)
+	(players-unit-type-count every-enemy spearman-line < 1)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age < castle-transit)
+	(strategic-number sn-military-level > 0)
+	(players-building-type-count target-player watch-tower <= 1)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(up-compare-goal gl-map-style != WATER)
+	(military-population >= 5)
+	(up-research-status c: castle-age < research-pending)
+	(strategic-number sn-enemy-current-age == castle-transit)
+	(players-building-type-count target-player watch-tower <= 1)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age != castle-transit)
+	(building-type-count-total archery-range >= 3)
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(players-unit-type-count every-enemy spearman-line < 1)
+	(up-compare-goal gl-map-style != WATER)
+	(military-population >= 5)
+	(players-building-type-count focus-player castle < 1)
+	(up-research-status c: castle-age < research-pending)
+	(or(strategic-number sn-enemy-current-age >= castle-transit)
+	   (strategic-number sn-military-level > 0))
+	(up-compare-goal gl-enemy-strategy == fast-castle)
+	(players-building-type-count target-player watch-tower <= 1)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age != castle-transit)
+	(players-building-type-count focus-player castle > 0)
+	(unit-type-count battering-ram-line < 3)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(up-compare-goal gl-map-style != WATER)
+	(players-building-type-count focus-player watch-tower > 1)
+	(unit-type-count battering-ram-line < 3)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(players-unit-type-count every-enemy spearman-line < 1)
+	(up-compare-goal gl-map-style != WATER)
+	(military-population >= 5)
+	(strategic-number sn-enemy-current-age != castle-transit)
+	(players-building-type-count focus-player castle > 0)
+	(players-building-type-count target-player watch-tower <= 1)
+	(unit-type-count battering-ram-line >= 3)
+	(strategic-number sn-military-level > 0)
+	(up-compare-goal gl-enable-tsa < 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(up-compare-goal gl-map-style != WATER)
+	(strategic-number sn-enemy-current-age < castle-transit)
+	(players-building-type-count target-player watch-tower <= 1)
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(current-age == feudal-age)
+	(up-compare-goal gl-map-style != WATER)
+	(players-unit-type-count any-enemy spearman-line > 0)
+	(strategic-number sn-enemy-current-age < castle-transit)
+	(players-building-type-count target-player watch-tower <= 1)
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+)
+(defrule
+	(or(taunt-detected any-human 250)
+	   (taunt-detected my-player-number 250))
+=>
+	(chat-to-allies "Hi! I'm BruteForce v3.1 Created by CheeseOnToast")
+	(chat-to-allies "I will scrush")
+	(acknowledge-taunt this-any-human 250)
+	(acknowledge-taunt my-player-number 250)
+)
+
+(defrule
+	(up-research-status c: feudal-age >= research-pending)
+	(or(players-building-type-count target-player mill == 0)
+	(or(players-building-type-count target-player lumber-camp == 0)
+	   (players-building-type-count target-player mining-camp == 0)))
+	(up-timer-status 16 != timer-running)
+	(players-building-count target-player > 0)
+=>
+	(enable-timer 16 180)
+	(up-send-scout group-type-land-explore scout-enemy)
+)
+
+(defrule
+	(game-time > 660)
+	(building-type-count stable == 0)
+=>
+	(up-assign-builders c: stable c: 2)
+	(disable-self)
+)
+(defrule
+	(building-type-count stable > 0)
+=>
+	(up-assign-builders c: stable c: 1)
+	(disable-self)
+)

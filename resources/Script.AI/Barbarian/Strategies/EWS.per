@@ -1,0 +1,19 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy eew-strategy)
+	(set-goal gl-eew-strategy-type boom)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(goal gl-rush-suitability-on-map GOOD)
+=>
+	(set-goal gl-strategy ew-boom)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)

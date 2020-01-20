@@ -1,0 +1,31 @@
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-heavy-scorpion)
+=>
+	(research ri-heavy-scorpion)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-pending-objects c: scorpion-line < 1)
+	(can-train scorpion-line)
+=>
+	(train scorpion-line)
+)

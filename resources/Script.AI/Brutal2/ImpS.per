@@ -1,0 +1,6718 @@
+
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(strategic-number sn-castle-age-strategy != RUN)
+	(strategic-number sn-castle-age-strategy != end-game)
+=>
+	(up-modify-goal gl-previous-strategy s:= sn-castle-age-strategy)
+	(set-strategic-number sn-castle-age-strategy end-game)
+	(set-strategic-number sn-maximum-food-drop-distance 32)
+	(set-strategic-number sn-maximum-wood-drop-distance 32)
+	(set-strategic-number sn-maximum-gold-drop-distance 32)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-elite-skirmisher >= research-pending)
+	(can-research ri-imperial-skirmisher)
+=>
+	(research ri-imperial-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game) ; reset cost data every time we add them up again.
+=>
+	(up-reset-cost-data gl-cost-food)
+	(up-add-object-cost c: farm c: 4)
+	(up-add-object-cost c: house c: 2)
+	(up-add-object-cost c: town-center-foundation c: 1)
+	(up-add-object-cost c: villager c: 1)
+)
+#load-if-defined AZTEC-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-leather-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: eagle-warrior-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-compare-goal gl-previous-strategy == xbow)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-compare-goal gl-previous-strategy == xbow)
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-compare-goal gl-previous-strategy == xbow)
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(can-research ri-elite-eagle-warrior)
+=>
+	(research ri-elite-eagle-warrior)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(or(up-research-status c: ri-blast-furnace >= research-pending)
+	   (players-current-age any-enemy == imperial-age))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(or(up-research-status c: ri-plate-mail >= research-pending)
+	   (players-current-age every-enemy < imperial-age))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 4)
+	(can-build archery-range)
+=>
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-elite-skirmisher)
+=>
+	(research ri-elite-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-elite-skirmisher >= research-pending)
+	(can-research ri-imperial-skirmisher)
+=>
+	(research ri-imperial-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(unit-type-count-total skirmisher-line > 10)
+	   (up-research-status c: ri-arbalest >= research-pending))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-atlatl)
+=>
+	(research ri-atlatl)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 2)
+	(players-unit-type-count any-enemy militiaman-line > 0)
+	(or(up-research-status c: ri-arbalest < research-pending)
+	   (gold-amount < 200))
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	;(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(building-type-count-total siege-workshop < 2)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-capped-ram >= research-pending)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)	
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)	
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(or(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	   (up-research-status c: ri-eagle-warrior == research-pending))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == xbow)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming)))
+	(or(players-unit-type-count any-enemy eagle-warrior-line > 0)
+	   (players-unit-type-count any-enemy militiaman-line > 0))
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(building-type-count castle > 0)
+	(strategic-number sn-escrow-level == 0)
+	(military-population > 20)
+=>
+	(set-goal gl-split-goal 1500)
+)
+(defrule
+	(goal gl-split-goal 1500)
+=>
+	(set-escrow-percentage food 50)
+	(set-escrow-percentage gold 50)
+	(chat-local-to-self "escrowing for elite jaguar warrior")
+	(set-strategic-number sn-escrow-level my-unique-unit-upgrade)
+	(set-goal gl-split-goal 0)
+)
+(defrule
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+	(or(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(or(building-type-count castle == 0)
+	   (military-population < 20)))
+=>
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow food)
+	(release-escrow gold)
+	(chat-local-to-self "stopping escrow for elite jaguar warrior")
+)
+(defrule
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+	(can-research-with-escrow my-unique-unit-upgrade)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research my-unique-unit-upgrade)
+	(chat-local-to-self "researching elite jaguar warrior with escrow.")
+)
+
+#end-if
+#load-if-defined BERBERS-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-leather-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: eagle-warrior-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count stable < 6)
+	(up-pending-objects c: stable < 2)
+	(can-build stable)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build stable)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count archery-range < 6)
+	(up-pending-objects c: archery-range < 2)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-heavy-camel)
+=>
+	(research ri-heavy-camel)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-elite-genitour)
+=>
+	(research ri-elite-genitour)
+)
+
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-thumb-ring)
+=>
+	(research ri-thumb-ring)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-expeditions)
+=>
+	(research ri-expeditions)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train genitour-placeholder)
+=>
+	(train genitour-placeholder)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train camel-line)
+=>
+	(train camel-line)
+)
+(defrule
+	(unit-type-count trebuchet-set < 4)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(unit-type-count-total bombard-cannon < 3)
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 5)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total villager < max-civ)
+	(up-research-status c: imperial-age >= research-pending)
+	(unit-type-count-total villager < 100)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+#end-if
+#load-if-defined BRITON-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: archer-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 8)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(can-research ri-war-wolf)
+=>
+	(research ri-war-wolf)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total battering-ram-line < 6)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-crossbow)
+=>
+	(research ri-crossbow)
+	(chat-local-to-self "crossbow research 1")
+)
+(defrule
+	;(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+#end-if
+#load-if-defined BYZANTINE-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-iron-casting c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-heavy-camel c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: archer-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: camel-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(building-type-count-total castle < 1)
+	(up-research-status c: ri-cavalier >= research-pending)
+	(can-train knight-line)
+=>
+	(train knight-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-elite-skirmisher)
+=>
+	(research ri-elite-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-imperial-skirmisher)
+=>
+	(research ri-imperial-skirmisher)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 6)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 6)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total battering-ram-line < 3)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total bombard-cannon < 3)
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-research ri-fletching)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 1)
+	(building-type-count-total stable == 0)
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-elite-skirmisher >= research-pending)
+	(or(gold-amount < 100)
+	   (population < 165))
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-pikeman >= research-pending)
+	(or(gold-amount < 100)
+	   (population < 165))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 5)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total villager < max-civ)
+	(up-research-status c: imperial-age >= research-pending)
+	(unit-type-count-total villager < 100)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle > 0)
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle > 0)
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle > 0)
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle > 0)
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle > 0)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle > 0)
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-cavalier >= research-pending)
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-cavalier >= research-pending)
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-cavalier >= research-pending)
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-cavalier >= research-pending)
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-cavalier >= research-pending)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-cavalier >= research-pending)
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(building-type-count castle < 1)
+	(building-type-count-total stable > 0)
+	(can-research ri-cavalier)
+=>
+	(research ri-cavalier)
+)
+(defrule
+	(building-type-count castle < 1)
+	(building-type-count-total stable > 0)
+	(can-research ri-paladin)
+=>
+	(research ri-paladin)
+)
+(defrule
+	(players-unit-type-count any-enemy spearman-line > 0)
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+#end-if
+#load-if-defined BURMESE-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-iron-casting c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-heavy-camel c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: archer-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: camel-line c: 1)
+)
+(load-random 20 "Brutal2\BURMESE1"
+             80 "Brutal2\BURMESE2")
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+#end-if
+#load-if-defined CELTIC-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(players-unit-type-count any-enemy scorpion-line > 0)
+	(can-research ri-onager)
+=>
+	(research ri-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(players-unit-type-count any-enemy scorpion-line > 0)
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(players-unit-type-count any-enemy scorpion-line > 0)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-build castle)
+=>
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(load-random 50 "Brutal2\CELTICSCHO1"
+             50 "Brutal2\CELTICSCHO2")
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: battering-ram-line < 1)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+#end-if
+#load-if-defined CHINESE-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 8)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(can-research ri-crossbow)
+=>
+	(research ri-crossbow)
+	(chat-local-to-self "crossbow research 2")
+)
+(defrule
+	;(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle < 4)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+#end-if
+#load-if-defined ETHIOPIAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(can-research ri-onager)
+=>
+	(research ri-onager)
+)
+(defrule
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager)
+)
+(defrule
+	(can-research ri-heavy-scorpion)
+=>
+	(research ri-heavy-scorpion)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-man-at-arms)
+=>
+	(research ri-man-at-arms)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-long-swordsman)
+=>
+	(research ri-long-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-two-handed-swordsman)
+=>
+	(research ri-two-handed-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-champion)
+=>
+	(research ri-champion)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-research ri-royal-heirs)
+=>
+	(research ri-royal-heirs)
+)
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(unit-type-count-total bombard-cannon < 3)
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total battering-ram-line < 4)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total mangonel-line < 4)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total scorpion-line < 25)
+	(can-train scorpion-line)
+=>
+	(train scorpion-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(idle-farm-count < 5)
+	(up-pending-objects c: farm < 7)
+	(can-build farm)
+=>
+	(build farm)
+)
+#end-if
+#load-if-defined FRANKISH-CIV
+#load-if-defined UP-POCKET-POSITION
+(load "Brutal2\PALADIN")
+#else
+(load-random 30 "Brutal2\INFANTRYUU"
+             70 "Brutal2\PALADIN")
+#end-if
+#end-if
+#load-if-defined GOTHIC-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-champion c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: militiaman-line c: 1)
+	(up-add-object-cost c: hand-cannoneer c: 1)
+)
+(defrule
+	(or(players-unit-type-count any-enemy jaguar-warrior-line > 0)
+	(or(players-unit-type-count any-enemy berserk-line > 0)
+	(or(players-unit-type-count any-enemy militiaman-line > 0)
+       (players-unit-type-count any-enemy samurai-line > 0))))
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(can-research ri-onager)
+=>
+	(research ri-onager)
+)
+(defrule
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager)
+)
+(defrule
+	(can-research ri-heavy-scorpion)
+=>
+	(research ri-heavy-scorpion)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-man-at-arms)
+=>
+	(research ri-man-at-arms)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-long-swordsman)
+=>
+	(research ri-long-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-two-handed-swordsman)
+=>
+	(research ri-two-handed-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-champion)
+=>
+	(research ri-champion)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-research ri-anarchy)
+=>
+	(research ri-anarchy)
+)
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(unit-type-count-total bombard-cannon < 3)
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total battering-ram-line < 4)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total mangonel-line < 4)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total scorpion-line < 25)
+	(can-train scorpion-line)
+=>
+	(train scorpion-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: militiaman-line < 2)
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: spearman-line < 2)
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: my-unique-unit-line < research-pending)
+	(up-pending-objects c: rax-huskarl < 2)
+	(can-train rax-huskarl)
+=>
+	(train rax-huskarl)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: my-unique-unit-line >= research-pending)
+	(can-train rax-elite-huskarl)
+=>
+	(train rax-elite-huskarl)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(idle-farm-count < 5)
+	(up-pending-objects c: farm < 7)
+	(can-build farm)
+=>
+	(build farm)
+)
+#end-if
+#load-if-defined HUN-CIV
+#load-if-defined UP-POCKET-POSITION
+(load "Brutal2\PALADIN")
+#else
+(load "Brutal2\HCA")
+#end-if
+#end-if
+#load-if-defined INCAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-leather-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: eagle-warrior-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: slinger c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-eagle-warrior)
+=>
+	(research ri-eagle-warrior)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-elite-eagle-warrior)
+=>
+	(research ri-elite-eagle-warrior)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule	
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-elite-skirmisher)
+=>
+	(research ri-elite-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-elite-skirmisher >= research-pending)
+	(can-research ri-imperial-skirmisher)
+=>
+	(research ri-imperial-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(unit-type-count-total skirmisher-line > 10)
+	   (up-research-status c: ri-arbalest >= research-pending))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(unit-type-count-total skirmisher-line > 10)
+	   (up-research-status c: ri-arbalest >= research-pending))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	;(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	;(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(building-type-count-total archery-range < 4)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	;(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(building-type-count-total siege-workshop < 2)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-andean-sling)
+=>
+	(research ri-andean-sling)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total battering-ram-line < 3)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: skirmisher-line < 2)
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: slinger < 2)
+	(can-train slinger)
+=>
+	(train slinger)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 5)
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total villager < max-civ)
+	(up-research-status c: imperial-age >= research-pending)
+	(unit-type-count-total villager < 100)
+	(can-train-with-escrow villager)
+=>
+	(release-escrow food)
+	(train villager)
+	(enable-timer 46 21)
+)
+#end-if
+#load-if-defined INDIAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-leather-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: eagle-warrior-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total stable < 8)
+	(can-build stable)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build stable)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 4)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(can-research ri-heavy-camel)
+=>
+	(research ri-heavy-camel)
+)
+(defrule
+	(can-research ri-imperial-camel)
+=>
+	(research ri-imperial-camel)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-sultans)
+=>
+	(research ri-sultans)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train camel-line)
+=>
+	(train camel-line)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 2)
+	(can-build siege-workshop)
+=>
+	(build siege-workshop)
+)
+(defrule
+	(unit-type-count-total bombard-cannon < 3)
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 5)
+	(can-build farm)
+=>
+	(build farm)
+)
+#end-if
+#load-if-defined ITALIAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-leather-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: eagle-warrior-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 4)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 4)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-thumb-ring)
+=>
+	(research ri-thumb-ring)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	;(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	;(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(players-building-count any-ally > 1)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-pavise)
+=>
+	(research ri-pavise)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train condottiero-placeholder)
+=>
+	(train condottiero-placeholder)
+)
+(defrule
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 4)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(unit-type-count-total bombard-cannon < 4)
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(unit-type-count-total battering-ram-line < 4)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+;(defrule
+;	(true)
+;=>
+;	(up-chat-data-to-self "condottiero-placeholder: %d" c: condottiero-placeholder)
+;)
+#end-if
+#load-if-defined JAPANESE-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-champion c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: militiaman-line c: 1)
+	(up-add-object-cost c: hand-cannoneer c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 6)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(building-type-count castle == 0)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(building-type-count castle == 0)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(building-type-count castle == 0)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(up-research-status c: ri-cavalier >= research-pending)
+	(building-type-count castle == 0)
+	(can-train knight-line)
+=>
+	(train knight-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-onager)
+=>
+	(research ri-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 4)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: mangonel-line < 1)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(building-type-count-total castle < 4)
+	(or(players-unit-type-count any-enemy camel-line > 0)
+	(or(players-unit-type-count any-enemy knight-line > 0)
+	   (players-unit-type-count any-enemy scout-cavalry-line > 0))))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+#end-if
+#load-if-defined KHMER-CIV
+(load-random 50 "Brutal2\BURMESE2"
+             50 "Brutal2\KHMER1")
+#end-if
+#load-if-defined KOREAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-thumb-ring c: 1)
+	(up-add-research-cost c: ri-bombard-tower c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: archer-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: bombard-tower c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 8)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(unit-type-count-total mangonel-line < 10)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(unit-type-count-total mangonel-line > 3)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+	(chat-local-to-self "crossbow research 3")
+)
+(defrule
+	(can-research ri-crossbow)
+=>
+	(research ri-crossbow)
+)
+(defrule
+	;(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total castle < 4)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(military-population > 30)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(strategic-number sn-escrow-level == 0)
+	(building-type-count castle > 0)
+	(building-type-count-total farm > 14)
+=>
+	(set-escrow-percentage wood 90)
+	(set-escrow-percentage gold 90)
+	(set-strategic-number sn-escrow-level my-unique-unit-upgrade)
+	(chat-local-to-self "escrowing for elite war wagon")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+	(or(building-type-count castle == 0)
+	(or(military-population < 30)
+	(or(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	   (building-type-count-total farm < 14))))
+=>
+	(set-escrow-percentage wood 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow wood)
+	(release-escrow gold)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "stopping escrow for elite war wagon")
+)
+(defrule
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+	(can-research-with-escrow my-unique-unit-upgrade)
+=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(research my-unique-unit-upgrade)
+)
+#end-if
+#load-if-defined MAYAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+=>
+	(up-add-object-cost c: archer-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(can-build-with-escrow castle)
+=>
+	(release-escrow stone)
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(building-type-count-total barracks == 0)
+	(can-build barracks)
+=>
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(building-type-count-total archery-range == 0)
+	(can-build archery-range)
+=>
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(up-research-status c: ri-chemistry >= research-pending)
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(up-research-status c: ri-ballistics >= research-pending)
+	(can-research ri-thumb-ring)
+=>
+	(research ri-thumb-ring)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == castled)
+	(up-compare-goal gl-previous-strategy == xbow))
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	    (up-compare-goal gl-previous-strategy == booming))
+=>
+	(up-add-object-cost c: archer-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: eagle-warrior-line c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(set-goal gl-split-goal 10000)
+)
+(defrule
+	(goal gl-split-goal 10000)
+=>
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(set-goal gl-split-goal 0)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	    (up-compare-goal gl-previous-strategy == booming))
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(can-research ri-elite-eagle-warrior)
+=>
+	(research ri-elite-eagle-warrior)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(or(up-research-status c: ri-blast-furnace >= research-pending)
+	   (players-current-age any-enemy == imperial-age))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(or(up-research-status c: ri-plate-mail >= research-pending)
+	   (players-current-age every-enemy < imperial-age))
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(up-compare-goal gl-previous-strategy == eagle-rush)
+	   (up-compare-goal gl-previous-strategy == booming))
+	(can-train battering-ram-line)
+	(unit-type-count-total battering-ram-line < 5)
+=>
+	(train battering-ram-line)
+)
+#end-if
+	
+#load-if-defined MAGYAR-CIV
+#load-if-defined UP-POCKET-POSITION
+(load "Brutal2\PALADIN")
+#else
+(load "Brutal2\HCA")
+#end-if
+(load "Brutal2\CAVALRYUU")
+#end-if
+#load-if-defined MALAY-CIV
+(load-random 40 "Brutal2\BURMESE1"
+             30 "Brutal2\BURMESE2"
+			 30 "Brutal2\INFANTRYUU")
+#end-if
+#load-if-defined MALIAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-man-at-arms)
+=>
+	(research ri-man-at-arms)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-long-swordsman)
+=>
+	(research ri-long-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-two-handed-swordsman)
+=>
+	(research ri-two-handed-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-champion)
+=>
+	(research ri-champion)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier)
+)
+(defrule
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(building-type-count castle == 0)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(or(building-type-count castle == 0)
+	   (unit-type-count-total archer-line > 10))
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(or(building-type-count castle == 0)
+	   (unit-type-count-total archer-line > 10))
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(up-research-status c: ri-cavalier >= research-pending)
+	(or(building-type-count castle == 0)
+	   (up-research-status c: my-unique-research >= research-pending))
+	(can-train knight-line)
+=>
+	(train knight-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(unit-type-count-total scout-cavalry-line > 1)
+	   (unit-type-count-total knight-line > 0))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(unit-type-count trebuchet-set < 4)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(unit-type-count bombard-cannon < 4)
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-elite-eagle-warrior c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: eagle-warrior-line c: 1)
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: archer-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(wood-amount < 200)
+	   (up-research-status c: ri-elite-eagle-warrior >= research-pending))
+	(food-amount >= 500)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(wood-amount < 200)
+	   (up-research-status c: ri-elite-eagle-warrior >= research-pending))
+	(can-research ri-elite-eagle-warrior)
+=>
+	(research ri-elite-eagle-warrior)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(strategic-number sn-escrow-level == 0)
+	(research-available my-unique-unit-upgrade)
+	(military-population >= 30)
+=>
+	(set-escrow-percentage wood 100)
+	(set-escrow-percentage food 50)
+	(set-strategic-number sn-escrow-level my-unique-unit-upgrade)
+	(chat-local-to-self "saving for elite plumed archer")
+)
+(defrule
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+	(or(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	   (military-population < 30))
+=>
+	(set-escrow-percentage wood 0)
+	(set-escrow-percentage food 0)
+	(release-escrow food)
+	(release-escrow wood)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "stopping escrow for elite plumed archer")
+)
+(defrule
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+	(can-research-with-escrow my-unique-unit-upgrade)
+=>
+	(release-escrow wood)
+	(release-escrow food)
+	(research my-unique-unit-upgrade)
+	(chat-local-to-self "researching elite plumed archer with escrow")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(can-research ri-obsidian-arrows)
+=>
+	(research ri-obsidian-arrows)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy xbow)(goal gl-previous-strategy castled))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-eagle-warrior)
+=>
+	(research ri-eagle-warrior)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-elite-eagle-warrior)
+=>
+	(research ri-elite-eagle-warrior)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(unit-type-count-total eagle-warrior-line > 5)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(building-type-count-total archery-range < 1)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(goal gl-previous-strategy booming)(goal gl-previous-strategy eagle-rush))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 4)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(unit-type-count-total battering-ram-line < 5)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+#end-if
+#load-if-defined MONGOL-CIV
+(load "Brutal2\HCA")
+(load "Brutal2\ARCHERUU")
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-heavy-camel c: 1)
+	(up-add-object-cost c: camel-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(players-unit-type-count any-enemy knight-line > 0)
+	(can-research ri-heavy-camel)
+=>
+	(research ri-heavy-camel)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(players-unit-type-count any-enemy knight-line > 0)
+	(can-train camel-line)
+=>
+	(train camel-line)
+)	
+#end-if
+#load-if-defined PERSIAN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-paladin c: 1)
+	(up-add-research-cost c: ri-heavy-camel c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: knight-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: camel-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(players-unit-type-count any-enemy knight-line > 0)
+	(can-research ri-heavy-camel)
+=>
+	(research ri-heavy-camel)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(players-unit-type-count any-enemy knight-line > 0)
+	(can-train camel-line)
+=>
+	(train camel-line)
+)	
+(load "Brutal2\PALADIN")
+;(load "Brutal2\CAVALRYUU")
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	;(players-unit-type-count any-enemy spearman-line > 0)
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	;(players-unit-type-count any-enemy spearman-line > 0)
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 4)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count hand-cannoneer > 0)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count hand-cannoneer > 0)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count hand-cannoneer > 0)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+#end-if
+#load-if-defined PORTUGUESE-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-paladin c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: knight-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+)
+(defrule
+	(building-type-count-total feitoria < max-feitoria)
+	(can-build feitoria)
+=>
+	(set-goal gl-pause-tsa 1)
+	(up-assign-builders c: feitoria c: 3)
+	(build feitoria)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 6)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+#end-if
+#load-if-defined SARACEN-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: ri-heavy-camel c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: knight-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: archer-line c: 1)
+	(up-add-object-cost c: camel-line c: 1)
+)
+(load "Brutal2\CAVALRYUU")
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-onager)
+=>
+	(research ri-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: mangonel-line < 1)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+#end-if
+#load-if-defined SLAVIC-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-paladin c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: knight-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-build castle)
+=>
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(load-random 50 "Brutal2\CELTICSCHO1"
+             50 "Brutal2\CELTICSCHO2")
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: battering-ram-line < 1)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+#end-if
+#load-if-defined SPANISH-CIV
+#load-if-defined UP-POCKET-POSITION
+(load "Brutal2\PALADIN")
+#else
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-bombard-tower c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: knight-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: bombard-cannon c: 1)
+	(up-add-object-cost c: bombard-tower c: 1)
+	(up-add-object-cost c: hand-cannoneer c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total stable == 0)
+	(can-build stable)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build stable)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range > 0)
+	(building-type-count-total archery-range < 6)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range > 0)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range > 0)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range > 0)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(building-type-count castle < 4)
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+#end-if
+#end-if
+#load-if-defined TEUTONIC-CIV
+(load "Brutal2\PALADIN")
+#end-if
+#load-if-defined TURKISH-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-heavy-camel c: 1)
+	(up-add-research-cost c: ri-plate-barding c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-capped-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-bombard-tower c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: knight-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: bombard-cannon c: 1)
+	(up-add-object-cost c: bombard-tower c: 1)
+	(up-add-object-cost c: hand-cannoneer c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total stable < 6)
+	(can-build stable)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build stable)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 6)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-barding >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train scout-cavalry-line)
+=>
+	(train scout-cavalry-line)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-husbandry)
+=>
+	(research ri-husbandry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+#end-if
+#load-if-defined VIETNAMESE-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total archery-range < 8)
+	(can-build archery-range)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(can-research ri-crossbow)
+=>
+	(research ri-crossbow)
+	(chat-local-to-self "crossbow research 4")
+)
+(defrule
+	;(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-elite-battle-elephant)
+=>
+	(research ri-elite-battle-elephant)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train battle-elephant)
+=>
+	(train battle-elephant)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count castle < 4)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+#end-if
+#load-if-defined VIKING-CIV
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: ri-arbalest c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-plate-mail c: 1)
+	(up-add-research-cost c: ri-blast-furnace c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+	(up-add-research-cost c: ri-champion c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: militiaman-line c: 1)
+	(up-add-object-cost c: archer-line c: 1)
+)
+(defrule	
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total archer-line > 10)
+	(can-research ri-arbalest)
+=>
+	(research ri-arbalest)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-champion >= research-pending)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total skirmisher-line > 10)
+	(can-research ri-elite-skirmisher)
+=>
+	(research ri-elite-skirmisher)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(building-type-count-total barracks < 8)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(build siege-workshop)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-build castle)
+=>
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-champion >= research-pending)
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-arson)
+=>
+	(research ri-arson)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-research ri-tracking)
+=>
+	(research ri-tracking)
+)
+(load-random 50 "Brutal2\CELTICSCHO1"
+             50 "Brutal2\CELTICSCHO2")
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-pending-objects c: battering-ram-line < 1)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-champion >= research-pending)
+	(or(civilian-population > 100)(food-amount > 300))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-champion >= research-pending)
+	(can-research ri-chieftains)
+=>
+	(research ri-chieftains)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-man-at-arms)
+=>
+	(research ri-man-at-arms)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-man-at-arms)
+=>
+	(research ri-man-at-arms)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-long-swordsman)
+=>
+	(research ri-long-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-two-handed-swordsman)
+=>
+	(research ri-two-handed-swordsman)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-champion)
+=>
+	(research ri-champion)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	;(up-research-status c: ri-elite-skirmisher >= research-pending)
+	(players-unit-type-count focus-player archer-line > 0)
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-two-handed-swordsman >= research-pending)
+	(up-pending-objects c: militiaman-line < 2)
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-champion >= research-pending)
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-champion >= research-pending)
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-champion >= research-pending)
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-champion >= research-pending)
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-research-status c: ri-plate-mail >= research-pending)
+	   (not(research-available ri-plate-mail)))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(up-research-status c: ri-blast-furnace >= research-pending)
+	   (not(research-available ri-blast-furnace)))
+	(can-research ri-squires)
+=>
+	(research ri-squires)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(up-research-status c: ri-champion >= research-pending)
+	(civ-selected aztec)
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(players-unit-type-count any-enemy scout-cavalry-line <= 1)
+	(players-unit-type-count any-enemy eagle-warrior-line <= 1)
+	(or(players-unit-type-count any-enemy cavalier > 0)
+	   (players-unit-type-count any-enemy paladin > 0))
+	(unit-type-count-total monk < 15)
+	(can-train monk)
+=>
+	(train monk)
+)
+(defrule
+	(or(up-research-status c: imperial-age >= research-pending)
+	   (players-unit-type-count any-enemy battering-ram-line > 0))
+	(or(building-type-count-total castle > 0)
+	   (building-type-count-total bombard-tower > 0))
+	(can-research ri-murder-holes)
+=>
+	(research ri-murder-holes)
+)
+(defrule
+	(or(unit-type-count-total trebuchet-set > 0)
+	   (unit-type-count-total mangonel-line > 0))
+	(can-research ri-siege-engineers)
+=>
+	(research ri-siege-engineers)
+)
+(defrule
+	(or(building-type-count-total archery-range >= 4)
+	(or(building-type-count-total stable >= 4)
+	   (building-type-count-total barracks >= 4)))
+	(can-research ri-conscription)
+=>
+	(research ri-conscription)
+)
+(defrule
+	(unit-type-count-total battering-ram-line > 0)
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(unit-type-count-total knight-line > 10)
+	(can-research ri-cavalier)
+=>
+	(research ri-cavalier)
+)
+(defrule
+	(unit-type-count-total knight-line > 10)
+	(can-research ri-plate-barding)
+=>
+	(research ri-plate-barding)
+)
+(defrule
+	(unit-type-count-total knight-line > 10)
+	(not(research-available ri-plate-barding))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(unit-type-count-total hand-cannoneer > 0)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(unit-type-count-total hand-cannoneer > 0)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(unit-type-count-total hand-cannoneer > 0)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(up-research-status c: ri-siege-ram >= research-pending)
+	(unit-type-count-total battering-ram-line < 4)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count-total villager < max-civ)
+	(or(unit-type-count-total villager < 100)
+	(or(housing-headroom > 20)
+	   (population-headroom >= 1)))
+	(unit-type-count-total villager < 134)
+	(can-train villager)
+=>
+	(train villager)
+	(enable-timer 46 21)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-gold-mining)
+=>
+	(research ri-gold-mining)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-gold-shaft-mining)
+=>
+	(research ri-gold-shaft-mining)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-stone-mining)
+=>
+	(research ri-stone-mining)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-stone-shaft-mining)
+=>
+	(research ri-stone-shaft-mining)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-two-man-saw)
+=>
+	(research ri-two-man-saw)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(can-research ri-crop-rotation)
+=>
+	(research ri-crop-rotation)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(or(idle-farm-count < 5)
+	   (building-type-count-total farm < 10))
+	(can-build farm)
+=>
+	(build farm)
+)
+(defrule
+	(not(research-available ri-plate-barding))
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(can-research ri-pikeman)
+=>
+	(research ri-pikeman)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(can-research ri-halberdier)
+=>
+	(research ri-halberdier)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(can-research ri-plate-mail)
+=>
+	(research ri-plate-mail)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(unit-type-count-total spearman-line > 5)
+	(up-research-status c: ri-pikeman >= research-pending)
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+(defrule
+	(unit-type-count-total camel-line > 5)
+	(can-research ri-heavy-camel)
+=>
+	(research ri-heavy-camel)
+)
+(defrule
+	(up-research-status c: imperial-age >= research-pending)
+	(building-type-count-total university == 0)
+	(can-build university)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build university)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(population > 180)
+	(or(civilian-population > 100)(food-amount > 300))
+	(military-population < 80)
+	(food-amount > 1000)
+	(wood-amount > 1000)
+	(or(civilian-population > 100)(food-amount > 300))
+=>
+	(delete-unit villager)
+)
+(defrule
+	(warboat-count >= 30)
+	(can-research ri-galleon)
+=>
+	(research ri-galleon)
+)
+(defrule
+	(warboat-count >= 30)
+	(can-research ri-fast-fire-ship)
+=>
+	(research ri-fast-fire-ship)
+)
+(defrule
+	(warboat-count >= 30)
+	(can-research ri-careening)
+=>
+	(research ri-careening)
+)
+(defrule
+	(warboat-count >= 30)
+	(can-research ri-dry-dock)
+=>
+	(research ri-dry-dock)
+)
+(defrule
+	(warboat-count >= 30)
+	(can-research ri-shipwright)
+=>
+	(research ri-shipwright)
+)
+(defrule
+	(warboat-count >= 30)
+	(can-research ri-cannon-galleon)
+=>
+	(research ri-cannon-galleon)
+)
+(defrule
+	(warboat-count >= 30)
+	(can-research ri-elite-cannon-galleon)
+=>
+	(research ri-elite-cannon-galleon)
+)
+(defrule
+	(up-research-status c: ri-cannon-galleon >= research-pending)
+	(can-train cannon-galleon)
+=>
+	(train cannon-galleon)
+)
+(defrule
+	(players-building-type-count every-enemy dock == 0)
+	(warboat-count > 30)
+=>
+	(delete-unit galley-line)
+)
+(defrule
+	(players-building-type-count every-enemy dock == 0)
+	(warboat-count > 30)
+=>
+	(delete-unit fire-ship-line)
+)
+(defrule
+	(up-research-status c: ri-halberdier >= research-pending)
+	(or(players-unit-type-count focus-player knight-line > 0)
+	   (players-unit-type-count focus-player cavalry-archer-line > 0))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(unit-type-count battering-ram-line > 4)
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(taunt-detected any-human 250)
+	   (taunt-detected my-player-number 250))
+=>
+	(chat-to-allies "Hi! I'm BruteForce v3.1 Created by CheeseOnToast")
+	(chat-to-allies "Will do what my civ is good for.")
+	(acknowledge-taunt this-any-human 250)
+	(acknowledge-taunt my-player-number 250)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-escrow-level == 0)
+	(food-amount < 200)
+	(unit-type-count-total villager < 100)
+	(or(housing-headroom > 17)
+	   (population-headroom > 0))
+=>
+	(set-escrow-percentage food 100)
+	(set-strategic-number sn-escrow-level saving-food)
+	(chat-local-to-self "saving food for a moment")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-escrow-level == saving-food)
+	(or(food-amount >= 200)
+	(or(unit-type-count-total villager >= 100)
+	(and(housing-headroom < 17)
+	    (population-headroom == 0))))
+=>
+	(set-escrow-percentage food 0)
+	(release-escrow food)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "free spending of food")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-escrow-level == 0)
+	(wood-amount < 200)
+	(building-type-count-total farm >= 30)
+	(building-type-count-total town-center >= 3)
+=>
+	(set-escrow-percentage wood 100)
+	(set-strategic-number sn-escrow-level saving-wood)
+	(chat-local-to-self "saving wood for a moment")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-escrow-level == saving-wood)
+	(or(building-type-count-total town-center < 3)
+	(or(wood-amount > 200)
+	   (building-type-count-total farm < 30)))
+=>
+	(set-escrow-percentage wood 0)
+	(release-escrow wood)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "free spending of wood")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-escrow-level == 0)
+	(gold-amount < 200)
+=>
+	(set-escrow-percentage gold 100)
+	(set-strategic-number sn-escrow-level saving-gold)
+	(chat-local-to-self "saving gold for a moment")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-escrow-level == saving-gold)
+	(gold-amount >= 200)
+=>
+	(set-escrow-percentage gold 0)
+	(release-escrow gold)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "free spending of gold")
+)
+
+(defrule
+	(up-research-status c: imperial-age == research-pending)
+	(up-compare-goal gl-previous-strategy == xbow)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(up-research-status c: imperial-age == research-pending)
+	(up-compare-goal gl-previous-strategy == krush)
+	(can-train knight-line)
+=>
+	(train knight-line)
+)
+(defrule
+	(up-research-status c: imperial-age == research-pending)
+	(up-compare-goal gl-previous-strategy == eagle-rush)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule
+	(current-age == imperial-age)
+	(research-available ri-cavalier)
+	(unit-type-count-total knight-line > 5)
+	(strategic-number sn-escrow-level == 0)
+=>
+	(set-escrow-percentage food 100)
+	(set-escrow-percentage gold 100)
+	(set-strategic-number sn-escrow-level ri-cavalier)
+	(chat-local-to-self "escrowing for cavalier")
+)
+(defrule
+	(current-age == imperial-age)
+	(or(up-research-status c: ri-cavalier >= research-pending)
+	   (unit-type-count-total knight-line < 5))
+	(strategic-number sn-escrow-level == ri-cavalier)
+=>
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow food)
+	(release-escrow gold)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "stopping escrowing for cavalier")
+)
+(defrule
+	(strategic-number sn-escrow-level == ri-cavalier)
+	(can-research-with-escrow ri-cavalier)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-cavalier)
+)
+
+(defrule
+	(current-age == imperial-age)
+	(unit-type-count-total spearman-line > 10)
+	(research-available ri-halberdier)
+	(strategic-number sn-escrow-level == 0)
+=>
+	(set-escrow-percentage food 50)
+	(set-escrow-percentage gold 100)
+	(chat-local-to-self "escrowing for halberdier")
+	(set-strategic-number sn-escrow-level ri-halberdier)
+)
+(defrule
+	(current-age == imperial-age)
+	(or(up-research-status c: ri-halberdier >= research-pending)
+	(or(unit-type-count-total spearman-line < 10)
+	   (not(research-available ri-halberdier))))
+	(strategic-number sn-escrow-level == ri-halberdier)
+=>
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow food)
+	(release-escrow gold)
+	(chat-local-to-self "stopping escrowing for halberdier")
+	(set-strategic-number sn-escrow-level 0)
+)
+(defrule
+	(strategic-number sn-escrow-level == ri-halberdier)
+	(can-research-with-escrow ri-halberdier)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-halberdier)
+	(chat-local-to-self "researching halb with escrow")
+)
+
+	
+(defrule
+	(current-age == imperial-age)
+	(research-available ri-heavy-camel)
+	(up-research-status c: ri-heavy-camel < research-pending)
+	(unit-type-count-total camel-line > 5)
+	(strategic-number sn-escrow-level == 0)
+=>
+	(set-escrow-percentage food 100)
+	(set-escrow-percentage gold 100)
+	(set-strategic-number sn-escrow-level ri-heavy-camel)
+	(chat-local-to-self "escrowing for heavy camel")
+)
+(defrule
+	(current-age == imperial-age)
+	(or(up-research-status c: ri-heavy-camel >= research-pending)
+	   (unit-type-count-total camel-line < 5))
+	(strategic-number sn-escrow-level == ri-heavy-camel)
+=>
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow food)
+	(release-escrow gold)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "stopping escrowing for heavy camel")
+)
+(defrule
+	(strategic-number sn-escrow-level == ri-heavy-camel)
+	(can-research-with-escrow ri-heavy-camel)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-heavy-camel)
+)
+(defrule
+	(or(up-research-status c: ri-cavalier >= research-pending)
+	   (up-research-status c: ri-heavy-camel >= research-pending))
+	(research-available ri-plate-barding)
+	(up-research-status c: ri-plate-barding < research-pending)
+	(strategic-number sn-escrow-level == 0)
+=>
+	(set-escrow-percentage food 100)
+	(set-escrow-percentage gold 100)
+	(set-strategic-number sn-escrow-level ri-plate-barding)
+	(chat-local-to-self "escrowing for plate-barding")
+)
+(defrule
+	(or(and(up-research-status c: ri-cavalier < research-pending)
+	       (up-research-status c: ri-heavy-camel < research-pending))
+	   (up-research-status c: ri-plate-barding >= research-pending))
+	(strategic-number sn-escrow-level == ri-plate-barding)
+=>
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow food)
+	(release-escrow gold)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "stopping escrowing for plate-barding")
+)
+(defrule
+	(strategic-number sn-escrow-level == ri-plate-barding)
+	(can-research-with-escrow ri-plate-barding)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-plate-barding)
+)
+
+(defrule
+	(current-age == imperial-age)
+	(research-available ri-paladin)
+	(unit-type-count-total knight-line > 10)
+	(up-research-status c: ri-paladin < research-pending)
+	(strategic-number sn-escrow-level == 0)
+=>
+	(set-escrow-percentage food 100)
+	(set-escrow-percentage gold 100)
+	(set-strategic-number sn-escrow-level ri-paladin)
+	(chat-local-to-self "escrowing for ri-paladin")
+)
+(defrule
+	(current-age == imperial-age)
+	(or(up-research-status c: ri-paladin >= research-pending)
+	   (unit-type-count-total knight-line < 10))
+	(strategic-number sn-escrow-level == ri-paladin)
+=>
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow food)
+	(release-escrow gold)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "stopping escrowing for ri-paladin")
+)
+(defrule
+	(strategic-number sn-escrow-level == ri-paladin)
+	(can-research-with-escrow ri-paladin)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-paladin)
+)
+#end-if
+#load-if-defined JAPANESE-CIV
+(defrule
+	(unit-type-count my-unique-unit-line > 10)
+	(current-age == imperial-age)
+	(research-available my-unique-unit-upgrade)
+	(building-type-count-total castle > 0)
+	(strategic-number sn-escrow-level == 0)
+=>
+	(set-escrow-percentage food 80)
+	(set-escrow-percentage gold 80)
+	(set-strategic-number sn-escrow-level my-unique-unit-upgrade)
+	(chat-local-to-self "escrowing for elite samurai")
+)
+(defrule
+	(or(unit-type-count my-unique-unit-line < 10)
+	(or(not(research-available my-unique-unit-upgrade))
+	(or(building-type-count-total castle == 0)
+	   (up-research-status c: my-unique-unit-upgrade >= research-pending))))
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+=>
+	(set-escrow-percentage food 0)
+	(set-escrow-percentage gold 0)
+	(release-escrow food)
+	(release-escrow gold)
+	(set-strategic-number sn-escrow-level 0)
+	(chat-local-to-self "stopping escrowing for elite samurai")
+)
+(defrule
+	(strategic-number sn-escrow-level == my-unique-unit-upgrade)
+	(can-research-with-escrow my-unique-unit-upgrade)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research my-unique-unit-upgrade)
+)
+#end-if
+
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(population >= 180)
+	(unit-type-count-total mangonel-line >= 3)
+	(can-research ri-onager)
+=>
+	(research ri-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(population >= 180)
+	(unit-type-count-total mangonel-line >= 3)
+	(can-research ri-siege-onager)
+=>
+	(research ri-siege-onager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-idle-unit-count idle-type-villager == 0)
+	(unit-type-count-total villager < 100)
+	(can-train-with-escrow villager)
+=>
+	(release-escrow food)
+	(train villager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-idle-unit-count idle-type-villager == 0)
+	(population < 150)
+	(unit-type-count-total villager < 120)
+	(can-train-with-escrow villager)
+=>
+	(release-escrow food)
+	(train villager)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(idle-farm-count < 1)
+	(up-pending-objects c: farm < 5)
+	(can-build-with-escrow farm)
+=>
+	(release-escrow wood)
+	(build farm)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(population-headroom > 0)
+	(up-pending-objects c: house < 1)
+	(can-build-with-escrow house)
+=>
+	(release-escrow wood)
+	(build house)
+)
+	
+; NEW
+(defrule
+	(current-age == imperial-age)
+	(population-headroom < 1)
+	(housing-headroom < 20)
+	(up-compare-goal gl-enable-tsa != 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+	(chat-local-to-self "imp reset 1")
+)
+(defrule
+	(current-age == imperial-age)
+	(strategic-number sn-military-level > 0)
+	(up-compare-goal gl-enable-tsa != 1)
+=>
+	(set-goal gl-enable-tsa 1)
+	(set-goal gl-tsa-duc 1)
+	(up-reset-unit c: all-units-class)
+	(chat-local-to-self "imp reset 2")
+)
+(defrule
+	(current-age == imperial-age)
+	(strategic-number sn-military-level <= 0)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+	(chat-local-to-self "imp reset 3")
+)
+(defrule
+	(current-age == imperial-age)
+	(or(population-headroom > 0)
+	   (housing-headroom > 20))
+	(strategic-number sn-military-level < 1)
+	(up-compare-goal gl-enable-tsa == 1)
+=>
+	(set-goal gl-enable-tsa 0)
+	(up-reset-unit c: all-units-class)
+	(chat-local-to-self "imp reset 4")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(or(civilian-population > 100)(food-amount > 300))
+	(or(taunt-detected any-human 250)
+	   (taunt-detected my-player-number 250))
+=>
+	(chat-to-allies "Hi! I'm BruteForce v3.1 Created by CheeseOnToast")
+	(chat-to-allies "Will do what my civ is good for.")
+	(acknowledge-taunt this-any-human 250)
+	(acknowledge-taunt my-player-number 250)
+)
+; Imperial age economy settings NEW
+(defrule
+	(or(strategic-number sn-castle-age-strategy != end-game)
+	   (unit-type-count villager < 50))
+=>
+	(up-jump-rule 4) ;not safe to change eco ; UPDATE TO 5 IF DEBUGGING
+)
+;Get the facts
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-get-fact food-amount 0 gl-food-amount)
+	(up-get-fact wood-amount 0 gl-wood-amount)
+	(up-get-fact gold-amount 0 gl-gold-amount)
+	(up-get-fact stone-amount 0 gl-stone-amount)
+	(up-get-fact unit-type-count villager gl-villager-count)
+
+)
+;Do the math
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-modify-goal gl-resource-dist g:= gl-food-amount)
+	(up-modify-goal gl-resource-dist g:+ gl-wood-amount)
+	(up-modify-goal gl-resource-dist g:+ gl-gold-amount)
+	(up-modify-goal gl-resource-dist g:+ gl-stone-amount)
+	(up-modify-goal gl-resource-dist c:/ 4)
+	(up-modify-goal gl-cost-food g:- gl-resource-dist)
+	(up-modify-goal gl-cost-wood g:- gl-resource-dist)
+	(up-modify-goal gl-cost-gold g:- gl-resource-dist)
+	(up-modify-goal gl-cost-stone g:- gl-resource-dist)
+	(up-modify-goal gl-cost-food g:/ gl-villager-count)
+	(up-modify-goal gl-cost-wood g:/ gl-villager-count)
+	(up-modify-goal gl-cost-gold g:/ gl-villager-count)
+	(up-modify-goal gl-cost-stone g:/ gl-villager-count)
+)
+; Do the percentages
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(set-goal gl-food-adjust 0)
+	(set-goal gl-wood-adjust 0)
+	(set-goal gl-gold-adjust 0)
+	(set-goal gl-stone-adjust 0)
+	(up-modify-goal gl-food-adjust g:+ gl-cost-food)
+	(up-modify-goal gl-wood-adjust g:+ gl-cost-wood)
+	(up-modify-goal gl-gold-adjust g:+ gl-cost-gold)
+	(up-modify-goal gl-stone-adjust g:+ gl-cost-stone)
+	(up-modify-sn sn-food-gatherer-percentage g:= gl-food-adjust)
+	(up-modify-sn sn-wood-gatherer-percentage g:= gl-wood-adjust)
+	(up-modify-sn sn-gold-gatherer-percentage g:= gl-gold-adjust)
+	(up-modify-sn sn-stone-gatherer-percentage g:= gl-stone-adjust)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(strategic-number sn-stone-gatherer-percentage < 10)
+	(strategic-number sn-wood-gatherer-percentage >= 20)
+	(or(goal gl-castle-civ 1)
+	   (building-type-count-total castle < 1))
+=>
+	(up-modify-sn sn-wood-gatherer-percentage c:- 10)
+	(up-modify-sn sn-stone-gatherer-percentage c:+ 10)
+)
+; Debug it
+;(defrule
+;	(strategic-number sn-castle-age-strategy == end-game)
+;=>
+;	(up-chat-data-to-all "sn-food-gatherer-percentage: %d" s: sn-food-gatherer-percentage)
+;	(up-chat-data-to-all "sn-wood-gatherer-percentage: %d" s: sn-wood-gatherer-percentage)
+;	(up-chat-data-to-all "sn-gold-gatherer-percentage: %d" s: sn-gold-gatherer-percentage)
+;	(up-chat-data-to-all "sn-stone-gatherer-percentage: %d" s: sn-stone-gatherer-percentage)
+;)

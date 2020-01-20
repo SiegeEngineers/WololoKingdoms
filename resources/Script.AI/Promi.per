@@ -1,0 +1,68 @@
+
+
+					; This is the Userpatch version of Promi!
+
+
+;=========================================================================================================================
+;
+; Plays all settings except for maps where it is absolutely necessary to transport villagers.
+;
+; Regularly check for more recent versions as i'm still working on this and will be for a very long time to come!
+; The reasons for that are that i absolutely love creating AIs, AoC and the (especially the scripting + AFK) community!
+;
+; A special shout-out goes to: scripter, Xhip, II2N, Archon, ryshep, Cysion, Eel, Offwo, Wergorne, JohnTheLate, Marathon,
+; Scottish_Hero, Campeador, CheeseOnToast, iPhone, fenris and all the other scripters and community members!
+;
+; This version of Promi only works with the Userpatch enabled (get it at userpatch.aiscripters.net).
+; The Userpatch is already being used in AoFE so it doesn't need to be installed seperately there.
+; Can't get the Userpatch? Use the (outdated) non-UP version of Promi 1.4e (find it on aiscripters.com / AoKH blacksmith).
+;
+; Made by Promiskuitiv
+;
+; Find me with the same name on aiscripters.com, aok.heavengames.com, reddit.com and steamcommunity.com/id/Promiskuitiv/.
+;
+;=========================================================================================================================
+
+#load-if-defined UP-AVAILABLE
+(load "Promi\const")
+(load "Promi\init")
+(load "Promi\threats")
+(load "Promi\escrow")
+(load "Promi\dawn")
+(load "Promi\gatherers")
+(load "Promi\tsa")
+(load "Promi\general")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+(load "Promi\boarhunting")
+#end-if
+#end-if
+#end-if
+(load "Promi\researches")
+(load "Promi\interaction")
+#load-if-defined UP-2-PLAYER-GAME
+#load-if-not-defined UP-ALLY-IN-GAME
+;#load-if-not-defined UP-SCENARIO-GAME
+(load "Promi\onevone")
+;#end-if
+#end-if
+#end-if
+(load "Promi\buildings")
+(load "Promi\units")
+#load-if-defined UP-GAME-WK
+(load "Promi\wololo")
+#end-if
+(load "Promi\trade")
+(load "Promi\resign")
+#else ; No UP
+(defrule
+	(game-time >= 12)
+=>
+	(chat-to-all "This AI requires the UserPatch to work: userpatch.aiscripters.net")
+	(disable-self))
+(defrule
+	(game-time >= 22)
+=>
+	(resign))
+#end-if

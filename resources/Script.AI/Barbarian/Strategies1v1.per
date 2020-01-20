@@ -1,0 +1,5535 @@
+; ======== RM
+
+#load-if-not-defined DEATH-MATCH
+
+#load-if-defined AZTEC-CIV
+(load "Barbarian\OnlyMeso")
+;(load "Barbarian\AztecSuperRush")
+(load "Barbarian\MayanEagleRush")
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+5 "Barbarian\Strategies\ARCHER2"
+25 "Barbarian\Strategies\MAA1ARCHER1"
+20 "Barbarian\Strategies\DR-ARCH"
+15 "Barbarian\Strategies\DR-EAGLES"
+5 "Barbarian\Strategies\FC2FI"
+5 "Barbarian\Strategies\MUSH"
+5 "Barbarian\Strategies\FC16"
+5 "Barbarian\Strategies\MANGOPUSH"
+)
+#else
+(load-random
+35 "Barbarian\Strategies\FC2FI"
+15 "Barbarian\Strategies\FC2BOOM"
+35 "Barbarian\Strategies\MUSH"
+15 "Barbarian\Strategies\MANGOPUSH"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-const gv-migration == 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-goal gl-military-percentage > 135)
+=>
+	(set-goal gl-advanced-archery light-archers)
+)
+
+#load-if-not-defined UP-GOTHIC-CIV-ENEMY
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-enemy-infantry-count < 4)
+	(or	(and	(up-compare-goal gl-enemy-skirmisher-count > 8)
+			(up-compare-goal gl-enemy-archer-count < 5))
+		(and	(players-civ any-enemy byzantine)
+			(or	(goal gl-current-age gv-feudal-up)
+				(unit-type-count-total archer-line < 10))))
+	(goal gl-strategy default)
+=>
+	(set-goal gl-eagles extra-eagles)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(or	(building-type-count-total monastery == 0)
+		(or	(unit-type-count archery-class < 40)
+			(or	(nor	(players-civ any-enemy mayan)
+					(players-civ any-enemy byzantine))
+				(or	(town-under-attack)
+					(or	(soldier-count g:< gl-toughest-fought-enemy-military)
+						(game-time > 2100))))))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal gl-current-age gv-castle)
+	(goal gl-rush-suitability-on-map GOOD)
+	(players-building-type-count target-player castle == 0)
+	(players-building-type-count target-player stone-wall-line == 0)
+	(up-compare-goal gl-enemy-archery-count > 9)
+	(up-compare-goal gl-enemy-eagle-count < 15)
+	(up-compare-goal gl-enemy-cavalry-count < 5)
+	(up-compare-goal gl-enemy-huskarl-count < 5)
+	(or	(up-compare-goal gl-enemy-eagle-count < 10)
+		(unit-type-count archer-line > 20))
+	(goal gl-strategy default)
+=>
+	(set-goal gl-castle-age-style one-workshop-mangonels)
+	(chat-to-player my-player-number "1Go for castle age push")
+	(disable-self)
+)
+
+(defrule
+	(building-type-count town-center > 1)
+	(goal gl-castle-age-style one-workshop-mangonels)
+=>
+	(set-goal gl-castle-age-style mangonel-push)
+)
+
+(defrule
+	(or	(and	(up-compare-goal gl-enemy-eagle-count > 10)
+			(unit-type-count archer-line < 10))
+		(or	(up-compare-goal gl-enemy-eagle-count > 15)
+			(or	(up-compare-goal gl-enemy-cavalry-count > 5)
+				(or	(up-compare-goal gl-enemy-huskarl-count > 3)
+					(or	(up-compare-goal gl-enemy-infantry-count > 15)
+						(or	(players-building-type-count target-player castle > 0)
+							(up-compare-goal gl-current-age >= gv-castle-up)))))))
+=>
+	(set-goal gl-castle-age-style -1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 500)
+		(or	(and	(players-unit-type-count focus-player monk > 7)
+				(goal gl-current-age gv-castle))
+			(up-compare-const gv-migration == 0)))
+	(goal gl-strategy default)
+=>
+	(set-goal gl-eagles extra-eagles)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 500))
+	(goal gl-strategy default)
+	(up-research-status c: ri-elite-eagle-warrior < research-pending)
+	(or	(players-civ focus-player celtic)
+		(or	(players-civ focus-player gothic)
+			(or	(players-civ focus-player japanese)
+				(players-civ focus-player viking))))
+=>
+	(set-goal gl-eagles 0)
+	(set-goal gl-advanced-monastery monks)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 500))
+	(goal gl-strategy default)
+	(up-research-status c: ri-elite-eagle-warrior < research-pending)
+	(or	(players-civ focus-player indian)
+		(or	(players-civ focus-player korean)
+			(players-civ focus-player persian)))
+=>
+	(set-goal gl-eagles 0)
+	(set-goal gl-advanced-monastery monks)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+		(up-compare-goal gl-enemy-eew-count > 4))
+	(goal gl-strategy-class basic-class)
+=>
+	(set-goal gl-strategy default)
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-archery 0)
+	(set-goal gl-castle-age-style -1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(or	(game-time > 2100)
+			(up-compare-goal gl-enemy-eagle-count > 25)))
+	(or	(up-compare-goal gl-enemy-infantry-count > 10)
+		(or	(up-compare-goal gl-enemy-eagle-count > 10)
+			(or	(up-compare-goal gl-enemy-huskarl-count > 5)
+				(research-completed my-unique-unit-upgrade))))
+	(goal gl-strategy default)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(research-completed ri-elite-eagle-warrior)
+	(goal gl-advanced-monastery monks)
+	(up-compare-goal gl-enemy-infantry-count < 5)
+	(up-compare-goal gl-enemy-huskarl-count < 5)
+	(up-compare-goal gl-enemy-cataphract-count < 4)
+	(up-compare-goal gl-enemy-gunpowder-count < 4)
+	(up-compare-goal gl-enemy-heavy-cavalry-count < 5)
+	(players-unit-type-count focus-player war-elephant-line == 0)
+	(game-time > 3000)
+=>
+	(set-goal gl-eagles heavy-eagles)
+	(set-goal gl-advanced-monastery 0)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(goal gl-strategy default)
+=>
+	(set-goal gl-eagles 0)
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-infantry 0)
+	(set-goal gl-advanced-monastery monks)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(goal gl-strategy default)
+	(or	(and	(research-completed ri-block-printing)
+			(gold-amount > 3000))
+		(up-compare-goal gl-enemy-cataphract-count > 9))
+	(players-civ focus-player byzantine)
+=>
+	(set-goal gl-advanced-monastery monks)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(goal gl-eagles extra-eagles)
+=>
+	(set-goal gl-eagles heavy-eagles)
+)
+
+(defrule
+	(or	(up-research-status c: ri-champion < research-pending)
+		(research-completed my-unique-unit-upgrade))
+	(goal gl-advanced-infantry heavy-swordsmen)
+	(building-type-count castle > 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-infantry 0)
+)
+
+(defrule
+	(up-research-status c: ri-champion >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(goal CASTLE 2)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(or	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+			(or	(goal CASTLE 2)
+				(or	(goal gl-advanced-infantry heavy-swordsmen)
+					(goal gl-advanced-monastery monks)))))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-eagles != 0)
+	(nand	(up-compare-goal TSA >= 1)
+		(goal gl-castle-age-style mangonel-push))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(research-completed ri-plate-mail)
+	(or	(goal gl-eagles heavy-eagles)
+		(or	(up-research-status c: ri-champion >= research-pending)
+			(research-completed my-unique-unit-upgrade)))
+	(strategic-number sn-allow-resource-spending < 4)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 4)
+)
+
+(defrule
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(up-compare-goal CASTLE != 0)
+	(strategic-number sn-allow-resource-spending > 4)
+=>
+	(set-strategic-number sn-allow-resource-spending 4)
+)
+
+(defrule
+	(research-completed ri-plate-mail)
+	(goal gl-strategy default)
+	(goal gl-eagles heavy-eagles)
+	(research-completed ri-elite-eagle-warrior)
+	(goal CASTLE 0)
+	(goal gl-advanced-infantry 0)
+	(research-completed my-unique-research)
+	(research-completed ri-blast-furnace)
+	(strategic-number sn-allow-resource-spending < 6)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+(defrule
+	(goal gl-advanced-monastery monks)
+	(research-completed ri-theocracy)
+	(research-completed ri-illumination)
+	(research-completed ri-block-printing)
+	(goal CASTLE 0)
+	(goal gl-advanced-infantry 0)
+	(goal gl-eagles 0)
+	(strategic-number sn-allow-resource-spending < 6)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+(defrule
+	(research-completed ri-plate-mail)
+	(or	(research-completed ri-champion)
+		(research-completed my-unique-unit-upgrade))
+	(nand	(up-compare-goal gl-eagles != 0)
+		(research-available ri-elite-eagle-warrior))
+	(research-completed my-unique-research)
+	(research-completed ri-blast-furnace)
+	(strategic-number sn-allow-resource-spending < 6)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined BRITON-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+25 "Barbarian\Strategies\MAA1ARCHER1"
+10 "Barbarian\Strategies\FC7"
+20 "Barbarian\Strategies\FC11"
+)
+#else
+(load-random
+35 "Barbarian\Strategies\CASTLEPUSH"
+30 "Barbarian\Strategies\FC11"
+10 "Barbarian\Strategies\MUSH"
+20 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal CASTLE 0)
+	(goal gl-strategy default)
+	(building-type-count-total castle == 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-const gv-michi-style != 1)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(strategic-number sn-allow-resource-spending > 1)
+	(or	(current-age-time > 900)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(or	(players-civ any-enemy aztec)
+		(players-civ any-enemy mayan))
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 4)
+	(up-compare-goal gl-enemy-eew-count < 4)
+	(players-civ focus-player mayan)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(players-civ any-enemy gothic)
+	(up-compare-goal gl-enemy-huskarl-count > 0)
+	(or	(current-age-time > 700)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(goal gl-strategy default)
+		(building-type-count town-center > 1))
+	(or	(players-civ any-enemy gothic)
+		(up-compare-const gv-meso-civ-enemy == 1))
+	(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+		(up-compare-goal gl-enemy-eew-count > 4))
+=>
+	(set-goal CASTLE 4)
+	(set-goal gl-strategy default)
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-advanced-archery != 0)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-advanced-archery 0)
+	(set-goal CASTLE 2)
+)
+
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(building-type-count-total castle > 1)
+		(and	(building-type-count castle > 0)
+			(or	(up-compare-goal gl-enemy-skirmisher-count > 10)
+				(or	(up-compare-goal CASTLE != 2)
+					(up-compare-goal gl-enemy-cavalry-count > 19)))))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-strategy != default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(nor	(goal CASTLE 0)
+		(goal CASTLE 11))
+	(research-completed my-unique-unit-upgrade)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined BYZANTINE-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+25 "Barbarian\Strategies\ARCHER2"
+20 "Barbarian\Strategies\MAA1ARCHER1"
+40 "Barbarian\Strategies\TRASH1"
+10 "Barbarian\Strategies\MUSH"
+5 "Barbarian\Strategies\FC11"
+)
+#else
+(load-random
+20 "Barbarian\Strategies\FC11"
+30 "Barbarian\Strategies\MUSH"
+10 "Barbarian\Strategies\FC12"
+20 "Barbarian\Strategies\MANGOPUSH"
+20 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(or	(and	(goal gl-strategy castle-drop)
+			(and	(current-age-time > 600)
+				(strategic-number sn-allow-resource-spending > 1)))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-trash YES)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-trash YES)
+	(goal CASTLE 2)
+	(nand	(goal gl-current-age gv-imperial)
+		(building-type-count castle == 0))
+	(or	(up-compare-goal gl-enemy-infantry-count > 9)
+		(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+			(or	(up-compare-goal gl-enemy-eagle-count > 9)
+				(up-compare-goal gl-enemy-eew-count > 3))))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-trash 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(current-age-time > 100)
+	(or	(and	(or	(current-age-time > 500)
+				(up-compare-goal gl-current-age >= gv-castle-up))
+			(or	(up-compare-const gv-meso-civ-enemy == 1)
+				(or	(players-civ any-enemy japanese)
+					(players-civ any-enemy viking))))
+		(players-civ any-enemy gothic))
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 500)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-enemy-infantry-count > 4)
+=>
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+
+(defrule
+	(or	(and	(research-completed my-unique-unit-upgrade)
+			(research-completed my-unique-research))
+		(and	(research-completed ri-bracer)
+			(and	(up-research-status c: ri-chemistry >= research-pending)
+				(and	(up-research-status c: ri-ring-archer-armor >= research-pending)
+					(goal CASTLE 0)))))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined CELTIC-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\SCORPS"
+10 "Barbarian\Strategies\ARCHER1"
+20 "Barbarian\Strategies\ARCHER2"
+40 "Barbarian\Strategies\MAA1ARCHER1"
+10 "Barbarian\Strategies\MAA1ARCHER2"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\FC11"
+70 "Barbarian\Strategies\FC17"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age < gv-castle-up)
+	(up-compare-const gv-migration == 0)
+	(goal gl-advanced-archery 0)
+	(goal gl-advanced-cavalry 0)
+	(goal CASTLE 0)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(players-civ focus-player celtic)
+	(up-compare-const gv-maximum-age == imperial-age)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(building-type-count siege-workshop > 0)
+		(or	(up-compare-goal gl-enemy-eew-count > 4)
+			(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+				(or	(goal gl-advanced-archery 0)
+					(and	(up-compare-goal gl-military-percentage > 120)
+						(building-type-count town-center > 2))))))
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery scorpions)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(goal gl-strategy-class basic-class)
+		(goal gl-strategy xbow-rush))
+	(or	(and	(game-time > 2300)
+			(current-age-time > 600))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal gl-strategy default)
+	(set-goal CASTLE 12)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(nor	(up-compare-const gv-meso-civ-enemy == 1)
+		(players-civ focus-player gothic))
+	(goal CASTLE 12)
+=>
+	(set-goal gl-advanced-infantry pikemen)
+	(set-goal gl-advanced-archery scorpions)
+	(set-goal CASTLE 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal CASTLE 12)
+	(not	(research-completed my-unique-unit-upgrade))
+	(or	(unit-type-count-total militiaman-line > 6)
+		(research-completed ri-long-swordsman))
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal gl-advanced-archery scorpions)
+	(set-goal CASTLE 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal CASTLE 12)
+=>
+	(set-goal gl-advanced-infantry 0)
+	(set-goal gl-advanced-archery scorpions)
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(players-civ focus-player celtic)
+	(up-compare-const gv-maximum-age == imperial-age)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-infantry pikemen)
+	(set-goal gl-advanced-archery scorpions)
+	(set-goal CASTLE 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-const gv-meso-civ-enemy == 1)
+		(or	(players-civ focus-player gothic)
+			(players-civ focus-player celtic)))
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-infantry 0)
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ focus-player celtic)
+		(players-civ focus-player korean))
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+#end-if
+
+(defrule
+	(or	(up-research-status c: ri-champion < research-pending)
+		(research-completed my-unique-unit-upgrade))
+	(goal gl-advanced-infantry heavy-swordsmen)
+	(building-type-count castle > 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-infantry 0)
+)
+
+(defrule
+	(up-research-status c: ri-champion >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(goal CASTLE 2)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(or	(research-completed ri-heavy-scorpion)
+		(and	(research-completed my-unique-unit-upgrade)
+			(goal gl-advanced-archery 0)))
+	(or	(research-completed my-unique-unit-upgrade)
+		(goal CASTLE 0))
+	(or	(research-completed ri-champion)
+		(up-compare-goal gl-advanced-infantry != heavy-swordsmen))
+	(or	(research-completed ri-halberdier)
+		(up-compare-goal gl-advanced-infantry != pikemen))
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(up-modify-sn sn-allow-resource-spending c:max 6)
+)
+
+(defrule
+	(goal gl-advanced-archery 0)
+	(goal CASTLE 0)
+	(research-completed ri-halberdier)
+	(goal gl-advanced-infantry pikemen)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(up-modify-sn sn-allow-resource-spending c:max 6)
+)
+
+#end-if
+#load-if-defined CHINESE-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+30 "Barbarian\Strategies\ARCHER2"
+10 "Barbarian\Strategies\SCOUT1ARCHER1"
+15 "Barbarian\Strategies\FC7"
+20 "Barbarian\Strategies\FC11"
+5 "Barbarian\Strategies\MANGOPUSH"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+35 "Barbarian\Strategies\FC11"
+20 "Barbarian\Strategies\MANGOPUSH"
+15 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal CASTLE 0)
+	(goal gl-strategy default)
+	(building-type-count-total castle == 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-const gv-michi-style != 1)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(strategic-number sn-allow-resource-spending > 1)
+	(or	(current-age-time > 900)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(or	(players-civ any-enemy aztec)
+		(players-civ any-enemy mayan))
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 4)
+	(up-compare-goal gl-enemy-eew-count < 4)
+	(players-civ focus-player mayan)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(players-civ any-enemy gothic)
+	(up-compare-goal gl-enemy-huskarl-count > 0)
+	(or	(current-age-time > 700)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(goal gl-strategy default)
+		(building-type-count town-center > 1))
+	(or	(players-civ any-enemy gothic)
+		(up-compare-const gv-meso-civ-enemy == 1))
+	(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+		(up-compare-goal gl-enemy-eew-count > 4))
+=>
+	(set-goal CASTLE 4)
+	(set-goal gl-strategy default)
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-advanced-archery != 0)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-advanced-archery 0)
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(building-type-count-total castle > 1)
+		(and	(building-type-count castle > 0)
+			(or	(up-compare-goal gl-enemy-skirmisher-count > 10)
+				(or	(up-compare-goal CASTLE != 2)
+					(up-compare-goal gl-enemy-cavalry-count > 19)))))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-strategy != default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(and	(strategic-number sn-allow-resource-spending > 1)
+			(game-time > 2300))
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(and	(up-compare-goal gl-enemy-skirmisher-count > 20)
+				(and	(civilian-population > 90)
+					(up-compare-goal CASTLE != 4)))))
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(nor	(goal CASTLE 0)
+		(goal CASTLE 11))
+	(research-completed my-unique-unit-upgrade)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined FRANKISH-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+20 "Barbarian\Strategies\ARCHER2"
+20 "Barbarian\Strategies\MAA1ARCHER1"
+30 "Barbarian\Strategies\SCOUT1ARCHER1"
+10 "Barbarian\Strategies\KRUSH"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+10 "Barbarian\Strategies\MUSH"
+15 "Barbarian\Strategies\FC11"
+20 "Barbarian\Strategies\KRUSH"
+25 "Barbarian\Strategies\KNIGHTBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-advanced-cavalry != heavy-knights)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+)
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy castle-drop)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(and	(game-time > 2400)
+			(strategic-number sn-allow-resource-spending > 1))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-strategy != castle-drop)
+	(strategic-number sn-allow-resource-spending > 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(game-time > 2300)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy default)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(goal gl-strategy default)
+	(or	(current-age == castle-age)
+		(up-research-status c: my-unique-unit-upgrade >= research-pending))
+	(goal gl-current-age gv-imperial)
+	(current-age-time > 900)
+	(or	(up-compare-goal gl-enemy-spearman-count > 7)
+		(up-compare-goal gl-enemy-camelry-count > 4))
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(players-civ focus-player gothic)
+		(or	(and	(players-civ focus-player celtic)
+				(building-type-count town-center > 2))
+			(or	(players-civ focus-player indian)
+				(players-civ focus-player incan))))
+	(goal CASTLE 0)
+	(or	(research-completed ri-paladin)
+		(game-time > 2000))
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(or	(players-civ focus-player gothic)
+		(players-civ focus-player celtic))
+	(or	(up-research-status c: ri-paladin < research-pending)
+		(up-compare-goal gl-enemy-spearman-count > 20))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count castle > 1)
+=>
+	(set-goal gl-advanced-cavalry 0)
+)
+
+#load-if-defined IMPERIAL-AGE-END
+(defrule
+	(goal gl-strategy default)
+	(goal gl-current-age gv-imperial)
+	(or	(goal CASTLE 0)
+		(and	(up-research-status c: my-unique-unit-upgrade < research-pending)
+			(and	(research-completed ri-chemistry)
+				(building-type-count archery-range > 3))))
+	(or	(up-compare-goal gl-enemy-spearman-count > 12)
+		(up-compare-goal gl-enemy-camelry-count > 4))
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+#end-if
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(up-compare-goal gl-advanced-cavalry != 0)
+	(up-compare-goal gl-enemy-spearman-count < 25)
+	(up-compare-goal gl-enemy-camelry-count < 16)
+=>
+	(set-goal CASTLE 5)
+)
+
+(defrule
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(up-compare-goal gl-advanced-cavalry != 0)
+	(up-compare-goal gl-enemy-spearman-count < 40)
+	(up-compare-goal gl-enemy-camelry-count < 23)
+=>
+	(set-goal CASTLE 3)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 25)
+	(up-compare-goal gl-enemy-camelry-count < 14)
+	(players-unit-type-count focus-player teutonic-knight-line < 12)
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 40)
+	(up-compare-goal gl-enemy-camelry-count < 23)
+=>
+	(set-goal gl-advanced-archery medium-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery light-cannoneers)
+	(or	(and	(up-compare-goal gl-enemy-spearman-count < 8)
+			(up-compare-goal gl-enemy-camelry-count < 4))
+		(and	(up-gaia-type-count c: gold < 6)
+			(up-compare-goal gl-gathered-relics < 7)))
+	(players-unit-type-count target-player teutonic-knight-line < 4)
+	(players-unit-type-count focus-player teutonic-knight-line < 4)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-research-status c: my-unique-unit-upgrade >= research-pending)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 4)
+=>
+	(set-strategic-number sn-allow-resource-spending 4)
+)
+
+(defrule
+	(or	(research-completed ri-paladin)
+		(and	(or	(players-civ focus-player gothic)
+				(players-civ focus-player celtic))
+			(research-completed my-unique-unit-upgrade)))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined GOTHIC-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+30 "Barbarian\Strategies\WALLS"
+10 "Barbarian\Strategies\MAA1ARCHER1"
+35 "Barbarian\Strategies\MAA1ARCHER2"
+25 "Barbarian\Strategies\ARCHER2"
+)
+#else
+(load-random
+85 "Barbarian\Strategies\WALLS"
+15 "Barbarian\Strategies\MUSH"
+)
+#end-if
+
+(load "Barbarian\WallAndBoom")
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal gl-advanced-infantry 0)
+	(goal CASTLE 0)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 0)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 500)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(and	(current-age-time > 60)
+				(players-civ focus-player mayan))))
+=>
+	(set-goal CASTLE 12)
+	(set-goal gl-advanced-infantry 0)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != default)
+=>
+	(up-jump-rule 13)
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal 0)
+)
+
+(defrule
+	(nor	(players-civ focus-player gothic)
+		(players-civ focus-player aztec))
+	(nor	(players-civ focus-player japanese)
+		(players-civ focus-player mayan))
+	(nor	(players-civ focus-player briton)
+		(players-civ focus-player viking))
+	(nor	(players-civ focus-player incan)
+		(players-civ focus-player korean))
+	(not	(players-civ focus-player celtic))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(or	(up-compare-goal CASTLE != 0)
+		(up-compare-goal gl-advanced-infantry != 0))
+	(up-compare-goal CASTLE != 1)
+	(goal temporary-goal 1)
+	(up-compare-goal gl-enemy-infantry-count < 9)
+=>
+	(set-goal CASTLE 12)
+	(set-goal gl-advanced-infantry 0)
+)
+
+(defrule
+	(goal CASTLE 12)
+	(goal temporary-goal 0)
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(goal CASTLE 4)
+	(or	(players-civ focus-player gothic)
+		(players-civ focus-player aztec))
+	(or	(up-compare-goal gl-enemy-infantry-count > 4)
+		(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+			(and	(up-compare-goal gl-enemy-archery-count < 5)
+				(up-compare-goal gl-enemy-scorpion-count < 4))))
+	(up-compare-goal gl-enemy-archer-count < 5)
+	(up-compare-goal gl-enemy-gunpowder-count < 4)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(goal CASTLE 4)
+	(or	(players-civ focus-player japanese)
+		(players-civ focus-player celtic))
+	(or	(up-compare-goal gl-enemy-infantry-count > 4)
+		(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+			(and	(up-compare-goal gl-enemy-archery-count < 5)
+				(up-compare-goal gl-enemy-scorpion-count < 4))))
+	(up-compare-goal gl-enemy-archer-count < 5)
+	(up-compare-goal gl-enemy-gunpowder-count < 4)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(goal gl-advanced-infantry heavy-swordsmen)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(or	(players-civ focus-player japanese)
+				(players-civ focus-player celtic))))
+	(or	(up-compare-goal gl-enemy-archer-count > 4)
+		(or	(up-compare-goal gl-enemy-gunpowder-count > 3)
+			(up-compare-goal gl-enemy-scorpion-count > 3)))
+=>
+	(set-goal CASTLE 4)
+	(set-goal gl-advanced-infantry 0)
+)
+
+(defrule
+	(goal CASTLE 12)
+=>
+	(set-goal CASTLE 1)
+)
+
+(defrule
+	(or	(goal CASTLE 2)
+		(and	(up-compare-goal gl-enemy-infantry-count > 8)
+			(and	(goal CASTLE 1)
+				(up-compare-goal gl-enemy-cavalry-count < 15))))
+	(or	(up-compare-goal gl-enemy-infantry-count > 8)
+		(up-compare-goal gl-enemy-eew-count > 5))
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal CASTLE != 0)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player japanese)
+			(or	(players-civ focus-player briton)
+				(or	(players-civ focus-player viking)
+					(or	(players-civ focus-player korean)
+						(players-civ focus-player chinese))))))
+	(up-compare-goal gl-enemy-cavalry-count > 9)
+	(up-compare-goal gl-enemy-infantry-count < 5)
+=>
+	(set-goal CASTLE 1)
+)
+
+(defrule
+	(goal CASTLE 1)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player aztec)
+			(or	(players-civ focus-player japanese)
+				(or	(players-civ focus-player briton)
+					(or	(players-civ focus-player viking)
+						(or	(players-civ focus-player korean)
+							(players-civ focus-player incan)))))))
+	(up-compare-goal gl-enemy-cavalry-count < 8)
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal CASTLE != 0)
+	(players-civ focus-player korean)
+	(up-compare-goal gl-enemy-archery-count > 14)
+	(up-compare-goal gl-enemy-cavalry-count < 8)
+	(up-compare-goal gl-enemy-infantry-count <= 8)
+	(up-compare-goal gl-enemy-eew-count <= 5)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal CASTLE != 0)
+	(or	(and	(or	(players-civ focus-player chinese)
+				(players-civ focus-player briton))
+			(and	(up-compare-goal gl-enemy-archery-count > 14)
+				(up-compare-goal gl-enemy-cavalry-count < 8)))
+		(players-civ focus-player mayan))
+	(up-compare-goal gl-enemy-infantry-count <= 8)
+	(up-compare-goal gl-enemy-eagle-count <= 5)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(or	(up-compare-goal CASTLE != 0)
+			(up-compare-goal gl-advanced-infantry != 0)))
+	(goal gl-advanced-archery heavy-archers)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(goal gl-advanced-archery light-cannoneers)
+	(up-compare-goal gl-enemy-infantry-count < 5)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(or	(and	(research-completed my-unique-unit-upgrade)
+			(or	(goal gl-strategy-control FULL-HUSKS)
+				(research-completed ri-champion)))
+		(and	(research-completed ri-champion)
+			(goal gl-strategy-control CHAMPS)))
+	(or	(players-unit-type-count focus-player samurai-line > 2)
+		(players-unit-type-count focus-player jaguar-man-line > 2))
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+
+(defrule
+	(goal gl-strategy gothic-boom)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(and	(research-completed my-unique-unit-upgrade)
+			(or	(goal gl-strategy-control FULL-HUSKS)
+				(research-completed ri-champion)))
+		(and	(research-completed ri-champion)
+			(goal gl-strategy-control CHAMPS)))
+	(or	(players-unit-type-count focus-player teutonic-knight-line > 2)
+		(players-unit-type-count focus-player throwing-axeman-line > 2))
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+
+(defrule
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(research-completed my-unique-unit-upgrade)
+		(research-completed ri-champion))
+	(or	(players-unit-type-count focus-player samurai-line > 2)
+		(or	(players-unit-type-count focus-player jaguar-man-line > 2)
+			(or	(players-unit-type-count focus-player teutonic-knight-line > 2)
+				(or	(players-unit-type-count focus-player throwing-axeman-line > 2)
+					(players-civ focus-player incan)))))
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(or	(up-compare-goal CASTLE != 0)
+			(up-compare-goal gl-advanced-infantry != 0)))
+	(goal gl-advanced-archery heavy-archers)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(or	(and	(nor	(goal CASTLE 0)
+				(goal CASTLE 11))
+			(research-completed my-unique-unit-upgrade))
+		(research-completed ri-champion))
+	(or	(goal CASTLE 0)
+		(research-completed my-unique-unit-upgrade))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined HUN-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+20 "Barbarian\Strategies\ARCHER2"
+20 "Barbarian\Strategies\MAA1ARCHER1"
+30 "Barbarian\Strategies\SCOUT1ARCHER1"
+5 "Barbarian\Strategies\FC4"
+10 "Barbarian\Strategies\FC15"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\FC4"
+30 "Barbarian\Strategies\KNIGHTBOOM"
+20 "Barbarian\Strategies\KRUSH"
+20 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(game-time < 1800)
+	(goal gl-strategy-class basic-class)
+	(or	(goal gl-strategy default)
+		(current-age-time > 600))
+	(unit-type-count-total cavalry-archer-line == 0)
+	(unit-type-count-total knight-line > 7)
+	(players-building-type-count focus-player castle > 0)
+	(up-compare-const gv-meso-civ-enemy == 1)
+	(goal gl-current-age gv-castle)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery 0)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-advanced-cavalry 0)
+	(goal gl-strategy-class basic-class)
+	(or	(goal gl-strategy default)
+		(and	(up-compare-goal gl-current-age >= gv-castle)
+			(current-age-time > 600)))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery hun-CAs)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy CA-boom)
+	(players-civ any-enemy gothic)
+	(up-compare-goal gl-rush-suitability-on-map >= AVERAGE)
+	(or	(players-building-type-count focus-player castle > 0)
+		(up-compare-goal gl-enemy-huskarl-count > 0))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count-total town-center > 1)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery hun-CAs)
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-enemy-skirmisher-count > 8)
+	(up-compare-goal gl-enemy-archer-count < 6)
+	(goal gl-current-age gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(game-time < 2000)
+	(players-current-age focus-player == imperial-age)
+	(up-compare-const gv-meso-civ-enemy == 1)
+	(or	(players-building-type-count focus-player barracks > 2)
+		(or	(up-compare-goal gl-enemy-eew-count > 4)
+			(up-compare-goal gl-enemy-eagle-count > 12)))
+	(goal gl-strategy-class basic-class)
+	(goal gl-current-age gv-castle)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery 0)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery hun-CAs)
+	(players-current-age focus-player <= castle-age)
+	(game-time > 2100)
+	(or	(game-time > 2600)
+		(and	(gold-amount < 50)
+			(and	(food-amount > 600)
+				(civilian-population > 115))))
+	(gold-amount < 500)
+	(goal gl-current-age gv-castle)
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery hun-CAs)
+	(civilian-population > 95)
+	(building-type-count town-center > 2)
+	(nand	(unit-type-count-total mangonel-line > 2)
+		(civilian-population < 115))
+	(or	(up-compare-goal gl-enemy-skirmisher-count > 15)
+		(up-compare-goal gl-enemy-scorpion-count > 3))
+	(goal gl-current-age gv-castle)
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(nand	(or	(unit-type-count-total knight-line > 10)
+			(up-research-status c: ri-cavalier >= research-pending))
+		(unit-type-count-total cavalry-archer-line < 6))
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-cavalry LC)
+	(set-goal gl-advanced-archery hun-CAs)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(building-type-count town-center > 2)
+	(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+		(or	(up-compare-goal gl-enemy-eew-count > 4)
+			(and	(or	(up-compare-const gv-meso-civ-enemy == 1)
+					(players-civ focus-player gothic))
+				(up-compare-goal gl-current-age >= gv-castle-up))))
+	(goal gl-strategy default)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery 0)
+	(or	(unit-type-count skirmisher-line < 17)
+		(or	(up-compare-goal gl-enemy-spearman-count > 22)
+			(or	(up-compare-goal gl-enemy-eew-count > 5)
+				(up-compare-goal gl-enemy-huskarl-count > 5))))
+	(up-compare-goal gl-enemy-spearman-count > 7)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery hun-CAs)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-advanced-cavalry heavy-knights)
+	(or	(up-compare-goal gl-enemy-spearman-count > 15)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 4)
+			(up-compare-goal gl-enemy-camelry-count > 6)))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-archery hun-CAs)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(unit-type-count-total knight-line > 10)
+		(up-research-status c: ri-paladin >= research-pending))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+)
+
+(defrule
+	(or	(up-compare-goal gl-enemy-eagle-count > 9)
+		(or	(goal gl-patrol-defence patrol-on)
+			(or	(up-compare-goal gl-advanced-cavalry != 0)
+				(game-time > 2100))))
+=>
+	(up-jump-rule 5)
+)
+
+(defrule
+	(or	(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)
+		(or	(up-compare-goal gl-current-age != gv-castle)
+			(or	(up-compare-goal gl-rush-suitability-on-map != GOOD)
+				(or	(players-building-type-count target-player castle > 0)
+					(or	(up-compare-goal gl-strategy != default)
+						(or	(players-building-type-count target-player stone-wall-line > 0)
+							(or	(up-compare-goal gl-enemy-cavalry-count > 4)
+								(up-compare-goal gl-enemy-huskarl-count > 4))))))))
+=>
+	(up-jump-rule 4)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-archery-count > 20)
+	(up-compare-goal gl-military-percentage > 70)
+	(up-compare-goal gl-military-percentage < 170)
+	(or	(and	(up-compare-goal gl-enemy-strategy != UP-TO-CASTLE)
+			(and	(players-civilian-population every-enemy < 65)
+				(players-current-age focus-player == feudal-age)))
+		(and	(building-type-count town-center > 2)
+			(up-compare-goal gl-enemy-skirmisher-count > 15)))
+	(building-type-count-total town-center > 1)
+	(goal gl-castle-age-style -1)
+=>
+	(set-goal gl-castle-age-style one-workshop-mangonels)
+	(chat-to-player my-player-number "1Go for one workshop mangonels")
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery hun-CAs)
+	(civilian-population > 85)
+	(building-type-count town-center > 2)
+	(up-compare-goal gl-enemy-skirmisher-count > 15)
+	(goal gl-current-age gv-castle)
+	(goal gl-castle-age-style -1)
+=>
+	(set-goal gl-castle-age-style mangonel-defence)
+	(chat-to-player my-player-number "1Go for castle age mangonels")
+	(disable-self)
+)
+
+(defrule
+	(or	(players-civ any-enemy aztec)
+		(or	(players-civ any-enemy byzantine)
+			(players-civ any-enemy mayan)))
+	(up-compare-goal gl-military-percentage > 80)
+	(up-compare-goal gl-military-percentage < 150)
+	(building-type-count-total monastery > 0)
+	(building-type-count-total town-center > 1)
+	(players-civilian-population every-enemy < 65)
+	(unit-type-count cavalry-archer-line > 20)
+=>
+	(set-goal gl-castle-age-style mangonel-push)
+	(chat-to-player my-player-number "1Go for castle age push")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-military-percentage > 70)
+	(up-compare-goal gl-military-percentage < 200)
+	(up-compare-goal gl-enemy-skirmisher-count > 12)
+	(up-compare-goal gl-enemy-eagle-count < 10)
+	(or	(unit-type-count cavalry-archer-line > 20)
+		(unit-type-count archer-line > 20))
+=>
+	(set-goal gl-castle-age-style one-workshop-mangonels)
+	(chat-to-player my-player-number "1Go for one workshop mangonels")
+	(disable-self)
+)
+
+(defrule
+	(or	(up-compare-goal gl-enemy-eagle-count > 10)
+		(or	(up-compare-goal gl-enemy-cavalry-count > 8)
+			(or	(up-compare-goal gl-enemy-huskarl-count > 3)
+				(or	(up-compare-goal gl-enemy-infantry-count > 13)
+					(or	(players-building-type-count target-player castle > 0)
+						(or	(up-compare-goal gl-current-age >= gv-castle-up)
+							(up-compare-goal gl-enemy-heavy-cavalry-count > 5)))))))
+=>
+	(set-goal gl-castle-age-style -1)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery hun-CAs)
+)
+#end-if
+
+(defrule
+	(or	(and	(research-completed ri-bracer)
+			(and	(research-completed ri-heavy-cavalry-archer)
+				(up-compare-goal gl-advanced-cavalry != heavy-knights)))
+		(research-completed ri-paladin))
+	(strategic-number sn-allow-resource-spending < 6)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined INCAN-CIV
+(load "Barbarian\OnlyMeso")
+(load "Barbarian\MayanEagleRush")
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+35 "Barbarian\Strategies\MAA1ARCHER1"
+15 "Barbarian\Strategies\FC7"
+10 "Barbarian\Strategies\FC16"
+)
+#else
+(load-random
+20 "Barbarian\Strategies\CASTLEPUSH"
+5 "Barbarian\Strategies\MUSH"
+20 "Barbarian\Strategies\FC2BOOM"
+20 "Barbarian\Strategies\FC11"
+15 "Barbarian\Strategies\FC12"
+20 "Barbarian\Strategies\MANGOPUSH"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal CASTLE 0)
+=>
+	(set-goal gl-eagles extra-eagles)
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(or	(players-civ focus-player briton)
+		(or	(players-civ focus-player byzantine)
+			(or	(players-civ focus-player ethiopian)
+				(or	(players-civ focus-player malian)
+					(players-civ focus-player vietnamese)))))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(up-compare-flag gl-flag != meso-civ-focus)
+	(or	(current-age-time > 600)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 600)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-enemy-cavalry-count > 9)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(up-compare-goal gl-enemy-infantry-count > 6)
+		(or	(up-compare-goal gl-enemy-huskarl-count > 5)
+			(or	(and	(up-compare-goal gl-current-age >= gv-castle-up)
+					(up-compare-flag gl-flag == meso-civ-focus))
+				(up-compare-goal gl-enemy-eagle-count > 5))))
+=>
+	(set-goal gl-advanced-archery slingers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(players-civ focus-player gothic)
+		(or	(players-civ focus-player malay)
+			(players-civ focus-player celtic)))
+=>
+	(set-goal gl-advanced-archery slingers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(goal gl-eagles extra-eagles)
+=>
+	(set-goal gl-eagles heavy-eagles)
+)
+
+(defrule
+	(research-completed ri-plate-mail)
+	(goal gl-eagles heavy-eagles)
+	(strategic-number sn-allow-resource-spending < 4)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 4)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(or	(goal CASTLE 0)
+		(research-completed my-unique-unit-upgrade))
+	(research-completed ri-elite-eagle-warrior)
+	(research-completed ri-plate-mail)
+	(research-completed ri-couriers)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined INDIAN-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+30 "Barbarian\Strategies\ARCHER2"
+25 "Barbarian\Strategies\MAA1ARCHER1"
+20 "Barbarian\Strategies\SCOUT1ARCHER1"
+10 "Barbarian\Strategies\KRUSH"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+20 "Barbarian\Strategies\KRUSH"
+40 "Barbarian\Strategies\KNIGHTBOOM"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(strategic-number sn-allow-resource-spending > 0)
+	(goal gl-strategy-class basic-class)
+	(or	(goal gl-strategy default)
+		(and	(up-compare-goal gl-current-age >= gv-castle)
+			(current-age-time > 600)))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry indian-camels)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry indian-camels)
+	(set-goal gl-advanced-archery heavy-cannoneers)
+	(disable-self)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry indian-camels)
+	(set-goal gl-advanced-archery heavy-cannoneers)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(strategic-number sn-allow-resource-spending > 0)
+	(goal gl-strategy-class basic-class)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 600))
+	(up-compare-const gv-maximum-age == castle-age)
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(strategic-number sn-allow-resource-spending > 0)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 600))
+	(up-compare-goal gl-enemy-archer-count > 23)
+	(or	(players-civ focus-player briton)
+		(or	(players-civ focus-player chinese)
+			(or	(players-civ focus-player ethiopian)
+				(players-civ focus-player vietnamese))))
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(or	(goal CASTLE 0)
+		(research-completed my-unique-unit-upgrade))
+	(research-completed ri-imperial-camel)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+#end-if
+#load-if-defined ITALIAN-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+25 "Barbarian\Strategies\MAA1ARCHER2"
+10 "Barbarian\Strategies\SCOUT1ARCHER1"
+5 "Barbarian\Strategies\KRUSH"
+10 "Barbarian\Strategies\FC7"
+10 "Barbarian\Strategies\FC11"
+)
+#else
+(load-random
+35 "Barbarian\Strategies\CASTLEPUSH"
+5 "Barbarian\Strategies\KRUSH"
+35 "Barbarian\Strategies\FC11"
+25 "Barbarian\Strategies\MANGOPUSH"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(up-compare-goal gl-current-age >= gv-castle)
+			(current-age-time > 1000))
+		(or	(up-compare-goal gl-enemy-skirmisher-count > 15)
+			(and	(players-civ any-enemy gothic)
+				(up-compare-goal gl-enemy-huskarl-count > 0))))
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(set-goal gl-advanced-cavalry LC)
+	(disable-self)
+)
+
+#load-if-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count-total castle > 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-archery heavy-cannoneers)
+	(disable-self)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(up-compare-goal gl-strategy != default)
+		(and	(up-compare-goal gl-advanced-archery != 0)
+			(up-compare-goal gl-advanced-archery != heavy-cannoneers)))
+	(building-type-count castle > 0)
+=>
+	(set-goal gl-advanced-archery 0)
+	(set-goal gl-strategy default)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(or	(current-age == imperial-age)
+		(and	(game-time > 3000)
+			(up-compare-const gv-maximum-age != imperial-age)))
+	(current-age-time > 120)
+=>
+	(set-goal gl-advanced-cavalry LC)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-strategy != castle-drop)
+	(goal CASTLE 2)
+	(up-compare-const gv-meso-civ-enemy == 1)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(goal gl-strategy-class basic-class)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(up-compare-goal gl-advanced-archery != heavy-cannoneers)
+	(or	(current-age == imperial-age)
+		(building-type-count castle > 0))
+	(or	(up-compare-const gv-meso-civ-enemy == 1)
+		(or	(players-civ focus-player gothic)
+			(players-civ focus-player malian)))
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+(defrule
+	(or	(and	(goal CASTLE 0)
+			(goal gl-advanced-archery heavy-cannoneers))
+		(research-completed my-unique-unit-upgrade))
+	(research-completed ri-chemistry)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined JAPANESE-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+35 "Barbarian\Strategies\MAA1ARCHER2"
+10 "Barbarian\Strategies\MUSH"
+5 "Barbarian\Strategies\FC7"
+5 "Barbarian\Strategies\MANGOPUSH"
+)
+#else
+(load-random
+35 "Barbarian\Strategies\MUSH"
+15 "Barbarian\Strategies\FC11"
+20 "Barbarian\Strategies\MANGOPUSH"
+30 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(or	(and	(goal gl-strategy castle-drop)
+			(current-age-time > 600))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(and	(or	(and	(current-age-time > 500)
+					(game-time > 2300))
+				(up-compare-goal gl-current-age >= gv-castle-up))
+			(strategic-number sn-allow-resource-spending > 1))
+		(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+			(up-compare-goal gl-enemy-eew-count > 4)))
+=>
+	(set-goal CASTLE 12)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(up-compare-goal gl-my-UU-count-total < 4)
+	(or	(players-civ any-enemy frankish)
+		(or	(players-civ any-enemy hun)
+			(players-civ any-enemy persian)))
+	(goal CASTLE 12)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-infantry pikemen)
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(goal CASTLE 12)
+	(or	(players-civ any-enemy aztec)
+		(or	(players-civ any-enemy gothic)
+			(or	(players-civ any-enemy teutonic)
+				(or	(players-civ any-enemy japanese)
+					(players-civ any-enemy viking)))))
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(goal CASTLE 12)
+	(players-civ any-enemy celtic)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(goal CASTLE 2)
+	(building-type-count castle > 0)
+	(or	(players-civ any-enemy aztec)
+		(or	(players-civ any-enemy celtic)
+			(or	(players-civ any-enemy gothic)
+				(or	(players-civ any-enemy korean)
+					(players-civ any-enemy mayan)))))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(goal CASTLE 12)
+=>
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+
+(defrule
+	(or	(up-research-status c: ri-champion < research-pending)
+		(research-completed my-unique-unit-upgrade))
+	(goal gl-advanced-infantry heavy-swordsmen)
+	(building-type-count castle > 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-infantry 0)
+)
+
+(defrule
+	(up-research-status c: ri-champion >= research-pending)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(goal CASTLE 2)
+=>
+	(set-goal CASTLE 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(or	(research-completed my-unique-unit-upgrade)
+		(or	(research-completed ri-champion)
+			(and	(goal gl-advanced-infantry pikemen)
+				(and	(research-completed ri-arbalest)
+					(research-completed ri-halberdier)))))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined KOREAN-CIV
+
+#load-if-not-defined ARENA-MAP
+#load-if-not-defined BLACK-FOREST-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+15 "Barbarian\Strategies\ARCHER2"
+15 "Barbarian\Strategies\MAA1ARCHER1"
+10 "Barbarian\Strategies\FC7"
+35 "Barbarian\Strategies\FC11"
+)
+#else
+(load-random
+10 "Barbarian\Strategies\ARCHER1"
+10 "Barbarian\Strategies\ARCHER2"
+40 "Barbarian\Strategies\WALLS"
+30 "Barbarian\Strategies\FC11"
+10 "Barbarian\Strategies\FC12"
+)
+#end-if
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+20 "Barbarian\Strategies\TRUSHPUSH"
+10 "Barbarian\Strategies\MUSH"
+30 "Barbarian\Strategies\FC11"
+10 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(goal CASTLE 0)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+#load-if-not-defined UP-AZTEC-CIV-ENEMY
+#load-if-not-defined UP-GOTHIC-CIV-ENEMY
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 840)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 480)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(up-compare-const gv-meso-civ-enemy == 1)
+	(or	(up-compare-goal gl-enemy-eew-count > 4)
+		(and	(building-type-count castle == 0)
+			(goal gl-current-age gv-imperial)))
+	(goal CASTLE 2)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(up-compare-const gv-meso-civ-enemy == 1)
+	(goal gl-current-age gv-castle)
+	(up-compare-goal gl-enemy-eew-count > 4)
+	(goal CASTLE 2)
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(building-type-count-total castle > 1)
+		(and	(building-type-count castle > 0)
+			(or	(up-compare-goal gl-enemy-skirmisher-count > 10)
+				(up-compare-goal CASTLE != 2))))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+#end-if
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(players-civ any-enemy aztec)
+		(players-civ any-enemy gothic))
+	(up-compare-const gv-maximum-age == imperial-age)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+#load-if-defined CASTLE-AGE-END
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 480)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(players-civ any-enemy gothic)
+		(and	(players-civ any-enemy aztec)
+			(and	(goal gl-current-age gv-castle)
+				(up-compare-goal gl-enemy-eew-count > 4))))
+	(goal CASTLE 0)
+	(goal gl-advanced-infantry 0)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-advanced-archery 0)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(nor	(goal CASTLE 0)
+		(goal CASTLE 11))
+	(research-completed my-unique-unit-upgrade)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 3)
+=>
+	(set-strategic-number sn-allow-resource-spending 3)
+)
+
+(defrule
+	(or	(up-compare-goal gl-enemy-scorpion-count >= 3)
+		(players-unit-type-count focus-player mangonel-line >= 2))
+	(goal gl-advanced-infantry 0)
+	(up-compare-goal CASTLE != 4)
+	(not	(research-completed ri-onager))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(or	(up-compare-goal gl-enemy-infantry-count >= 5)
+		(or	(up-compare-goal gl-enemy-archery-count >= 5)
+			(or	(up-compare-goal gl-enemy-gunpowder-count >= 5)
+				(or	(up-compare-goal gl-enemy-mameluke-count > 3)
+					(up-compare-const gv-michi-style == 1)))))
+	(goal gl-advanced-infantry 0)
+	(up-compare-goal CASTLE != 4)
+	(not	(research-completed ri-onager))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(or	(research-completed my-unique-unit-upgrade)
+		(goal CASTLE 0))
+	(or	(goal gl-advanced-archery 0)
+		(research-completed ri-chemistry))
+	(or	(and	(goal gl-advanced-infantry 0)
+			(up-compare-goal CASTLE != 4))
+		(research-completed ri-champion))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined MAGYAR-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+10 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+30 "Barbarian\Strategies\SCOUT1ARCHER1"
+25 "Barbarian\Strategies\MAA1ARCHER1"
+5 "Barbarian\Strategies\KRUSH"
+5 "Barbarian\Strategies\FC12"
+)
+#else
+(load-random
+50 "Barbarian\Strategies\KRUSH"
+50 "Barbarian\Strategies\KNIGHTBOOM"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(strategic-number sn-allow-resource-spending > 0)
+	(goal gl-strategy-class basic-class)
+	(goal CASTLE 0)
+	(or	(goal gl-strategy default)
+		(and	(up-compare-goal gl-current-age >= gv-castle)
+			(current-age-time > 600)))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery CAs)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-advanced-archery CAs)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(game-time > 3000)
+			(gold-amount < 500))
+		(and	(goal gl-advanced-cavalry 0)
+			(and	(game-time > 1800)
+				(unit-type-count-total knight-line < 7))))
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-archery CAs)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(research-completed ri-heavy-cavalry-archer)
+	(goal gl-advanced-archery heavy-archers)
+=>
+	(set-goal gl-advanced-archery CAs)
+)
+
+(defrule
+	(or	(research-completed ri-paladin)
+		(and	(research-completed my-unique-unit-upgrade)
+			(or	(research-completed ri-arbalest)
+				(research-completed ri-heavy-cavalry-archer))))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined MAYAN-CIV
+(load "Barbarian\OnlyMeso")
+(load "Barbarian\MayanEagleRush")
+
+#load-if-not-defined ARENA-MAP
+(load-random
+30 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+15 "Barbarian\Strategies\MAA1ARCHER1"
+5 "Barbarian\Strategies\FC2FI"
+10 "Barbarian\Strategies\FC7"
+10 "Barbarian\Strategies\FC11"
+5 "Barbarian\Strategies\FC16"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+25 "Barbarian\Strategies\FC2FI"
+15 "Barbarian\Strategies\FC2BOOM"
+30 "Barbarian\Strategies\FC11"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal CASTLE 0)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-goal gl-military-percentage > 135)
+=>
+	(set-goal gl-advanced-archery light-archers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(building-type-count-total castle > 1)
+		(and	(building-type-count castle > 0)
+			(or	(up-compare-goal gl-eagles != 0)
+				(or	(up-compare-goal gl-enemy-skirmisher-count > 10)
+					(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+						(up-compare-goal gl-enemy-eew-count > 4))))))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+#load-if-not-defined UP-GOTHIC-CIV-ENEMY
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-enemy-infantry-count < 4)
+	(or	(and	(up-compare-goal gl-enemy-skirmisher-count > 8)
+			(up-compare-goal gl-enemy-archer-count < 5))
+		(and	(players-civ any-enemy byzantine)
+			(or	(goal gl-current-age gv-feudal-up)
+				(unit-type-count-total archer-line < 10))))
+	(goal gl-strategy default)
+=>
+	(set-goal gl-eagles extra-eagles)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal CASTLE 6)
+	(set-goal gl-eagles extra-eagles)
+	(set-goal gl-strategy default)
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(building-type-count-total castle < 2)
+	(or	(players-civ focus-player hun)
+		(and	(players-civ focus-player mayan)
+			(unit-type-count-total plumed-archer-line < 10)))
+	(unit-type-count-total plumed-archer-line < 25)
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal CASTLE 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(goal gl-eagles extra-eagles)
+=>
+	(set-goal gl-eagles heavy-eagles)
+)
+
+(defrule
+	(research-completed ri-plate-mail)
+	(goal gl-eagles heavy-eagles)
+	(strategic-number sn-allow-resource-spending < 4)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 4)
+)
+
+(defrule
+	(not	(goal CASTLE 0))
+	(nand	(goal CASTLE 6)
+		(research-available ri-elite-eagle-warrior))
+	(research-completed my-unique-unit-upgrade)
+	(research-completed ri-bracer)
+	(research-completed ri-chemistry)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+(defrule
+	(goal CASTLE 0)
+	(goal gl-eagles heavy-eagles)
+	(research-completed my-unique-research)
+	(research-completed ri-elite-eagle-warrior)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined MONGOL-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+15 "Barbarian\Strategies\ARCHER2"
+30 "Barbarian\Strategies\SCOUT1ARCHER1"
+20 "Barbarian\Strategies\MAA1ARCHER1"
+5 "Barbarian\Strategies\KRUSHFIX"
+5 "Barbarian\Strategies\FC7"
+10 "Barbarian\Strategies\FC11"
+)
+#else
+(load-random
+35 "Barbarian\Strategies\CASTLEPUSH"
+35 "Barbarian\Strategies\FC11"
+30 "Barbarian\Strategies\MONGOLBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal CASTLE 0)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(up-compare-goal gl-military-percentage > 135)
+=>
+	(set-goal gl-advanced-archery light-archers)
+)
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(building-type-count-total castle > 1)
+			(up-compare-goal gl-strategy != castle-drop)))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(or	(up-compare-goal gl-enemy-huskarl-count > 0)
+		(research-completed ri-long-swordsman))
+	(players-civ every-enemy gothic)
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(goal gl-current-age gv-castle)
+	(or	(goal gl-strategy default)
+		(building-type-count town-center > 1))
+	(or	(players-civ any-enemy gothic)
+		(up-compare-const gv-meso-civ-enemy == 1))
+	(or	(up-compare-goal gl-enemy-huskarl-count > 5)
+		(up-compare-goal gl-enemy-eew-count > 5))
+=>
+	(set-goal CASTLE 4)
+	(set-goal gl-strategy default)
+	(set-goal gl-advanced-archery 0)
+	(up-jump-rule 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(civilian-population > 90)
+			(and	(building-type-count town-center > 2)
+				(or	(up-compare-goal gl-enemy-archery-count > 20)
+					(up-research-status c: ri-chain-barding >= research-pending))))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(civilian-population > 85)
+	(building-type-count town-center > 2)
+	(or	(up-compare-goal gl-enemy-skirmisher-count > 9)
+		(up-compare-goal gl-enemy-scorpion-count > 3))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-strategy != default)
+	(up-compare-goal gl-strategy != michi-boom)
+	(goal gl-strategy-class basic-class)
+	(goal gl-current-age gv-castle)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(building-type-count castle > 0)
+	(up-compare-goal CASTLE != 0)
+	(up-compare-goal gl-advanced-archery != 0)
+	(nand	(research-available my-unique-unit-upgrade)
+		(up-research-status c: ri-heavy-cavalry-archer >= research-pending))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-advanced-archery 0)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-const gv-aofe-game == 1)
+	(nor	(players-civ any-enemy berbers)
+		(players-civ any-enemy saracen))
+	(not	(players-civ any-enemy indian))
+=>
+	(set-goal gl-advanced-archery CAs)
+)
+
+(defrule
+	(nor	(goal CASTLE 0)
+		(goal CASTLE 11))
+	(research-completed my-unique-unit-upgrade)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined PERSIAN-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+10 "Barbarian\Strategies\MAA1ARCHER1"
+40 "Barbarian\Strategies\SCOUT1ARCHER1"
+5 "Barbarian\Strategies\KRUSH"
+)
+#else
+(load-random
+40 "Barbarian\Strategies\KNIGHTBOOM"
+50 "Barbarian\Strategies\KRUSH"
+10 "Barbarian\Strategies\MUSH"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(up-compare-const gv-michi-style == 1)
+		(and	(up-research-status c: ri-paladin < research-pending)
+			(up-research-status c: my-unique-unit-upgrade >= research-pending)))
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry 0)
+	(set-goal CASTLE 2)
+)
+
+#load-if-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(up-compare-goal gl-enemy-spearman-count > 12)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 4)
+			(up-compare-goal gl-enemy-camelry-count > 4)))
+	(up-compare-goal gl-advanced-archery != scorpions)
+=>
+	(set-goal gl-advanced-archery scorpions)
+)
+#end-if
+
+#load-if-defined BLACK-FOREST-MAP
+(load-random 60 "Barbarian\Strategies\WarElephants")
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(player-human any-enemy)
+		(not	(players-civ any-enemy aztec)))
+	(or	(up-compare-goal gl-advanced-cavalry != 0)
+		(up-compare-goal CASTLE != 2))
+=>
+	(set-goal gl-advanced-cavalry 0)
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(players-unit-type-count focus-player spearman-line > 12)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 4)
+			(up-compare-goal gl-enemy-camelry-count > 4)))
+	(up-compare-goal gl-advanced-archery != scorpions)
+=>
+	(set-goal gl-advanced-archery scorpions)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(nor	(goal gl-advanced-cavalry heavy-knights)
+		(goal CASTLE 2))
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(players-unit-type-count focus-player spearman-line > 12)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 4)
+			(up-compare-goal gl-enemy-camelry-count > 4)))
+	(up-compare-goal gl-advanced-archery != heavy-cannoneers)
+	(up-compare-goal gl-advanced-archery != scorpions)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 25)
+	(up-compare-goal gl-enemy-camelry-count < 14)
+	(players-unit-type-count focus-player teutonic-knight-line < 12)
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 40)
+	(up-compare-goal gl-enemy-camelry-count < 23)
+=>
+	(set-goal gl-advanced-archery medium-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery light-cannoneers)
+	(or	(and	(up-compare-goal gl-enemy-spearman-count < 8)
+			(up-compare-goal gl-enemy-camelry-count < 4))
+		(and	(up-gaia-type-count c: gold < 6)
+			(up-compare-goal gl-gathered-relics < 7)))
+	(players-unit-type-count target-player teutonic-knight-line < 4)
+	(players-unit-type-count focus-player teutonic-knight-line < 4)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(up-compare-goal gl-advanced-cavalry != 0)
+	(up-compare-goal CASTLE != 0)
+=>
+	(set-goal gl-advanced-cavalry 0)
+)
+
+(defrule
+	(goal gl-strategy castle-drop)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(or	(research-completed ri-paladin)
+		(research-completed my-unique-unit-upgrade))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined SARACEN-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+20 "Barbarian\Strategies\ARCHER2"
+20 "Barbarian\Strategies\FC3"
+35 "Barbarian\Strategies\SCOUT1ARCHER1"
+10 "Barbarian\Strategies\MAA1ARCHER1"
+)
+#else
+(load-random
+25 "Barbarian\Strategies\CASTLEPUSH"
+30 "Barbarian\Strategies\MUSH"
+25 "Barbarian\Strategies\MANGOPUSH"
+20 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(research-completed my-unique-unit-upgrade)
+		(and	(or	(players-unit-type-count any-enemy knight-line > 18)
+				(and	(or	(players-civ any-enemy hun)
+						(players-civ any-enemy persian))
+					(up-compare-goal gl-current-age >= gv-castle-up)))
+			(game-time > 2100)))
+=>
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(civilian-population > 80)
+	(building-type-count town-center > 2)
+	(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+		(up-compare-goal gl-enemy-eew-count > 4))
+	(not	(research-completed ri-chemistry))
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(players-civ any-enemy gothic)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(goal gl-advanced-archery heavy-archers)
+	(research-completed ri-chemistry)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(players-unit-type-count focus-player teutonic-knight-line > 6)
+	(up-compare-goal gl-enemy-heavy-cavalry-count < 5)
+=>
+	(set-goal CASTLE 0)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-cavalry LC)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(civilian-population > 90)
+			(and	(building-type-count town-center > 2)
+				(or	(up-compare-goal gl-enemy-archery-count > 20)
+					(up-research-status c: ri-chain-barding >= research-pending))))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(civilian-population > 85)
+	(building-type-count town-center > 2)
+	(or	(up-compare-goal gl-enemy-skirmisher-count > 9)
+		(up-compare-goal gl-enemy-scorpion-count > 3))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(or	(and	(goal gl-advanced-archery heavy-archers)
+			(and	(research-completed ri-arbalest)
+				(research-completed ri-bracer)))
+		(goal gl-advanced-archery heavy-cannoneers))
+	(nand	(goal CASTLE 2)
+		(research-available my-unique-unit-upgrade))
+	(research-completed ri-chemistry)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined SLAVIC-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+5 "Barbarian\Strategies\ARCHER2"
+5 "Barbarian\Strategies\TRASH1"
+25 "Barbarian\Strategies\MAA1ARCHER1"
+20 "Barbarian\Strategies\SCOUT1ARCHER1"
+15 "Barbarian\Strategies\MUSH"
+5 "Barbarian\Strategies\KRUSH"
+25 "Barbarian\Strategies\SCORPS"
+)
+#else
+(load-random
+15 "Barbarian\Strategies\FC11"
+20 "Barbarian\Strategies\FC17"
+35 "Barbarian\Strategies\MUSH"
+30 "Barbarian\Strategies\MANGOPUSH"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(unit-type-count-total scorpion-line > 9)
+			(and	(up-compare-goal gl-military-percentage > 70)
+				(or	(up-compare-goal gl-enemy-spearman-count > 10)
+					(up-compare-goal gl-enemy-camelry-count > 10)))))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(building-type-count siege-workshop > 0)
+		(or	(and	(up-compare-goal gl-military-percentage > 120)
+				(building-type-count town-center > 2))
+			(up-compare-goal gl-current-age >= gv-castle-up)))
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery scorpions)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(nor	(players-civ focus-player gothic)
+		(up-compare-flag gl-flag == meso-civ-focus))
+	(or	(and	(current-age-time > 800)
+			(up-compare-goal gl-enemy-cavalry-count > 5))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(strategic-number sn-allow-resource-spending > 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-infantry pikemen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ focus-player gothic)
+		(up-compare-flag gl-flag == meso-civ-focus))
+	(or	(current-age-time > 800)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(strategic-number sn-allow-resource-spending > 1)
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(or	(research-completed ri-champion)
+		(research-completed ri-halberdier))
+	(research-completed ri-heavy-scorpion)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined SPANISH-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+30 "Barbarian\Strategies\TRASH1"
+15 "Barbarian\Strategies\FC11"
+30 "Barbarian\Strategies\SCOUT1ARCHER1"
+10 "Barbarian\Strategies\MAA1ARCHER2"
+5 "Barbarian\Strategies\MUSH"
+5 "Barbarian\Strategies\KRUSH"
+5 "Barbarian\Strategies\MANGOPUSH"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+20 "Barbarian\Strategies\MUSH"
+30 "Barbarian\Strategies\FC11"
+10 "Barbarian\Strategies\KRUSH"
+10 "Barbarian\Strategies\MANGOPUSH"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-strategy default)
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(set-goal CASTLE 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 0)
+	(or	(research-completed my-unique-unit-upgrade)
+		(and	(current-age == castle-age)
+			(and	(up-compare-goal gl-current-age != gv-castle-up)
+				(and	(building-type-count castle > 0)
+					(or	(up-compare-const gv-maximum-age == castle-age)
+						(food-amount < 400))))))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+;	(up-compare-const gv-michi-style == 1)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(up-compare-goal gl-enemy-spearman-count > 12)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 4)
+			(up-compare-goal gl-enemy-camelry-count > 4)))
+	(up-compare-goal gl-advanced-archery != heavy-cannoneers)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 25)
+	(up-compare-goal gl-enemy-camelry-count < 14)
+	(players-unit-type-count focus-player teutonic-knight-line < 12)
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 40)
+	(up-compare-goal gl-enemy-camelry-count < 23)
+=>
+	(set-goal gl-advanced-archery medium-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery light-cannoneers)
+	(or	(and	(up-compare-goal gl-enemy-spearman-count < 8)
+			(up-compare-goal gl-enemy-camelry-count < 4))
+		(and	(up-gaia-type-count c: gold < 6)
+			(up-compare-goal gl-gathered-relics < 7)))
+	(players-unit-type-count target-player teutonic-knight-line < 4)
+	(players-unit-type-count focus-player teutonic-knight-line < 4)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(or	(and	(nor	(goal CASTLE 0)
+				(goal CASTLE 11))
+			(research-completed my-unique-unit-upgrade))
+		(research-completed ri-paladin))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined TEUTONIC-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+15 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+35 "Barbarian\Strategies\SCOUT1ARCHER1"
+15 "Barbarian\Strategies\MAA1ARCHER1"
+5 "Barbarian\Strategies\KRUSH"
+5 "Barbarian\Strategies\MANGOPUSH"
+)
+#else
+(load-random
+25 "Barbarian\Strategies\KRUSH"
+20 "Barbarian\Strategies\MUSH"
+5 "Barbarian\Strategies\FC11"
+25 "Barbarian\Strategies\KNIGHTBOOM"
+25 "Barbarian\Strategies\MANGOPUSH"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(current-age >= feudal-age)
+	(goal CASTLE 0)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(game-time > 2700)
+	(strategic-number sn-allow-resource-spending > 1)
+	(current-age >= castle-age)
+	(current-age-time > 600)
+	(nor	(players-civ any-enemy briton)
+		(or	(players-civ any-enemy hun)
+			(or	(players-civ any-enemy mayan)
+				(players-civ any-enemy mongol))))
+=>
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(game-time > 2700)
+	(strategic-number sn-allow-resource-spending > 1)
+	(current-age >= castle-age)
+	(current-age-time > 600)
+	(or	(players-civ any-enemy briton)
+		(or	(players-civ any-enemy hun)
+			(or	(players-civ any-enemy mayan)
+				(players-civ any-enemy mongol))))
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(current-age == imperial-age)
+	(or	(up-compare-goal gl-enemy-archer-count > 10)
+		(and	(building-type-count castle == 0)
+			(game-time > 1200)))
+	(goal gl-advanced-cavalry 0)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery 0)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total castle > 1)
+	(or	(and	(goal CASTLE 2)
+			(or	(players-unit-type-count any-enemy jaguar-man-line > 7)
+				(players-unit-type-count any-enemy samurai-line > 7)))
+		(and	(goal gl-advanced-cavalry heavy-knights)
+			(up-compare-goal gl-enemy-spearman-count > 13)))
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-archery scorpions)
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 25)
+	(up-compare-goal gl-enemy-camelry-count < 14)
+	(players-unit-type-count focus-player teutonic-knight-line < 12)
+=>
+	(set-goal gl-advanced-archery light-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-cannoneers)
+	(up-compare-goal gl-enemy-spearman-count < 40)
+	(up-compare-goal gl-enemy-camelry-count < 23)
+=>
+	(set-goal gl-advanced-archery medium-cannoneers)
+)
+
+(defrule
+	(goal gl-advanced-archery light-cannoneers)
+	(or	(and	(up-compare-goal gl-enemy-spearman-count < 8)
+			(up-compare-goal gl-enemy-camelry-count < 4))
+		(and	(up-gaia-type-count c: gold < 6)
+			(up-compare-goal gl-gathered-relics < 7)))
+	(players-unit-type-count target-player teutonic-knight-line < 4)
+	(players-unit-type-count focus-player teutonic-knight-line < 4)
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(nand	(not	(research-completed my-unique-unit-upgrade))
+		(not	(goal CASTLE 0)))
+	(nand	(not	(research-completed ri-paladin))
+		(goal gl-advanced-cavalry heavy-knights))
+	(or	(research-completed my-unique-unit-upgrade)
+		(research-completed ri-paladin))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined TURKISH-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+5 "Barbarian\Strategies\ARCHER1"
+20 "Barbarian\Strategies\ARCHER3"
+40 "Barbarian\Strategies\SCOUT1ARCHER1"
+10 "Barbarian\Strategies\MAA1ARCHER1"
+5 "Barbarian\Strategies\FC7"
+15 "Barbarian\Strategies\FC11"
+5 "Barbarian\Strategies\MANGOPUSH"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+15 "Barbarian\Strategies\FC9FI"
+25 "Barbarian\Strategies\FC11"
+10 "Barbarian\Strategies\MANGOPUSH"
+20 "Barbarian\Strategies\BOMBARDMENT"
+)
+#end-if
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(goal gl-advanced-cavalry 0)
+	(goal CASTLE 0)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-advanced-archery heavy-archers)
+	(or	(up-compare-goal gl-soldier-percentage > 150)
+		(civilian-population > 85))
+=>
+	(set-goal gl-advanced-archery light-archers)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal gl-current-age gv-castle)
+	(players-current-age focus-player == castle-age)
+	(goal gl-strategy default)
+	(goal gl-advanced-cavalry 0)
+	(up-compare-goal gl-enemy-skirmisher-count > 5)
+=>
+	(set-goal gl-castle-age-style mangonel-defence)
+)
+
+(defrule
+	(up-compare-goal gl-castle-age-style != -1)
+	(or	(up-compare-goal gl-advanced-cavalry != 0)
+		(or	(up-compare-goal gl-enemy-skirmisher-count < 6)
+			(up-compare-goal gl-current-age != gv-castle)))
+=>
+	(set-goal gl-castle-age-style -1)
+)
+
+(defrule
+	(up-compare-goal gl-castle-age-style != -1)
+	(or	(up-compare-goal gl-enemy-eagle-count > 10)
+		(or	(up-compare-goal gl-enemy-cavalry-count > 5)
+			(or	(up-compare-goal gl-enemy-huskarl-count > 3)
+				(or	(up-compare-goal gl-enemy-infantry-count > 5)
+					(players-building-type-count target-player castle > 0)))))
+=>
+	(set-goal gl-castle-age-style -1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-strategy != krush)
+	(goal gl-current-age gv-castle)
+	(building-type-count town-center > 2)
+	(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+		(up-compare-goal gl-enemy-eew-count > 4))
+	(goal gl-strategy-class basic-class)
+=>
+	(set-goal gl-strategy default)
+	(set-goal CASTLE 2)
+	(set-goal gl-advanced-archery 0)
+	(set-goal gl-advanced-cavalry LC)
+	(set-goal gl-castle-age-style -1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(up-compare-const gv-meso-civ-enemy == 1)
+		(or	(players-civ focus-player gothic)
+			(players-civ focus-player japanese)))
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+	(set-goal CASTLE 0)
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(and	(goal gl-current-age gv-castle)
+			(and	(or	(current-age-time > 900)
+					(game-time > 2460))
+				(strategic-number sn-allow-resource-spending > 1)))
+		(research-completed my-unique-unit-upgrade))
+=>
+	(set-goal gl-advanced-cavalry LC)
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(goal gl-strategy-class basic-class)
+=>
+	(set-goal gl-advanced-archery 0)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(goal gl-advanced-archery heavy-archers)
+		(or	(goal gl-strategy xbow-boom)
+			(goal gl-advanced-archery light-archers)))
+	(building-type-count castle > 0)
+=>
+	(set-goal gl-advanced-archery 0)
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(goal CASTLE 0)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+	(set-goal gl-advanced-cavalry LC)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal gl-advanced-archery light-archers)
+	(up-compare-goal gl-toughest-fought-enemy-military > 20)
+	(or	(building-type-count-total town-center > 1)
+		(or	(building-type-count-total town-center >= preferred-TC-number)
+			(up-compare-goal gl-toughest-fought-enemy-military > 45)))
+	(or	(up-compare-goal gl-toughest-fought-enemy-military > 30)
+		(building-type-count town-center > 2))
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+			(and	(civilian-population > 85)
+				(building-type-count town-center > 2))))
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal CASTLE 0)
+	(goal gl-current-age gv-imperial)
+	(or	(research-completed my-unique-unit-upgrade)
+		(strategic-number sn-minimum-water-body-size-for-dock == islands-map-landing-style))
+=>
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry LC)
+	(set-goal CASTLE 2)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-advanced-archery 0)
+	(current-age != imperial-age)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-advanced-archery 0)
+	(current-age == imperial-age)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+(defrule
+	(or	(research-completed my-unique-unit-upgrade)
+		(and	(goal gl-advanced-archery heavy-cannoneers)
+			(research-completed ri-ring-archer-armor)))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#load-if-defined VIKING-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+25 "Barbarian\Strategies\ARCHER1"
+20 "Barbarian\Strategies\ARCHER2"
+30 "Barbarian\Strategies\MAA1ARCHER1"
+10 "Barbarian\Strategies\MAA1ARCHER2"
+10 "Barbarian\Strategies\FC7"
+5 "Barbarian\Strategies\FC12"
+)
+#else
+(load-random
+10 "Barbarian\Strategies\MUSH"
+25 "Barbarian\Strategies\FC11"
+15 "Barbarian\Strategies\FC12"
+50 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(or	(goal gl-strategy default)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-enemy-eew-count > 4)
+		(up-compare-goal gl-enemy-huskarl-count > 4))
+	(building-type-count castle == 0)
+	(goal CASTLE 0)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-enemy-eew-count > 4)
+		(up-compare-goal gl-enemy-huskarl-count > 4))
+	(goal gl-advanced-infantry 0)
+	(building-type-count castle > 0)
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(current-age-time > 500)
+	(or	(game-time > 2300)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(strategic-number sn-allow-resource-spending > 1)
+	(goal gl-advanced-infantry 0)
+	(or	(building-type-count castle > 0)
+		(up-compare-goal CASTLE != 0))
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(and	(current-age-time > 500)
+			(game-time > 2300))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(strategic-number sn-allow-resource-spending > 1)
+	(building-type-count castle == 0)
+	(goal CASTLE 0)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(not	(goal CASTLE 2))
+=>
+	(set-goal CASTLE 2)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(goal gl-advanced-infantry 0)
+		(up-compare-goal CASTLE != 0))
+	(up-research-status c: my-unique-unit-upgrade < research-pending)
+	(up-research-status c: ri-champion >= research-pending)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal CASTLE 0)
+)
+
+(defrule
+	(research-completed ri-chemistry)
+	(research-completed ri-bracer)
+	(research-completed ri-arbalest)
+	(strategic-number sn-allow-resource-spending < 4)
+	(strategic-number sn-allow-resource-spending >= 0)
+=>
+	(set-strategic-number sn-allow-resource-spending 4)
+)
+
+(defrule
+	(or	(research-completed ri-champion)
+		(research-completed my-unique-unit-upgrade))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+25 "Barbarian\Strategies\ARCHER1"
+40 "Barbarian\Strategies\ARCHER2"
+15 "Barbarian\Strategies\SCOUT1ARCHER1"
+5 "Barbarian\Strategies\KRUSHFIX"
+5 "Barbarian\Strategies\FC7"
+10 "Barbarian\Strategies\FC11"
+)
+#else
+(load-random
+35 "Barbarian\Strategies\CASTLEPUSH"
+45 "Barbarian\Strategies\FC11"
+20 "Barbarian\Strategies\KRUSH"
+)
+#end-if
+
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal CASTLE 0)
+		(and	(up-compare-goal gl-current-age >= gv-castle-up)
+			(or	(goal gl-advanced-cavalry 0)
+				(and	(building-type-count castle == 0)
+					(up-compare-goal gl-advanced-cavalry != heavy-camels)))))
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+)
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(building-type-count-total castle > 1)
+			(up-compare-goal gl-strategy != castle-drop)))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(or	(up-compare-goal gl-enemy-huskarl-count > 0)
+		(research-completed ri-long-swordsman))
+	(or	(up-compare-goal gl-advanced-cavalry != heavy-knights)
+		(building-type-count castle < 1))
+	(players-civ every-enemy gothic)
+=>
+	(set-goal gl-advanced-cavalry 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(goal gl-current-age gv-castle)
+	(or	(goal gl-strategy default)
+		(building-type-count town-center > 1))
+	(or	(up-compare-goal gl-enemy-huskarl-count > 5)
+		(up-compare-goal gl-enemy-eew-count > 5))
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(set-goal gl-advanced-archery 0)
+	(up-jump-rule 3)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(players-civ any-enemy hun)
+		(or	(up-compare-goal gl-enemy-heavy-cavalry-count > 10)
+			(or	(and	(up-compare-goal gl-enemy-heavy-cavalry-count > 2)
+					(goal gl-advanced-cavalry heavy-camels))
+				(players-civ any-enemy indian))))
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-cavalry heavy-camels)
+	(up-jump-rule 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count castle > 0)
+	(or	(and	(civilian-population > 90)
+			(and	(building-type-count town-center > 2)
+				(or	(up-compare-goal gl-enemy-archery-count > 20)
+					(up-research-status c: ri-chain-barding >= research-pending))))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(civilian-population > 85)
+	(building-type-count town-center > 2)
+	(building-type-count castle > 0)
+	(or	(up-compare-goal gl-enemy-skirmisher-count > 9)
+		(up-compare-goal gl-enemy-scorpion-count > 3))
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(up-compare-goal gl-strategy != default)
+	(up-compare-goal gl-strategy != michi-boom)
+	(goal gl-strategy-class basic-class)
+	(goal gl-current-age gv-castle)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(nor	(goal CASTLE 0)
+		(goal CASTLE 11))
+	(research-completed my-unique-unit-upgrade)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+30 "Barbarian\Strategies\ARCHER2"
+40 "Barbarian\Strategies\MAA1ARCHER1"
+10 "Barbarian\Strategies\FC11"
+)
+#else
+(load-random
+35 "Barbarian\Strategies\CASTLEPUSH"
+35 "Barbarian\Strategies\FC11"
+30 "Barbarian\Strategies\MUSH"
+)
+#end-if
+
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-goal gl-enemy-eagle-count > 5)
+		(up-compare-goal gl-enemy-huskarl-count > 5))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-infantry 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-elephants)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ any-enemy aztec)
+		(or	(players-civ any-enemy gothic)
+			(or	(players-civ any-enemy indian)
+				(players-civ any-enemy saracen))))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 900))
+=>
+	(set-goal gl-advanced-cavalry 0)
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+#load-if-not-defined UP-MICHI-STYLE
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(building-type-count-total castle > 1)
+			(up-compare-goal gl-strategy != castle-drop)))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+)
+#else
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal CASTLE 2)
+	(set-goal gl-strategy default)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(or	(research-completed ri-champion)
+		(research-completed ri-elite-battle-elephant))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+30 "Barbarian\Strategies\ARCHER1"
+20 "Barbarian\Strategies\ARCHER2"
+50 "Barbarian\Strategies\MAA1ARCHER2"
+)
+#else
+(load-random
+100 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(or	(up-compare-flag gl-flag == meso-civ-focus)
+		(or	(players-civ any-enemy byzantine)
+			(players-civ any-enemy vietnamese)))
+	(up-compare-goal gl-military-percentage > 80)
+	(up-compare-goal gl-military-percentage < 170)
+	(building-type-count-total monastery > 0)
+	(building-type-count-total town-center > 1)
+	(players-civilian-population every-enemy < 65)
+	(unit-type-count archer-line > 20)
+=>
+	(set-goal gl-castle-age-style mangonel-push)
+	(chat-to-player my-player-number "1Go for castle age push")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-castle-age-style != -1)
+	(or	(up-compare-goal gl-current-age != gv-castle)
+		(players-building-type-count any-enemy castle > 0))
+=>
+	(set-goal gl-castle-age-style -1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-goal gl-enemy-cavalry-count > 7)
+		(and	(up-compare-goal gl-current-age >= gv-castle-up)
+			(up-compare-const dm-cavalry-threat-likelihood == 1)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 600))
+=>
+	(set-goal gl-advanced-infantry pikemen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ any-enemy gothic)
+		(or	(up-compare-goal gl-enemy-eagle-count > 6)
+			(and	(up-compare-goal gl-current-age >= gv-castle-up)
+				(players-civ any-enemy byzantine))))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 500))
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(up-compare-goal gl-enemy-skirmisher-count > 15)
+	(up-compare-goal gl-enemy-archer-count < 5)
+	(up-compare-goal gl-enemy-gunpowder-count < 5)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(research-completed ri-arbalest)
+	(research-completed ri-bracer)
+	(or	(research-completed my-unique-unit-upgrade)
+		(goal CASTLE 0))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+30 "Barbarian\Strategies\ARCHER1"
+30 "Barbarian\Strategies\ARCHER2"
+30 "Barbarian\Strategies\MAA1ARCHER2"
+10 "Barbarian\Strategies\KRUSH"
+)
+#else
+(load-random
+70 "Barbarian\Strategies\KRUSH"
+30 "Barbarian\Strategies\MUSH"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-current-age gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(disable-self)
+)
+
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(civilian-population > 70)
+		(or	(goal gl-advanced-cavalry 0)
+			(and	(civilian-population > 44)
+				(goal gl-current-age gv-feudal-up))))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-elephants)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-goal gl-enemy-spearman-count > 8)
+		(or	(civilian-population > 60)
+			(up-compare-goal gl-current-age >= gv-castle-up)))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery scorpions)
+)
+
+(defrule
+	(research-completed ri-heavy-scorpion)
+	(research-completed ri-elite-battle-elephant)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+
+#load-if-defined MALAY-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+40 "Barbarian\Strategies\ARCHER1"
+40 "Barbarian\Strategies\ARCHER2"
+20 "Barbarian\Strategies\FC7"
+)
+#else
+(load-random
+50 "Barbarian\Strategies\RANGEDBOOM"
+50 "Barbarian\Strategies\MUSH"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(nor	(players-civ any-enemy gothic)
+		(players-civ any-enemy byzantine))
+	(up-compare-flag gl-flag != meso-civ-focus)
+	(not	(players-civ any-enemy celtic))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(current-age-time > 660)
+			(goal CASTLE 0)))
+=>
+	(set-goal gl-advanced-cavalry heavy-elephants)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ any-enemy gothic)
+		(or	(up-compare-goal gl-enemy-eagle-count > 6)
+			(and	(up-compare-goal gl-current-age >= gv-castle-up)
+				(players-civ any-enemy byzantine))))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(current-age-time > 500))
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-advanced-cavalry 0)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(current-age-time > 500)
+			(goal gl-advanced-cavalry 0)))
+	(up-compare-goal gl-enemy-skirmisher-count > 15)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-advanced-cavalry 0)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(current-age-time > 500)
+			(goal gl-advanced-cavalry 0)))
+	(up-compare-goal gl-enemy-skirmisher-count > 15)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(research-completed ri-forced-levy)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(research-completed ri-arbalest)
+	(research-completed ri-bracer)
+	(or	(research-completed ri-elite-battle-elephant)
+		(goal gl-advanced-cavalry 0))
+	(or	(research-completed my-unique-unit-upgrade)
+		(goal CASTLE 0))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+20 "Barbarian\Strategies\ARCHER1"
+10 "Barbarian\Strategies\ARCHER2"
+50 "Barbarian\Strategies\MAA1ARCHER2"
+10 "Barbarian\Strategies\SCOUT1ARCHER1"
+10 "Barbarian\Strategies\KRUSH"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\KRUSH"
+40 "Barbarian\Strategies\MUSH"
+30 "Barbarian\Strategies\FC11"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-flag gl-flag != meso-civ-focus)
+	(nor	(players-civ focus-player byzantine)
+		(or	(players-civ focus-player gothic)
+			(players-civ focus-player italian)))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-knights)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-flag gl-flag == meso-civ-focus)
+		(or	(players-civ focus-player byzantine)
+			(or	(players-civ focus-player gothic)
+				(players-civ focus-player italian))))
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ focus-player briton)
+		(or	(players-civ focus-player chinese)
+			(or	(players-civ focus-player korean)
+				(or	(players-civ focus-player incan)
+					(players-civ focus-player vietnamese)))))
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal gl-advanced-cavalry 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(players-civ focus-player ethiopian)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+	(set-goal gl-advanced-cavalry 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-flag gl-flag != meso-civ-focus)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(and	(current-age-time > 660)
+			(building-type-count castle > 0))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-flag gl-flag == meso-civ-focus)
+		(or	(players-civ focus-player byzantine)
+			(or	(players-civ focus-player gothic)
+				(players-civ focus-player italian))))
+	(or	(current-age-time > 420)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ focus-player italian)
+		(or	(players-civ focus-player malian)
+			(players-civ focus-player slavic)))
+	(or	(current-age-time > 660)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ focus-player berbers)
+		(or	(players-civ focus-player frankish)	
+			(or	(players-civ focus-player indian)
+				(or	(players-civ focus-player hun)
+					(players-civ focus-player magyar)))))
+	(or	(current-age-time > 660)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-cavalry heavy-camels)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(players-civ focus-player persian)
+		(players-civ focus-player khmer))
+	(or	(current-age-time > 660)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-current-age >= gv-castle)
+=>
+	(set-goal gl-advanced-cavalry heavy-camels)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(players-civ focus-player aztec)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(up-compare-const gv-maximum-age == imperial-age)
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+)
+
+(defrule
+	(or	(goal gl-advanced-infantry 0)
+		(research-completed ri-champion))
+	(or	(goal gl-advanced-cavalry 0)
+		(research-completed ri-farimba))
+	(or	(goal CASTLE 0)
+		(research-completed my-unique-unit-upgrade))
+	(or	(research-completed my-unique-unit-upgrade)
+		(research-completed ri-farimba))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+30 "Barbarian\Strategies\ARCHER1"
+25 "Barbarian\Strategies\ARCHER2"
+25 "Barbarian\Strategies\MAA1ARCHER1"
+20 "Barbarian\Strategies\FC7"
+)
+#else
+(load-random
+30 "Barbarian\Strategies\CASTLEPUSH"
+10 "Barbarian\Strategies\MANGOPUSH"
+30 "Barbarian\Strategies\FC11"
+30 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-const gv-michi-style != 1)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(or	(and	(research-completed ri-chemistry)
+			(goal CASTLE 0))
+		(or	(players-civ any-enemy aztec)
+			(or	(players-civ any-enemy incan)
+				(or	(players-civ any-enemy mayan)
+					(players-civ any-enemy gothic)))))
+=>
+	(set-goal gl-advanced-archery heavy-cannoneers)
+	(set-goal CASTLE 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(strategic-number sn-allow-resource-spending > 1)
+	(or	(current-age-time > 900)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(or	(players-civ any-enemy aztec)
+		(or	(players-civ any-enemy incan)
+			(players-civ any-enemy gothic)))
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(and	(strategic-number sn-allow-resource-spending > 1)
+			(game-time > 2300))
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(and	(up-compare-goal gl-enemy-skirmisher-count > 20)
+				(and	(civilian-population > 90)
+					(up-compare-goal CASTLE != 4)))))
+=>
+	(set-goal gl-advanced-cavalry LC)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(and	(civilian-population > 70)
+			(up-compare-goal gl-enemy-eagle-count > 14)))
+	(players-civ focus-player mayan)
+=>
+	(set-goal gl-advanced-infantry 0)
+	(set-goal gl-advanced-cavalry heavy-knights)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(players-civ any-enemy gothic)
+	(or	(and	(current-age-time > 700)
+			(up-compare-goal gl-enemy-huskarl-count > 0))
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal gl-advanced-infantry heavy-swordsmen)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-strategy != default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(research-completed ri-arquebus)
+	(or	(research-completed my-unique-unit-upgrade)
+		(and	(goal CASTLE 0)
+			(research-completed ri-chemistry)))
+	(or	(research-completed ri-cavalier)
+		(up-compare-goal gl-advanced-cavalry != heavy-knights))
+	(or	(research-completed ri-champion)
+		(goal gl-advanced-infantry 0))
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+
+#load-if-not-defined ARENA-MAP
+(load-random
+30 "Barbarian\Strategies\ARCHER1"
+30 "Barbarian\Strategies\ARCHER2"
+20 "Barbarian\Strategies\MAA1ARCHER1"
+20 "Barbarian\Strategies\FC7"
+)
+#else
+(load-random
+40 "Barbarian\Strategies\CASTLEPUSH"
+40 "Barbarian\Strategies\FC11"
+20 "Barbarian\Strategies\RANGEDBOOM"
+)
+#end-if
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal CASTLE 0)
+	(goal gl-strategy default)
+	(building-type-count-total castle == 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-const gv-michi-style != 1)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(or	(goal gl-strategy default)
+		(and	(current-age-time > 600)
+			(goal gl-strategy-class basic-class)))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 420)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(building-type-count-total castle > 0)))
+	(goal CASTLE 0)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(strategic-number sn-allow-resource-spending > 1)
+	(or	(current-age-time > 900)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(or	(players-civ any-enemy aztec)
+		(players-civ any-enemy mayan))
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 4)
+	(up-compare-goal gl-enemy-eew-count < 4)
+	(players-civ focus-player mayan)
+=>
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal CASTLE 2)
+	(players-civ any-enemy gothic)
+	(up-compare-goal gl-enemy-huskarl-count > 0)
+	(or	(current-age-time > 700)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+=>
+	(set-goal CASTLE 4)
+)
+
+(defrule
+	(players-civ any-enemy incan)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(goal gl-strategy default)
+		(building-type-count town-center > 1))
+	(or	(players-civ any-enemy gothic)
+		(up-compare-const gv-meso-civ-enemy == 1))
+	(or	(up-compare-goal gl-enemy-huskarl-count > 4)
+		(up-compare-goal gl-enemy-eew-count > 4))
+=>
+	(set-goal CASTLE 4)
+	(set-goal gl-strategy default)
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(players-civ any-enemy incan)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-goal gl-advanced-cavalry heavy-elephants)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-advanced-archery != 0)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-advanced-archery 0)
+	(set-goal CASTLE 2)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(goal gl-advanced-archery heavy-archers)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(building-type-count-total castle > 1)
+		(and	(building-type-count castle > 0)
+			(or	(up-compare-goal gl-enemy-skirmisher-count > 10)
+				(or	(up-compare-goal CASTLE != 2)
+					(up-compare-goal gl-enemy-cavalry-count > 19)))))
+=>
+	(set-goal gl-advanced-archery 0)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy default)
+	(building-type-count castle == 0)
+	(game-time > 1200)
+	(goal gl-current-age gv-imperial)
+=>
+	(set-goal gl-advanced-archery heavy-archers)
+)
+
+(defrule
+	(up-compare-goal gl-unit-selection-block != 1)
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-strategy != default)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total castle > 1)
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(or	(up-compare-goal gl-advanced-cavalry != heavy-elephants)
+		(research-completed ri-elite-battle-elephant))
+	(nor	(goal CASTLE 0)
+		(goal CASTLE 11))
+	(research-completed my-unique-unit-upgrade)
+	(strategic-number sn-allow-resource-spending >= 0)
+	(strategic-number sn-allow-resource-spending < 6)
+=>
+	(set-strategic-number sn-allow-resource-spending 6)
+)
+
+#end-if
+#else
+; ======== DM
+ 
+#load-if-defined AZTEC-CIV
+(load "Barbarian\Strategies\DM\dm-champs")
+
+#load-if-not-defined UP-BRITON-CIV-ENEMY; Vs Aztec/Goth/Slav/Vik
+#load-if-not-defined UP-BYZANTINE-CIV-ENEMY
+#load-if-not-defined UP-CELTIC-CIV-ENEMY
+#load-if-not-defined UP-CHINESE-CIV-ENEMY
+#load-if-not-defined UP-FRANKISH-CIV-ENEMY
+#load-if-not-defined UP-HUN-CIV-ENEMY
+#load-if-not-defined UP-JAPANESE-CIV-ENEMY
+#load-if-not-defined UP-INCAN-CIV-ENEMY
+#load-if-not-defined UP-INDIAN-CIV-ENEMY
+#load-if-not-defined UP-ITALIAN-CIV-ENEMY
+#load-if-not-defined UP-KOREAN-CIV-ENEMY
+#load-if-not-defined UP-MAYAN-CIV-ENEMY
+#load-if-not-defined UP-MAGYAR-CIV-ENEMY
+#load-if-not-defined UP-MONGOL-CIV-ENEMY
+#load-if-not-defined UP-PERSIAN-CIV-ENEMY
+#load-if-not-defined UP-SARACEN-CIV-ENEMY
+#load-if-not-defined UP-SPANISH-CIV-ENEMY
+#load-if-not-defined UP-TURKISH-CIV-ENEMY
+#load-if-not-defined UP-TEUTONIC-CIV-ENEMY
+(load "Barbarian\Strategies\DM\dm-champ-turtle")
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+
+#load-if-not-defined UP-GAME-AGE2-X2
+(defrule
+	(goal gl-strategy dm-champ-turtle)
+	(or	(game-time > 70)
+		(building-type-count-total barracks > 5))
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 300)
+	(building-type-count castle > 3)
+	(or	(up-compare-goal gl-enemy-infantry-count > 8)
+		(or	(up-compare-goal gl-enemy-eagle-count > 8)
+			(up-compare-goal gl-enemy-huskarl-count > 8)))
+=>
+	(set-goal gl-strategy dm-UU)
+)
+#else
+(defrule
+	(game-time > 120)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 120)
+	(building-type-count castle > 1)
+=>
+	(set-goal gl-strategy dm-UU)
+	(disable-self)
+)
+#end-if
+
+#end-if
+
+#load-if-defined BRITON-CIV
+(load "Barbarian\Strategies\DM\dm-UU-champ")
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+(load "Barbarian\Strategies\DM\dm-camel-cannoneer")
+#end-if
+
+#load-if-defined CELTIC-CIV
+(load "Barbarian\Strategies\DM\dm-halb-scorpion")
+#end-if
+
+#load-if-defined CHINESE-CIV
+(load "Barbarian\Strategies\DM\dm-UU")
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+#load-if-not-defined UP-AZTEC-CIV-ENEMY; Vs Byz/Celt/Hun/India/Pers/Sara/Spa/Teut
+#load-if-not-defined UP-BRITON-CIV-ENEMY
+#load-if-not-defined UP-CHINESE-CIV-ENEMY
+#load-if-not-defined UP-GOTHIC-CIV-ENEMY
+#load-if-not-defined UP-INCAN-CIV-ENEMY
+#load-if-not-defined UP-ITALIAN-CIV-ENEMY
+#load-if-not-defined UP-JAPANESE-CIV-ENEMY
+#load-if-not-defined UP-KOREAN-CIV-ENEMY
+#load-if-not-defined UP-MAYAN-CIV-ENEMY
+#load-if-not-defined UP-MONGOL-CIV-ENEMY
+#load-if-not-defined UP-SLAVIC-CIV-ENEMY
+#load-if-not-defined UP-TURKISH-CIV-ENEMY
+#load-if-not-defined UP-VIKING-CIV-ENEMY
+#load-if-not-defined UP-ETHIOPIAN-CIV-ENEMY
+(load "Barbarian\Strategies\DM\dm-halb-husk")
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-not-defined UP-AZTEC-CIV-ENEMY; Vs Brit/Chin/Inca/Italia/Jap/Kor/Maya/Mongol/Turk/Vik
+#load-if-not-defined UP-BYZANTINE-CIV-ENEMY
+#load-if-not-defined UP-CELTIC-CIV-ENEMY
+#load-if-not-defined UP-FRANKISH-CIV-ENEMY
+#load-if-not-defined UP-GOTHIC-CIV-ENEMY
+#load-if-not-defined UP-HUN-CIV-ENEMY
+#load-if-not-defined UP-INDIAN-CIV-ENEMY
+#load-if-not-defined UP-MAGYAR-CIV-ENEMY
+#load-if-not-defined UP-PERSIAN-CIV-ENEMY
+#load-if-not-defined UP-SARACEN-CIV-ENEMY
+#load-if-not-defined UP-SLAVIC-CIV-ENEMY
+#load-if-not-defined UP-SPANISH-CIV-ENEMY
+#load-if-not-defined UP-TEUTONIC-CIV-ENEMY
+(load "Barbarian\Strategies\DM\dm-husk-champ")
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-not-defined UP-BRITON-CIV-ENEMY; Vs Aztec/Goth/Slav
+#load-if-not-defined UP-BYZANTINE-CIV-ENEMY
+#load-if-not-defined UP-CELTIC-CIV-ENEMY
+#load-if-not-defined UP-CHINESE-CIV-ENEMY
+#load-if-not-defined UP-FRANKISH-CIV-ENEMY
+#load-if-not-defined UP-HUN-CIV-ENEMY
+#load-if-not-defined UP-INCAN-CIV-ENEMY
+#load-if-not-defined UP-INDIAN-CIV-ENEMY
+#load-if-not-defined UP-ITALIAN-CIV-ENEMY
+#load-if-not-defined UP-JAPANESE-CIV-ENEMY
+#load-if-not-defined UP-KOREAN-CIV-ENEMY
+#load-if-not-defined UP-MAYAN-CIV-ENEMY
+#load-if-not-defined UP-MAGYAR-CIV-ENEMY
+#load-if-not-defined UP-MONGOL-CIV-ENEMY
+#load-if-not-defined UP-PERSIAN-CIV-ENEMY
+#load-if-not-defined UP-SARACEN-CIV-ENEMY
+#load-if-not-defined UP-SPANISH-CIV-ENEMY
+#load-if-not-defined UP-TURKISH-CIV-ENEMY
+#load-if-not-defined UP-TEUTONIC-CIV-ENEMY
+#load-if-not-defined UP-VIKING-CIV-ENEMY
+#load-if-not-defined UP-ETHIOPIAN-CIV-ENEMY
+(load "Barbarian\Strategies\DM\dm-champ-cannoneer")
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#end-if
+
+#load-if-defined FRANKISH-CIV
+(load "Barbarian\Strategies\DM\dm-palas")
+#end-if
+
+#load-if-defined HUN-CIV
+(load "Barbarian\Strategies\DM\dm-palas")
+#end-if
+
+#load-if-defined INCAN-CIV
+(load "Barbarian\Strategies\DM\dm-UU")
+
+(defrule
+	(game-time > 50)
+=>
+	(up-modify-goal gl-dm-workshop-number c:max 3)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined INDIAN-CIV
+(load "Barbarian\Strategies\DM\dm-camel-cannoneer")
+#end-if
+
+#load-if-defined ITALIAN-CIV
+(load "Barbarian\Strategies\DM\dm-cannoneers")
+#end-if
+
+#load-if-defined JAPANESE-CIV
+(load "Barbarian\Strategies\DM\dm-champs")
+
+(defrule
+	(or	(players-civ focus-player hun)
+		(or	(players-civ focus-player frankish)
+			(players-civ focus-player persian)))
+=>
+	(set-goal gl-strategy dm-halb-scorpion)
+	(set-goal gl-dm-barracks-number 10)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 0)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit scorpion)
+	(disable-self)
+)
+
+(defrule
+	(or	(players-civ focus-player spanish)
+		(players-civ focus-player teutonic))
+=>
+	(set-goal gl-strategy dm-halb-scorpion)
+	(set-goal gl-dm-barracks-number 10)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 0)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit scorpion)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 150)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(nor	(players-civ focus-player hun)
+		(or	(players-civ focus-player frankish)
+			(or	(players-civ focus-player persian)
+				(players-civ focus-player spanish))))
+	(building-type-count castle > 1)
+=>
+	(set-goal gl-strategy dm-UU-scorpion)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-main-unit my-unique-unit)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined KOREAN-CIV
+(load "Barbarian\Strategies\DM\dm-UU-champ")
+#end-if
+
+#load-if-defined MAGYAR-CIV
+(load "Barbarian\Strategies\DM\dm-palas")
+
+(defrule
+	(game-time > 150)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined MAYAN-CIV
+(load "Barbarian\Strategies\DM\dm-eagles")
+#end-if
+
+#load-if-defined MONGOL-CIV
+(load "Barbarian\Strategies\DM\dm-champ-turtle")
+
+(defrule
+	(building-type-count-total castle > 3)
+=>
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 300)
+=>
+	(up-modify-goal gl-dm-stable-number c:max 8)
+)
+
+(defrule
+	(civilian-population > 100)
+=>
+	(up-modify-goal gl-dm-stable-number c:max 11)
+)
+#end-if
+
+#load-if-defined PERSIAN-CIV
+(load "Barbarian\Strategies\DM\dm-pala-turtle")
+
+(defrule
+	(up-compare-const dm-infantry-threat-likelihood == 1)
+=>
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 6)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+#load-if-not-defined UP-AZTEC-CIV-ENEMY
+#load-if-not-defined UP-GOTHIC-CIV-ENEMY
+#load-if-not-defined UP-JAPANESE-CIV-ENEMY
+#load-if-not-defined UP-MAYAN-CIV-ENEMY
+(load "Barbarian\Strategies\DM\dm-camel-cannoneer")
+#else
+(load "Barbarian\Strategies\DM\dm-cannoneers")
+#end-if
+#else
+(load "Barbarian\Strategies\DM\dm-cannoneers")
+#end-if
+#else
+(load "Barbarian\Strategies\DM\dm-cannoneers")
+#end-if
+#else
+(load "Barbarian\Strategies\DM\dm-cannoneers")
+#end-if
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+(load "Barbarian\Strategies\DM\dm-halb-scorpion")
+#end-if
+
+#load-if-defined SPANISH-CIV
+(load "Barbarian\Strategies\DM\dm-palas")
+#end-if
+
+#load-if-defined TURKISH-CIV
+(load "Barbarian\Strategies\DM\dm-cannoneers")
+
+(defrule
+	(or	(game-time > 240)
+		(or	(up-compare-const dm-cavalry-threat-likelihood == 1)
+			(or	(up-compare-goal gl-enemy-cavalry-count > 1)
+				(players-building-type-count focus-player stable > 0))))
+=>
+	(set-goal gl-dm-barracks-number 0)
+	(up-modify-goal gl-dm-stable-number c:max 6)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count castle > 2)
+=>
+	(set-goal gl-strategy dm-UU)
+	(set-goal gl-dm-main-unit my-unique-unit)
+	(set-goal gl-dm-stable-number 8)
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(civilian-population > 100)
+=>
+	(up-modify-goal gl-dm-stable-number c:max 11)
+)
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+#load-if-defined UP-SARACEN-CIV-ENEMY
+(load "Barbarian\Strategies\DM\dm-pala-turtle")
+#else
+#load-if-defined UP-INDIAN-CIV-ENEMY
+(load "Barbarian\Strategies\DM\dm-pala-turtle")
+#else
+(load "Barbarian\Strategies\DM\dm-palas")
+#end-if
+#end-if
+#end-if
+
+#load-if-defined VIKING-CIV
+(load "Barbarian\Strategies\DM\dm-champ-turtle")
+
+(defrule
+	(or	(players-civ focus-player hun)
+		(or	(players-civ focus-player frankish)
+			(players-civ focus-player persian)))
+=>
+	(set-goal gl-strategy dm-halb-scorpion)
+	(set-goal gl-dm-barracks-number 10)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 0)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit scorpion)
+	(disable-self)
+)
+
+(defrule
+	(or	(players-civ focus-player spanish)
+		(players-civ focus-player teutonic))
+=>
+	(set-goal gl-strategy dm-halb-scorpion)
+	(set-goal gl-dm-barracks-number 10)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 0)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit scorpion)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 210)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(nor	(players-civ focus-player hun)
+		(or	(players-civ focus-player frankish)
+			(or	(players-civ focus-player persian)
+				(players-civ focus-player spanish))))
+	(building-type-count castle > 1)
+=>
+	(set-goal gl-strategy dm-UU-scorpion)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-main-unit my-unique-unit)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined BERBERS-CIV
+(load "Barbarian\Strategies\DM\dm-pala-turtle")
+
+(defrule
+	(game-time > 120)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined BURMESE-CIV
+(load "Barbarian\Strategies\DM\dm-eles")
+
+(defrule
+	(game-time > 150)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+;(load "Barbarian\Strategies\DM\dm-arbs")
+(load "Barbarian\Strategies\DM\dm-halb-scorpion")
+
+(defrule
+	(or	(players-civ focus-player malay)
+		(or	(players-civ focus-player khmer)
+			(or	(players-civ focus-player burmese)
+				(players-civ focus-player vietnamese))))
+=>
+	(set-goal gl-strategy dm-halb-scorpion)
+	(set-goal gl-dm-barracks-number 10)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 0)
+	(set-goal gl-dm-workshop-number 6)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 0)
+	(set-goal gl-dm-stone-to-sell 500)
+	(disable-self)
+)
+
+(defrule
+	(or	(players-civ focus-player malay)
+		(or	(players-civ focus-player khmer)
+			(or	(players-civ focus-player burmese)
+				(players-civ focus-player vietnamese))))
+=>
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 0)
+	(set-goal gl-dm-main-unit scorpion)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 50)
+	(nor	(players-civ focus-player malay)
+		(players-civ focus-player khmer))
+	(nor	(players-civ focus-player burmese)
+		(players-civ focus-player vietnamese))
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(population > 30)
+=>
+	(up-modify-goal gl-dm-workshop-number c:max 3)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined KHMER-CIV
+(load "Barbarian\Strategies\DM\dm-eles")
+#end-if
+
+#load-if-defined MALAY-CIV
+(load "Barbarian\Strategies\DM\dm-eles")
+#end-if
+
+#load-if-defined MALIAN-CIV
+(load "Barbarian\Strategies\DM\dm-pala-turtle")
+
+(defrule
+	(game-time > 120)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+(load "Barbarian\Strategies\DM\dm-champ-turtle")
+
+(defrule
+	(game-time > 50)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count castle > 2)
+=>
+	(set-goal gl-dm-main-unit my-unique-unit)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+(load "Barbarian\Strategies\DM\dm-eles")
+
+(defrule
+	(game-time > 50)
+=>
+	(set-goal gl-dm-allow-UU-training 1)
+	(disable-self)
+)
+#end-if
+
+#end-if
+

@@ -1,0 +1,440 @@
+; 230 - Mush
+; 33 - Boom
+; 32 - Rush
+
+#load-if-not-defined UP-MICHI-STYLE
+#load-if-defined IMPERIAL-AGE-END
+#load-if-defined POPULATION-CAP-200
+(defrule
+	(or	(game-time > 600)
+		(or	(strategic-number sn-minimum-water-body-size-for-dock >= islands-map-landing-style)
+			(or	(game-time < 30)
+				(up-compare-goal gl-current-age != gv-dark))))
+=>
+	(up-jump-rule 8)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(player-human focus-player)
+	(taunt-detected focus-player 48)
+	(goal SLING 0)
+	(goal gl-rush-suitability-on-map GOOD)
+=>
+	(set-goal gl-DRUSH YES)
+)
+
+(defrule
+	(stance-toward focus-player ally)
+	(player-human focus-player)
+	(taunt-detected focus-player 48)
+	(goal SLING 0)
+=>
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy shot-strategy)
+	(set-goal gl-strategy-type FC2)
+	(set-goal SLING 3)
+	(chat-to-allies "I'll assume I'm slung.")
+	(set-strategic-number sn-strategy-lock 1)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+	(set-strategic-number sn-focus-player-number 1)
+)
+
+(defrule
+	(true)
+=>
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+(defrule
+	(taunt-detected any-human-ally 230)
+=>
+	(acknowledge-taunt every-ally 230)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy fi-monk-rush)
+	(set-goal gl-strategy-type FI2)
+	(chat-to-allies "I'll go monks.")
+	(set-strategic-number sn-strategy-lock 1)
+)
+
+(defrule
+	(taunt-detected any-human-ally 33)
+=>
+	(acknowledge-taunt every-ally 33)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy boom-strategy)
+	(set-goal gl-strategy-type FC2)
+	(chat-to-allies "I'll boom.")
+	(set-strategic-number sn-strategy-lock 1)
+)
+
+(defrule
+	(taunt-detected any-human-ally 32)
+=>
+	(acknowledge-taunt every-ally 32)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy aggressive-strategy)
+	(set-goal gl-strategy-type FC2)
+	(chat-to-allies "I'll rush.")
+	(set-strategic-number sn-strategy-lock 1)
+)
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(not	(taunt-detected taunt-sender1 250))
+=>
+	(up-jump-rule 46)
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(up-compare-goal gl-current-age <= gv-feudal)
+	(current-age <= feudal-age)
+	(goal gl-strategy default)
+=>
+	(chat-to-player taunt-sender2 "I'm flushing.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(or	(up-compare-goal gl-current-age >= gv-feudal-up)
+		(current-age > feudal-age))
+	(or	(goal gl-strategy default)
+		(goal gl-strategy wonder-race-fi))
+=>
+	(chat-to-player taunt-sender2 "I'm not using any specific strategy.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-eew-strategy-type boom)
+=>
+	(chat-to-player taunt-sender2 "I'm booming with eagle warriors.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+=>
+	(chat-to-player taunt-sender2 "I'm fast imping with eagle warriors.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy ew-boom)
+=>
+	(chat-to-player taunt-sender2 "I'll train eagle warriors.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy heavy-krush)
+=>
+	(chat-to-player taunt-sender2 "I'm doing a heavy krush.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy CA-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm booming with cavalry archers.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy xbow-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with crossbowmen.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy turkish-fast-imp)
+=>
+	(chat-to-player taunt-sender2 "I'm fast imping to use hand cannoneers.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy castle-drop)
+=>
+	(chat-to-player taunt-sender2 "I'm going unique units.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy xbow-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm booming with crossbowmen.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy scorpion-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with scorpions.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy CA-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with cavalry archers.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy eagle-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with eagle warriors.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy scorpion-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm booming with scorpions.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy forward)
+=>
+	(chat-to-player taunt-sender2 "I'll forward the enemy.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy trush)
+=>
+	(chat-to-player taunt-sender2 "I'll rush with towers.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy mayan-fi-counter)
+=>
+	(chat-to-player taunt-sender2 "I'm altering my fast imp to counter enemy fast imp.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy gothic-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm going to use infantry.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy trush-push)
+=>
+	(chat-to-player taunt-sender2 "I'll push with towers.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy scrush)
+=>
+	(chat-to-player taunt-sender2 "I'm doing a scout rush.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy wall-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm going to wall and boom.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy fi-monk-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm going to do a fast imp with monks.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy grush)
+=>
+	(chat-to-player taunt-sender2 "I'm doing a galley rush.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy landing)
+=>
+	(chat-to-player taunt-sender2 "I'm going to land on the enemy.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(not	(civ-selected indian))
+	(nand	(goal POSITION POCKET)
+		(building-type-count-total stable < 2))
+	(goal gl-strategy krush)
+=>
+	(chat-to-player taunt-sender2 "I'm doing knights.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(not	(civ-selected indian))
+	(goal POSITION POCKET)
+	(building-type-count-total stable < 2)
+	(goal gl-strategy krush)
+=>
+	(chat-to-player taunt-sender2 "I'm doing knights (1 stable).")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(not	(civ-selected indian))
+	(goal gl-strategy knight-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with knights.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(civ-selected indian)
+	(or	(goal gl-strategy krush)
+		(goal gl-strategy knight-rush))
+=>
+	(chat-to-player taunt-sender2 "I'm doing camels.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy sling)
+=>
+	(chat-to-player taunt-sender2 "I'm slinging.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy eternal-drush)
+=>
+	(chat-to-player taunt-sender2 "I'm doing a heavy drush.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy michi-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm doing a michi boom.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy fi-castle-drop)
+=>
+	(chat-to-player taunt-sender2 "I'll fast imp with unique units.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy castle-push)
+=>
+	(chat-to-player taunt-sender2 "I'll push with castles.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy castle-sling)
+=>
+	(chat-to-player taunt-sender2 "I'm going to sling at castle age.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(not	(civ-selected indian))
+	(goal gl-strategy knight-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm booming with knights.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(civ-selected indian)
+	(goal gl-strategy knight-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm booming with camels.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy mongol-boom)
+=>
+	(chat-to-player taunt-sender2 "I'm doing a mangudai boom.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy monk-mango-push)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with monks and mangonels.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy turtle-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with turtle ships.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(up-compare-goal gl-strategy >= nothing-FC-boom)
+	(up-compare-goal gl-strategy <= nothing-market-flush)
+=>
+	(chat-to-player taunt-sender2 "I'm using a nothing map strategy.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy war-galley-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with war galleys.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy fire-ship-rush)
+=>
+	(chat-to-player taunt-sender2 "I'm rushing with fire ships.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy turkish-bombardment)
+=>
+	(chat-to-player taunt-sender2 boom-chat)
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-strategy archery-boom)
+=>
+	(chat-to-player taunt-sender2 "This is the archery boom.")
+)
+
+(defrule
+	(taunt-detected taunt-sender1 250)
+	(goal gl-DRUSH YES)
+=>
+	(chat-to-player taunt-sender2 "I'll drush.")
+)

@@ -1,0 +1,438 @@
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-research-cost c: ri-chemistry c: 1)
+	(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+	(up-add-research-cost c: ri-elite-skirmisher c: 1)
+	(up-add-research-cost c: ri-halberdier c: 1)
+	(up-add-research-cost c: ri-bracer c: 1)
+	(up-add-research-cost c: ri-ring-archer-armor c: 1)
+	(up-add-research-cost c: ri-ballistics c: 1)
+	(up-add-research-cost c: ri-siege-ram c: 1)
+	(up-add-research-cost c: ri-parthian-tactics c: 1)
+	(up-add-research-cost c: my-unique-research c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+=>
+	(up-add-object-cost c: skirmisher-line c: 1)
+	(up-add-object-cost c: spearman-line c: 1)
+	(up-add-object-cost c: barracks c: 1)
+	(up-add-object-cost c: castle c: 1)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-add-object-cost c: battering-ram-line c: 1)
+	(up-add-object-cost c: trebuchet c: 1)
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(building-type-count-total barracks == 0)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build barracks)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(building-type-count-total archery-range == 0)
+	(can-build barracks)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build archery-range)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(building-type-count-total siege-workshop < 3)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-pending)
+	(building-type-count castle == 0)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-build castle)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build castle)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-thumb-ring)
+=>
+	(research ri-thumb-ring)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-ballistics)
+=>
+	(research ri-ballistics)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-chemistry)
+=>
+	(research ri-chemistry)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-fletching)
+=>
+	(research ri-fletching)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-bodkin-arrow)
+=>
+	(research ri-bodkin-arrow)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-bracer)
+=>
+	(research ri-bracer)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-fletching >= research-pending)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(up-research-status c: ri-bracer >= research-pending)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research my-unique-unit-upgrade)
+=>
+	(research my-unique-unit-upgrade)
+)
+#load-if-defined MONGOL-CIV
+(defrule
+	(can-research my-unique-research)
+=>
+	(research my-unique-research)
+)
+#end-if
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-research ri-obsidian-arrows)
+=>
+	(research ri-obsidian-arrows)
+)
+(defrule
+	(unit-type-count-total trebuchet-set < 4)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(can-research ri-capped-ram)
+=>
+	(research ri-capped-ram)
+)
+(defrule
+	(can-research ri-siege-ram)
+=>
+	(research ri-siege-ram)
+)
+(defrule
+	(unit-type-count-total battering-ram-line < 5)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy == end-game)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager < 30)
+	(unit-type-count villager >= 17)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-food-gatherer-percentage 59)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 30)
+	(unit-type-count villager < 35)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-food-gatherer-percentage 57)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 35)
+	(unit-type-count villager < 40)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 40)
+	(unit-type-count villager < 45)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 45)
+	(unit-type-count villager < 50)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 50)
+	(unit-type-count villager < 55)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-food-gatherer-percentage 62)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 55)
+	(unit-type-count villager < 60)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 60)
+	(unit-type-count villager < 65)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 26)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 65)
+	(unit-type-count villager < 70)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 24)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 70)
+	(unit-type-count villager < 75)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 26)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 75)
+	(unit-type-count villager < 80)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-food-gatherer-percentage 62)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 80)
+	(unit-type-count villager < 85)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-food-gatherer-percentage 60)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 85)
+	(unit-type-count villager < 90)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-food-gatherer-percentage 58)
+	(set-strategic-number sn-gold-gatherer-percentage 22)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 90)
+	(unit-type-count villager < 95)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-food-gatherer-percentage 51)
+	(set-strategic-number sn-gold-gatherer-percentage 27)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 95)
+	(unit-type-count villager < 100)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-food-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 29)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 100)
+	(unit-type-count villager < 105)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 31)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 105)
+	(unit-type-count villager < 110)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 33)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 110)
+	(unit-type-count villager < 115)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 18)
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 115)
+	(unit-type-count villager < 120)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 16)
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	;(up-compare-goal gl-strategy == krush)
+	;(up-compare-goal gl-knights-type > one-stable)
+	(unit-type-count villager >= 120)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 14)
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 37)
+	(set-strategic-number sn-stone-gatherer-percentage 20)
+)
+(defrule 
+	(strategic-number sn-castle-age-strategy == end-game)
+	(housing-headroom < 20)
+	(population-headroom < 1)
+	(up-research-status c: castle-age >= research-pending)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 14)
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 35)
+	(set-strategic-number sn-stone-gatherer-percentage 22)
+)

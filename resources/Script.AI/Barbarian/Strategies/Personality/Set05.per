@@ -1,0 +1,135 @@
+(defconst super-traitor-chat-id 22075); In fact, I'm switching sides! Fare thee well, losers.
+(defconst traitor-chat-id 22104); Your cities we shall burn to ashes.
+(defconst betrayed-chat-id 22096); My armies will easily crush you!
+(defconst wonder-game-time 4577)
+(defconst camp-raid-time-variance 666)
+(defconst nomad-tc-up-chat "TC")
+(defconst gg-chat "well played!")
+
+#load-if-not-defined UP-SCENARIO-GAME
+
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 6)
+=>
+	(chat-to-all "gg")
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(goal gl-current-age gv-dark)
+	(game-time > 502)
+	(up-players-in-game ally >= 3)
+	(not	(player-valid any-computer-ally))
+	(up-compare-const gv-pocket-position == 1)
+=>
+	(chat-to-allies "Plan?")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 25)
+	(cc-players-unit-type-count 0 gold-mine > 300)
+=>
+	(chat-to-all "Noob map detected.")
+	(disable-self)
+)
+
+(defrule
+	(population < 100)
+	(up-compare-goal victory-time <= 0)
+	(players-population focus-player > 150)
+	(players-population any-enemy > 170)
+	(up-players-in-game enemy >= 3)
+	(players-population every-ally < 150)
+=>
+	(chat-to-allies "gg?")
+	(disable-self)
+)
+
+(defrule
+	(current-age == dark-age)
+	(game-time > 13)
+	(unit-type-count siege-onager > 0)
+=>
+	(chat-to-all ".")
+	(disable-self)
+)
+
+#load-if-defined UP-MULTIPLE-ENEMIES
+(defrule
+	(population-cap >= 200)
+	(players-population every-enemy >= pop-to-full-pop-attack)
+	(players-population every-ally < almost-full-pop)
+	(population < 130)
+=>
+	(chat-to-all "meh")
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(game-time > 47)
+	(up-compare-const gv-maximum-age == imperial-age)
+	(or	(and	(up-players-in-game ally >= 2)
+			(players-civ every-ally briton))
+		(unit-type-count longbowman-line > 60))
+	(civ-selected briton)
+=>
+	(chat-to-all "It's longbow time?")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 600)
+	(unit-type-count monk > 20)
+=>
+	(chat-to-all "30 30")
+	(disable-self)
+)
+
+(defrule
+	(game-time < 700)
+	(up-compare-goal gl-DRUSH != YES)
+	(up-compare-const gv-maximum-age >= feudal-age)
+	(goal gl-rush-suitability-on-map GOOD)
+	(or	(goal threat-source scout-cavalry-class)
+		(goal threat-source infantry-class))
+	(goal threat-target villager-class)
+	(up-compare-goal threat-time < 7000)
+	(players-military-population focus-player > 3)
+	(players-current-age focus-player == dark-age)
+=>
+	(chat-to-all "Git.")
+	(disable-self)
+)
+
+(defrule
+	(game-time < 1800)
+	(not	(death-match-game))
+	(goal gl-rush-suitability-on-map GOOD)
+	(building-type-count wall-class < 5)
+	(players-building-type-count every-ally stone-wall-line < 5)
+	(players-building-type-count every-ally palisade-wall < 5)
+	(or	(players-building-type-count target-player stone-wall-line > 9)
+		(players-building-type-count target-player palisade-wall > 9))
+=>
+	(chat-to-all "Waller.")
+	(disable-self)
+)
+
+(defrule
+	(game-time < 900)
+	(starting-age == dark-age)
+	(up-compare-const gv-regicide == 0)
+	(up-compare-goal gl-uncommon-settings != YES)
+	(players-current-age-time focus-player < 5)
+	(players-current-age focus-player == castle-age)
+	(starting-resources == low-resources)
+=>
+	(chat-to-all "Fast player.")
+	(disable-self)
+)
+#end-if

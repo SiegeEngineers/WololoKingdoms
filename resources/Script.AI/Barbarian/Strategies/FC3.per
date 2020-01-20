@@ -1,0 +1,38 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy krush)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+#load-if-defined FRANKISH-CIV
+(defrule
+	(game-time < 10)
+	(goal gl-current-age gv-dark)
+	(cc-players-unit-type-count 0 gold-mine > 16)
+	(building-type-count-total town-center <= 1)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy heavy-krush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+#else
+(defrule
+	(game-time < 10)
+	(goal gl-current-age gv-dark)
+	(cc-players-unit-type-count 0 stone-mine > 16)
+	(cc-players-unit-type-count 0 gold-mine > 24)
+	(building-type-count-total town-center <= 1)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy heavy-krush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC)
+	(disable-self)
+)
+#end-if
+

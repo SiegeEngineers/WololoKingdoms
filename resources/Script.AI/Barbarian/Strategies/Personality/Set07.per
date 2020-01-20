@@ -1,0 +1,220 @@
+(defconst super-traitor-chat-id 22069); I have waited far too long for the promised tribute!
+(defconst traitor-chat-id 22099); I and my troops can easily vanquish seven times your number!
+(defconst betrayed-chat-id 22119); A curse upon thee and thy entire civilization!
+(defconst wonder-game-time 7444)
+(defconst camp-raid-time-variance 888)
+(defconst nomad-tc-up-chat "TC")
+(defconst gg-chat "GG")
+
+#load-if-not-defined UP-SCENARIO-GAME
+
+#load-if-not-defined WONDER-RACE
+#load-if-not-defined KING-OF-THE-HILL
+#load-if-not-defined TURBO-RANDOM-MAP
+#load-if-defined DARK-AGE-START
+#load-if-defined DIFFICULTY-HARD
+#load-if-not-defined CUSTOM-MAP
+(defrule
+	(or	(goal gl-strategy fi-monk-rush)
+		(goal gl-strategy eagle-rush))
+	(building-type-count-total house > 45)
+	(population-cap <= 200)
+=>
+	(chat-to-all "Your town has a brand new paint, huh?")
+	(disable-self)
+)
+#end-if
+(defrule
+	(goal MILITARY 1)
+	(not	(players-population any-ally < 150))
+	(game-time > 3600)
+	(game-time < 3700)
+=>
+	(chat-to-all "28 28")
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined ARENA-MAP
+(defrule
+	(up-compare-const gv-2-player-game == 1)
+	(civ-selected aztec)
+	(nor	(players-civ any-enemy aztec)
+		(or	(players-civ any-enemy mayan)
+			(players-civ any-enemy teutonic)))
+	(game-time > 20)
+=>
+	(chat-to-all "1 1")
+	(disable-self)
+)
+#end-if
+
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 10)
+	(not	(hold-relics))
+	(players-building-type-count every-ally wonder == 0)
+	(building-type-count wonder == 0)
+	(or	(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+=>
+	(chat-to-all "gg I guess")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 8)
+	(or	(players-building-type-count any-ally wonder > 0)
+		(or	(building-type-count wonder > 0)
+			(hold-relics)))
+	(nor	(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+=>
+	(chat-to-all "*gg")
+	(disable-self)
+)
+#end-if
+
+#load-if-defined UP-HUMAN-IN-GAME
+(defrule
+	(game-time > 2835)
+	(up-compare-const gv-real-FFA == 1)
+	(player-in-game any-computer-enemy)
+	(player-in-game any-human-enemy)
+=>
+	(up-store-player-name this-any-human-enemy)
+	(up-chat-data-to-all "Everyone attack %s now" c: 7031232)
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(goal MILITARY 1)
+	(unit-type-count monk > 20)
+	(unit-type-count spearman-line < 10)
+	(players-unit-type-count focus-player scout-cavalry-line > 15)
+=>
+	(chat-to-all "Does light cavalry counter monks?")
+	(disable-self)
+)
+
+(defrule
+	(civ-selected gothic)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(population > almost-full-pop)
+	(players-civ focus-player mayan)
+	(research-completed ri-elite-huskarl)
+=>
+	(chat-to-all "I doubt Mayans are the best choice against the Goths.")
+	(disable-self)
+)
+
+(defrule
+	(unit-type-count monk > 14)
+	(up-compare-goal TSA >= 1)
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(research-completed ri-theocracy)
+	(not	(goal gl-strategy fi-monk-rush))
+	(players-building-count target-player > 0)
+=>
+	(chat-to-all "18 18")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 4379)
+	(population < 150)
+	(players-population every-enemy >= almost-full-pop)
+=>
+	(chat-to-all "pff")
+	(disable-self)
+)
+
+(defrule
+	(or	(and	(players-civ focus-player aztec)
+			(players-unit-type-count focus-player knight-line > 9))
+		(and	(civ-selected aztec)
+			(unit-type-count knight-line > 9)))
+=>
+	(chat-to-all "Aztec krush?")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 8374)
+	(population >= almost-full-pop)
+	(players-population any-enemy >= almost-full-pop)
+=>
+	(chat-to-all "Not the fastest game I've played :D")
+	(disable-self)
+)
+
+#load-if-defined UP-HUMAN-IN-GAME
+(defrule
+	(or	(and	(cc-players-unit-type-count focus-player cobra-car == 0)
+			(and	(cc-players-unit-type-count focus-player saboteur == 0)
+				(cc-players-unit-type-count focus-player monkey-boy == 0)))
+		(strategic-number sn-minimum-water-body-size-for-dock >= islands-map-landing-style))
+=>
+	(up-jump-rule 4)
+)
+
+(defrule
+	(or	(cc-players-unit-type-count focus-player cobra-car > 0)
+		(or	(cc-players-unit-type-count focus-player saboteur > 0)
+			(cc-players-unit-type-count focus-player monkey-boy > 0)))
+=>
+	(chat-to-all "You'll regret that.")
+	(disable-self)
+)
+
+(defrule
+	(or	(cc-players-unit-type-count focus-player cobra-car > 0)
+		(or	(cc-players-unit-type-count focus-player saboteur > 0)
+			(cc-players-unit-type-count focus-player monkey-boy > 0)))
+=>
+	(set-goal temporary-goal 0)
+	(set-difficulty-parameter ability-to-maintain-distance 100)
+	(set-difficulty-parameter ability-to-dodge-missiles 100)
+	(attack-now)
+	(set-strategic-number sn-number-explore-groups 1)
+	(set-strategic-number sn-total-number-explorers 1)
+	(up-get-focus-fact military-population 0 temporary-goal2)
+	(up-modify-goal temporary-goal2 c:* 3)
+	(up-modify-goal temporary-goal2 c:+ 1)
+)
+
+(defrule
+	(or	(cc-players-unit-type-count focus-player cobra-car > 0)
+		(or	(cc-players-unit-type-count focus-player saboteur > 0)
+			(cc-players-unit-type-count focus-player monkey-boy > 0)))
+	(players-building-count target-player == 0)
+=>
+	(set-strategic-number sn-number-explore-groups 10)
+	(set-strategic-number sn-total-number-explorers 10)
+	(set-strategic-number sn-home-exploration-time 0)
+)
+
+(defrule
+	(or	(cc-players-unit-type-count focus-player cobra-car > 0)
+		(or	(cc-players-unit-type-count focus-player saboteur > 0)
+			(cc-players-unit-type-count focus-player monkey-boy > 0)))
+	(or	(military-population g:< temporary-goal2)
+		(unit-type-count cobra-car < 3))
+	(unit-type-count cobra-car < 100)
+	(up-compare-goal temporary-goal < 4)
+=>
+	(up-jump-rule -1)
+	(up-modify-goal temporary-goal c:+ 1)
+	(up-modify-goal temporary-goal2 c:- 1)
+	(up-cc-send-cheat "how do you turn this on")
+)
+#end-if
+
+#end-if

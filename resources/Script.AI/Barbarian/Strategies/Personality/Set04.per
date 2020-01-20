@@ -1,0 +1,131 @@
+(defconst super-traitor-chat-id 22104); Your cities we shall burn to ashes.
+(defconst traitor-chat-id 2310); Your petty offerings will not sway my determination to crush your empire!
+(defconst betrayed-chat-id 2305); You dare defy me?! Prepare to die!
+(defconst wonder-game-time 2500)
+(defconst camp-raid-time-variance 555)
+(defconst nomad-tc-up-chat "I'll settle here")
+(defconst gg-chat "gg wp")
+
+#load-if-not-defined UP-SCENARIO-GAME
+(defrule
+	(game-time < 1800)
+	(game-time > 600)
+	(current-age-time < 10)
+	(current-age == imperial-age)
+	(players-current-age every-enemy <= castle-age)
+=>
+	(chat-to-all "What's up?")
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy fi-monk-rush)
+	(goal MILITARY 1)
+	(game-time < 2100)
+	(game-time > 1800)
+	(current-age == imperial-age)
+	(players-current-age every-enemy <= castle-age)
+=>
+	(chat-to-all-using-id 22100)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 2100)
+	(soldier-count > 35)
+	(up-compare-const gv-maximum-age >= castle-age)
+	(players-current-age target-player == feudal-age)
+	(players-current-age-time target-player > 1200)
+	(goal gl-current-age gv-feudal)
+=>
+	(chat-to-all "It's great to have long feudal age wars once in a while.")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 843)
+	(up-compare-const gv-pocket-position == 1)
+	(player-human 1)
+	(player-in-game any-human-ally)
+	(goal gl-my-flank1 1)
+=>
+	(up-store-player-name this-any-human-ally)
+	(up-chat-data-to-all "How is it going %s?" c: 7031232)
+	(disable-self)
+)
+
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 6)
+	(not	(hold-relics))
+	(players-building-type-count every-ally wonder == 0)
+	(building-type-count wonder == 0)
+	(or	(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+=>
+	(chat-to-all "*bah, gg")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 6)
+	(or	(players-building-type-count any-ally wonder > 0)
+		(or	(building-type-count wonder > 0)
+			(hold-relics)))
+	(nor	(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+=>
+	(chat-to-all "GG")
+	(disable-self)
+)
+#end-if
+
+(defrule
+	(players-civ focus-player turkish)
+	(game-time > 2100)
+	(players-current-age focus-player >= castle-age)
+	(players-unit-type-count focus-player skirmisher-line > 14)
+=>
+	(chat-to-all "Skirmisher, the Turkish unique unit.")
+	(disable-self)
+)
+
+(defrule
+	(goal gl-rush-suitability-on-map GOOD)
+	(goal MILITARY 1)
+	(nor	(map-type arena)
+		(map-type fortress))
+	(not	(map-type black-forest))
+	(player-human target-player)
+	(players-building-type-count target-player stone-wall-line > 80)
+=>
+	(chat-to-all "I'd appreciate if you used less walls.")
+	(disable-self)
+)
+
+(defrule
+	(goal gl-rush-suitability-on-map GOOD)
+	(goal MILITARY 1)
+	(nor	(map-type arena)
+		(map-type fortress))
+	(not	(map-type black-forest))
+	(player-human target-player)
+	(players-building-type-count target-player stone-wall-line > 150)
+=>
+	(chat-to-all "So, you're planning to wall the whole map?")
+	(disable-self)
+)
+
+(defrule
+	(not	(death-match-game))
+	(population > 150)
+	(stance-toward focus-player enemy)
+	(unit-type-count monastery-class > 10)
+	(players-unit-type-count focus-player war-elephant-line > 10)
+=>
+	(chat-to-all "Maybe those elephants want to join me instead.")
+	(disable-self)
+)
+#end-if

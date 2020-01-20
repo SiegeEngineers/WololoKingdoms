@@ -1,0 +1,2452 @@
+; =========== GOALS ETC
+
+(defrule
+	(up-compare-goal gl-strategy != eew-strategy)
+=>
+	(up-jump-rule 8)
+)
+
+(defrule
+	(or	(game-time > 3000)
+		(and	(strategic-number sn-minimum-water-body-size-for-dock != land-map-style)
+			(and	(up-compare-goal gl-current-age >= gv-castle-up)
+				(goal gl-eew-strategy-type boom))))
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(can-research-with-escrow ri-heavy-plow)
+=>
+	(release-escrow food)
+	(release-escrow wood)
+	(research ri-heavy-plow)
+)
+
+(defrule
+	(current-age <= castle-age)
+	(goal POSITION FLANK)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(players-military-population focus-player > 4)
+	(players-current-age any-enemy == feudal-age)
+=>
+	(set-goal gl-eagles flush-counter-eagles)
+	(set-strategic-number sn-enemy-sighted-response-distance 0)
+;	(chat-to-player my-player-number "Enemy flushing!")
+	(disable-self)
+)
+
+(defrule
+	(goal gl-eagles flush-counter-eagles)
+	(or	(and	(up-compare-goal gl-eagle-warrior-count-total == 5)
+			(players-military-population any-enemy < 7))
+		(and	(up-compare-goal gl-eagle-warrior-count-total > 5)
+			(players-military-population any-enemy < 9)))
+=>
+	(set-strategic-number sn-percent-enemy-sighted-response 100)
+	(set-strategic-number sn-enemy-sighted-response-distance 20)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-eagles flush-counter-eagles)
+	(up-compare-goal gl-eagle-warrior-count-total > 4)
+=>
+	(set-strategic-number sn-percent-enemy-sighted-response 100)
+	(set-strategic-number sn-enemy-sighted-response-distance 10)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-eagles flush-counter-eagles)
+	(current-age == castle-age)
+	(up-compare-goal gl-eagle-warrior-count-total > 4)
+	(or	(players-military-population any-enemy < 8)
+		(up-compare-goal gl-eagle-warrior-count-total > 7))
+	(players-military-population any-enemy < 16)
+	(not	(town-under-attack))
+=>
+	(set-goal gl-eagles 0)
+;	(chat-to-player my-player-number "Safe now?")
+	(set-strategic-number sn-maximum-town-size 17)
+	(set-goal gl-gathering-inside RESET)
+	(set-strategic-number sn-enemy-sighted-response-distance 20)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-eagles flush-counter-eagles)
+	(goal gl-enemy-strategy MAA-FLUSH)
+	(players-unit-type-count every-enemy archer-line < 3)
+	(up-compare-goal gl-my-UU-count-total > 0)
+	(building-type-count-total castle > 0)	
+=>
+	(set-goal gl-eagles 0)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-required-eagle-upgrades 0)
+	(research-available my-unique-research)
+	(not	(player-in-game any-ally))
+	(or	(players-unit-type-count focus-player jaguar-man-line > 3)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 1)
+			(up-compare-goal gl-enemy-infantry-count > 8)))
+=>
+	(set-goal gl-required-eagle-upgrades full-upgrades)
+	(set-strategic-number sn-upgrade-eagles 1)
+)
+
+;
+
+(defrule
+	(goal gl-required-eagle-upgrades full-upgrades)
+	(nand	(soldier-count g:> gl-toughest-fought-enemy-military)
+		(players-current-age focus-player <= castle-age))
+	(strategic-number sn-threat-level < 1)
+=>
+	(set-strategic-number sn-threat-level 1)
+)
+
+(defrule
+	(or	(goal gl-required-eagle-upgrades full-upgrades)
+		(strategic-number sn-upgrade-eagles != 0))
+	(up-research-status c: ri-blast-furnace >= research-pending)
+	(up-research-status c: my-unique-research >= research-pending)
+=>
+	(set-goal gl-required-eagle-upgrades 0)
+;	(chat-to-player my-player-number "Safe to make eagles?")
+	(set-strategic-number sn-threat-level -2)
+	(set-strategic-number sn-upgrade-eagles 0)
+)
+
+; =============== ECO BALANCING
+
+(defrule
+	(up-compare-goal gl-strategy != eew-strategy)
+=>
+	(up-jump-rule 24)
+)
+
+(defrule
+	(goal gl-eew-strategy-type fast-imp)
+	(goal gl-current-age gv-feudal)
+	(dropsite-min-distance stone < 4)
+	(building-type-count-total castle == 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 33)
+	(set-strategic-number sn-wood-gatherer-percentage 31)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+	(set-strategic-number sn-stone-gatherer-percentage 26)
+)
+
+(defrule
+	(goal gl-eew-strategy-type fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(dropsite-min-distance stone < 4)
+	(building-type-count-total castle == 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 34)
+	(set-strategic-number sn-gold-gatherer-percentage 8)
+	(set-strategic-number sn-stone-gatherer-percentage 26)
+)
+
+(defrule
+	(goal gl-eew-strategy-type fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(goal gl-enemy-strategy EAGLERUSH-NOTE)
+		(goal gl-enemy-strategy EAGLERUSH))
+	(dropsite-min-distance stone < 4)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 32)
+	(set-strategic-number sn-wood-gatherer-percentage 32)
+	(set-strategic-number sn-gold-gatherer-percentage 6)
+	(set-strategic-number sn-stone-gatherer-percentage 30)
+)
+
+(defrule
+	(goal gl-eew-strategy-type fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal gl-eagles flush-counter-eagles)
+	(building-type-count-total castle == 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 25)
+	(set-strategic-number sn-wood-gatherer-percentage 55)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+	(set-strategic-number sn-stone-gatherer-percentage 17)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal gl-eagles flush-counter-eagles)
+	(building-type-count-total castle == 0)
+	(building-type-count-total barracks > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 35)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(goal gl-eagles flush-counter-eagles)
+			(and	(building-type-count-total barracks > 1)
+				(building-type-count-total castle == 0)))
+		(and	(building-type-count-total castle > 0)
+			(current-age == feudal-age)))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 24)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(goal gl-current-age gv-castle-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 22)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+	(set-goal gl-eagles extra-eagles)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(goal gl-current-age gv-castle-up)
+	(building-type-count-total barracks > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-wood-gatherer-percentage 27)
+	(set-strategic-number sn-gold-gatherer-percentage 26)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(or	(building-type-count-total castle > 0)
+		(or	(stone-amount >= castle-stone)
+			(goal gl-eew-strategy-type plain-fast-imp)))
+	(nand	(goal gl-eagles flush-counter-eagles)
+		(building-type-count-total barracks < 1))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 54)
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-gold-gatherer-percentage 21)
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+
+(defrule
+	(goal gl-eew-strategy-type plain-fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(building-type-count-total siege-workshop == 0)
+	(not	(research-available imperial-age))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 38)
+	(set-strategic-number sn-gold-gatherer-percentage 16)
+)
+
+(defrule
+	(or	(goal gl-eew-strategy-type fast-imp)
+		(and	(game-time > 1900)
+			(and	(goal gl-eew-strategy-type plain-fast-imp)
+				(research-completed ri-plate-mail))))
+	(up-compare-goal gl-current-age >= gv-castle)
+	(stone-amount < castle-stone)
+	(building-type-count-total castle == 0)
+=>
+	(up-modify-sn sn-stone-gatherer-percentage c:max 10)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(building-type-count-total barracks > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-gold-gatherer-percentage 33)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(up-research-status c: ri-blast-furnace < research-pending)
+	(building-type-count-total barracks > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-wood-gatherer-percentage 20)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(building-type-count-total barracks > 2)
+	(goal gl-required-eagle-upgrades full-upgrades)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 47)
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-gold-gatherer-percentage 28)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(building-type-count-total barracks > 2)
+	(research-completed my-unique-research)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 37)
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-gold-gatherer-percentage 38)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(building-type-count-total barracks > 2)
+	(unit-type-count-total jaguar-man-line > 2)
+	(civ-selected aztec)
+	(current-age-time > 300)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 22)
+	(set-strategic-number sn-gold-gatherer-percentage 30)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(building-type-count-total barracks > 2)
+	(unit-type-count-total jaguar-man-line > 2)
+	(civ-selected aztec)
+	(civilian-population > 110)
+	(current-age-time > 300)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-gold-gatherer-percentage 32)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(building-type-count-total barracks > 2)
+	(civ-selected aztec)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 1)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 1)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(building-type-count-total barracks > 2)
+	(unit-type-count-total spearman-line > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 28)
+	(set-strategic-number sn-gold-gatherer-percentage 26)
+	(set-strategic-number sn-stone-gatherer-percentage 3)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(research-completed my-unique-research)
+	(building-type-count-total barracks > 2)
+	(unit-type-count-total plumed-archer-line > 3)
+	(civ-selected mayan)
+	(current-age-time > 300)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 6)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 6)
+)
+
+(defrule
+	(goal gl-eew-strategy-type plain-fast-imp)
+	(game-time < 1900)
+	(building-type-count town-center > 0)
+	(up-compare-goal TC != 1)
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 0)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(or	(wood-amount < 250)
+		(food-amount > 1200))
+	(or	(and	(game-time > 2040)
+			(building-type-count-total siege-workshop == 0))
+		(and	(research-completed my-unique-research)
+			(and	(food-amount > 600)
+				(wood-amount < 700))))
+	(strategic-number sn-wood-gatherer-percentage < 30)
+=>
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal)
+=>
+	(up-modify-sn sn-gold-gatherer-percentage g:- gl-gathered-relics)
+	(up-modify-goal temporary-goal s:= sn-food-gatherer-percentage)
+	(up-modify-goal temporary-goal s:+ sn-wood-gatherer-percentage)
+	(up-modify-goal temporary-goal s:+ sn-gold-gatherer-percentage)
+	(up-modify-goal temporary-goal s:+ sn-stone-gatherer-percentage)
+	(up-modify-sn sn-food-gatherer-percentage g:%/ temporary-goal)
+	(up-modify-sn sn-wood-gatherer-percentage g:%/ temporary-goal)
+	(up-modify-sn sn-gold-gatherer-percentage g:%/ temporary-goal)
+	(up-get-fact unit-type-count villager-food temporary-goal6)
+	(up-get-fact unit-type-count villager-farmer temporary-goal7)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(up-compare-goal temporary-goal6 g:== temporary-goal7)
+	(unit-type-count villager-builder < 2)
+=>
+	(up-modify-goal temporary-goal g:= gl-my-villager-count)
+	(up-modify-goal temporary-goal s:* sn-food-gatherer-percentage)
+	(up-modify-goal temporary-goal c:/ 100)
+	(up-modify-goal temporary-goal c:- 2)
+	(up-modify-goal temporary-goal g:- temporary-goal6)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal temporary-goal g:%/ gl-my-villager-count)
+	(up-modify-sn sn-food-gatherer-percentage g:- temporary-goal)
+	(up-modify-sn sn-wood-gatherer-percentage g:+ temporary-goal)
+)
+
+#load-if-defined TINY-MAP
+#load-if-defined MAYAN-CIV
+(defrule
+	(goal gl-eew-strategy-type fast-imp)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(game-time > 1310)
+	(players-current-age every-enemy == castle-age)
+	(players-civ every-enemy turkish)
+	(players-military-population every-enemy < 3)
+=>
+	(set-goal gl-strategy mayan-fi-counter)
+	(set-goal gl-strategy-type FC2)
+	(set-goal CASTLE 2)
+	(set-goal TC 1)
+	(set-strategic-number sn-food-gatherer-percentage 24)
+	(set-strategic-number sn-wood-gatherer-percentage 52)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+	(enable-timer 7 0)
+	(chat-to-player my-player-number "24Threat of enemy fast imp detected!"); Triggers vs mush too but that doesn't matter
+)
+
+(defrule
+	(goal gl-strategy mayan-fi-counter)
+	(building-type-count-total town-center > 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 35)
+	(set-strategic-number sn-wood-gatherer-percentage 40)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy mayan-fi-counter)
+	(building-type-count-total town-center > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 39)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 23)
+	(set-strategic-number sn-stone-gatherer-percentage 7)
+	(set-goal gl-strategy castle-drop)
+	(set-goal gl-fixed-eco-balancing NO)
+)
+#end-if
+#end-if
+
+(defrule
+	(up-compare-goal gl-strategy != ew-boom)
+=>
+	(up-jump-rule 19)
+)
+
+(defrule
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(game-time > 2400))
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(up-compare-goal gl-enemy-pocket > 0)
+=>
+	(up-modify-goal temporary-goal s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= gl-enemy-pocket)
+	(up-modify-sn sn-focus-player-number g:= gl-my-flank1)
+	(up-get-focus-fact allied-goal gl-strategy-type temporary-goal2)
+	(up-get-focus-fact allied-goal gl-identity temporary-goal3)
+	(up-get-focus-fact allied-goal gl-target-player-distance temporary-goal4)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+)
+
+(defrule
+	(building-type-count-total barracks < 2)
+	(goal POSITION POCKET)
+	(up-compare-goal gl-strategy-control != gv-1-barracks)
+	(nand	(up-compare-const gv-x-vs-one-challenge == 1)
+		(players-military-population focus-player > 3))
+	(goal gl-current-age gv-feudal)
+	(or	(up-compare-goal gl-my-villager-count < 29)
+		(up-compare-goal gl-DRUSH-CONTROL > 0))
+=>
+	(set-goal gl-strategy-control gv-1-barracks)
+)
+
+(defrule
+	(building-type-count-total barracks < 2)
+	(goal POSITION POCKET)
+	(up-compare-goal gl-strategy-control != gv-1-barracks)
+	(up-compare-goal gl-current-age <= gv-feudal)
+	(or	(and	(up-compare-goal gl-current-age >= gv-dark-up)
+			(or	(up-compare-goal gl-enemy-wall-count-total > 12)
+				(goal gl-super-pocket YES)))
+		(taunt-detected any-human-ally 41))
+	(up-compare-goal gl-my-villager-count < 35)
+=>
+	(set-goal gl-strategy-control gv-1-barracks)
+)
+
+(defrule
+	(building-type-count-total barracks < 2)
+	(goal POSITION POCKET)
+	(up-compare-goal gl-strategy-control != gv-1-barracks)
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(up-compare-goal gl-current-age <= gv-feudal)
+	(or	(up-compare-goal gl-enemy-tower-count > 1)
+		(or	(goal gl-enemy-pocket-civ aztec)
+			(or	(goal gl-enemy-pocket-civ mayan)
+				(goal gl-enemy-pocket-civ korean))))
+	(up-compare-goal gl-my-villager-count < 35)
+=>
+	(set-goal gl-strategy-control gv-1-barracks)
+)
+
+(defrule
+	(building-type-count-total barracks < 2)
+	(goal POSITION POCKET)
+	(up-compare-goal gl-strategy-control != gv-1-barracks)
+	(up-compare-goal gl-current-age >= gv-dark-up)
+	(up-compare-goal gl-current-age <= gv-feudal)
+	(goal temporary-goal3 Barbarian)
+	(or	(up-compare-goal temporary-goal2 >= FC)
+		(up-compare-goal temporary-goal4 > 90))
+	(up-compare-goal gl-my-villager-count < 35)
+=>
+	(set-goal gl-strategy-control gv-1-barracks)
+)
+
+(defrule
+	(or	(up-compare-goal gl-strategy != ew-boom)
+		(or	(up-compare-goal gl-current-age < gv-feudal-up)
+			(not	(goal gl-fixed-eco-balancing YES))))
+=>
+	(up-jump-rule 12)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 42)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+	(set-goal gl-eagles extra-eagles)
+)
+
+(defrule
+	(goal POSITION POCKET)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(goal POSITION POCKET)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(current-age-time >= 240)
+	(building-type-count-total town-center == 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 49)
+	(set-strategic-number sn-gold-gatherer-percentage 11)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(building-type-count-total town-center == 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 12)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(building-type-count-total town-center > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(current-age-time >= 270)
+	(building-type-count-total town-center > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 35)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(up-compare-goal gl-my-villager-count-total > 75)
+	(building-type-count-total town-center > 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 45)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 25)
+)
+
+(defrule
+	(building-type-count-total town-center > 2)
+	(civilian-population < 100)
+	(civ-selected mayan)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:+ 2)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 1)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+)
+
+(defrule
+	(or	(players-building-type-count target-player stable > 1)
+		(or	(and	(map-size tiny)
+				(goal gl-enemy-strategy KNIGHT-RUSH))
+			(or	(up-compare-goal gl-enemy-heavy-cavalry-count > 1)
+				(or	(up-compare-goal gl-enemy-cavalry-count > 2)
+					(and	(building-type-count-total barracks < 2)
+						(up-compare-goal gl-current-age >= gv-castle))))))
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:+ 2)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 1)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 3)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(current-age-time > 900)
+		(or	(up-compare-goal gl-current-age >= gv-castle-up)
+			(or	(up-compare-goal DOCK != 0)
+				(and	(or	(gold-amount > 350)
+						(or	(food-amount > 400)
+							(wood-amount > 370)))
+					(current-age-time > 10)))))
+=>
+	(set-goal gl-fixed-eco-balancing NO)
+)
+
+; ================= RESEARCHES
+
+(defrule
+	(goal gl-strategy ew-boom)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-research-status c: ri-bow-saw >= research-pending)
+	(up-research-status c: ri-horse-collar >= research-pending)
+	(up-research-status c: ri-wheel-barrow >= research-pending)
+=>
+	(research ri-scale-mail)
+)
+
+(defrule
+	(or	(goal gl-strategy eew-strategy)
+		(up-compare-goal gl-eagle-warrior-count-total >= relative-4-units))
+	(strategic-number sn-allow-resource-spending > 0)
+	(up-compare-goal gl-eagle-warrior-count-total > 1)
+=>
+	(research ri-scale-mail)
+	(research ri-chain-mail)
+)
+
+(defrule
+	(or	(and	(unit-type-count-total jaguar-man-line > 0)
+			(or	(goal gl-enemy-strategy EAGLERUSH)
+				(unit-type-count-total jaguar-man-line > 5)))
+		(and	(goal gl-strategy eew-strategy)
+			(and	(building-type-count-total barracks > 0)
+				(or	(goal gl-eagles flush-counter-eagles)
+					(goal gl-eagles heavy-eagles)))))
+=>
+	(research ri-scale-mail)
+	(research ri-chain-mail)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(building-type-count-total barracks > 0)
+	(goal gl-eagles flush-counter-eagles)
+	(or	(town-under-attack)
+		(or	(up-compare-goal gl-eagle-warrior-count-total > 5)
+			(players-military-population focus-player > 8)))
+	(players-military-population focus-player > 4)
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+
+(defrule
+	(or	(and	(unit-type-count-total jaguar-man-line > 0)
+			(and	(goal gl-enemy-strategy EAGLERUSH)
+				(goal gl-strategy eew-strategy)))
+		(or	(goal gl-eagles heavy-eagles)
+			(and	(up-compare-goal gl-current-age >= gv-castle-up)
+				(food-amount > 1000))))
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(civilian-population > 70)
+	(or	(up-compare-goal gl-enemy-archery-count > 15)
+		(or	(up-compare-goal gl-enemy-gunpowder-count > 10)
+			(or	(up-compare-goal gl-enemy-scorpion-count > 5)
+				(up-compare-goal gl-eagle-warrior-count-total > 20))))
+	(up-compare-goal gl-eagle-warrior-count-total > 9)
+	(research-completed ri-forging)
+	(research-available ri-plate-mail)
+=>
+	(up-modify-escrow food c:max 300)
+	(up-modify-escrow gold c:max 150)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(research-completed ri-forging)
+	(can-research-with-escrow ri-plate-mail)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-plate-mail)
+)
+
+(defrule
+	(or	(strategic-number sn-allow-resource-spending > 1)
+		(or	(up-compare-goal gl-eagle-warrior-count-total > 17)
+			(goal MILITARY 1)))
+	(nand	(up-research-status c: imperial-age >= research-pending)
+		(and	(up-research-status c: ri-elite-eagle-warrior < research-pending)
+			(food-amount < 950)))
+	(research-completed ri-chain-mail)
+	(up-compare-goal gl-eagle-warrior-count-total > 3)
+	(or	(up-compare-goal gl-eagle-warrior-count-total > 5)
+		(research-completed ri-elite-eagle-warrior))
+=>
+	(research ri-forging)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(or	(and	(research-completed ri-chain-mail)
+			(can-research ri-forging))
+		(and	(research-completed ri-plate-mail)
+			(and	(can-research ri-iron-casting)
+				(up-compare-goal gl-eagle-warrior-count-total > 13))))
+=>
+	(research ri-forging)
+	(research ri-iron-casting)
+)
+
+(defrule
+	(or	(goal gl-eagles heavy-eagles)
+		(and	(or	(up-compare-goal gl-eagle-warrior-count-total > 20)
+				(and	(up-compare-goal gl-eagle-warrior-count-total > 4)
+					(strategic-number sn-allow-resource-spending > 5)))
+			(research-completed ri-elite-eagle-warrior)))
+	(or	(up-compare-goal gl-eagle-warrior-count-total > 15)
+		(goal gl-required-eagle-upgrades full-upgrades))
+	(can-research ri-blast-furnace)
+=>
+	(research ri-blast-furnace)
+)
+
+#load-if-defined UP-GAME-WK
+(defrule
+	(civilian-population > 35)
+	(or	(goal gl-strategy eew-strategy)
+		(or	(goal gl-eagles extra-eagles)
+			(or	(goal gl-strategy eagle-rush)
+				(goal gl-strategy ew-boom))))
+	(up-compare-goal gl-eagle-warrior-count-total > 9)
+	(research-available ri-eagle-warrior)
+=>
+	(up-modify-escrow food c:max 200)
+	(up-modify-escrow gold c:max 200)
+)
+
+(defrule
+	(or	(goal gl-strategy eew-strategy)
+		(or	(goal gl-eagles extra-eagles)
+			(or	(goal gl-strategy eagle-rush)
+				(or	(goal gl-strategy ew-boom)
+					(up-compare-goal gl-eagle-warrior-count-total > 5)))))
+	(can-research-with-escrow ri-eagle-warrior)
+=>
+	(release-escrow food)
+	(release-escrow gold)
+	(research ri-eagle-warrior)
+)
+#end-if
+
+; =================== BUILDINGS AND TS
+
+(defrule
+	(or	(and	(up-compare-goal gl-strategy != eew-strategy)
+			(up-compare-goal gl-advanced-monastery != monks))
+		(or	(and	(unit-type-count villager-gold < 5)
+				(unit-type-count trade-cart < 15))
+			(or	(soldier-count <= 30)
+				(or	(building-type-count castle < 1)
+					(strategic-number sn-allow-resource-spending < 0)))))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(or	(players-building-type-count target-player castle > 0)
+		(or	(players-building-type-count target-player bombard-tower > 0)
+			(and	(players-building-type-count target-player stone-wall-line > 4)
+				(unit-type-count-total trebuchet-set < 1))))
+	(unit-type-count villager-gold > 9)
+	(unit-type-count-total battering-ram-line < 2)
+	(or	(unit-type-count-total trebuchet-set < 2)
+		(soldier-count > 40))
+	(unit-type-count-total trebuchet-set < 3)
+	(unit-available trebuchet)
+=>
+	(up-modify-escrow wood c:max 200)
+	(up-modify-escrow gold c:max 200)
+)
+
+(defrule
+	(or	(players-building-type-count target-player castle > 0)
+		(or	(players-building-type-count target-player bombard-tower > 0)
+			(and	(players-building-type-count target-player stone-wall-line > 4)
+				(unit-type-count-total trebuchet-set < 1))))
+	(or	(unit-type-count-total trebuchet-set < 2)
+		(soldier-count > 40))
+	(unit-type-count-total trebuchet-set < 3)
+	(can-train-with-escrow trebuchet)
+=>
+	(release-escrow wood)
+	(release-escrow gold)
+	(train trebuchet)
+)
+
+(defrule
+	(up-compare-goal gl-strategy != eew-strategy)
+=>
+	(up-jump-rule 13)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(up-timer-status 7 == timer-disabled)
+	(strategic-number sn-hitting-pop-cap != YES)
+=>
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(research ri-elite-eagle-warrior)
+	(set-goal gl-eagles heavy-eagles)
+	(set-strategic-number sn-allow-resource-spending 1)
+	(enable-timer 7 0)
+	(up-modify-goal gl-camp-raid-time c:- 600)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(goal gl-eagles flush-counter-eagles)
+	(building-type-count-total barracks > 1)
+	(or	(research-completed ri-horse-collar)
+		(current-age-time g:> gl-current-age-time-for-farms))
+	(nand	(goal gl-current-age gv-castle)
+		(building-type-count-total monastery == 0))
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total blacksmith > 0)
+	(building-type-count-total barracks > 3)
+	(building-type-count-total mining-camp < relative-5-camps)
+	(resource-found stone)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(game-time > 2100)
+	(or	(building-type-count-total mining-camp < relative-7-camps)
+		(game-time > 2400))
+	(building-type-count-total mining-camp < relative-9-camps)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(goal SLING 0)
+	(up-compare-goal gl-current-age >= gv-castle-up)
+	(building-type-count-total barracks > 2)
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(or	(building-type-count-total monastery < 1)
+		(building-type-count-total siege-workshop < 1))
+	(building-type-count-total castle < 1)
+	(building-type-count-total university < 1)
+	(or	(and	(food-amount >= high-castle-food)
+			(gold-amount >= high-castle-gold))
+		(and	(food-amount > 450)
+			(and	(building-type-count-total town-center > 2)
+				(goal gl-eew-strategy-type boom))))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(up-compare-goal gl-current-age <= gv-castle)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(nand	(goal gl-eagles flush-counter-eagles)
+		(building-type-count-total farm > 15))
+	(nand	(goal gl-current-age gv-castle)
+		(and	(building-type-count-total monastery == 0)
+			(up-compare-goal gl-eew-strategy-type >= fast-imp)))
+	(or	(research-completed ri-horse-collar)
+		(current-age-time g:> gl-current-age-time-for-farms))
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(goal gl-eew-strategy-type boom)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(research-completed ri-horse-collar)
+		(current-age-time g:> gl-current-age-time-for-farms))
+	(building-type-count-total farm g:< gl-max-farm-count)
+	(nand	(up-compare-goal gl-current-age >= gv-castle-up)
+		(building-type-count-total barracks < 3))
+	(or	(building-type-count-total barracks > 1)
+		(and	(up-compare-goal gl-rush-suitability-on-map != GOOD)
+			(civilian-population < 70)))
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(or	(and	(goal SLING 1)
+			(and	(building-type-count-total monastery > 0)
+				(building-type-count-total siege-workshop > 0)))
+		(wood-amount > 235))
+	(nand	(up-compare-goal gl-current-age >= gv-castle-up)
+		(building-type-count-total barracks < 3))
+	(building-type-count-total farm g:< gl-max-farm-count)
+=>
+	(set-goal gl-farming 1)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(current-age-time > 5)
+	(current-age >= castle-age)
+	(or	(and	(research-completed my-unique-research)
+			(unit-type-count-total villager > 70))
+		(and	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+				(wood-amount > 320))
+			(building-type-count-total barracks < 4)))
+	(building-type-count-total barracks < 7)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 900)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(or	(goal gl-eagles flush-counter-eagles)
+		(and	(or	(goal POSITION FLANK)
+				(civilian-population >= 70))
+			(goal gl-eew-strategy-type boom)))
+	(building-type-count-total barracks < 2)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 900)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(goal gl-eagles flush-counter-eagles)
+	(strategic-number sn-maximum-town-size == 9)
+	(building-type-count-total monastery < 1)
+=>
+	(up-modify-goal gl-monastery-build-priority c:max 900)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(goal gl-eagles heavy-eagles)
+	(goal gl-strategy default)
+	(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+	(building-type-count-total town-center > 2)
+	(civilian-population > 50)
+	(or	(civilian-population > 80)
+		(building-type-count-total barracks < 4))
+	(building-type-count-total barracks < 7)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 900)
+)
+
+; ================ UNITS
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal 0)
+	(set-goal temporary-goal8 70)
+	(up-get-fact civilian-population 0 temporary-goal3)
+	(up-get-target-fact civilian-population 0 temporary-goal4)
+	(up-modify-goal temporary-goal3 g:- temporary-goal4)
+	(up-modify-goal temporary-goal5 s:= sn-focus-player-number)
+	(up-modify-sn sn-focus-player-number g:= gl-enemy-pocket)
+	(up-get-focus-fact unit-type-count knight-line temporary-goal2)
+	(up-modify-goal temporary-goal2 c:min 1)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal5)
+)
+
+(defrule
+	(up-compare-goal gl-current-age <= gv-feudal)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(goal gl-strategy default)
+	(research-available imperial-age)
+	(players-current-age any-enemy == imperial-age)
+	(or	(players-current-age focus-player == imperial-age); Eagles won't do much at this point, better go up
+		(game-time > 2300))
+	(or	(up-compare-goal gl-enemy-archery-count < 10)
+		(up-compare-goal gl-enemy-cavalry-count > 10))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(or	(goal gl-strategy default)
+		(goal gl-strategy ew-boom))
+	(up-compare-goal gl-soldier-percentage > 200)
+	(soldier-count > 27)
+	(or	(strategic-number sn-percent-attack-soldiers == 0)
+		(and	(up-compare-goal TSA >= 1)
+			(or	(soldier-count > 35)
+				(unit-type-count-total cavalry-class > 17))))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(up-compare-goal gl-panic-xbow-counter != YES)
+	(goal gl-strategy-class basic-class)
+	(or	(population >= pop-to-full-pop-attack)
+		(and	(population-cap <= 210)
+			(military-population > 90)))
+	(nand	(food-amount > 1600)
+		(and	(wood-amount > 1000)
+			(gold-amount > 500)))
+	(civilian-population < 105)
+	(military-population > 40)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(or	(goal gl-strategy default)
+		(goal gl-strategy ew-boom))
+	(up-compare-goal gl-current-age <= gv-castle)
+;	(civilian-population > 75)
+;	(up-compare-goal gl-soldier-percentage > 125)
+;	(soldier-count > 30)
+	(players-current-age focus-player == imperial-age)
+;	(up-compare-goal gl-patrol-defence != patrol-on); Actually EWs aren't going to do much for defence, so other units may do the job...
+;	(up-compare-goal gl-enemy-units-in-town < 5)
+	(goal TSA 0)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(goal gl-strategy ew-boom)
+	(civilian-population > 80)
+	(up-compare-goal gl-patrol-defence != patrol-on)
+	(up-compare-goal gl-defending-ally != YES)
+	(up-compare-goal gl-soldier-percentage > 50)
+	(up-compare-goal gl-target-player-distance > 70)
+	(up-compare-goal gl-military-percentage2 > 110)
+	(or	(up-compare-goal gl-military-percentage > 45)
+		(up-compare-goal gl-pair-player-military > 25))
+	(or	(player-in-game any-ally)
+		(up-compare-goal gl-target-player-distance > 100))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(goal gl-strategy ew-boom)
+	(up-compare-goal gl-enemy-units-in-town < 5)
+	(goal TSA 0)
+	(up-compare-goal gl-patrol-defence != patrol-on)
+	(up-compare-goal gl-soldier-percentage > 80)
+	(soldier-count > 20)
+	(up-compare-goal gl-target-player-distance > 70)
+	(up-compare-goal gl-military-percentage2 > 110)
+	(or	(up-compare-goal gl-military-percentage > 45)
+		(up-compare-goal gl-pair-player-military > 25))
+	(or	(player-in-game any-ally)
+		(up-compare-goal gl-target-player-distance > 110))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(or	(goal gl-strategy default)
+		(goal gl-strategy ew-boom))
+	(up-compare-goal gl-current-age <= gv-castle)
+	(or	(up-compare-goal gl-enemy-units-in-town < 5)
+		(goal TSA 1))
+	(up-compare-goal gl-patrol-defence != patrol-on)
+	(up-compare-goal gl-soldier-percentage > 80)
+	(soldier-count > 30)
+	(up-compare-goal gl-target-player-distance > 70)
+	(or	(player-in-game any-ally)
+		(up-compare-goal gl-target-player-distance > 110))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(goal gl-strategy-class basic-class)
+	(goal gl-current-age gv-castle)
+	(or	(and	(goal gl-safe-in-town YES)
+			(goal TSA 0))
+		(up-compare-goal gl-soldier-percentage >= 160))
+	(up-compare-goal gl-soldier-percentage >= 87)
+	(military-population > 40)
+	(or	(military-population > 60)
+		(up-compare-goal gl-soldier-percentage >= 93))
+	(or	(strategic-number sn-percent-attack-soldiers == 0)
+		(up-compare-goal temporary-goal3 > -6)); Not too much behind in boom war
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(or	(not	(goal gl-strategy-class basic-class))
+		(or	(civilian-population < 86)
+			(and	(or	(and	(goal POSITION FLANK)
+						(military-population g:>= gl-toughest-fought-enemy-military))
+					(and	(up-compare-goal threat-time < 10000)
+						(up-compare-goal gl-military-percentage < 120)))
+				(up-compare-goal gl-target-player-distance < 80)))); If we retarget far, no point going full army
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock != wood-exhaustion)
+	(goal gl-current-age gv-castle)
+	(up-compare-goal gl-target-player-distance > 35)
+	(goal TSA 0)
+	(goal gl-gathering-inside NO)
+	(up-compare-goal MILITARY != 1)
+	(up-compare-goal gl-attacking-with-ally != YES)
+	(up-compare-goal gl-defending-ally != YES)
+	(military-population > 30)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(population > almost-full-pop)
+	(or	(and	(unit-type-count-total battering-ram-line < 5)
+			(and	(unit-type-count-total trebuchet-set < 3)
+				(population >= pop-to-full-pop-attack)))
+		(and	(unit-type-count-total transport-ship < relative-3-units)
+			(and	(soldier-count > 2)
+				(strategic-number sn-minimum-water-body-size-for-dock == islands-map-landing-style))))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(population-cap > 275)
+	(gold-amount > 500)
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(up-compare-goal gl-panic-xbow-counter != YES)
+	(up-compare-goal gl-target-player-distance > 35)
+	(population >= pop-to-full-pop-attack)
+	(or	(and	(players-building-type-count any-ally market > 0)
+			(and	(building-type-count market > 0)
+				(up-compare-goal gl-trade-unit-count-total < 35)))
+		(and	(up-compare-goal gl-my-villager-count-total < 90)
+			(food-amount < 1000)))
+	(military-population > 40)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock != wood-exhaustion)
+	(goal gl-current-age gv-castle)
+	(civilian-population > 65)
+	(research-available imperial-age)
+	(food-amount > 700)
+	(gold-amount > 550)
+	(or	(up-compare-goal TSA >= 1)
+		(and	(up-compare-goal gl-enemy-units-in-town < 5)
+			(up-compare-goal gl-patrol-defence != patrol-on)))
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock != wood-exhaustion)
+	(players-population any-ally > 150)
+	(players-current-age any-ally == imperial-age)
+	(players-current-age any-enemy == imperial-age)
+	(game-time > 2880)
+	(soldier-count > 5)
+	(up-compare-goal gl-my-villager-count > 0)
+	(or	(civilian-population < 60)
+		(military-population > 15))
+	(or	(civilian-population < 100)
+		(military-population > 30))
+	(up-compare-goal gl-current-age <= gv-castle)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock != wood-exhaustion)
+	(players-population any-ally > 150)
+	(players-current-age any-ally == imperial-age)
+	(players-current-age any-enemy == imperial-age)
+	(up-compare-goal gl-defending-ally != YES)
+	(up-compare-goal gl-patrol-defence != patrol-on)
+	(up-compare-goal gl-target-player-distance > 80)
+	(game-time > 2700)
+	(up-compare-goal gl-enemy-units-in-town < 5)
+	(up-compare-goal gl-my-villager-count > 0)
+	(or	(civilian-population < 130)
+		(military-population > 10))
+	(up-compare-goal gl-current-age <= gv-castle)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(strategic-number sn-minimum-water-body-size-for-dock != wood-exhaustion)
+	(players-population any-ally > 150)
+	(game-time > 2400)
+	(up-compare-goal gl-my-villager-count > 0)
+	(or	(civilian-population < 25)
+		(soldier-count > 4))
+	(or	(civilian-population < 35)
+		(military-population > 8))
+	(civilian-population < 50)
+=>
+	(set-goal temporary-goal 1)
+)
+
+(defrule
+	(or	(and	(or	(strategic-number sn-minimum-water-body-size-for-dock == islands-map-water-style)
+				(and	(strategic-number sn-minimum-water-body-size-for-dock == islands-map-landing-style)
+					(warboat-count < 25)))
+			(soldier-count > 10))
+		(or	(goal gl-TC-lost YES)
+			(or	(goal gl-cutter IN-PROGRESS)
+				(or	(building-type-count town-center == 0)
+					(goal temporary-goal 1)))))
+=>
+	(up-jump-rule 23)
+)
+
+(defrule
+	(goal gl-eew-strategy-type boom)
+	(not	(research-completed ri-eagle-warrior))
+	(current-age == castle-age)
+	(goal SLING 0)
+	(or	(up-compare-goal gl-current-age >= gv-castle-up)
+		(unit-type-count-total scorpion-line < 3))
+	(unit-type-count-total scorpion-line < 4)
+	(players-unit-type-count focus-player militiaman-line > 3)
+	(can-train scorpion-line)
+=>
+	(train scorpion-line)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(soldier-count > 25)
+	(current-age-time > 400)
+	(not	(town-under-attack))
+	(unit-type-count-total battering-ram-line < 3)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+
+(defrule
+	(or	(up-research-status c: ri-bodkin-arrow < research-pending)
+		(or	(up-research-status c: ri-crossbow < research-pending)
+			(and	(up-compare-goal gl-eagle-warrior-count-total > 7)
+				(research-available ri-elite-eagle-warrior))))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(or	(and	(goal gl-advanced-archery heavy-archers)
+			(up-compare-goal gl-soldier-percentage < 155))
+		(goal gl-strategy xbow-boom))
+	(up-compare-goal gl-enemy-skirmisher-count > 8)
+	(or	(up-compare-goal gl-enemy-skirmisher-count > 15)
+		(up-compare-goal gl-enemy-archer-count < 3))
+	(up-compare-goal gl-enemy-archer-count < 10)
+	(up-compare-goal gl-eagle-warrior-count-total < 15)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-strategy ew-boom)
+	(up-pending-objects c: villager-class > 0)
+	(up-compare-goal temporary-goal3 > -3)
+	(up-compare-goal gl-military-percentage2 < 115)
+	(or	(up-compare-goal gl-military-percentage2 < 100)
+		(and	(up-compare-goal gl-enemy-pocket > 0)
+			(up-compare-goal temporary-goal2 > 0)))
+=>
+	(set-goal temporary-goal8 0)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(goal gl-safe-in-town YES)
+	(military-population > 10)
+	(or	(goal POSITION POCKET)
+		(soldier-count g:>= gl-toughest-fought-enemy-military))
+	(or	(up-compare-goal gl-military-percentage >= 80)
+		(military-population > 23))
+	(or	(up-compare-goal gl-military-percentage >= 67)
+		(or	(up-compare-goal gl-pair-player-military > 35)
+			(up-compare-goal gl-closest-enemy-military < 20)))
+=>
+	(up-jump-rule 3)
+)
+
+(defrule
+	(or	(and	(goal gl-strategy eew-strategy)
+			(and	(goal gl-current-age gv-castle-up)
+				(gold-amount < 600)))
+		(or	(and	(up-compare-goal gl-eagle-warrior-count-total > 12)
+				(up-research-status c: ri-chain-mail < research-pending))
+			(up-compare-flag gl-flag == pikeman-upgrade-notice)))
+=>
+	(up-jump-rule 2)
+)
+
+(defrule
+	(goal gl-eagles extra-eagles)
+	(goal gl-strategy-class basic-class)
+	(food-amount g:>= temporary-goal8)
+	(or	(and	(goal gl-current-age gv-castle)
+			(and	(strategic-number sn-allow-resource-spending > 1)
+				(up-research-status c: ri-chain-mail >= research-pending)))
+		(up-compare-goal gl-eagle-warrior-count-total < 15))
+	(nand	(up-compare-goal gl-eagle-warrior-count-total > 8)
+		(research-available ri-elite-eagle-warrior))
+	(up-compare-goal gl-eagle-warrior-count-total < 35)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(up-compare-goal gl-current-age <= gv-castle-up)
+	(goal gl-eagles extra-eagles)
+	(food-amount g:>= temporary-goal8)
+	(or	(and	(gold-amount > 600)
+			(goal gl-current-age gv-castle-up))
+		(or	(and	(up-compare-goal gl-eagle-warrior-count-total < 40)
+				(up-compare-goal gl-military-percentage < 80))
+			(and	(up-compare-goal gl-eagle-warrior-count-total < 20)
+				(goal gl-current-age gv-castle))))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-strategy-class basic-class)
+	(up-compare-goal gl-current-age >= gv-castle)
+	(or	(up-compare-goal gl-enemy-onager-count > 0)
+		(up-compare-goal gl-enemy-scorpion-count > 0))
+	(or	(goal gl-current-age gv-castle)
+		(or	(up-compare-goal gl-enemy-onager-count > 2)
+			(up-compare-goal gl-enemy-scorpion-count > 4)))
+	(up-compare-goal gl-eagle-warrior-count-total < 7)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-advanced-monastery monks)
+	(research-available ri-onager)
+	(or	(up-compare-goal gl-enemy-archery-count > 25)
+		(up-compare-goal gl-enemy-gunpowder-count > 23))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(goal gl-advanced-monastery monks)
+	(research-completed ri-elite-eagle-warrior)
+	(up-compare-goal gl-enemy-archery-count > 35)
+	(unit-type-count-total monk-set > 2)
+	(or	(up-compare-goal gl-eagle-warrior-count-total < 20)
+		(and	(up-compare-goal gl-enemy-archery-count > 60)
+			(and	(research-completed my-unique-research)
+				(and	(unit-type-count-total monk-set > 12)
+					(strategic-number sn-allow-resource-spending > 5)))))
+	(up-compare-goal gl-eagle-warrior-count-total < 40)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(research-completed ri-plate-mail)
+	(or	(up-compare-goal gl-enemy-heavy-cavalry-count > 0)
+		(up-compare-goal gl-enemy-cataphract-count > 4))
+	(or	(up-compare-goal gl-eagle-warrior-count-total > 15)
+		(current-age-time > 600))
+	(unit-type-count-total spearman-line < 30)
+	(or	(goal MILITARY 0)
+		(nand	(unit-type-count-total battering-ram-line < 1)
+			(building-type-count-total siege-workshop > 0)))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+
+(defrule
+	(or	(goal gl-strategy eew-strategy)
+		(goal gl-strategy eagle-rush))
+	(or	(goal gl-eagles flush-counter-eagles)
+		(players-unit-type-count focus-player archer-line > 2))
+	(current-age == castle-age)
+	(players-military-population focus-player > 4)
+	(or	(players-military-population focus-player > 8)
+		(up-compare-goal gl-eagle-warrior-count-total < 5))
+	(up-compare-goal gl-eagle-warrior-count-total < 7)
+	(can-train-with-escrow eagle-warrior-line)
+=>
+	(release-escrow food)
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-eagles flush-counter-eagles)
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(current-age == castle-age)
+	(food-amount >= 60)
+	(players-military-population focus-player > 12)
+	(or	(players-military-population focus-player > 22)
+		(up-compare-goal gl-eagle-warrior-count-total < 10))
+	(or	(players-military-population focus-player > 32)
+		(up-compare-goal gl-eagle-warrior-count-total < 14))
+	(up-compare-goal gl-eagle-warrior-count-total < 20)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type != fast-imp)
+	(or	(and	(goal gl-strategy xbow-rush)
+			(players-building-type-count target-player watch-tower > 0))
+		(goal gl-eagles extra-eagles))
+	(up-compare-goal gl-eagle-warrior-count-total < 5)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(nor	(goal gl-required-eagle-upgrades full-upgrades)
+		(research-available ri-chain-mail))
+	(or	(up-compare-goal gl-eagle-warrior-count-total < 35)
+		(up-research-status c: ri-plate-mail >= research-pending))
+	(up-compare-goal gl-eagle-warrior-count-total < 40)
+	(or	(goal MILITARY 0)
+		(nand	(unit-type-count-total battering-ram-line < 1)
+			(building-type-count-total siege-workshop > 0)))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-eagles heavy-eagles)
+	(nor	(goal gl-required-eagle-upgrades full-upgrades)
+		(research-available ri-chain-mail))
+	(or	(up-compare-goal gl-eagle-warrior-count-total < 35)
+		(up-research-status c: ri-plate-mail >= research-pending))
+	(up-compare-goal gl-eagle-warrior-count-total < 40)
+	(gold-amount >= 125)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(not	(goal gl-eagles heavy-eagles))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(up-research-status c: ri-plate-mail >= research-pending)
+	(or	(up-research-status c: my-unique-research >= research-pending)
+		(building-type-count-total castle < 1))
+	(or	(up-research-status c: ri-blast-furnace >= research-pending)
+		(up-compare-goal gl-eagle-warrior-count-total < 50))
+	(or	(goal MILITARY 0)
+		(nand	(unit-type-count-total battering-ram-line < 1)
+			(and	(building-type-count-total siege-workshop > 0)
+				(gold-amount < 125))))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(food-amount >= 70)
+	(or	(goal gl-eagles heavy-eagles)
+		(and	(goal gl-strategy xbow-boom)
+			(and	(up-compare-goal gl-eagle-warrior-count-total < 5)
+				(or	(players-unit-type-count focus-player skirmisher-line > 2)
+					(or	(players-unit-type-count focus-player scout-cavalry-line > 1)
+						(players-building-type-count target-player watch-tower > 0))))))
+	(up-compare-goal gl-eagle-warrior-count-total < 14)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(food-amount >= 70)
+	(up-compare-goal gl-eew-strategy-type != fast-imp)
+	(or	(players-unit-type-count focus-player monk > 5)
+		(players-unit-type-count focus-player missionary > 5))
+	(or	(up-compare-goal gl-eagle-warrior-count-total < 15)
+		(or	(players-unit-type-count focus-player monk > 7)
+			(players-unit-type-count focus-player missionary > 7)))
+	(up-compare-goal gl-eagle-warrior-count-total < 35)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(food-amount >= 70)
+	(goal CASTLE 6)
+	(or	(up-compare-goal gl-eagle-warrior-count-total < 12)
+		(up-research-status c: ri-elite-eagle-warrior >= research-pending-stage))
+	(or	(up-compare-goal gl-eagle-warrior-count-total < 25)
+		(up-compare-goal gl-current-age >= gv-castle-up))
+	(up-compare-goal gl-eagle-warrior-count-total < 45)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(or	(and	(up-compare-goal gl-strategy != eew-strategy)
+			(up-compare-goal gl-strategy != eagle-rush))
+		(and	(civ-selected aztec)
+			(and	(goal gl-current-age gv-castle)
+				(and	(players-unit-type-count focus-player monk > 4); Don't feed jaguars to monks
+					(up-compare-goal gl-eew-strategy-type >= fast-imp)))))
+=>
+	(up-jump-rule 12)
+)
+
+(defrule
+	(civ-selected aztec)
+	(or	(goal gl-eagles heavy-eagles)
+		(current-age == castle-age))
+	(up-compare-goal gl-my-UU-count-total < 12)
+	(or	(players-unit-type-count focus-player huskarl-line > 12)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 3)
+			(or	(up-compare-goal gl-enemy-infantry-count > 12)
+				(and	(players-unit-type-count focus-player huskarl-line > 2)
+					(current-age == castle-age)))))
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected aztec)
+	(research-completed my-unique-unit-upgrade)
+	(up-compare-goal gl-my-UU-count-total < 18)
+	(or	(players-unit-type-count focus-player huskarl-line > 5)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 3)
+			(or	(up-compare-goal gl-enemy-infantry-count > 4)
+				(up-compare-goal gl-enemy-eagle-count > 4))))
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected aztec)
+	(goal gl-eagles heavy-eagles)
+	(or	(game-time > 2700)
+		(research-completed my-unique-unit-upgrade))
+	(up-compare-goal gl-my-UU-count-total < 12)
+	(or	(players-unit-type-count focus-player huskarl-line > 5)
+		(or	(players-unit-type-count focus-player teutonic-knight-line > 3)
+			(up-compare-goal gl-enemy-infantry-count > 5)))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected aztec)
+	(goal gl-eagles heavy-eagles)
+	(up-compare-goal gl-my-UU-count-total < 20)
+	(or	(up-compare-goal gl-enemy-infantry-count > 14)
+		(and	(up-compare-goal gl-my-UU-count-total < 13)
+			(and	(players-unit-type-count focus-player jaguar-man-line > 7)
+				(goal gl-strategy eagle-rush))))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected mayan)
+	(goal gl-eagles heavy-eagles)
+	(nand	(goal gl-required-eagle-upgrades full-upgrades)
+		(player-valid 3))
+	(up-compare-goal gl-my-UU-count-total < 16)
+	(or	(players-unit-type-count focus-player teutonic-knight-line > 3)
+		(or	(up-compare-goal gl-enemy-infantry-count > 5)
+			(players-unit-type-count focus-player jaguar-man-line > 3)))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected mayan)
+	(goal gl-eagles heavy-eagles)
+	(nand	(goal gl-required-eagle-upgrades full-upgrades)
+		(player-valid 3))
+	(up-compare-goal gl-my-UU-count-total < 20)
+	(or	(up-compare-goal gl-enemy-infantry-count > 7)
+		(players-unit-type-count focus-player jaguar-man-line > 4))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(or	(goal gl-strategy eew-strategy)
+		(goal gl-strategy eagle-rush))
+	(current-age == castle-age)
+	(players-current-age any-enemy == castle-age)
+	(or	(up-compare-goal gl-my-UU-count-total < 3)
+		(or	(and	(up-compare-goal gl-my-UU-count-total < 6)
+				(up-compare-goal gl-enemy-eagle-count > 7))
+			(up-compare-goal gl-enemy-eagle-count > 12)))
+	(up-compare-goal gl-enemy-eagle-count > 1)
+	(up-compare-goal gl-my-UU-count-total < 11)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(or	(up-compare-goal gl-my-UU-count-total < 3)
+		(and	(current-age == imperial-age)
+			(research-available ri-elite-eagle-warrior)))
+	(up-compare-goal gl-my-UU-count-total < 6)
+	(or	(up-compare-goal gl-enemy-infantry-count > 4)
+		(and	(up-compare-goal gl-current-age <= gv-castle)
+			(and	(goal gl-enemy-strategy EAGLERUSH)
+				(current-age-time < 360))))
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected mayan)
+	(or	(goal gl-strategy eew-strategy)
+		(goal gl-strategy eagle-rush))
+	(nand	(goal gl-required-eagle-upgrades full-upgrades)
+		(player-valid 3))
+	(game-time > 2000)
+	(or	(up-compare-goal gl-my-UU-count-total < 7)
+		(current-age == imperial-age))
+	(up-compare-goal gl-my-UU-count-total < 15)
+	(up-compare-goal gl-enemy-infantry-count > 8)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected mayan)
+	(or	(goal gl-strategy eew-strategy)
+		(goal gl-strategy eagle-rush))
+	(nand	(goal gl-required-eagle-upgrades full-upgrades)
+		(player-valid 3))
+	(game-time > 2000)
+	(or	(up-compare-goal gl-my-UU-count-total < 10)
+		(current-age == imperial-age))
+	(up-compare-goal gl-my-UU-count-total < 25)
+	(up-compare-goal gl-enemy-infantry-count > 14)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(civ-selected mayan)
+	(or	(goal gl-strategy eew-strategy)
+		(goal gl-strategy eagle-rush))
+	(nand	(goal gl-required-eagle-upgrades full-upgrades)
+		(player-valid 3))
+	(goal gl-eagles heavy-eagles)
+	(game-time > 2100)
+	(up-compare-goal gl-my-UU-count-total < 12)
+	(players-unit-type-count focus-player hand-cannoneer > 2)
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type >= fast-imp)
+	(or	(unit-type-count-total monk-set < 2)
+		(and	(goal gl-eagles heavy-eagles)
+			(or	(players-unit-type-count focus-player knight-line > 4)
+				(players-unit-type-count focus-player hand-cannoneer > 4))))
+	(unit-type-count-total monk-set < 9)
+	(can-train monk)
+=>
+	(train monk)
+)
+
+; ================= MARKET
+
+(defrule
+	(up-compare-goal gl-strategy != eew-strategy)
+=>
+	(up-jump-rule 4)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(research-available ri-elite-eagle-warrior)
+	(up-research-status c: ri-guilds != research-pending)
+	(current-age == imperial-age)
+	(gold-amount >= 650)
+	(food-amount < 800)
+	(can-buy-commodity food)
+=>
+	(buy-commodity food)
+	(chat-to-player my-player-number "Buy food")
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(research-available ri-elite-eagle-warrior)
+	(up-research-status c: ri-guilds != research-pending)
+	(goal gl-current-age gv-imperial)
+	(building-type-count-total barracks > 0)
+	(wood-amount >= 150)
+	(gold-amount < 500)
+	(commodity-selling-price wood >= 50)
+	(can-sell-commodity wood)
+=>
+	(sell-commodity wood)
+	(chat-to-player my-player-number "Sell wood")
+)
+
+(defrule
+	(goal gl-eew-strategy-type fast-imp)
+	(goal gl-current-age gv-castle)
+	(building-type-count-total castle == 0)
+	(stone-amount >= 450)
+	(stone-amount < 650)
+	(can-buy-commodity stone)
+	(nand	(goal gl-eagles flush-counter-eagles)
+		(up-compare-goal gl-eagle-warrior-count-total < 5))
+	(or	(town-under-attack)
+		(or	(commodity-selling-price stone < default-stone-price); Enemy is using evil strategy
+			(goal gl-enemy-strategy EAGLERUSH)))
+=>
+	(buy-commodity stone)
+)
+
+(defrule
+	(or	(and	(goal gl-eagles heavy-eagles)
+			(and	(soldier-count > 40)
+				(and	(gold-amount < 1000)
+					(food-amount >= 800))))
+		(and	(gold-amount < 800)
+			(and	(food-amount > 1300)
+				(up-compare-goal gl-current-age <= gv-castle))))
+	(can-sell-commodity food)
+	(commodity-selling-price food >= 65)
+=>
+	(sell-commodity food)
+)
+
+#load-if-not-defined INCAN-CIV
+(defrule
+	(current-age-time > 30)
+	(goal gl-strategy eew-strategy)
+	(goal gl-eagles heavy-eagles)
+	(research-available my-unique-research)
+	(or	(gold-amount < 450)
+		(civ-selected aztec))
+	(gold-amount < 750)
+	(or	(food-amount > 850)
+		(civ-selected aztec))
+	(food-amount > 550)
+	(commodity-selling-price food >= 45)
+	(can-sell-commodity food)
+=>
+	(sell-commodity food)
+	(chat-to-player my-player-number sell-food-chat)
+)
+#end-if
+
+; =============== EAGLERAID
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(goal gl-eagles heavy-eagles)
+	(up-compare-goal TSA >= 1)
+	(or	(goal SLING 1)
+		(players-current-age every-enemy <= castle-age))
+	(player-valid 3)
+	(game-time < 2550)
+	(strategic-number sn-maximum-town-size < 253)
+=>
+	(set-strategic-number sn-maximum-town-size 254)
+	(set-strategic-number sn-special-attack-type2 villager)
+	(set-strategic-number sn-special-attack-influence2 255)
+)
+
+(defrule
+	(goal gl-strategy eew-strategy)
+	(goal gl-eagles heavy-eagles)
+	(goal TSA 0)
+	(players-current-age every-enemy <= castle-age)
+	(strategic-number sn-maximum-town-size >= 254)
+=>
+	(set-strategic-number sn-maximum-town-size 25)
+	(set-strategic-number sn-special-attack-type2 villager)
+	(set-strategic-number sn-special-attack-influence2 255)
+)
+
+; ======== PRE-LOADING EAGLEBOOM
+
+(defrule
+	(up-compare-goal gl-eew-strategy-type != boom)
+=>
+	(up-jump-rule 40)
+)
+
+(defrule
+	(civilian-population > 120)
+	(goal gl-current-age gv-imperial)
+	(research-completed my-unique-research)
+	(players-current-age focus-player == imperial-age)
+	(or	(up-compare-goal gl-enemy-infantry-count > 20)
+		(or	(up-compare-goal gl-enemy-gunpowder-count > 15)
+			(up-compare-goal gl-enemy-cataphract-count > 8)))
+=>
+	(set-goal gl-strategy default)
+)
+
+(defrule
+	(game-time < 1140)
+	(up-compare-goal gl-enemy-cavalry-count < 2)
+	(up-compare-goal gl-enemy-infantry-count < 2)
+	(players-building-type-count focus-player stable == 0)
+	(players-current-age focus-player == castle-age)
+	(players-current-age-time focus-player < 20)
+	(players-military-population focus-player > 6)
+=>
+	(set-goal gl-enemy-strategy XBOW-RUSH)
+	(disable-self)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(goal SLING 0)
+	(goal gl-current-age gv-castle)
+	(or	(goal gl-enemy-strategy XBOW-RUSH)
+		(and	(or	(players-building-type-count target-player archery-range > 1)
+				(players-unit-type-count focus-player archer-line > 4))
+			(and	(up-compare-goal gl-enemy-cavalry-count < 2)
+				(up-compare-goal gl-enemy-infantry-count < 2))))
+	(unit-type-count-total scorpion-line < 7)
+=>
+	(up-modify-escrow wood c:= 200)
+	(up-modify-escrow gold c:= 135)
+	(set-goal gl-panic-xbow-counter YES)
+)
+
+(defrule
+	(not	(goal gl-eagles heavy-eagles))
+	(up-compare-goal gl-current-age >= gv-castle-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 33)
+	(set-strategic-number sn-gold-gatherer-percentage 24)
+	(set-goal gl-eagles extra-eagles)
+	(up-modify-sn sn-camp-max-distance c:max 42)
+)
+
+(defrule
+	(up-compare-const gv-FFA-like-game == 0)
+	(current-age >= castle-age)
+=>
+	(enable-timer 1 30)
+	(enable-timer 7 10)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-current-age gv-castle-up)
+	(goal SLING 0)
+=>
+	(set-goal TSA 0)
+	(disable-timer 7)
+	(disable-self)
+)
+
+(defrule
+	(goal SLING 1)
+	(goal gl-current-age gv-feudal-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+)
+
+(defrule
+	(or	(goal SLING 0)
+		(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style))
+	(goal gl-current-age gv-feudal-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 43)
+	(set-strategic-number sn-wood-gatherer-percentage 47)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+)
+
+(defrule
+	(or	(goal SLING 0)
+		(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style))
+	(goal POSITION POCKET)
+	(goal gl-current-age gv-feudal-up)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 41)
+	(set-strategic-number sn-wood-gatherer-percentage 54)
+	(set-strategic-number sn-gold-gatherer-percentage 5)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(or	(goal SLING 0)
+		(strategic-number sn-minimum-water-body-size-for-dock == mixed-map-style))
+=>
+	(set-strategic-number sn-food-gatherer-percentage 35)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 15)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total monastery == 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 42)
+	(set-strategic-number sn-wood-gatherer-percentage 48)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total monastery > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 36)
+	(set-strategic-number sn-gold-gatherer-percentage 14)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(goal POSITION POCKET)
+	(goal SLING 0)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total monastery > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 52)
+	(set-strategic-number sn-wood-gatherer-percentage 39)
+	(set-strategic-number sn-gold-gatherer-percentage 9)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(civilian-population > 50)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total monastery > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 51)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+)
+
+(defrule
+	(goal gl-current-age gv-castle)
+	(civilian-population > 70)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total monastery > 0)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 46)
+	(set-strategic-number sn-wood-gatherer-percentage 25)
+	(set-strategic-number sn-gold-gatherer-percentage 29)
+)
+
+(defrule
+	(up-compare-const gv-FFA-like-game == 1)
+	(goal gl-current-age gv-castle)
+	(current-age-time < 400)
+	(building-type-count-total siege-workshop == 0)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 3)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 2)
+	(up-modify-sn sn-gold-gatherer-percentage c:+ 5)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(goal gl-current-age gv-castle)
+	(current-age-time < 420)
+	(building-type-count-total barracks < 2)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 40)
+	(set-strategic-number sn-wood-gatherer-percentage 50)
+	(set-strategic-number sn-gold-gatherer-percentage 10)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(current-age-time < 420)
+	(building-type-count-total barracks > 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 45)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(current-age-time < 420)
+	(building-type-count-total town-center > 2)
+	(building-type-count-total barracks > 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 41)
+	(set-strategic-number sn-wood-gatherer-percentage 42)
+	(set-strategic-number sn-gold-gatherer-percentage 17)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(goal SLING 0)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(current-age-time < 420)
+	(goal gl-panic-xbow-counter YES)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 28)
+	(set-strategic-number sn-wood-gatherer-percentage 53)
+	(set-strategic-number sn-gold-gatherer-percentage 19)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(or	(up-compare-goal gl-enemy-heavy-cavalry-count > 0)
+		(goal gl-enemy-strategy KNIGHT-RUSH))
+	(current-age-time < 420)
+	(building-type-count-total barracks > 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 48)
+	(set-strategic-number sn-wood-gatherer-percentage 44)
+	(set-strategic-number sn-gold-gatherer-percentage 8)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+	(up-compare-goal gl-enemy-archery-count > 2)
+	(or	(up-compare-goal gl-enemy-heavy-cavalry-count > 0)
+		(goal gl-enemy-strategy KNIGHT-RUSH))
+	(current-age-time < 420)
+	(building-type-count-total barracks > 1)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 44)
+	(set-strategic-number sn-wood-gatherer-percentage 43)
+	(set-strategic-number sn-gold-gatherer-percentage 13)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(goal SLING 1)
+	(goal gl-current-age gv-castle)
+	(current-age-time < 420)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:+ 3)
+	(up-modify-sn sn-wood-gatherer-percentage c:- 10)
+	(up-modify-sn sn-gold-gatherer-percentage c:+ 7)
+	(set-strategic-number sn-allow-resource-spending 4)
+)
+
+(defrule
+	(goal POSITION FLANK)
+	(goal SLING 0)
+	(goal gl-current-age gv-castle)
+	(up-compare-goal gl-military-percentage > 125)
+	(current-age-time < 420)
+	(building-type-count-total barracks > 1)
+	(building-type-count-total town-center < 3)
+=>
+	(up-modify-sn sn-food-gatherer-percentage c:- 4)
+	(up-modify-sn sn-wood-gatherer-percentage c:+ 6)
+	(up-modify-sn sn-gold-gatherer-percentage c:- 2)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(up-compare-goal gl-current-age <= gv-castle)
+=>
+	(up-modify-sn sn-gold-gatherer-percentage g:- gl-gathered-relics)
+)
+
+(defrule
+	(goal gl-current-age gv-imperial)
+	(not	(goal gl-eagles heavy-eagles))
+	(gold-amount < 500)
+	(food-amount > 500)
+	(wood-amount > 200)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 38)
+	(set-strategic-number sn-wood-gatherer-percentage 26)
+	(set-strategic-number sn-gold-gatherer-percentage 31)
+	(set-strategic-number sn-stone-gatherer-percentage 5)
+)
+
+(defrule
+	(goal gl-current-age gv-imperial)
+	(not	(goal gl-eagles heavy-eagles))
+	(gold-amount > 400)
+	(food-amount < 200)
+	(wood-amount > 200)
+=>
+	(set-strategic-number sn-food-gatherer-percentage 50)
+	(set-strategic-number sn-wood-gatherer-percentage 30)
+	(set-strategic-number sn-gold-gatherer-percentage 20)
+)
+
+(defrule
+	(goal gl-eagles flush-counter-eagles)
+	(current-age == castle-age)
+	(or	(players-military-population any-enemy < 8)
+		(soldier-count > 5))
+=>
+	(set-goal gl-eagles 0)
+	(set-strategic-number sn-maximum-town-size 17)
+	(set-strategic-number sn-percent-enemy-sighted-response 100)
+	(set-strategic-number sn-enemy-sighted-response-distance 5)
+	(disable-self)
+)
+
+(defrule
+	(building-type-count-total castle == 0)
+	(or	(and	(goal SLING 1)
+			(up-research-status c: ri-elite-eagle-warrior >= research-pending))
+		(and	(or	(game-time > 1800)
+				(and	(up-compare-goal gl-current-age >= gv-castle-up)
+					(or	(game-time > 1680)
+						(soldier-count > 17))))
+			(building-type-count town-center > 2)))
+	(strategic-number sn-stone-gatherer-percentage < 8)
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 8)
+)
+
+(defrule
+	(building-type-count-total castle > 0)
+	(or	(strategic-number sn-stone-gatherer-percentage > 4)
+		(and	(or	(game-time > 1800)
+				(up-compare-goal gl-current-age >= gv-castle-up))
+			(building-type-count town-center > 2)))
+=>
+	(set-strategic-number sn-stone-gatherer-percentage 4)
+)
+
+; ============== BUILDINGS
+
+(defrule
+	(building-type-count-total siege-workshop < 1)
+	(building-type-count-total town-center > 2)
+	(food-amount > 400)
+=>
+	(up-modify-goal gl-workshop-build-priority c:max 900)
+	(set-strategic-number sn-monk-trained 1)
+)
+
+(defrule
+	(building-type-count-total siege-workshop < 1)
+	(or	(building-type-count-total siege-workshop < 2)
+		(and	(players-military-population focus-player > 14)
+			(building-type-count-total town-center > 1)))
+	(goal SLING 0)
+	(goal POSITION FLANK)
+	(goal gl-panic-xbow-counter YES)
+	(can-build-with-escrow siege-workshop)
+=>
+	(release-escrow wood)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-set-placement-data my-player-number -1 c: 0)
+	(up-modify-sn sn-placement-zone-size g:= gl-my-maximum-town-size)
+	(up-build place-control 0 c: siege-workshop)
+	(set-strategic-number sn-monk-trained 1)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(goal SLING 1)
+			(goal POSITION FLANK))
+		(and	(building-type-count-total barracks < 1)
+			(up-compare-const gv-FFA-like-game == 1)))
+	(building-type-count-total barracks < 4)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 900)
+)
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(or	(and	(or	(building-type-count-total barracks < 1)
+				(and	(building-type-count-total town-center > 1)
+					(building-type-count-total barracks < 2)))
+			(goal POSITION FLANK))
+		(and	(building-type-count-total siege-workshop > 0)
+			(building-type-count-total town-center > 2)))
+	(building-type-count-total barracks < 7)
+=>
+	(up-modify-goal gl-barracks-build-priority c:max 900)
+)
+
+(defrule
+	(goal gl-eew-strategy-type boom)
+	(or	(goal gl-current-age gv-castle)
+		(or	(building-type-count-total mining-camp < 3)
+			(building-type-count-total barracks > 2)))
+	(building-type-count-total siege-workshop > 0)
+	(building-type-count-total town-center > 2)
+	(or	(up-pending-objects c: mining-camp < 1)
+		(strategic-number sn-defer-dropsite-update == 0))
+	(building-type-count-total mining-camp < 5)
+	(can-build mining-camp)
+=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	(build mining-camp)
+)
+
+; ============= UNITS
+
+(defrule
+	(up-compare-goal gl-current-age >= gv-feudal-up)
+	(food-amount >= 70)
+	(up-compare-goal SLING != 0)
+	(or	(unit-type-count-total spearman-line < 6)
+		(up-research-status c: ri-pikeman >= research-pending))
+	(unit-type-count-total spearman-line < 25)
+	(up-compare-goal gl-enemy-cavalry-count > 4)
+	(or	(players-unit-type-count focus-player scout-cavalry-line > 8)
+		(or	(up-compare-goal gl-enemy-cavalry-count > 6)
+			(goal POSITION FLANK)))
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+
+(defrule
+	(or	(and	(or	(unit-type-count-total spearman-line >= 6)
+				(goal gl-enemy-strategy KNIGHT-RUSH))
+			(up-research-status c: ri-pikeman == research-available))
+		(and	(or	(up-compare-goal gl-military-percentage > 125)
+				(and	(goal POSITION POCKET)
+					(soldier-count g:>= gl-toughest-fought-enemy-military)))
+			(and	(goal SLING 0)
+				(goal gl-current-age gv-castle))))
+=>
+	(up-jump-rule 1)
+)
+
+(defrule
+	(food-amount >= 70)
+	(nand	(soldier-count > 12)
+		(research-available ri-elite-eagle-warrior))
+	(or	(and	(up-compare-goal gl-eagle-warrior-count-total < 25)
+			(or	(up-compare-goal gl-current-age >= gv-castle-up)
+				(goal SLING 1)))
+		(and	(up-compare-goal gl-military-percentage <= 125)
+			(up-compare-goal gl-eagle-warrior-count-total < 35)))
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+
+(defrule
+	(goal gl-eew-strategy-type boom)
+	(or	(and	(unit-type-count-total monk < 8)
+			(and	(current-age == castle-age)
+				(and	(or	(food-amount < high-castle-food)
+						(town-under-attack))
+					(soldier-count g:< gl-toughest-fought-enemy-military))))
+		(goal gl-eagles heavy-eagles))
+	(unit-type-count-total monk < 10)
+	(can-train monk)
+=>
+	(train monk)
+)
+
+; =============  MARKET
+
+(defrule
+	(goal gl-eew-strategy-type boom)
+	(goal gl-current-age gv-castle)
+	(building-type-count-total town-center > 2)
+	(or	(wood-amount >= 350)
+		(town-under-attack))
+	(wood-amount >= 200)
+	(gold-amount < 100)
+	(commodity-selling-price wood >= 60)
+	(can-sell-commodity wood)
+=>
+	(sell-commodity wood)
+	(chat-to-player my-player-number sell-wood-chat)
+)
+
+#load-if-defined TINY-MAP
+(defrule
+	(game-time < 20)
+	(goal gl-strategy eew-strategy)
+	(goal gl-eew-strategy-type boom)
+	(up-compare-const gv-meso-civ-enemy == 1)
+=>
+	(set-goal gl-strategy eew-strategy)
+	(set-goal gl-eew-strategy-type fast-imp)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI)
+)
+#end-if

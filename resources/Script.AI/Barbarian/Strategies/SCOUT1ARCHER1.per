@@ -1,0 +1,45 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(set-goal gl-strategy krush)
+	(disable-self)
+)
+
+#load-if-not-defined OASIS-MAP
+#load-if-not-defined BLACK-FOREST-MAP
+#load-if-not-defined YUCATAN-MAP
+(defrule
+	(game-time < 10)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-nomad-style-start == 0)
+=>
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy scrush)
+	(disable-self)
+)
+
+(defrule
+	(strategic-number sn-boars-on-map != NONE)
+	(strategic-number sn-nomad-style-start == 0)
+	(strategic-number sn-strategy-lock == 0)
+	(up-compare-const gv-pocket-position == 1)
+	(goal gl-current-age gv-dark)
+	(game-time > 65)
+	(game-time < 75)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(goal SLING 0)
+	(goal gl-rush-suitability-on-map GOOD)
+	(goal POSITION POCKET)
+=>
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy scrush)
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if

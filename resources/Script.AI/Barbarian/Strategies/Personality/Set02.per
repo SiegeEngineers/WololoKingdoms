@@ -1,0 +1,166 @@
+(defconst super-traitor-chat-id 22024); Now we must be foes!
+(defconst traitor-chat-id 22075); In fact, I'm switching sides! Fare thee well, losers.
+(defconst betrayed-chat-id 22103); We shall annihilate your civilization.
+(defconst wonder-game-time 3333)
+(defconst camp-raid-time-variance 444)
+(defconst nomad-tc-up-chat "My TC")
+(defconst gg-chat "gg, re?")
+
+#load-if-not-defined UP-SCENARIO-GAME
+
+#load-if-not-defined DEATH-MATCH
+#load-if-defined HUN-CIV
+(defrule
+	(game-time > 35)
+	(game-time < 45)
+	(strategic-number sn-nomad-style-start == 1)
+	(wood-amount < 275)
+	(building-type-count-total town-center == 0)
+	(unit-type-count transport-ship == 0)
+=>
+	(chat-to-all "Yeah, the best civ...")
+	(disable-self)
+)
+#end-if
+#end-if
+
+(defrule
+	(up-compare-goal TSA >= 1)
+	(unit-type-count monk > 9)
+=>
+	(chat-to-all "Wololo?")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 34)
+	(player-in-game any-human-ally)
+	(player-in-game any-human-enemy)
+=>
+	(up-store-player-name this-any-human-enemy)
+	(up-chat-data-to-player every-ally "Let's kill %s" c: 7031232)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 2100)
+	(soldier-count > 35)
+	(soldier-count g:>= gl-toughest-fought-enemy-military)
+	(players-military-population target-player > 35)
+	(up-compare-const gv-maximum-age >= castle-age)
+	(players-current-age target-player == feudal-age)
+	(players-current-age-time target-player > 1200)
+	(current-age-time < 10)
+	(goal gl-current-age gv-castle)
+=>
+	(chat-to-all "Yep.")
+	(disable-self)
+)
+
+#load-if-defined UP-MULTIPLAYER-GAME
+(defrule
+	(goal MILITARY 1)
+	(player-human target-player)
+	(goal gl-strategy turkish-bombardment)
+	(unit-type-count bombard-cannon > 5)
+	(players-building-count target-player > 0)
+=>
+	(chat-to-all "This is the Turkish Bombardment.")
+	(disable-self)
+)
+#end-if
+
+#load-if-not-defined WONDER-RACE
+#load-if-not-defined KING-OF-THE-HILL
+#load-if-not-defined TURBO-RANDOM-MAP
+#load-if-defined DARK-AGE-START
+#load-if-defined DIFFICULTY-HARD
+(defrule
+	(goal MILITARY 1)
+	(or	(goal gl-strategy eew-strategy)
+		(or	(goal gl-strategy CA-rush)
+			(or	(goal gl-strategy xbow-rush)
+				(or	(goal gl-strategy scorpion-rush)
+					(goal gl-strategy turkish-fast-imp)))))
+	(game-time > 1600)
+	(game-time < 2400)
+	(soldier-count > 50)
+	(players-military-population focus-player < 5)
+=>
+	(chat-to-all-using-id 22104); Your cities we shall burn to ashes.
+	(disable-self)
+)
+
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 20)
+	(not	(hold-relics))
+	(players-building-type-count every-ally wonder == 0)
+	(building-type-count wonder == 0)
+	(players-building-type-count any-enemy wonder > 0)
+=>
+	(chat-to-all "26 26")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal victory-time > 0)
+	(up-compare-goal victory-time < 7)
+	(or	(players-building-type-count any-ally wonder > 0)
+		(or	(building-type-count wonder > 0)
+			(hold-relics)))
+	(nor	(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+=>
+	(chat-to-all "1")
+	(disable-self)
+)
+#end-if
+
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(building-type-count bombard-tower > 20)
+=>
+	(chat-to-all "Do you like my fort?")
+	(disable-self)
+)
+
+(defrule
+	(up-compare-goal gl-TC-garrisoning >= 1)
+	(game-time < 780)
+	(difficulty <= hard)
+	(players-military-population any-enemy == 0)
+	(not	(player-computer any-enemy))
+=>
+	(chat-to-all "You may want to control your units better.")
+	(disable-self)
+)
+
+(defrule
+	(game-time > 13435)
+	(population > almost-full-pop)
+	(not	(players-population any-ally < almost-full-pop))
+	(players-population every-enemy > almost-full-pop)
+=>
+	(chat-to-all "Is this ever going to end?")
+	(disable-self)
+)
+
+(defrule
+	(or	(players-tribute-memory any-ally food >= 1000)
+		(or	(players-tribute-memory any-ally wood >= 1000)
+			(or	(players-tribute-memory any-ally gold >= 1000)
+				(players-tribute-memory any-ally stone >= 500))))
+=>
+	(chat-to-allies "Thanks for the resources!")
+	(disable-self)
+)
+#end-if
+
+

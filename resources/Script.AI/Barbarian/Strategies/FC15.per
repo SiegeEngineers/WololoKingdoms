@@ -1,0 +1,26 @@
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy CA-boom)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+(defrule
+	(game-time < 10)
+	(strategic-number sn-strategy-lock == 0)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy CA-rush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+
+
+
+
+
+
+

@@ -1,0 +1,215 @@
+(defrule
+	(strategic-number sn-castle-age-strategy == RUN)
+=>
+	(up-jump-rule 16)
+)
+(defrule
+	(up-research-status c: castle-age >= research-pending)
+	(up-compare-goal gl-map-style != WATER)
+	(current-age < imperial-age)
+	(strategic-number sn-castle-age-strategy != eagle-rush)
+	(strategic-number sn-castle-age-strategy != krush)
+	(strategic-number sn-castle-age-strategy != klew)
+	(not(civ-selected spanish))
+	(nor(up-compare-goal gl-enemy-strategy == EAGLE-RUSH) 
+	    (up-compare-goal gl-enemy-strategy == krush))
+	(strategic-number sn-castle-age-strategy != xbow)
+	(strategic-number sn-castle-age-strategy != end-game)
+	(strategic-number sn-castle-age-strategy != booming)
+	(strategic-number sn-castle-age-strategy != castled)
+=>
+	(set-strategic-number sn-castle-age-strategy xbow)
+)
+(defrule
+	(up-research-status c: castle-age >= research-pending)
+	(up-compare-goal gl-map-style != WATER)
+	(up-compare-goal gl-map-style != WATER)
+	(current-age < imperial-age)
+	(strategic-number sn-castle-age-strategy != lsr)
+	(up-compare-goal gl-enemy-strategy == EAGLE-RUSH)
+	(nor(civ-selected mayan)
+	    (civ-selected persian))
+=>
+	(set-strategic-number sn-castle-age-strategy lsr)
+)
+(defrule
+	(up-compare-goal gl-map-style != WATER)
+	(current-age < imperial-age)
+	(up-research-status c: castle-age >= research-pending)
+	(strategic-number sn-castle-age-strategy != krush)
+	(civ-selected spanish)
+	(strategic-number sn-castle-age-strategy != conquistadors)
+	(strategic-number sn-castle-age-strategy != end-game)
+	(strategic-number sn-castle-age-strategy != booming)
+	(strategic-number sn-castle-age-strategy != castled)
+=>
+	(set-strategic-number sn-castle-age-strategy conquistadors)
+)
+(defrule
+	(up-compare-goal gl-map-style == WATER)
+	(current-age == castle-age)
+	(current-age < imperial-age)
+	(strategic-number sn-castle-age-strategy != naval-fun)
+	(strategic-number sn-castle-age-strategy != end-game)
+	(strategic-number sn-castle-age-strategy != booming)
+	(strategic-number sn-castle-age-strategy != castled)
+=>
+	(set-strategic-number sn-castle-age-strategy naval-fun)
+	;(chat-local-to-self "naval-fun")
+)
+(defrule
+	(strategic-number sn-castle-age-strategy != booming)
+	(or(players-building-type-count focus-player castle > 0)
+	   (players-building-type-count focus-player stone-wall > 0))
+	(unit-type-count-total battering-ram-line < 3)
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy != booming)
+	(players-building-type-count focus-player castle > 0)
+	(building-type-count-total siege-workshop == 0)
+	(can-build siege-workshop)
+=>
+	(set-goal gl-pause-tsa 1)
+	(build siege-workshop)
+)
+
+; Deal with elephants
+(defrule
+	(strategic-number sn-castle-age-strategy != booming)
+	(players-unit-type-count any-enemy war-elephant > 0)
+	(can-train monk)
+=>
+	(train monk)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy != booming)
+	(players-unit-type-count any-enemy battle-elephant > 0)
+	(can-train monk)
+=>
+	(train monk)
+)
+(defrule
+	(strategic-number sn-castle-age-strategy != booming)
+	(players-unit-type-count any-enemy ballista-elephant-line > 0)
+	(can-train monk)
+=>
+	(train monk)
+)
+;Counter for mass knights.
+
+(defrule
+	(not(civ-selected turkish))
+	(current-age-time > 300)
+	(unit-type-count-total spearman-line > 4)
+	(up-research-status c: castle-age >= research-pending)
+	(can-research ri-scale-mail)
+=>
+	(research ri-scale-mail)
+)
+(defrule
+	(not(civ-selected turkish))
+	(current-age-time > 300)
+	(unit-type-count-total spearman-line > 4)
+	(up-research-status c: castle-age >= research-pending)
+	(can-research ri-chain-mail)
+=>
+	(research ri-chain-mail)
+)
+(defrule
+	(not(civ-selected turkish))
+	(current-age-time > 300)
+	(unit-type-count-total spearman-line > 4)
+	(up-research-status c: castle-age >= research-pending)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(not(civ-selected turkish))
+	(current-age-time > 300)
+	(unit-type-count-total spearman-line > 4)
+	(up-research-status c: castle-age >= research-pending)
+	(up-research-status c: ri-chain-mail >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(civ-selected spanish)
+	(unit-type-count my-unique-unit-line > 10)
+	(can-research ri-padded-archer-armor)
+=>
+	(research ri-padded-archer-armor)
+)
+(defrule
+	(civ-selected spanish)
+	(unit-type-count my-unique-unit-line > 10)
+	(can-research ri-leather-archer-armor)
+=>
+	(research ri-leather-archer-armor)
+)
+(defrule
+	(civ-selected spanish)
+	(unit-type-count my-unique-unit-line > 10)
+	(can-research ri-ring-archer-armor)
+=>
+	(research ri-ring-archer-armor)
+)
+#load-if-defined UP-1-PLAYER-TEAM
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(unit-type-count-total knight-line > 5)
+	(can-research ri-scale-barding)
+=>
+	(research ri-scale-barding)
+)
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(unit-type-count-total knight-line > 5)
+	(can-research ri-chain-barding)
+=>
+	(research ri-chain-barding)
+)
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(unit-type-count-total knight-line > 5)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-forging)
+=>
+	(research ri-forging)
+)
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(unit-type-count-total knight-line > 5)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-iron-casting)
+=>
+	(research ri-iron-casting)
+)
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(unit-type-count-total knight-line > 5)
+	(up-research-status c: ri-chain-barding >= research-pending)
+	(can-research ri-bloodlines)
+=>
+	(research ri-bloodlines)
+)
+(defrule
+	(up-research-status c: imperial-age < research-pending)
+	(or(players-unit-type-count any-enemy mangonel-line > 0)
+	   (players-unit-type-count any-enemy battering-ram-line > 0))
+	(can-train knight-line)
+=>
+	(train knight-line)
+)
+#end-if
+
+(load "Brutal2\XBOW")
+(load "Brutal2\CONQ")
+(load "Brutal2\CASTLENAVY")
+(load "Brutal2\LSR")
+	   

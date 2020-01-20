@@ -1,0 +1,109 @@
+#load-if-defined PERSIAN-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-pala-turtle)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 7)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 0)
+	(set-goal gl-dm-wood-to-sell 1500)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit paladin)
+	(disable-self)
+)
+
+(defrule
+	(goal gl-strategy dm-pala-turtle)
+	(building-type-count castle > 1)
+	(or	(gold-amount < 3000)
+		(building-type-count castle > 2))
+=>
+	(set-goal gl-dm-main-unit my-unique-unit)
+	(set-goal gl-strategy dm-UU)
+	(disable-self)
+)
+
+(defrule
+	(up-compare-const dm-infantry-threat-likelihood == 1)
+=>
+	(set-goal gl-dm-workshop-number 4)
+	(disable-self)
+)
+#else
+#load-if-defined TEUTONIC-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-pala-turtle)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 7)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 500)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit paladin)
+	(disable-self)
+)
+#else
+#load-if-defined BERBERS-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-pala-turtle)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 7)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 1000)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-allow-counter-halbs 0)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit paladin)
+	(disable-self)
+)
+#else
+#load-if-defined MALIAN-CIV
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-pala-turtle)
+	(set-goal gl-dm-barracks-number 0)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 7)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 1000)
+	(set-goal gl-dm-wood-to-sell 1000)
+	(set-goal gl-dm-allow-counter-halbs 0)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit paladin)
+	(disable-self)
+)
+#else; Byz
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy dm-pala-turtle)
+	(set-goal gl-dm-barracks-number 6)
+	(set-goal gl-dm-range-number 0)
+	(set-goal gl-dm-stable-number 8)
+	(set-goal gl-dm-workshop-number 0)
+	(set-goal gl-dm-food-to-sell 1000)
+	(set-goal gl-dm-wood-to-sell 2000)
+	(set-goal gl-dm-stone-to-sell 500)
+	(set-goal gl-dm-allow-counter-halbs 1)
+	(set-goal gl-dm-allow-counter-skirms 1)
+	(set-goal gl-dm-main-unit paladin)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+

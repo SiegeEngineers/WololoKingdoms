@@ -1,0 +1,43 @@
+#load-if-defined AZTEC-CIV
+#load-if-defined TINY-MAP
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy eew-strategy)
+	(set-goal gl-eew-strategy-type fast-imp)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FI)
+	(disable-self)
+)
+
+(defrule
+	(not	(players-civ any-enemy gothic))
+	(strategic-number sn-nomad-style-start == 0)
+=>
+	(set-goal gl-strategy eagle-monk-rush)
+	(set-goal gl-strategy-aggressiveness-level AVERAGE)
+	(set-goal gl-strategy-type FC)
+	(disable-self)
+)
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy eagle-rush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC)
+	(disable-self)
+)
+#end-if
+#else
+(defrule
+	(true)
+=>
+	(set-goal gl-strategy eagle-rush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-strategy-type FC)
+	(disable-self)
+)
+#end-if
+
+

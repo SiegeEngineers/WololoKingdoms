@@ -1,0 +1,377 @@
+; Hidden Treasures
+
+; Only for 1v1
+; Possible during the first 10 minutes/less in most non-custom maps
+
+; Commands (civs):
+; 30 - Mush (any)
+; 42 - Fast Imp (aztec/maya/turk)
+; 38 - Saracen Krush/Hun CA (quess)
+; 32 - FC+xbow (any but spanish/hun)
+; 33 - Castle Drop (any but aztec/goth/hun)
+; 17 - Scout+Archer flush (any but not aztec/maya/inca/)
+; 28 - Aztec Eagles&Monks / Mayan/Incan eaglerush
+; 40 - Goth Castle Drop + Boom
+; 21 - Drush
+; 23 - Eternal drush (any but saracens/indians, requires normal drush to already be chosen -> taunt 21 first)
+; 29 - Castle push (only at arena, civ with ranged unique unit)
+; 41 - Jaguar boom
+; 22 - Mangonel + monk push
+
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(or	(taunt-detected my-player-number 30)
+		(taunt-detected any-enemy 30))
+=>
+	(set-goal gl-strategy fi-monk-rush)
+	(set-goal gl-strategy-type FI2)
+	(chat-to-player my-player-number "Monks coming!")
+	(chat-to-player this-any-enemy "Monks coming!")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+
+#load-if-not-defined SARACEN-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(or	(taunt-detected my-player-number 42)
+		(taunt-detected any-enemy 42))
+	(or	(civ-selected aztec)
+		(civ-selected mayan))
+=>
+	(set-goal gl-strategy eew-strategy)
+	(set-goal gl-eew-strategy-type fast-imp)
+	(set-goal gl-strategy-type FI)
+	(acknowledge-taunt my-player-number 42)
+;	(acknowledge-taunt this-any-enemy 42)
+	(chat-to-all "Fast imping!")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined TURKISH-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(or	(taunt-detected my-player-number 42)
+		(taunt-detected any-enemy 42))
+=>
+	(set-goal gl-strategy turkish-fast-imp)
+	(set-goal gl-strategy-type FI)
+	(acknowledge-taunt my-player-number 42)
+	(acknowledge-taunt this-any-enemy 42)
+	(chat-to-player my-player-number "Fast imping!")
+	(chat-to-player this-any-enemy "Fast imping!")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+
+
+#load-if-defined SARACEN-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(or	(taunt-detected my-player-number 38)
+		(taunt-detected any-enemy 38))
+=>
+	(set-goal gl-strategy heavy-krush)
+	(set-goal gl-strategy-type FC2)
+	(acknowledge-taunt my-player-number 38)
+	(acknowledge-taunt this-any-enemy 38)
+	(chat-to-player my-player-number "Soon I'll abuse market!")
+	(chat-to-player this-any-enemy "Soon I'll abuse market!")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined HUN-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(or	(taunt-detected my-player-number 38)
+		(taunt-detected any-enemy 38))
+=>
+	(set-goal gl-strategy CA-rush)
+	(set-goal gl-strategy-type FC2)
+	(acknowledge-taunt my-player-number 38)
+	(acknowledge-taunt this-any-enemy 38)
+	(chat-to-player my-player-number "Let cavalry archers fill the world!")
+	(chat-to-player this-any-enemy "Let cavalry archers fill the world!")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined FRANKISH-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(or	(taunt-detected my-player-number 38)
+		(taunt-detected any-enemy 38))
+=>
+	(set-goal gl-strategy heavy-krush)
+	(set-goal gl-strategy-type FC2)
+	(acknowledge-taunt my-player-number 38)
+	(acknowledge-taunt this-any-enemy 38)
+	(chat-to-player my-player-number "The French Knight shall rise again!")
+	(chat-to-player this-any-enemy "The French Knight shall rise again!")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-not-defined HUN-CIV
+#load-if-not-defined SPANISH-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(or	(taunt-detected my-player-number 32)
+		(taunt-detected any-enemy 32))
+=>
+	(set-goal gl-strategy xbow-rush)
+	(set-goal gl-strategy-type FC2)
+	(acknowledge-taunt my-player-number 32)
+	(acknowledge-taunt this-any-enemy 32)
+	(chat-to-player my-player-number "Plan of the day: xbows!")
+	(chat-to-player this-any-enemy "Plan of the day: xbows!")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#end-if
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined GOTHIC-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(strategic-number sn-minimum-water-body-size-for-dock <= mixed-map-style)
+	(or	(taunt-detected my-player-number 33)
+		(taunt-detected any-enemy 33))
+=>
+	(set-goal gl-strategy castle-drop)
+	(set-goal gl-strategy-type FC2)
+	(chat-to-all "FC+castle drop.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+
+#load-if-defined AZTEC-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(or	(taunt-detected my-player-number 28)
+		(taunt-detected any-enemy 28))
+=>
+	(set-goal gl-strategy eagle-monk-rush)
+	(set-goal gl-strategy-type FC)
+	(acknowledge-taunt my-player-number 28)
+	(acknowledge-taunt this-any-enemy 28)
+	(chat-to-player my-player-number "Never underestimate the Aztec might.")
+	(chat-to-player this-any-enemy "Never underestimate the Aztec might.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#load-if-defined INCAN-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(or	(taunt-detected my-player-number 28)
+		(taunt-detected any-enemy 28))
+=>
+	(set-goal gl-strategy eagle-rush)
+	(set-goal gl-strategy-type FC)
+	(acknowledge-taunt my-player-number 28)
+	(acknowledge-taunt this-any-enemy 28)
+	(chat-to-player my-player-number "1 1.")
+	(chat-to-player this-any-enemy "1 1.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#load-if-defined MAYAN-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(goal gl-rush-suitability-on-map GOOD)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(or	(taunt-detected my-player-number 28)
+		(taunt-detected any-enemy 28))
+=>
+	(set-goal gl-strategy eagle-rush)
+	(set-goal gl-strategy-type FC)
+	(acknowledge-taunt my-player-number 28)
+	(acknowledge-taunt this-any-enemy 28)
+	(chat-to-player my-player-number "1 1.")
+	(chat-to-player this-any-enemy "1 1.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-defined GOTHIC-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(or	(taunt-detected my-player-number 40)
+		(taunt-detected any-enemy 40))
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-strategy castle-drop)
+	(set-goal gl-strategy-type FC2)
+	(acknowledge-taunt my-player-number 40)
+	(acknowledge-taunt this-any-enemy 40)
+	(chat-to-player my-player-number "1 1.")
+	(chat-to-player this-any-enemy "1 1.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+
+#load-if-not-defined ARENA-MAP
+#load-if-not-defined FORTRESS-MAP
+(defrule
+	(game-time > 30)
+	(game-time <= 180)
+	(goal gl-rush-suitability-on-map GOOD)
+	(or	(taunt-detected my-player-number 21)
+		(taunt-detected any-enemy 21))
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(set-goal gl-DRUSH YES)
+	(acknowledge-taunt my-player-number 21)
+	(acknowledge-taunt this-any-enemy 21)
+	(chat-to-player my-player-number "1I will.")
+	(chat-to-player this-any-enemy "1I will.")
+	(disable-self)
+)
+
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined INDIAN-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 640)
+	(goal gl-DRUSH YES)
+	(or	(taunt-detected my-player-number 23)
+		(taunt-detected any-enemy 23))
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(acknowledge-taunt my-player-number 23)
+	(acknowledge-taunt this-any-enemy 23)
+	(set-goal gl-strategy eternal-drush)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(set-goal gl-eternal-drush YES)
+	(chat-to-all "Exactly.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#end-if
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined MAYAN-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 180)
+	(goal gl-rush-suitability-on-map GOOD)
+	(or	(taunt-detected my-player-number 17)
+		(taunt-detected any-enemy 17))
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+=>
+	(acknowledge-taunt my-player-number 17)
+	(acknowledge-taunt this-any-enemy 17)
+	(set-goal gl-strategy scrush)
+	(set-goal gl-strategy-type controlled-flush)
+	(set-goal gl-strategy-aggressiveness-level HIGH)
+	(chat-to-all "Yep.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+
+#end-if
+#end-if
+
+
+#load-if-defined ARENA-MAP
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined CELTIC-CIV
+#load-if-not-defined GOTHIC-CIV
+#load-if-not-defined HUN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined TEUTONIC-CIV
+#load-if-not-defined VIKING-CIV
+#load-if-not-defined MAGYAR-CIV
+#load-if-not-defined SLAVIC-CIV
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(or	(taunt-detected my-player-number 29)
+		(taunt-detected any-enemy 29))
+=>
+	(set-goal gl-strategy castle-push)
+	(set-goal gl-strategy-type FC)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(chat-to-all "Castles?")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#end-if
+
+(defrule
+	(game-time > 30)
+	(game-time <= 600)
+	(strategic-number sn-minimum-water-body-size-for-dock == land-map-style)
+	(or	(taunt-detected my-player-number 22)
+		(taunt-detected any-enemy 22))
+=>
+	(set-goal gl-strategy monk-mango-push)
+	(set-goal gl-strategy-type FC)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(chat-to-all "Mangonels it shall be.")
+	(set-strategic-number sn-strategy-lock 1)
+	(disable-self)
+)

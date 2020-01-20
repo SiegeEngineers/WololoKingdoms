@@ -1,0 +1,31 @@
+#load-if-defined UP-POCKET-POSITION
+(defrule
+	(game-time < 10)
+	(goal SLING 0)
+	(or	(player-human any-enemy)
+		(not	(players-civ any-enemy aztec)))
+	(goal gl-current-age gv-dark)
+	(up-compare-goal gl-strategy != michi-boom)
+	(strategic-number sn-strategy-lock == 0)
+=>
+	(set-goal gl-strategy elephant-boom)
+	(set-goal gl-strategy-aggressiveness-level VERY-LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+#else
+(defrule
+	(game-time < 10)
+	(goal SLING 0)
+	(or	(player-human any-enemy)
+		(not	(players-civ any-enemy aztec)))
+	(goal gl-current-age gv-dark)
+	(up-compare-goal gl-strategy != michi-boom)
+	(strategic-number sn-strategy-lock == 0)
+=>
+	(set-goal gl-strategy castle-drop)
+	(set-goal gl-strategy-aggressiveness-level LOW)
+	(set-goal gl-strategy-type FC2)
+	(disable-self)
+)
+#end-if
