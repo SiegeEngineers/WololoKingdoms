@@ -29,7 +29,7 @@ void balancePatch(genie::DatFile* aocDat) {
   auto tech_supplies = aocDat->Techs[tech_id_new];
   tech_supplies.Name = "Supplies";
   tech_supplies.Name2 = "Supplies";
-  tech_supplies.RequiredTechs[0] = 101; // Feudal Age
+  tech_supplies.RequiredTechs.push_back(101); // Feudal Age
   tech_supplies.RequiredTechCount = 1;
   tech_supplies.ResearchTime = 35;
   // TODO needs an icon
@@ -117,7 +117,7 @@ void balancePatch(genie::DatFile* aocDat) {
   auto tech_watch_tower_hp = aocDat->Techs[tech_id_new];
   tech_watch_tower_hp.Name = "Watch Tower HP";
   tech_watch_tower_hp.Name2 = "Watch Tower HP";
-  tech_watch_tower_hp.RequiredTechs[0] = 102;
+  tech_watch_tower_hp.RequiredTechs.push_back(102);
   tech_watch_tower_hp.RequiredTechCount = 1;
   tech_watch_tower_hp.EffectID = effect_id_watch_tower_hp;
   aocDat->Techs.push_back(tech_watch_tower_hp);
@@ -195,7 +195,7 @@ void balancePatch(genie::DatFile* aocDat) {
   auto tech_eagle_scout_los = aocDat->Techs[tech_id_new];
   tech_eagle_scout_los.Name = "Eagle Scout Feudal LoS";
   tech_eagle_scout_los.Name2 = "Eagle Scout Feudal LoS";
-  tech_eagle_scout_los.RequiredTechs[0] = 101;
+  tech_eagle_scout_los.RequiredTechs.push_back(101);
   tech_eagle_scout_los.RequiredTechCount = 1;
   tech_eagle_scout_los.EffectID = effect_id_eagle_scout_los;
   aocDat->Techs.push_back(tech_eagle_scout_los);
@@ -417,7 +417,7 @@ void balancePatch(genie::DatFile* aocDat) {
   auto tech_sara_3 = aocDat->Techs[tech_id_new];
   tech_sara_3.Name = "C 9, C-Bonus, Archers v Buildings 3";
   tech_sara_3.Name2 = "C 9, C-Bonus, Archers v Buildings 3";
-  tech_sara_3.RequiredTechs[0] = 102; // Castle Age
+  tech_sara_3.RequiredTechs.push_back(102); // Castle Age
   tech_sara_3.RequiredTechCount = 1;
   tech_sara_3.EffectID = effect_id_saracens_castle;
   tech_sara_3.Civ = civ_id_saracens;
@@ -456,7 +456,7 @@ void balancePatch(genie::DatFile* aocDat) {
   auto tech_sara_4 = aocDat->Techs[tech_id_new];
   tech_sara_4.Name = "C 9, C-Bonus, Archers v Buildings 4";
   tech_sara_4.Name2 = "C 9, C-Bonus, Archers v Buildings 4";
-  tech_sara_4.RequiredTechs[0] = 103; // Imperial Age
+  tech_sara_4.RequiredTechs.push_back(103); // Imperial Age
   tech_sara_4.RequiredTechCount = 1;
   tech_sara_4.EffectID = effect_id_saracens_imp;
   tech_sara_4.Civ = civ_id_saracens;
@@ -544,7 +544,6 @@ void balancePatch(genie::DatFile* aocDat) {
   effect_commands_husbandry.push_back(speed_multiplier_ec);
 
   // Gives Slavs free Supplies upon reaching the Feudal Age.
-  // TODO implement
 
   auto tech_id_supplies_free = aocDat->Techs.size();
   auto effect_id_supplies_free = aocDat->Effects.size();
@@ -583,7 +582,7 @@ void balancePatch(genie::DatFile* aocDat) {
   auto tech_supplies_free = aocDat->Techs[tech_id_new];
   tech_supplies_free.Name = "Free Slav Supplies";
   tech_supplies_free.Name2 = "Free Slav Supplies";
-  tech_supplies_free.RequiredTechs[0] = 101;
+  tech_supplies_free.RequiredTechs.push_back(101);
   tech_supplies_free.RequiredTechCount = 1;
   tech_supplies_free.EffectID = effect_id_supplies_free;
   tech_supplies_free.Civ = 23; // Slavs
@@ -639,7 +638,7 @@ void balancePatch(genie::DatFile* aocDat) {
   auto tech_herbal_medicine_free = aocDat->Techs[tech_id_new];
   tech_herbal_medicine_free.Name = "Free Teuton Herbal Medicine";
   tech_herbal_medicine_free.Name2 = "Free Teuton Herbal Medicine";
-  tech_herbal_medicine_free.RequiredTechs[0] = 102;
+  tech_herbal_medicine_free.RequiredTechs.push_back(102);
   tech_herbal_medicine_free.RequiredTechCount = 1;
   tech_herbal_medicine_free.EffectID = effect_id_herbal_medicine_free;
   tech_herbal_medicine_free.Civ = 4;
