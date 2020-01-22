@@ -1,15 +1,15 @@
 #include "wk_xml.h"
 #include <ostream>
 
-void write_wk_xml(std::ostream& output, int dlc_level) {
+void write_wk_xml(std::ostream& output, std::string baseModName, int dlc_level) {
   auto name = dlc_level >= 3
                   ? "Age of Empires II: Rise of the Rajas"
                   : dlc_level >= 2 ? "Age of Empires II: African Kingdoms"
                                    : "Age of Empires II: The Forgotten";
 
   auto path = dlc_level >= 3
-                  ? "WololoKingdoms"
-                  : dlc_level >= 2 ? "WololoKingdoms AK" : "WololoKingdoms FE";
+                  ? baseModName
+                  : dlc_level >= 2 ? baseModName+" AK" : baseModName+" FE";
 
   output
       // BOM is required by UP

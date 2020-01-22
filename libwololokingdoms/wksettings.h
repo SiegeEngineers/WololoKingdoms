@@ -45,6 +45,7 @@ public:
   fs::path nfzUpOutPath;
   std::map<int, DataMod> dataModList;
   std::string modName;
+  std::string baseModName;
 
   std::vector<std::pair<fs::path, IndexType>> drsModDirectories;
 

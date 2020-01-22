@@ -2177,6 +2177,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
   refreshSymlink(oldDir / "Taunt", newDir / "Taunt", LinkType::Dir);
   refreshSymlink(oldDir / "Sound", newDir / "Sound", LinkType::Dir);
   refreshSymlink(oldDir / "History", newDir / "History", LinkType::Dir);
+  refreshSymlink(oldDir / "mmmods", newDir / "mmmods", LinkType::Dir);
   refreshSymlink(oldDir / "Script.Rm", newDir / "Script.Rm", LinkType::Dir);
   refreshSymlink(oldDir / "Script.Ai", newDir / "Script.Ai", LinkType::Dir);
   refreshSymlink(oldDir / "Screenshots", newDir / "Screenshots", LinkType::Dir);
@@ -2512,11 +2513,11 @@ int WKConverter::run() {
     listener->log("Write expansion XML");
     if (settings.useExe || settings.useBoth) {
       std::ofstream xml_output(xmlOutPathUP);
-      write_wk_xml(xml_output, settings.dlcLevel);
+      write_wk_xml(xml_output, settings.baseModName, settings.dlcLevel);
     }
     if (settings.useVoobly || settings.useBoth) {
       std::ofstream xml_output(xmlOutPath);
-      write_wk_xml(xml_output, settings.dlcLevel);
+      write_wk_xml(xml_output, settings.baseModName, settings.dlcLevel);
     }
 
     fs::path installMapDir = installDir / "Script.Rm";
@@ -2771,10 +2772,10 @@ int WKConverter::run() {
   if (settings.patch >= 0) {
     listener->log("Patch setup");
     std::string dlcLevelName =
-        baseModName +
+        settings.baseModName +
         (settings.dlcLevel == 3 ? "" : settings.dlcLevel == 2 ? " AK" : " FE");
     std::stringstream sstream;
-    write_wk_xml(sstream, settings.dlcLevel);
+    write_wk_xml(sstream, settings.baseModName, settings.dlcLevel);
     auto str = sstream.str();
     replace_all(str, dlcLevelName, settings.modName);
     if (settings.useBoth || settings.useVoobly) {
@@ -2841,20 +2842,20 @@ int WKConverter::run() {
     if (settings.dlcLevel > 1) {
       listener->log("FE Setup");
       fs::path vooblyModDir =
-          settings.vooblyDir.parent_path() / (baseModName + " FE");
+          settings.vooblyDir.parent_path() / (settings.baseModName + " FE");
       if (settings.useBoth || settings.useVoobly) {
         std::ofstream outstream(vooblyModDir / "age2_x1.xml");
-        write_wk_xml(outstream, 1);
+        write_wk_xml(outstream, settings.baseModName, 1);
         symlinkSetup(settings.vooblyDir, vooblyModDir);
       }
     }
     if (settings.dlcLevel > 2) {
       listener->log("AK Setup");
       fs::path vooblyModDir =
-          settings.vooblyDir.parent_path() / (baseModName + " AK");
+          settings.vooblyDir.parent_path() / (settings.baseModName + " AK");
       if (settings.useBoth || settings.useVoobly) {
         std::ofstream outstream(vooblyModDir / "age2_x1.xml");
-        write_wk_xml(outstream, 2);
+        write_wk_xml(outstream, settings.baseModName, 2);
         symlinkSetup(settings.vooblyDir, vooblyModDir);
       }
     }

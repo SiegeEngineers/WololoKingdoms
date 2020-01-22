@@ -203,6 +203,7 @@ void MainWindow::runConverter() {
   settings.upDir = upDir;
   settings.dataModList = dataModList;
   settings.modName = modName;
+  settings.baseModName = baseModName;
   settings.resourceDir = resourceDir;
 
   auto visualModsDir = resourceDir / "visual-mods";
