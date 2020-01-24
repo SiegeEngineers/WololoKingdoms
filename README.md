@@ -29,8 +29,6 @@ You can then use it as a mod in Voobly (To do that, click the "Settings" button 
 [Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch as usual.
 Select the "Create an offline installation" checkbox and let the program run.
 You can launch the game using the "WK.exe" in the "age2\_x1/" folder.
-Rarely there can be issues with creating the language\_x1\_p1.dll file. Usually when you get an error message regarding this, restarting the program and running it again is enough.
-If this error happens every time, your original language file may be corrupt.
 
 ## How to use (on Linux)
 You can install Age of Empires 2 HD on Linux by enabling Steam Play for unsupported games. Open Steam, and in the top left menu select Steam » Settings » Steam Play. There is a checkbox under "Advanced" to enable Steam Play for all titles. Restart Steam and install AoE2:HD.
@@ -92,9 +90,6 @@ It's also possible for other data mods based on WK to be added to the installer.
 
 I've done my best to make the installer stable, but sometimes it can still have issues.
 Generally, if you encounter problems: Make sure you run the installer as administrator (right click the exe -> run as administrator). If you get a message about an exception, often just closing the installer and running it again helps
-- **Q**: The installer can't read/write the language\_x1\_p1.dll when creating an offline installation! What's going on?
-**A**: Creating a language\_x1\_p1.dll language file for offline use without Voobly can be unstable unfortunately. You may need to rerun it a few times, but it should eventually work. 
-If you don't need to use an offline installation though, make sure that checkbox is unchecked, to avoid potential issues.
 - **Q**: Why is my interface is messed up? It looks like this: https://imgur.com/a/xouXF
 **A**: This happens if you reinstalled an older version of the compatibility patch after installing WololoKingdoms. To fix it, you can go into the Age2HD folder and delete the "compatslp" subfolder.
 
