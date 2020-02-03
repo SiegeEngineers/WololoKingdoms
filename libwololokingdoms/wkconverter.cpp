@@ -299,12 +299,19 @@ std::pair<int, std::string> WKConverter::parseHDTextLine(std::string line) {
 void WKConverter::createLanguageFile(fs::path languageIniPath,
                                      fs::path patchFolder) {
   std::map<int, std::string> langReplacement;
-  fs::path keyValuesStringsPath =
-      settings.language == "zht"
-          ? resourceDir / "locales" / "traditional chinese game strings" /
-                "key-value-strings-utf8.txt"
-          : settings.hdPath / "resources" / settings.language / "strings" /
-                "key-value" / "key-value-strings-utf8.txt";
+  fs::path keyValuesStringsPath;
+  if (settings.language == "zht") {
+    keyValuesStringsPath = resourceDir / "locales" /
+                           "traditional chinese game strings" /
+                           "key-value-strings-utf8.txt";
+  } else if (settings.language == "tu") {
+    keyValuesStringsPath = resourceDir / "locales" / "turkish.ini";
+  } else {
+    keyValuesStringsPath = settings.hdPath / "resources" / settings.language /
+                           "strings" / "key-value" /
+                           "key-value-strings-utf8.txt";
+  }
+
   fs::path improvedTooltipStrings =
       resourceDir / "improved-tooltips" / (settings.language + ".ini");
   /*

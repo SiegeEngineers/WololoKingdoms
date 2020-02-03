@@ -634,6 +634,9 @@ void MainWindow::changeLanguage() {
   case 11:
     language = "zht";
     break;
+  case 12:
+    language = "tu";
+    break;
   default:
     language = "en";
   }
