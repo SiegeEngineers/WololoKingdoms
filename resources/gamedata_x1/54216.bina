@@ -9843,7 +9843,7 @@ elseif PACIFIC_ISLANDS_
 
 /* ****************************************************** */
 
-#include_drs random_map.def 
+#include_drs random_map.def 54000 
 
 <PLAYER_SETUP>
 random_placement
@@ -9961,7 +9961,7 @@ elseif SANDBANK_
 
 /* ****************************************************** */
 
-#include_drs random_map.def 
+#include_drs random_map.def 54000 
 
 <PLAYER_SETUP>
 random_placement
@@ -10110,7 +10110,7 @@ elseif SERENGETI_
 
 /* African Arabia */
 
-#include_drs random_map.def 
+#include_drs random_map.def 54000 
 
 <PLAYER_SETUP>
   random_placement 
@@ -10631,7 +10631,7 @@ elseif WATER_NOMAD_
 
 /* ****************************************************** */
 
-#include_drs random_map.def 
+#include_drs random_map.def 54000 
 
 <PLAYER_SETUP>
 random_placement

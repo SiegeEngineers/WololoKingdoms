@@ -66,3 +66,9 @@ build/
 # Misc
 mod_override/
 log.txt
+
+/.vs/
+/resources/old dat slp compatibility/
+/resources/patches/
+/resources/zht/
+/resources/SetupAoC.exe
