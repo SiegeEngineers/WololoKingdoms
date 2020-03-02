@@ -1266,9 +1266,10 @@ void WKConverter::patchArchitectures(genie::DatFile* aocDat) {
       667, 668, 669, 670, 671, 672, 673, 674, 1102, 1189};
   const std::array unitIDs = {17,  21,  420, 442, 527,  528, 529,
                               532, 539, 545, 691, 1103, 1104};
-  const std::array civIDs = {13, 23, 7, 17, 14, 31, 21, 6,  11,
-                             12, 27, 1, 4,  18, 9,  8,  16, 24,
-                            29, 30, 26};
+  const std::array civIDs = {
+      13, 23, 7,  17, 14, 31, 21, 6,  11, 12, 27,
+      1,  4,  18, 9,  8,  16, 24, 29, 26, 30}; // burmese need to be last,
+                                               // because of the next line
   const auto& burmese = aocDat->Civs[30]; // These are used for ID reference
   for (size_t c = 0; c < civIDs.size(); c++) {
     const auto civId = civIDs[c];
@@ -1329,19 +1330,15 @@ void WKConverter::patchArchitectures(genie::DatFile* aocDat) {
 
   // Separate Units into 4 major regions (Europe, Asian, Southern, American)
   const std::vector<std::vector<int32_t>> civGroups = {
-      {3},
-      {7},
-      {14}, // Central Eu, Orthodox, Mediterranean
-      {5},
-      {6},
-      {28}, // Japanese, East Asian, SE Asian
-      {8},
-      {20},
-      {25},     // Middle Eastern, Indian, African
-      {15}, // American
-      {17},
-      {22}, // Steppe, Magyars
-      {4}, {11}, {23}, {19}, {24}, {18}, {29}, {30}, {31}, {9}, {10}, {27}, {26}, {16}, {21}, {12}, {2}, {13} //This line could be reordered if it makes more sense
+      {3},  {7},  {14}, // Central Eu, Orthodox, Mediterranean
+      {5},  {6},  {28}, // Japanese, East Asian, SE Asian
+      {8},  {20}, {25}, // Middle Eastern, Indian, African
+      {15},             // American
+      {17}, {22},       // Steppe, Magyars
+      {4},  {11}, {23}, {19}, {24}, {18}, {29}, {30}, {31}, {9},
+      {10}, {27}, {26}, {16}, {21}, {12}, {2},  {13} // This line could be
+                                                     // reordered if it makes
+                                                     // more sense
   };
   // std::map<int,int> slpIdConversion =
   // {{2683,0},{376,2},{4518,1},{2223,3},{3482,4},{3483,5},{4172,6},{4330,7},{889,10},{4612,16},{891,17},{4611,15},{3596,12},
@@ -2087,14 +2084,14 @@ static void moveQueueTechIcons(std::map<int, fs::path>& slpFiles,
   std::ifstream ifs(unit_icon_slp_path, std::ios::binary);
   slp unit_icon_slp_file = read_slp(ifs);
   ifs.close();
-  //Fill a number of frames as a buffer for future unit icons to be added
+  // Fill a number of frames as a buffer for future unit icons to be added
   const int num_buffer_frames =
       UNIT_ICON_ID_OFFSET - unit_icon_slp_file.header.num_frames;
   for (auto _ = 0; _ < num_buffer_frames; ++_) {
     duplicate_frame(unit_icon_slp_file, 0);
   }
 
-  //Copy all frames from the tech icon slp to the end of the unit icon slp
+  // Copy all frames from the tech icon slp to the end of the unit icon slp
   ifs = std::ifstream(tech_icon_slp_path, std::ios::binary);
   slp tech_icon_slp_file = read_slp(ifs);
 

@@ -53,7 +53,7 @@ private:
   fs::path installDir;
   fs::path nfzUpOutPath;
   fs::path nfzVooblyOutPath;
-  std::string baseModName = "WololoKingdoms";
+  std::string baseModName = "WololoKingdoms Beta";
   fs::path resourceDir;
 
   Ui::MainWindow* ui;

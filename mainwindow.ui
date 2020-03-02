@@ -204,11 +204,11 @@
          <string>繁體中文 (Traditional Chinese)</string>
         </property>
        </item>
-        <item>
-          <property name="text">
-            <string>Türkçe (Turkish)</string>
-          </property>
-        </item>
+       <item>
+        <property name="text">
+         <string>Türkçe (Turkish)</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item row="6" column="1">
