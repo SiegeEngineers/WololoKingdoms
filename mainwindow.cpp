@@ -267,7 +267,7 @@ void MainWindow::runConverter() {
   thread->start();
 }
 
-static QTime log_timer;
+static QElapsedTimer log_timer;
 void MainWindow::log(std::string logMessage) {
   logFile << log_timer.elapsed() << "ms - " << logMessage << std::endl;
   std::cout << log_timer.elapsed() << "ms - " << logMessage << std::endl;
