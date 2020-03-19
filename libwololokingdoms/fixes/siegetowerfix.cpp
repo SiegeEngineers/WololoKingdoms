@@ -9,7 +9,7 @@ void siegeTowerPatch(genie::DatFile* aocDat) {
    */
 
   size_t const siegeTowerUnitId = 1105;
-  aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].ActionType = 12;
+  aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].ActionType = genie::ActionType::UnloadBoat;
   aocDat->UnitHeaders[siegeTowerUnitId].TaskList[2].CarryCheck = 0;
 }
 

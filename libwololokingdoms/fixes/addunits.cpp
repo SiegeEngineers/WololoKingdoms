@@ -28,7 +28,7 @@ void addRoamingWolf(genie::DatFile * df) {
   auto taskList = &df->UnitHeaders[headerId].TaskList;
   auto taskFly = genie::Task();
   taskFly.IsDefault = true;
-  taskFly.ActionType = genie::Task::ActionTypes::Fly;
+  taskFly.ActionType = genie::ActionType::Fly;
   taskFly.MovingGraphicID = graphicsIdWolfxWn;
   taskFly.ProceedingGraphicID = graphicsIdWolfxWn;
   taskFly.WorkingGraphicID = graphicsIdWolfxWn;
@@ -89,7 +89,7 @@ void addTransportSharkatzor(genie::DatFile * df) {
   taskList->erase(taskList->begin() + 1);
 
   auto taskUnload = genie::Task();
-  taskUnload.ActionType = genie::Task::ActionTypes::UnloadBoat;
+  taskUnload.ActionType = genie::ActionType::UnloadBoat;
   taskList->push_back(taskUnload);
   // Sets the task IDs equal to their position in the task list.
   for (int i = 0; i != taskList->size(); ++i) {
@@ -150,9 +150,7 @@ void addUnitSpawner(genie::DatFile * df) {
   annexF.UnitID = unitIdA + 5;
   annexF.Misplacement = {-0.5f, -0.5f};
 
-  std::vector<genie::unit::BuildingAnnex> annexes = {annexC, annexD, annexE,
-                                                     annexF};
-  unitA.Building.Annexes = annexes;
+  unitA.Building.Annexes = {annexC, annexD, annexE, annexF};
   int langId = 5039;
   auto units = {unitA, unitB, unitC, unitD, unitE, unitF};
   for (auto unit : units) {
