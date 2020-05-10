@@ -1,7 +1,7 @@
 # WololoKingdoms
 A program for converting AOE2HD expansions files (The Forgotten, African Kingdoms and Rise of the Rajas) to the original AOC engine format.
 
-Note: Please download the program or post any issues, pull requests, etc. on the **current main repository (https://github.com/AoE2CommunityGitHub/WololoKingdoms)**.  This is a continuation of Jineapple's WololoKingdoms (https://github.com/Jineapple/WololoKingdoms). For personal reasons he has stepped down from this project, and Trirem will be carrying over with his permission.
+Note: Please download the program or post any issues, pull requests, etc. on the **current main repository (https://github.com/SiegeEngineers/WololoKingdoms)**.
 
 ## Why ?
 People who play AOE2:HD are probably aware of all the issues currently affecting the game : lobbies not starting, desyncs, lag issues etc.
@@ -23,7 +23,7 @@ It's heavily recommended to get all 3 DLCs though to be able to join all games.
 
 ## How to use (with Voobly)
 [Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract the Zip, make sure Steam is running and launch the WololoKingdoms.exe inside (It should find your HD installation automatically, otherwise copy the entire WololoKingdoms folder into your Age2HD folder and try again).
-You can then use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms". Make sure to select Userpatch 1.5 as the patch. You can then launch as normal).  
+You can then use it as a mod in Voobly (To do that, click the "Settings" button next to "Launch", click the "Mod" checkbox, then select "WololoKingdoms". Make sure to select Userpatch 1.5 as the patch. You can then launch as normal).
 
 ## How to use (without Voobly)
 [Download the latest release](https://github.com/AoE2CommunityGitHub/WololoKingdoms/releases), extract it, make sure Steam is running and launch as usual.
@@ -67,7 +67,7 @@ The options in the installer have a "Help" Icon to explain them, but they will a
 - Adjust garrison flags for new architectures: This is intended for use with this mod: https://www.voobly.com/gamemods/mod/858/WK-Architectures-showcase. It shifts the position of garrison flags to fit the changed architecture. If you don't use this mod, uncheck this option
 - No Snow/Small Trees/Grid/Regional Monks/Short Walls: These are all graphics mods that can be used with or without Voobly. You can still override these with other Voobly Mods. To remove them, you need to run the installer again with the option unchecked.
 	- Regional Monks gives monks of certain regions (Asia/Middle East/Africa,India) a different graphical appearance.
-- If there are any Voobly Graphic or Sound Mods that you want to use offline (or if you want to make some of them permanent to reduce the number of voobly mods in use), you can place the files of the mod in the "mod_override" folder and run the installer. These files will automatically replace regular game files. To undo this, you need to remove the files from the folder and run the installer again. 
+- If there are any Voobly Graphic or Sound Mods that you want to use offline (or if you want to make some of them permanent to reduce the number of voobly mods in use), you can place the files of the mod in the "mod\_override" folder and run the installer. These files will automatically replace regular game files. To undo this, you need to remove the files from the folder and run the installer again.
 	- This can e.g. be used for a different grid mod, using some of the architecture mods offline, etc.
 
 ## Data Mods or old patches
