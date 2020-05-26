@@ -1,0 +1,90 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{matrix.cc}}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+      - name: Setup apt repositories
+        run: |
+          if [ $CC = clang ]; then
+            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+          fi
+      - name: Update apt repositories
+        run: sudo apt-get update
+      - name: Install Qt
+        run: sudo apt-get install -y --no-install-recommends qt5-default
+      - name: Install C compiler
+        run: |
+          if [ $CC = clang ]; then
+            sudo apt-get install -y --no-install-recommends clang-9
+            export CXX=clang++
+          else
+            sudo apt-get install -y --no-install-recommends $CC
+          fi
+      - name: Generate build files
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+      - name: Build
+        run: cmake --build build
+
+  build-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [Win32, x64]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+      - name: Install Qt (x64)
+        uses: jurplel/install-qt-action@v2
+        if: matrix.arch == 'x64'
+        with:
+          arch: win64_msvc2017_64
+      - name: Install Qt (x86)
+        uses: jurplel/install-qt-action@v2
+        with:
+          arch: win32_msvc2017
+        if: matrix.arch == 'Win32'
+      - name: Generate build files
+        run: |
+          mkdir build
+          cd build
+          cmake .. -A ${{matrix.arch}}
+      - name: Build
+        run: cmake --build build
+
+  # clang-tidy:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout sources
+  #       uses: actions/checkout@v1
+  #       with:
+  #         submodules: recursive
+  #     - name: Setup apt repositories
+  #       run: sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+  #     - name: Update apt repositories
+  #       run: sudo apt-get update
+  #     - name: Install Qt
+  #       run: sudo apt-get install -y --no-install-recommends qt5-default
+  #     - name: Install Clang
+  #       run: sudo apt-get install -y --no-install-recommends cmake clang-9 clang-tidy-9
+  #     - name: Generate build files
+  #       run: mkdir build && cd build && cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+  #     - name: Run clang-tidy
+  #       run: clang-tidy-9 -p build *.{h,cpp}h libwololokingdoms/*.{h,cpp} libwololokingdoms/fixes/*.{h,cpp}
