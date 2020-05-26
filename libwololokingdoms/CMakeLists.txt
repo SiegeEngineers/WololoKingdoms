@@ -117,17 +117,17 @@ if (WK_STATIC_BUILD)
 else()
   add_library(${Wololokingdoms_LIBRARY} SHARED ${ALL_SRC})
   target_link_libraries(${Wololokingdoms_LIBRARY} genieutils)
-
-  install(TARGETS ${Wololokingdoms_LIBRARY}
-    LIBRARY DESTINATION lib
-  )
-
-  install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/include/
-    DESTINATION include
-    FILES_MATCHING PATTERN "*.h*"
-  )
 endif()
+
+install(TARGETS ${Wololokingdoms_LIBRARY}
+  LIBRARY DESTINATION lib
+)
+
+install(
+  DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+  DESTINATION include
+  FILES_MATCHING PATTERN "*.h*"
+)
 
 if(ENABLE_LTO)
   message(STATUS "Building libwololokingdoms with link time optimization")
