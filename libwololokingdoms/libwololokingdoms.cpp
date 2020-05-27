@@ -41,7 +41,7 @@ void wksettings_hd_path(wksettings_t, const path_char_t* path);
 void wksettings_output_path(wksettings_t, const path_char_t* path);
 void wksettings_voobly_path(wksettings_t, const path_char_t* path);
 void wksettings_up_path(wksettings_t, const path_char_t* path);
-void wksettings_mod_name(wksettings_t, const path_char_t* name);
+void wksettings_mod_name(wksettings_t, const char* name);
 
 // Add mods.
 void wksettings_data_mod(wksettings_t, const char* name, const char* exe,
