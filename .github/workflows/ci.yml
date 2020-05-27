@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc, clang]
+        cc: [gcc-9, clang]
     runs-on: ubuntu-latest
     env:
       CC: ${{matrix.cc}}
@@ -18,7 +18,7 @@ jobs:
       - name: Setup apt repositories
         run: |
           if [ $CC = clang ]; then
-            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
           fi
       - name: Update apt repositories
         run: sudo apt-get update
@@ -27,10 +27,11 @@ jobs:
       - name: Install C compiler
         run: |
           if [ $CC = clang ]; then
-            sudo apt-get install -y --no-install-recommends clang-10
+            sudo apt-get install -y --no-install-recommends clang-9
             export CXX=clang++
           else
             sudo apt-get install -y --no-install-recommends $CC
+            export CXX=g++-9
           fi
       - name: Generate build files
         run: |
