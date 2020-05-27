@@ -71,15 +71,6 @@ if (WIN32)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libwololokingdoms/third_party/genieutils/extern/win-iconv)
 endif()
 
-# check c++17 filesystem support
-# (mingw's windows header has a bug and msvc doesn't have it)
-include(HasWorkingFilesystem)
-if (NOT WORKING_STD_FS)
-  message(WARNING "builtin filesystem is bad, falling back to gulrak/filesystem")
-  include_directories(libwololokingdoms/third_party/filesystem/include/)
-  add_definitions(-DUSE_USERLAND_FS)
-endif()
-
 if (WIN32)
   add_definitions(-DNOMINMAX)
   add_definitions(-DWIN32_LEAN_AND_MEAN)

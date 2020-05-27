@@ -61,21 +61,6 @@ else()
   target_compile_options(${Wololokingdoms_LIBRARY} PRIVATE /wd4244 /wd4018 /wd4267 /wd4996 /wd4800)
 endif()
 
-# check c++17 filesystem support
-# (mingw's windows header has a bug and msvc doesn't have it)
-include(HasWorkingFilesystem)
-set(CMAKE_REQUIRED_FLAGS)
-set(CMAKE_REQUIRED_LIBRARIES)
-if (NOT WORKING_STD_FS)
-  message(WARNING "builtin filesystem is bad, falling back to gulrak/filesystem")
-  target_include_directories(${Wololokingdoms_LIBRARY}
-    PRIVATE third_party/filesystem/include/
-  )
-  target_compile_definitions(${Wololokingdoms_LIBRARY}
-    PRIVATE USE_USERLAND_FS
-  )
-endif()
-
 if (WIN32)
   target_compile_definitions(${Wololokingdoms_LIBRARY}
     PRIVATE UNICODE _UNICODE
