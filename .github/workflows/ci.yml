@@ -28,10 +28,10 @@ jobs:
         run: |
           if [ $CC = clang ]; then
             sudo apt-get install -y --no-install-recommends clang-9
-            export CXX=clang++
+            echo ::set-env name=CXX::clang++
           else
             sudo apt-get install -y --no-install-recommends $CC
-            export CXX=g++-9
+            echo ::set-env name=CXX::g++-9
           fi
       - name: Generate build files
         run: |
