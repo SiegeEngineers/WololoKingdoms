@@ -1,7 +1,7 @@
 #include "libwololokingdoms/wkconverter.h"
 #include "libwololokingdoms/wksettings.h"
 #include <QObject>
-#include <fs.h>
+#include <filesystem>
 #include <memory>
 #include <string>
 
@@ -26,6 +26,6 @@ signals:
 public:
   WKInstaller(WKSettings& settings);
   void error(std::exception const& err, bool showDialog = false) override;
-  void installUserPatch(fs::path exePath,
+  void installUserPatch(std::filesystem::path exePath,
                         std::vector<std::string> cliFlags) override;
 };

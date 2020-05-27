@@ -1,8 +1,9 @@
 #include "wkconverter.h"
 #include "wksettings.h"
-#include <fs.h>
+#include <filesystem>
 #include <memory>
 
+namespace fs = std::filesystem;
 using path_char_t = fs::path::value_type;
 
 class Listener;

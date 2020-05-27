@@ -37,12 +37,14 @@
 #include "wololo/datPatch.h"
 #include "zr_map_creator.h"
 #include <cctype>
-#include <fs.h>
+#include <filesystem>
 #include <fstream>
 #include <genie/dat/DatFile.h>
 #include <genie/lang/LangFile.h>
 #include <map>
 #include <string>
+
+namespace fs = std::filesystem;
 
 // this copy is unfortunate but cfs::resolve returns a temporary :/
 const fs::path resolve_path(const fs::path& input) {

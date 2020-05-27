@@ -1,5 +1,5 @@
 #pragma once
-#include <fs.h>
+#include <filesystem>
 #include <map>
 #include <string>
 #include <tuple>
@@ -36,20 +36,20 @@ public:
   int patch = -1;
   int hotkeyChoice = 0;
   int dlcLevel = 0;
-  fs::path resourceDir;
-  fs::path hdPath;
-  fs::path outPath;
-  fs::path vooblyDir;
-  fs::path upDir;
-  fs::path nfzVooblyOutPath;
-  fs::path nfzUpOutPath;
+  std::filesystem::path resourceDir;
+  std::filesystem::path hdPath;
+  std::filesystem::path outPath;
+  std::filesystem::path vooblyDir;
+  std::filesystem::path upDir;
+  std::filesystem::path nfzVooblyOutPath;
+  std::filesystem::path nfzUpOutPath;
   std::map<int, DataMod> dataModList;
   std::string modName;
   std::string baseModName;
 
-  std::vector<std::pair<fs::path, IndexType>> drsModDirectories;
+  std::vector<std::pair<std::filesystem::path, IndexType>> drsModDirectories;
 
-  inline void addDrsResources(const fs::path& directory,
+  inline void addDrsResources(const std::filesystem::path& directory,
                               IndexType type = IndexType::Expansion) {
     drsModDirectories.push_back(std::make_pair(directory, type));
   }

@@ -3,7 +3,8 @@
 #include <QMetaType>
 #include <QProgressBar>
 #include <QPushButton>
-#include <fs.h>
+#include <filesystem>
+#include <fstream>
 
 namespace Ui {
 class MainWindow;
@@ -31,9 +32,9 @@ public:
   ~MainWindow();
 
 private:
-  fs::path steamPath;
-  fs::path hdPath;
-  fs::path outPath;
+  std::filesystem::path steamPath;
+  std::filesystem::path hdPath;
+  std::filesystem::path outPath;
   std::map<int,
            std::tuple<std::string, std::string, std::string, int, std::string>>
       dataModList;
@@ -48,13 +49,13 @@ private:
   std::string modName;
   std::ofstream logFile;
 
-  fs::path vooblyDir;
-  fs::path upDir;
-  fs::path installDir;
-  fs::path nfzUpOutPath;
-  fs::path nfzVooblyOutPath;
+  std::filesystem::path vooblyDir;
+  std::filesystem::path upDir;
+  std::filesystem::path installDir;
+  std::filesystem::path nfzUpOutPath;
+  std::filesystem::path nfzVooblyOutPath;
   std::string baseModName = "WololoKingdoms Beta";
-  fs::path resourceDir;
+  std::filesystem::path resourceDir;
 
   Ui::MainWindow* ui;
 

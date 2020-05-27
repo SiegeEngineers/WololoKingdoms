@@ -72,7 +72,6 @@ endif()
 #------------------------------------------------------------------------------#
 target_sources(${Wololokingdoms_LIBRARY} PRIVATE
   libwololokingdoms.cpp
-  fs.cpp
   base64.cpp
   md5.cpp
   wk_xml.cpp
