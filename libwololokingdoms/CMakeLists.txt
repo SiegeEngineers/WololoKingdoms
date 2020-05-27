@@ -21,7 +21,8 @@ endif()
 # dependencies:
 
 if (WK_STATIC_BUILD)
-  set(GENIEUTILS_STATIC_BUILD 1)
+  # Set `GUTILS_STATIC` option for genieutils.
+  set(GUTILS_STATIC ON CACHE BOOL "")
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
