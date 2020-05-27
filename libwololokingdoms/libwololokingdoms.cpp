@@ -191,8 +191,7 @@ extern "C" void wksettings_up_path(wksettings_t inst, const path_char_t* path) {
   inst->upDir = path;
 }
 
-extern "C" void wksettings_mod_name(wksettings_t inst,
-                                    const path_char_t* name) {
+extern "C" void wksettings_mod_name(wksettings_t inst, const char* name) {
   inst->modName = name;
 }
 
