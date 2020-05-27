@@ -99,13 +99,13 @@ void WKConverter::indexDrsFiles(fs::path const& src, bool expansionFiles,
       }
     } else {
       if (extension == ".slp") {
-        int id = atoi(src.stem().string().c_str());
+        int id = std::stoi(src.stem().string());
         if (!expansionFiles)
           aocSlpFiles.insert(id);
         else
           slpFiles[id] = src;
       } else if (extension == ".wav") {
-        int id = atoi(src.stem().string().c_str());
+        int id = std::stoi(src.stem().string());
         wavFiles[id] = src;
       }
     }
@@ -430,7 +430,7 @@ void WKConverter::makeRandomMapScriptsDrs(std::ofstream& out,
                                           const fs::path& drsDir) {
   DRSCreator drs(out);
   for (const auto& p : fs::directory_iterator(resolve_path(drsDir))) {
-    auto id = std::atoi(p.path().stem().c_str());
+    auto id = std::stoi(p.path().stem().string());
     drs.addFile(DRSTableType::Bina, id, p.path());
   }
   drs.commit();
@@ -1915,7 +1915,7 @@ static void addMonkGraphicsToCiv(std::map<int, fs::path>& slpFiles,
   for (const auto& current : fs::directory_iterator(newMonkGraphicsDir)) {
     auto src = current.path();
     std::string extension = src.extension().string();
-    int id = prefix * 10000 + atoi(src.stem().string().c_str());
+    int id = prefix * 10000 + std::stoi(src.stem().string());
     slpFiles[id] = src;
   }
 }
