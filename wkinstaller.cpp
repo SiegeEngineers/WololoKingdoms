@@ -1,6 +1,9 @@
 #include "wkinstaller.h"
 #include <QProcess>
 #include <QString>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 WKInstaller::WKInstaller(WKSettings& settings) : settings(settings) {}
 

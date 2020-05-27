@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc, clang]
+        cc: [gcc-9, clang]
     runs-on: ubuntu-latest
     env:
       CC: ${{matrix.cc}}
@@ -28,9 +28,10 @@ jobs:
         run: |
           if [ $CC = clang ]; then
             sudo apt-get install -y --no-install-recommends clang-9
-            export CXX=clang++
+            echo ::set-env name=CXX::clang++
           else
             sudo apt-get install -y --no-install-recommends $CC
+            echo ::set-env name=CXX::g++-9
           fi
       - name: Generate build files
         run: |

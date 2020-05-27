@@ -1,7 +1,7 @@
 #include "paths.h"
 #include "libwololokingdoms/platform.h"
 #include "libwololokingdoms/string_helpers.h"
-#include <fs.h>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -12,6 +12,8 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif
+
+namespace fs = std::filesystem;
 
 static fs::path extractHDPath(fs::path steamPath) {
   std::string line;

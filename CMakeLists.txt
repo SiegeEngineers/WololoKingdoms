@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9.4)
 
 set(Wololokingdoms_INSTALLER WololoKingdoms)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 project(WololoKingdoms)
 
@@ -69,15 +69,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libwololokingdoms/third_party/pc
 if (WIN32)
   add_definitions(-DICONV_SECOND_ARGUMENT_IS_CONST)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libwololokingdoms/third_party/genieutils/extern/win-iconv)
-endif()
-
-# check c++17 filesystem support
-# (mingw's windows header has a bug and msvc doesn't have it)
-include(HasWorkingFilesystem)
-if (NOT WORKING_STD_FS)
-  message(WARNING "builtin filesystem is bad, falling back to gulrak/filesystem")
-  include_directories(libwololokingdoms/third_party/filesystem/include/)
-  add_definitions(-DUSE_USERLAND_FS)
 endif()
 
 if (WIN32)

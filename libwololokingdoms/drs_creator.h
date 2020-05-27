@@ -1,5 +1,5 @@
 #pragma once
-#include <fs.h>
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -20,12 +20,13 @@ class DRSCreatorTableEntry {
   uint32_t size_ = 0;
   // Owned by this object
   std::istream* stream_ = nullptr;
-  fs::path filename_;
+  std::filesystem::path filename_;
 
 public:
   inline DRSCreatorTableEntry(uint32_t id, std::istream* data)
       : id_(id), stream_(data) {}
-  inline DRSCreatorTableEntry(uint32_t id, const fs::path& filename)
+  inline DRSCreatorTableEntry(uint32_t id,
+                              const std::filesystem::path& filename)
       : id_(id), filename_(filename) {}
   inline DRSCreatorTableEntry(DRSCreatorTableEntry&& entry)
       : id_(entry.id_), stream_(entry.stream_),
@@ -53,7 +54,7 @@ class DRSCreatorTable {
 
 public:
   inline void addFile(uint32_t id, std::istream* data);
-  inline void addFile(uint32_t id, const fs::path& filename);
+  inline void addFile(uint32_t id, const std::filesystem::path& filename);
 
 private:
   inline void setOffset(uint32_t offset);
@@ -73,7 +74,7 @@ public:
 
   inline void addFile(DRSTableType table, uint32_t id, std::istream* data);
   inline void addFile(DRSTableType table, uint32_t id,
-                      const fs::path& filename);
+                      const std::filesystem::path& filename);
   void commit();
 };
 
@@ -81,7 +82,8 @@ inline void DRSCreatorTable::addFile(uint32_t id, std::istream* data) {
   files_.push_back(DRSCreatorTableEntry(id, data));
 }
 
-inline void DRSCreatorTable::addFile(uint32_t id, const fs::path& filename) {
+inline void DRSCreatorTable::addFile(uint32_t id,
+                                     const std::filesystem::path& filename) {
   files_.push_back(DRSCreatorTableEntry(id, filename));
 }
 
@@ -91,6 +93,6 @@ inline void DRSCreator::addFile(DRSTableType table, uint32_t id,
 }
 
 inline void DRSCreator::addFile(DRSTableType table, uint32_t id,
-                                const fs::path& filename) {
+                                const std::filesystem::path& filename) {
   tables_[table].addFile(id, filename);
 }

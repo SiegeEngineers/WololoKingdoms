@@ -4,13 +4,15 @@
 #include "paths.h"
 #include <QProcess>
 #include <errno.h>
-#include <fs.h>
+#include <filesystem>
 #include <fstream>
 #include <iconv.h>
 #include <iostream>
 #include <pwd.h>
 #include <stdio.h>
 #include <string>
+
+namespace fs = std::filesystem;
 
 fs::path getExePath() { return fs::read_symlink("/proc/self/exe"); }
 

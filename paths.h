@@ -1,9 +1,9 @@
 #pragma once
-#include <fs.h>
+#include <filesystem>
 
-static fs::path extractHDPath(fs::path steamPath);
-fs::path getExePath();
+static std::filesystem::path extractHDPath(std::filesystem::path steamPath);
+std::filesystem::path getExePath();
 std::wstring readRegistryKey(std::wstring keyPath, std::wstring key);
-fs::path getSteamPath();
-fs::path getHDPath(fs::path steamPath);
-fs::path getOutPath(fs::path HDPath);
+std::filesystem::path getSteamPath();
+std::filesystem::path getHDPath(std::filesystem::path steamPath);
+std::filesystem::path getOutPath(std::filesystem::path HDPath);

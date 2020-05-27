@@ -3,7 +3,7 @@
 #include "genie/lang/LangFile.h"
 #include "platform.h"
 #include "wksettings.h"
-#include <fs.h>
+#include <filesystem>
 #include <map>
 #include <regex>
 #include <set>
@@ -39,12 +39,14 @@ public:
   /**
    * Report an error.
    */
-  virtual void error([[maybe_unused]] std::exception const& err, bool showDialog = false) {}
+  virtual void error([[maybe_unused]] std::exception const& err,
+                     bool showDialog = false) {}
 
   /**
    * Report an error (message only).
    */
-  virtual void error([[maybe_unused]] std::string message, bool showDialog = false) {
+  virtual void error([[maybe_unused]] std::string message,
+                     bool showDialog = false) {
     error(std::runtime_error(message), showDialog);
   }
 
@@ -86,7 +88,7 @@ public:
    * flags
    */
   virtual void
-  installUserPatch([[maybe_unused]] fs::path userPatchExe,
+  installUserPatch([[maybe_unused]] std::filesystem::path userPatchExe,
                    [[maybe_unused]] std::vector<std::string> cliFlags) {}
 };
 
@@ -97,7 +99,7 @@ class WKConverter {
 public:
   WKConverter(WKSettings& settings, WKConvertListener* const listener)
       : settings(settings), listener(listener) {
-    if (settings.resourceDir != fs::path()) {
+    if (settings.resourceDir != std::filesystem::path()) {
       resourceDir = settings.resourceDir;
     }
   }
@@ -108,18 +110,18 @@ public:
 private:
   std::set<char> civLetters;
   std::set<int> aocSlpFiles;
-  std::map<int, fs::path> slpFiles;
-  std::map<int, fs::path> wavFiles;
-  std::map<std::string, fs::path> newTerrainFiles;
+  std::map<int, std::filesystem::path> slpFiles;
+  std::map<int, std::filesystem::path> wavFiles;
+  std::map<std::string, std::filesystem::path> newTerrainFiles;
   std::vector<std::pair<int, std::string>> rmsCodeStrings;
   bool secondAttempt = false;
 
-  fs::path nfzUpOutPath;
-  fs::path nfzVooblyOutPath;
-  fs::path vooblyDir;
-  fs::path upDir;
-  fs::path installDir;
-  fs::path resourceDir = "resources";
+  std::filesystem::path nfzUpOutPath;
+  std::filesystem::path nfzVooblyOutPath;
+  std::filesystem::path vooblyDir;
+  std::filesystem::path upDir;
+  std::filesystem::path installDir;
+  std::filesystem::path resourceDir = "resources";
 
   enum TerrainType {
     None,
@@ -139,41 +141,50 @@ private:
     TerrainType terrain_type;
   };
 
-  void copyHDMaps(const fs::path& inputDir, const fs::path& outputDir,
-                  bool replace = false);
+  void copyHDMaps(const std::filesystem::path& inputDir,
+                  const std::filesystem::path& outputDir, bool replace = false);
   bool usesMultipleWaterTerrains(const std::string& map,
                                  std::map<int, bool>& terrainsUsed);
   bool isTerrainUsed(int terrain, std::map<int, bool>& terrainsUsed,
                      const std::string& map,
                      const std::map<int, std::regex>& patterns);
   void upgradeTrees(int usedTerrain, int oldTerrain, std::string& map);
-  void createZRmap(std::map<std::string, fs::path>& terrainOverrides,
-                   fs::path outputDir, std::string mapName);
+  void
+  createZRmap(std::map<std::string, std::filesystem::path>& terrainOverrides,
+              std::filesystem::path outputDir, std::string mapName);
   void terrainSwap(genie::DatFile* hdDat, genie::DatFile* aocDat, int tNew,
                    int tOld, int slpID);
-  void indexDrsFiles(fs::path const& src, bool expansionFiles = true,
-                     bool terrainFiles = false);
-  inline void indexDrsFiles(fs::path const& src, WKSettings::IndexType flags) {
+  void indexDrsFiles(std::filesystem::path const& src,
+                     bool expansionFiles = true, bool terrainFiles = false);
+  inline void indexDrsFiles(std::filesystem::path const& src,
+                            WKSettings::IndexType flags) {
     indexDrsFiles(
         src, static_cast<int>(flags & WKSettings::IndexType::Expansion) != 0,
         static_cast<int>(flags & WKSettings::IndexType::Terrain) != 0);
   }
-  void copyHistoryFiles(fs::path inputDir, fs::path outputDir);
+  void copyHistoryFiles(std::filesystem::path inputDir,
+                        std::filesystem::path outputDir);
   std::pair<int, std::string> parseHDTextLine(std::string line);
   void convertLanguageFile(std::ifstream& in, std::ofstream& iniOut,
                            std::map<int, std::string>& langReplacement);
-  void createLanguageFile(fs::path languageIniPath, fs::path patchFolder);
-  void loadGameStrings(std::map<int, std::string>& langReplacement, fs::path file);
-  void loadModdedStrings(fs::path moddedStringsFile,
+  void createLanguageFile(std::filesystem::path languageIniPath,
+                          std::filesystem::path patchFolder);
+  void loadGameStrings(std::map<int, std::string>& langReplacement,
+                       std::filesystem::path file);
+  void loadModdedStrings(std::filesystem::path moddedStringsFile,
                          std::map<int, std::string>& langReplacement);
-  void makeRandomMapScriptsDrs(std::ofstream& out, const fs::path& drsDir);
+  void makeRandomMapScriptsDrs(std::ofstream& out,
+                               const std::filesystem::path& drsDir);
   void makeDrs(std::ofstream& out);
   void editDrs(std::ifstream* in, std::ofstream* out);
-  void copyCivIntroSounds(const fs::path& inputDir, const fs::path& outputDir);
-  void copyWallFiles(const fs::path& inputDir);
-  void createMusicPlaylist(const fs::path& inputDir, const fs::path& outputDir);
+  void copyCivIntroSounds(const std::filesystem::path& inputDir,
+                          const std::filesystem::path& outputDir);
+  void copyWallFiles(const std::filesystem::path& inputDir);
+  void createMusicPlaylist(const std::filesystem::path& inputDir,
+                           const std::filesystem::path& outputDir);
   void transferHdDatElements(genie::DatFile* hdDat, genie::DatFile* aocDat);
-  void adjustArchitectureFlags(genie::DatFile* aocDat, fs::path flagFilename);
+  void adjustArchitectureFlags(genie::DatFile* aocDat,
+                               std::filesystem::path flagFilename);
   void patchArchitectures(genie::DatFile* aocDat);
   bool checkGraphics(genie::DatFile* aocDat, short graphicID,
                      std::vector<int> checkedGraphics);
@@ -184,15 +195,18 @@ private:
                          std::map<short, short>& replacedGraphics,
                          std::vector<short> duplicatedGraphics, short graphicID,
                          short compareID, short offset, bool civGroups = false);
-  bool identifyHotkeyFile(const fs::path& directory, fs::path& maxHki,
-                          fs::path& lastEditedHki);
-  void copyHotkeyFile(const fs::path& maxHki, const fs::path& lastEditedHki,
-                      fs::path dst);
+  bool identifyHotkeyFile(const std::filesystem::path& directory,
+                          std::filesystem::path& maxHki,
+                          std::filesystem::path& lastEditedHki);
+  void copyHotkeyFile(const std::filesystem::path& maxHki,
+                      const std::filesystem::path& lastEditedHki,
+                      std::filesystem::path dst);
   void removeWkHotkeys();
   void hotkeySetup();
-  void refreshSymlink(const fs::path& oldDir, const fs::path& newDir,
-                      const LinkType type, bool copyOldContents = false);
-  void symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
-                    bool dataMod = false);
-  void setupFolders(fs::path xmlOutPathUP);
+  void refreshSymlink(const std::filesystem::path& oldDir,
+                      const std::filesystem::path& newDir, const LinkType type,
+                      bool copyOldContents = false);
+  void symlinkSetup(const std::filesystem::path& oldDir,
+                    const std::filesystem::path& newDir, bool dataMod = false);
+  void setupFolders(std::filesystem::path xmlOutPathUP);
 };

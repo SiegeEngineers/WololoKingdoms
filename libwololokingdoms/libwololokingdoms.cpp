@@ -1,8 +1,9 @@
 #include "wkconverter.h"
 #include "wksettings.h"
-#include <fs.h>
+#include <filesystem>
 #include <memory>
 
+namespace fs = std::filesystem;
 using path_char_t = fs::path::value_type;
 
 class Listener;
@@ -40,7 +41,7 @@ void wksettings_hd_path(wksettings_t, const path_char_t* path);
 void wksettings_output_path(wksettings_t, const path_char_t* path);
 void wksettings_voobly_path(wksettings_t, const path_char_t* path);
 void wksettings_up_path(wksettings_t, const path_char_t* path);
-void wksettings_mod_name(wksettings_t, const path_char_t* name);
+void wksettings_mod_name(wksettings_t, const char* name);
 
 // Add mods.
 void wksettings_data_mod(wksettings_t, const char* name, const char* exe,
@@ -190,8 +191,7 @@ extern "C" void wksettings_up_path(wksettings_t inst, const path_char_t* path) {
   inst->upDir = path;
 }
 
-extern "C" void wksettings_mod_name(wksettings_t inst,
-                                    const path_char_t* name) {
+extern "C" void wksettings_mod_name(wksettings_t inst, const char* name) {
   inst->modName = name;
 }
 

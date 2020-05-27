@@ -37,12 +37,14 @@
 #include "wololo/datPatch.h"
 #include "zr_map_creator.h"
 #include <cctype>
-#include <fs.h>
+#include <filesystem>
 #include <fstream>
 #include <genie/dat/DatFile.h>
 #include <genie/lang/LangFile.h>
 #include <map>
 #include <string>
+
+namespace fs = std::filesystem;
 
 // this copy is unfortunate but cfs::resolve returns a temporary :/
 const fs::path resolve_path(const fs::path& input) {
@@ -97,13 +99,13 @@ void WKConverter::indexDrsFiles(fs::path const& src, bool expansionFiles,
       }
     } else {
       if (extension == ".slp") {
-        int id = atoi(src.stem().string().c_str());
+        int id = std::stoi(src.stem().string());
         if (!expansionFiles)
           aocSlpFiles.insert(id);
         else
           slpFiles[id] = src;
       } else if (extension == ".wav") {
-        int id = atoi(src.stem().string().c_str());
+        int id = std::stoi(src.stem().string());
         wavFiles[id] = src;
       }
     }
@@ -428,7 +430,7 @@ void WKConverter::makeRandomMapScriptsDrs(std::ofstream& out,
                                           const fs::path& drsDir) {
   DRSCreator drs(out);
   for (const auto& p : fs::directory_iterator(resolve_path(drsDir))) {
-    auto id = std::atoi(p.path().stem().c_str());
+    auto id = std::stoi(p.path().stem().string());
     drs.addFile(DRSTableType::Bina, id, p.path());
   }
   drs.commit();
@@ -1913,7 +1915,7 @@ static void addMonkGraphicsToCiv(std::map<int, fs::path>& slpFiles,
   for (const auto& current : fs::directory_iterator(newMonkGraphicsDir)) {
     auto src = current.path();
     std::string extension = src.extension().string();
-    int id = prefix * 10000 + atoi(src.stem().string().c_str());
+    int id = prefix * 10000 + std::stoi(src.stem().string());
     slpFiles[id] = src;
   }
 }
@@ -2139,10 +2141,8 @@ void WKConverter::refreshSymlink(const fs::path& oldPath,
 
 void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                                bool dataMod) {
-  bool vooblySrc =
-      tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
-  bool vooblyDst =
-      tolower(newDir).find("\\voobly mods\\aoc") != std::string::npos;
+  bool vooblySrc = string_to_lower(oldDir.string()).find("\\voobly mods\\aoc") != std::string::npos;
+  bool vooblyDst = string_to_lower(newDir.string()).find("\\voobly mods\\aoc") != std::string::npos;
 
   cfs::create_directory(newDir);
   bool datalink = vooblySrc == vooblyDst && !dataMod;
@@ -2194,7 +2194,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     for (const auto& current : fs::directory_iterator(oldDir)) {
       const auto& currentPath = current.path();
       if (!cfs::is_directory(currentPath) ||
-          tolower(currentPath.filename().string()) != "savegame") {
+          string_to_lower(currentPath.filename().string()) != "savegame") {
         cfs::copy(currentPath, newDir / currentPath.filename(),
                   fs::copy_options::recursive |
                       fs::copy_options::skip_existing);

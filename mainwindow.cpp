@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <cctype>
 #include <chrono>
-#include <fs.h>
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <set>
@@ -27,6 +27,8 @@
 #include <steam/steam_api.h>
 #include <string>
 #include <thread>
+
+namespace fs = std::filesystem;
 
 MainWindow::MainWindow(QWidget* parent, bool skipUpdater)
     : QMainWindow(parent), ui(new Ui::MainWindow) {

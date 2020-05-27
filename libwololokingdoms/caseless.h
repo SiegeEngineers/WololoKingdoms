@@ -1,27 +1,31 @@
 #pragma once
-#include <fs.h>
+#include <filesystem>
 
 #ifdef _WIN32
 
 /**
  * Windows is already case insensitive.
  */
-namespace cfs = fs;
+namespace cfs = std::filesystem;
 
 #else
 #include "./string_helpers.h"
 #include <map>
 
 // Remember the casing of previously used paths.
-static std::map<fs::path, fs::path> caseless_directories = {};
-static std::map<fs::path, std::map<fs::path, fs::path>> caseless_files = {};
+static std::map<std::filesystem::path, std::filesystem::path>
+    caseless_directories = {};
+static std::map<std::filesystem::path,
+                std::map<std::filesystem::path, std::filesystem::path>>
+    caseless_files = {};
 
 /**
  * Case-insensitively find a file path.
  */
-static const fs::path& caseless(fs::path const& input) {
+static const std::filesystem::path&
+caseless(std::filesystem::path const& input) {
   std::string inputs = input.string();
-  fs::path linput = tolower(inputs);
+  std::filesystem::path linput = string_to_lower(inputs);
   if (caseless_directories.find(linput) != caseless_directories.end()) {
     return caseless_directories[linput];
   }
@@ -39,21 +43,21 @@ static const fs::path& caseless(fs::path const& input) {
   auto filename = linput.filename();
   if (caseless_files.find(parent) == caseless_files.end()) {
     // Invalid path, trying to use a nonexistent directory
-    if (!fs::is_directory(parent)) {
+    if (!std::filesystem::is_directory(parent)) {
       return input;
     }
 
     caseless_directories[parent_path] = parent;
     auto& cached_dir = caseless_files[parent];
-    for (auto& entry : fs::directory_iterator(parent)) {
+    for (auto& entry : std::filesystem::directory_iterator(parent)) {
       auto basename = entry.path().filename();
-      cached_dir[tolower(basename.string())] = parent / basename;
+      cached_dir[string_to_lower(basename.string())] = parent / basename;
     }
   }
 
   auto& directory = caseless_files[parent];
   if (directory.find(filename) == directory.end()) {
-    // Creates a new file, use the casing used in the fs call
+    // Creates a new file, use the casing used in the std::filesystem call
     directory[filename] = parent / input.filename();
   }
 
@@ -61,10 +65,11 @@ static const fs::path& caseless(fs::path const& input) {
 }
 
 /**
- * Case-insensitive wrappers around fs methods, for use on case sensitive file
- * systems.
+ * Case-insensitive wrappers around std::filesystem methods, for use on case
+ * sensitive file systems.
  */
 namespace cfs {
+namespace fs = std::filesystem;
 using path = fs::path;
 using copy_options = fs::copy_options;
 static path resolve [[maybe_unused]] (const path& p) { return caseless(p); }
