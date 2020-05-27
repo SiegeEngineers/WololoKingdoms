@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #include <string>
 
 /**
@@ -35,17 +36,10 @@ static void runCmd(std::wstring exe) {
   WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
 
-static void mklink(LinkType type, std::string link, std::string dest) {
-  std::wstring wlink;
-  std::wstring wdest;
-  for (auto c : link) {
-    wchar_t w = c;
-    wlink.push_back(w);
-  }
-  for (auto c : dest) {
-    wchar_t w = c;
-    wdest.push_back(w);
-  }
+static void mklink(LinkType type, const std::filesystem::path& link,
+                   const std::filesystem::path& dest) {
+  std::wstring wlink = link.wstring();
+  std::wstring wdest = dest.wstring();
 
   if (type == LinkType::Soft) {
     std::wstringstream line;
@@ -71,7 +65,8 @@ static void mklink(LinkType type, std::string link, std::string dest) {
 #include <unistd.h>
 
 static void mklink [[maybe_unused]] ([[maybe_unused]] LinkType type,
-                                     std::string link, std::string dest) {
+                                     const std::filesystem::path& link,
+                                     const std::filesystem::path& dest) {
   symlink(dest.c_str(), link.c_str());
 }
 
