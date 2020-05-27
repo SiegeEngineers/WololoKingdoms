@@ -25,7 +25,7 @@ static std::map<std::filesystem::path,
 static const std::filesystem::path&
 caseless(std::filesystem::path const& input) {
   std::string inputs = input.string();
-  std::filesystem::path linput = tolower(inputs);
+  std::filesystem::path linput = string_to_lower(inputs);
   if (caseless_directories.find(linput) != caseless_directories.end()) {
     return caseless_directories[linput];
   }
@@ -51,7 +51,7 @@ caseless(std::filesystem::path const& input) {
     auto& cached_dir = caseless_files[parent];
     for (auto& entry : std::filesystem::directory_iterator(parent)) {
       auto basename = entry.path().filename();
-      cached_dir[tolower(basename.string())] = parent / basename;
+      cached_dir[string_to_lower(basename.string())] = parent / basename;
     }
   }
 

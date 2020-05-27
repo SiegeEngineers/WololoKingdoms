@@ -32,7 +32,7 @@ std::string wstrtostr(std::wstring wide) {
   return narrow;
 }
 
-std::string tolower(std::string line) {
+std::string string_to_lower(std::string line) {
   std::transform(line.begin(), line.end(), line.begin(),
                  static_cast<int (*)(int)>(std::tolower));
   return line;

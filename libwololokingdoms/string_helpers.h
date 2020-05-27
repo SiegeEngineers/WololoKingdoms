@@ -24,7 +24,7 @@ std::string wstrtostr(std::wstring wide);
 /**
  * Convert a std::string to lowercase.
  */
-std::string tolower(std::string line);
+std::string string_to_lower(std::string line);
 
 /**
  * Completely consume a readable stream and concatenate it into a std::string.

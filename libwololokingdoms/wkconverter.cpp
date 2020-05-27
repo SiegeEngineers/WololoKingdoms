@@ -2141,10 +2141,8 @@ void WKConverter::refreshSymlink(const fs::path& oldPath,
 
 void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
                                bool dataMod) {
-  bool vooblySrc =
-      tolower(oldDir).find("\\voobly mods\\aoc") != std::string::npos;
-  bool vooblyDst =
-      tolower(newDir).find("\\voobly mods\\aoc") != std::string::npos;
+  bool vooblySrc = string_to_lower(oldDir.string()).find("\\voobly mods\\aoc") != std::string::npos;
+  bool vooblyDst = string_to_lower(newDir.string()).find("\\voobly mods\\aoc") != std::string::npos;
 
   cfs::create_directory(newDir);
   bool datalink = vooblySrc == vooblyDst && !dataMod;
@@ -2196,7 +2194,7 @@ void WKConverter::symlinkSetup(const fs::path& oldDir, const fs::path& newDir,
     for (const auto& current : fs::directory_iterator(oldDir)) {
       const auto& currentPath = current.path();
       if (!cfs::is_directory(currentPath) ||
-          tolower(currentPath.filename().string()) != "savegame") {
+          string_to_lower(currentPath.filename().string()) != "savegame") {
         cfs::copy(currentPath, newDir / currentPath.filename(),
                   fs::copy_options::recursive |
                       fs::copy_options::skip_existing);
